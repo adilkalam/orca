@@ -23,8 +23,7 @@
 +------------------------------------------------------------------+
 ```
 
-**→ [Quick Start Guide](QUICK-START.md)** - Get running in 5 minutes
-
+**→ [Quick Start Guide](QUICK-START.md)**
 ---
 
 ## The Problem
