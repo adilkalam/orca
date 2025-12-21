@@ -42,6 +42,22 @@ The installer will:
 4. Configure MCP servers in `~/.claude.json`
 5. Initialize memory systems
 
+### Upgrade
+
+Already have ORCA-OS? Use the fast upgrade path:
+
+```bash
+cd orca-os
+git pull
+./dist/install.sh --upgrade
+```
+
+Upgrade mode:
+- Auto-backups without prompting
+- Skips unchanged dependencies
+- Preserves your optional MCP choices
+- Completes in ~10-30 seconds
+
 ### Verify Installation
 
 ```bash
