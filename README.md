@@ -9,7 +9,7 @@
 
 **Orchestrated Reasoning & Coordination Architecture for Claude Code**
 
-```
+
 +------------------------------------------------------------------+
 
 Make Claude Code think before it acts, remember what it learns, and finish work.
@@ -19,7 +19,7 @@ Make Claude Code think before it acts, remember what it learns, and finish work.
 - Self-improvement from every interaction
 
 +------------------------------------------------------------------+
-```
+
 
 **→ [Quick Start Guide](QUICK-START.md)**
 
