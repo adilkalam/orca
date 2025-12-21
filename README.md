@@ -7,7 +7,7 @@
                                     v4.0
 ```
 
-# An Orchestration Layer for Claude Code
+**Orchestrated Reasoning & Coordination Architecture for Claude Code**
 
 ```
 +------------------------------------------------------------------+
