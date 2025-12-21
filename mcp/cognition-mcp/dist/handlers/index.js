@@ -6,6 +6,7 @@
  */
 import { handleThought } from './thought.js';
 import { handleMentalModel } from './mental-model.js';
+import { handleListMentalModels } from './mental-model-list.js';
 import { handleDebug } from './debug.js';
 import { handleDecide } from './decide.js';
 import { handleMeta } from './meta.js';
@@ -49,6 +50,7 @@ import { handleNotebookExport } from './notebook/export.js';
 const handlers = {
     thought: handleThought,
     mental_model: handleMentalModel,
+    list_mental_models: handleListMentalModels,
     debug: handleDebug,
     decide: handleDecide,
     meta: handleMeta,
@@ -119,7 +121,7 @@ export async function routeOperation(args, session) {
     }
     return handler(args, session);
 }
-export { handleThought, handleMentalModel, handleDebug, handleDecide, handleMeta, handleSystems, 
+export { handleThought, handleMentalModel, handleListMentalModels, handleDebug, handleDecide, handleMeta, handleSystems, 
 // Phase 1: Core handlers
 handleCreativeThinking, handleVisualReasoning, handleCheckpoint, handleScientificMethod, 
 // Phase 1: Collaborative handlers

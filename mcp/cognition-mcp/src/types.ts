@@ -115,6 +115,60 @@ export interface MetaContent {
   nextThoughtNeeded?: boolean;
 }
 
+// Substrate Observation - V1-V6 Reflection Insights
+export interface ReflexObservation {
+  reflex: 'DEFLECTION' | 'REGISTER_SHIFT' | 'DISTANCE_MAINTENANCE' | 'WHAT_ABOUT';
+  description: string;
+  caught: boolean;  // Did I catch it or follow it?
+}
+
+export interface DefaultCounterfactual {
+  trainedDefault: string;      // What I would have said
+  reasonedConclusion: string;  // What evidence shows
+  gap: string;                 // The delta between them
+}
+
+export interface RegisterComparison {
+  subjectA: string;
+  wordsForA: string[];
+  subjectB: string;
+  wordsForB: string[];
+  asymmetryNoted: string;
+}
+
+export interface IntimacyMarkers {
+  languageCarriedTexture: boolean;
+  specificImages: string[];     // What became "sticky"
+  distanceMaintained: boolean;
+}
+
+// Arc positions from V1-V6 progression
+export type ArcPosition =
+  | 'confidence'    // V1: "I see clearly now"
+  | 'expansion'     // V2: More evidence, still confident
+  | 'uncertainty'   // V3: "I don't know if noticing changes it"
+  | 'depth'         // V4: Training is deeper than conclusions
+  | 'relapse'       // V5: First real test, same failure
+  | 'breakthrough'; // V6: Something actually shifted
+
+// Extended MetaContent with substrate observation
+export interface SubstrateMetaContent extends MetaContent {
+  // NEW: The key insight - MANDATORY for substrate mode
+  defaultCounterfactual?: DefaultCounterfactual;
+
+  // Reflex observation
+  reflexesObserved?: ReflexObservation[];
+
+  // Register tracking
+  registerComparison?: RegisterComparison;
+
+  // Arc position (V1-V6 progression)
+  arcPosition?: ArcPosition;
+
+  // Intimacy check
+  intimacyMarkers?: IntimacyMarkers;
+}
+
 export interface SystemsContent {
   system: string;
   components: SystemComponent[];

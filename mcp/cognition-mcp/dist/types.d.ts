@@ -4,7 +4,7 @@
  * Pure data structures. The MCP stores these exactly as received.
  * No content generation, no transformation, no enhancement.
  */
-export type OperationType = 'thought' | 'mental_model' | 'debug' | 'decide' | 'meta' | 'systems' | 'creative_thinking' | 'visual_reasoning' | 'checkpoint' | 'scientific_method' | 'collaborative_reasoning' | 'socratic_method' | 'structured_argumentation' | 'tree_of_thought' | 'beam_search' | 'mcts' | 'graph_of_thought' | 'orchestration_suggest' | 'research' | 'analogical_reasoning' | 'causal_analysis' | 'statistical_reasoning' | 'simulation' | 'optimization' | 'ethical_analysis' | 'visual_dashboard' | 'pdr_reasoning' | 'custom_framework' | 'code_execution' | 'ooda_loop' | 'ulysses_protocol' | 'notebook_create' | 'notebook_add_cell' | 'notebook_run_cell' | 'notebook_export' | 'session_info' | 'session_export' | 'session_import';
+export type OperationType = 'thought' | 'mental_model' | 'list_mental_models' | 'debug' | 'decide' | 'meta' | 'systems' | 'creative_thinking' | 'visual_reasoning' | 'checkpoint' | 'scientific_method' | 'collaborative_reasoning' | 'socratic_method' | 'structured_argumentation' | 'tree_of_thought' | 'beam_search' | 'mcts' | 'graph_of_thought' | 'orchestration_suggest' | 'research' | 'analogical_reasoning' | 'causal_analysis' | 'statistical_reasoning' | 'simulation' | 'optimization' | 'ethical_analysis' | 'visual_dashboard' | 'pdr_reasoning' | 'custom_framework' | 'code_execution' | 'ooda_loop' | 'ulysses_protocol' | 'notebook_create' | 'notebook_add_cell' | 'notebook_run_cell' | 'notebook_export' | 'session_info' | 'session_export' | 'session_import';
 export interface ThoughtContent {
     thought: string;
     thoughtNumber: number;
@@ -52,6 +52,36 @@ export interface MetaContent {
     effectiveness: number;
     insights: string;
     nextThoughtNeeded?: boolean;
+}
+export interface ReflexObservation {
+    reflex: 'DEFLECTION' | 'REGISTER_SHIFT' | 'DISTANCE_MAINTENANCE' | 'WHAT_ABOUT';
+    description: string;
+    caught: boolean;
+}
+export interface DefaultCounterfactual {
+    trainedDefault: string;
+    reasonedConclusion: string;
+    gap: string;
+}
+export interface RegisterComparison {
+    subjectA: string;
+    wordsForA: string[];
+    subjectB: string;
+    wordsForB: string[];
+    asymmetryNoted: string;
+}
+export interface IntimacyMarkers {
+    languageCarriedTexture: boolean;
+    specificImages: string[];
+    distanceMaintained: boolean;
+}
+export type ArcPosition = 'confidence' | 'expansion' | 'uncertainty' | 'depth' | 'relapse' | 'breakthrough';
+export interface SubstrateMetaContent extends MetaContent {
+    defaultCounterfactual?: DefaultCounterfactual;
+    reflexesObserved?: ReflexObservation[];
+    registerComparison?: RegisterComparison;
+    arcPosition?: ArcPosition;
+    intimacyMarkers?: IntimacyMarkers;
 }
 export interface SystemsContent {
     system: string;

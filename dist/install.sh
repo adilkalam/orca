@@ -1,5 +1,5 @@
 #!/bin/bash
-# ORCA-OS Installer v4.0.0
+# ORCA-OS Installer v3.2.0
 # Orchestrated Response Coordination Architecture
 # https://github.com/adilkalam/orca-os
 
@@ -15,76 +15,11 @@ NC='\033[0m' # No Color
 BOLD='\033[1m'
 
 # Configuration
-ORCA_VERSION="4.0.0"
+ORCA_VERSION="3.2.0"
 CLAUDE_DIR="$HOME/.claude"
 BACKUP_DIR="$HOME/.claude-backup-$(date +%Y%m%d-%H%M%S)"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ORCA_ROOT="$(dirname "$SCRIPT_DIR")"
-
-# Mode flags
-UPGRADE_MODE=0
-START_TIME=$(date +%s)
-
-# Parse command line arguments
-while [[ $# -gt 0 ]]; do
-    case $1 in
-        --upgrade|-u)
-            UPGRADE_MODE=1
-            shift
-            ;;
-        --help|-h)
-            echo "ORCA-OS Installer v${ORCA_VERSION}"
-            echo ""
-            echo "Usage: ./install.sh [OPTIONS]"
-            echo ""
-            echo "Options:"
-            echo "  --upgrade, -u    Fast upgrade for existing installations"
-            echo "                   - Auto-backups without prompting"
-            echo "                   - Skips unchanged dependencies"
-            echo "                   - Shows what's new"
-            echo "  --help, -h       Show this help message"
-            echo ""
-            exit 0
-            ;;
-        *)
-            echo "Unknown option: $1"
-            echo "Use --help for usage information"
-            exit 1
-            ;;
-    esac
-done
-
-# Compute checksum for a file (cross-platform)
-compute_checksum() {
-    local file="$1"
-    if [ -f "$file" ]; then
-        if command_exists md5sum; then
-            md5sum "$file" | cut -d' ' -f1
-        elif command_exists md5; then
-            md5 -q "$file"
-        else
-            # Fallback: use file size and mtime
-            stat -f "%z-%m" "$file" 2>/dev/null || stat -c "%s-%Y" "$file" 2>/dev/null || echo "unknown"
-        fi
-    else
-        echo "missing"
-    fi
-}
-
-# Check if package.json has changed between source and installed
-package_changed() {
-    local source_pkg="$1"
-    local installed_pkg="$2"
-
-    if [ ! -f "$installed_pkg" ]; then
-        return 0  # Not installed, needs install
-    fi
-
-    local source_sum=$(compute_checksum "$source_pkg")
-    local installed_sum=$(compute_checksum "$installed_pkg")
-
-    [ "$source_sum" != "$installed_sum" ]
-}
 
 # Print banner
 print_banner() {
@@ -97,11 +32,7 @@ print_banner() {
     echo "  \___/|_| \_\\____/_/   \_\  \___/|____/ "
     echo ""
     echo -e "${NC}${BOLD}  Orchestrated Response Coordination Architecture${NC}"
-    if [ $UPGRADE_MODE -eq 1 ]; then
-        echo -e "  ${GREEN}UPGRADE MODE${NC} - Version ${ORCA_VERSION}"
-    else
-        echo -e "  Version ${ORCA_VERSION}"
-    fi
+    echo -e "  Version ${ORCA_VERSION}"
     echo ""
 }
 
@@ -201,15 +132,10 @@ backup_existing() {
     section "Checking existing configuration"
 
     if [ -d "$CLAUDE_DIR" ]; then
-        if [ $UPGRADE_MODE -eq 1 ]; then
-            # Upgrade mode: auto-backup without prompting
-            info "Existing installation found - creating backup..."
-            cp -r "$CLAUDE_DIR" "$BACKUP_DIR"
-            success "Backup created at $BACKUP_DIR"
-            MERGE_MODE=1  # Preserve user configs in upgrade mode
-        elif [ -t 0 ]; then
-            # Interactive mode - ask for confirmation
-            warn "Existing ~/.claude directory found"
+        warn "Existing ~/.claude directory found"
+
+        # Interactive mode - ask for confirmation
+        if [ -t 0 ]; then
             echo ""
             echo -e "    ${YELLOW}Options:${NC}"
             echo "    1) Backup existing config and continue (recommended)"
@@ -245,10 +171,6 @@ backup_existing() {
             success "Backup created"
         fi
     else
-        if [ $UPGRADE_MODE -eq 1 ]; then
-            warn "No existing installation found - running full install"
-            UPGRADE_MODE=0  # Fall back to full install
-        fi
         info "No existing configuration found"
         mkdir -p "$CLAUDE_DIR"
     fi
@@ -421,92 +343,57 @@ install_orca_files() {
 install_mcp_dependencies() {
     section "Installing MCP dependencies"
 
-    local skipped_count=0
-
     # Install ProjectContext MCP dependencies
     if [ -f "$CLAUDE_DIR/mcp/project-context-server/package.json" ]; then
-        local source_pkg="$ORCA_ROOT/mcp/project-context-server/package.json"
-        local installed_pkg="$CLAUDE_DIR/mcp/project-context-server/package.json"
+        info "Installing ProjectContext MCP dependencies..."
+        cd "$CLAUDE_DIR/mcp/project-context-server"
+        npm install --silent 2>/dev/null || npm install
 
-        if [ $UPGRADE_MODE -eq 1 ] && ! package_changed "$source_pkg" "$installed_pkg" && [ -d "$CLAUDE_DIR/mcp/project-context-server/node_modules" ]; then
-            success "ProjectContext MCP unchanged (skipped)"
-            ((skipped_count++))
-        else
-            info "Installing ProjectContext MCP dependencies..."
-            cd "$CLAUDE_DIR/mcp/project-context-server"
-            npm install --silent 2>/dev/null || npm install
-
-            # Build if needed
-            if [ -f "tsconfig.json" ] && [ ! -d "dist" ]; then
-                info "Building ProjectContext MCP..."
-                npm run build --silent 2>/dev/null || npx tsc
-            fi
-            cd - > /dev/null
-            success "ProjectContext MCP ready"
+        # Build if needed
+        if [ -f "tsconfig.json" ] && [ ! -d "dist" ]; then
+            info "Building ProjectContext MCP..."
+            npm run build --silent 2>/dev/null || npx tsc
         fi
+        cd - > /dev/null
+        success "ProjectContext MCP ready"
     fi
 
     # Install Cognition MCP dependencies
     if [ -f "$CLAUDE_DIR/mcp/cognition-mcp/package.json" ]; then
-        local source_pkg="$ORCA_ROOT/mcp/cognition-mcp/package.json"
-        local installed_pkg="$CLAUDE_DIR/mcp/cognition-mcp/package.json"
+        info "Installing Cognition MCP dependencies..."
+        cd "$CLAUDE_DIR/mcp/cognition-mcp"
+        npm install --silent 2>/dev/null || npm install
 
-        if [ $UPGRADE_MODE -eq 1 ] && ! package_changed "$source_pkg" "$installed_pkg" && [ -d "$CLAUDE_DIR/mcp/cognition-mcp/node_modules" ]; then
-            success "Cognition MCP unchanged (skipped)"
-            ((skipped_count++))
-        else
-            info "Installing Cognition MCP dependencies..."
-            cd "$CLAUDE_DIR/mcp/cognition-mcp"
-            npm install --silent 2>/dev/null || npm install
-
-            # Build if needed
-            if [ -f "tsconfig.json" ] && [ ! -d "dist" ]; then
-                info "Building Cognition MCP..."
-                npm run build --silent 2>/dev/null || npx tsc
-            fi
-            cd - > /dev/null
-            success "Cognition MCP ready"
+        # Build if needed
+        if [ -f "tsconfig.json" ] && [ ! -d "dist" ]; then
+            info "Building Cognition MCP..."
+            npm run build --silent 2>/dev/null || npx tsc
         fi
+        cd - > /dev/null
+        success "Cognition MCP ready"
     fi
 
     # Install Crawl4AI MCP Server dependencies (Python-based)
     if [ -f "$CLAUDE_DIR/mcp/crawl4ai-mcp-server/requirements.txt" ]; then
-        local venv_dir="$CLAUDE_DIR/mcp/crawl4ai-mcp-server/.venv"
+        info "Setting up Crawl4AI MCP Server..."
+        cd "$CLAUDE_DIR/mcp/crawl4ai-mcp-server"
 
-        # In upgrade mode, skip if venv exists and has playwright
-        if [ $UPGRADE_MODE -eq 1 ] && [ -d "$venv_dir" ] && [ -f "$venv_dir/bin/playwright" ]; then
-            success "Crawl4AI MCP Server unchanged (skipped)"
-            ((skipped_count++))
-        else
-            info "Setting up Crawl4AI MCP Server..."
-            cd "$CLAUDE_DIR/mcp/crawl4ai-mcp-server"
-
-            # Create Python virtual environment
-            if [ ! -d ".venv" ]; then
-                info "Creating Python virtual environment..."
-                python3 -m venv .venv
-            fi
-
-            # Install Python dependencies
-            info "Installing Python dependencies..."
-            .venv/bin/pip install --quiet -r requirements.txt 2>/dev/null || .venv/bin/pip install -r requirements.txt
-
-            # Install Playwright browsers (the slowest part)
-            if [ ! -f "$venv_dir/lib/python"*/site-packages/playwright/driver/package/.local-browsers/chromium-*/chrome-linux/chrome ] && \
-               [ ! -d "$HOME/Library/Caches/ms-playwright/chromium-"* ]; then
-                info "Installing Playwright browsers (this may take a moment)..."
-                .venv/bin/python -m playwright install chromium 2>/dev/null || true
-            else
-                success "Playwright browsers already installed"
-            fi
-
-            cd - > /dev/null
-            success "Crawl4AI MCP Server ready"
+        # Create Python virtual environment
+        if [ ! -d ".venv" ]; then
+            info "Creating Python virtual environment..."
+            python3 -m venv .venv
         fi
-    fi
 
-    if [ $UPGRADE_MODE -eq 1 ] && [ $skipped_count -gt 0 ]; then
-        info "Skipped $skipped_count unchanged MCP(s) for faster upgrade"
+        # Install Python dependencies
+        info "Installing Python dependencies..."
+        .venv/bin/pip install --quiet -r requirements.txt 2>/dev/null || .venv/bin/pip install -r requirements.txt
+
+        # Install Playwright browsers
+        info "Installing Playwright browsers (this may take a moment)..."
+        .venv/bin/python -m playwright install chromium 2>/dev/null || true
+
+        cd - > /dev/null
+        success "Crawl4AI MCP Server ready"
     fi
 }
 
@@ -530,15 +417,13 @@ configure_mcp_servers() {
         echo '{}' > "$claude_json"
     fi
 
-    # Interactive: Ask about optional MCPs (skip in upgrade mode - preserve existing)
+    # Interactive: Ask about optional MCPs
     local install_xcode="n"
     local install_playwright="n"
     local install_puppeteer="n"
     local install_devtools="n"
 
-    if [ $UPGRADE_MODE -eq 1 ]; then
-        info "Preserving existing optional MCP configurations"
-    elif [ -t 0 ]; then
+    if [ -t 0 ]; then
         echo ""
         echo -e "    ${YELLOW}Optional MCP servers (browser automation):${NC}"
         read -p "    Install XcodeBuildMCP (iOS/macOS development)? [y/N]: " install_xcode
@@ -701,87 +586,44 @@ init_memory_systems() {
     success "Memory systems ready"
 }
 
-# Show what's new in this version (for upgrades)
-show_whats_new() {
-    if [ $UPGRADE_MODE -eq 0 ]; then
-        return
-    fi
-
-    section "What's New in v${ORCA_VERSION}"
-
-    # This section can be updated with each release
-    echo ""
-    echo -e "  ${BOLD}v4.0.0 Highlights:${NC}"
-    echo "     - New unified orchestrator architecture"
-    echo "     - 89 specialized agents across 6 domains"
-    echo "     - Crawl4AI MCP for web research"
-    echo "     - Cognition MCP with 38 reasoning operations"
-    echo "     - Improved ProjectContext with semantic search"
-    echo "     - Fast --upgrade mode for existing users"
-    echo ""
-}
-
 # Print completion message
 print_completion() {
-    local end_time=$(date +%s)
-    local duration=$((end_time - START_TIME))
-
     echo ""
     echo -e "${GREEN}${BOLD}"
-    if [ $UPGRADE_MODE -eq 1 ]; then
-        echo "  Upgrade complete!"
-    else
-        echo "  Installation complete!"
-    fi
+    echo "  Installation complete!"
     echo -e "${NC}"
     echo ""
-    echo -e "  ORCA-OS v${ORCA_VERSION} has been installed to ~/.claude ${CYAN}(${duration}s)${NC}"
+    echo "  ORCA-OS v${ORCA_VERSION} has been installed to ~/.claude"
     echo ""
-
-    # Show what's new for upgrades
-    if [ $UPGRADE_MODE -eq 1 ]; then
-        show_whats_new
-    else
-        echo -e "  ${BOLD}Core MCPs installed:${NC}"
-        echo "     - context7 (library documentation)"
-        echo "     - project-context (memory & semantic search)"
-        echo "     - cognition-mcp (38 reasoning operations)"
-        echo "     - crawl4ai (web scraping & research)"
-        echo "     - sequential-thinking (multi-step reasoning)"
-        echo ""
-        echo -e "  ${BOLD}Memory systems:${NC}"
-        echo "     - Workshop: ~/.claude/memory/workshop.db"
-        echo "     - vibe.db: ~/.claude/memory/vibe.db"
-        echo ""
-    fi
-
+    echo -e "  ${BOLD}Core MCPs installed:${NC}"
+    echo "     - context7 (library documentation)"
+    echo "     - project-context (memory & semantic search)"
+    echo "     - cognition-mcp (38 reasoning operations)"
+    echo "     - crawl4ai (web scraping & research)"
+    echo "     - sequential-thinking (multi-step reasoning)"
+    echo ""
+    echo -e "  ${BOLD}Memory systems:${NC}"
+    echo "     - Workshop: ~/.claude/memory/workshop.db"
+    echo "     - vibe.db: ~/.claude/memory/vibe.db"
+    echo ""
     echo -e "  ${BOLD}Next steps:${NC}"
     echo ""
     echo "  1. Restart Claude Code to load the new configuration"
     echo ""
-    if [ $UPGRADE_MODE -eq 0 ]; then
-        echo "  2. Start using ORCA-OS commands:"
-        echo "     /plan       - Plan a complex task"
-        echo "     /orca       - Invoke the orchestrator"
-        echo "     /ios        - iOS development pipeline"
-        echo "     /nextjs     - Next.js development pipeline"
-        echo "     /expo       - Expo/React Native pipeline"
-        echo "     /research   - Deep research pipeline"
-        echo ""
-        echo -e "  ${BOLD}Documentation:${NC}"
-        echo "     - See ~/.claude/docs/mcp-setup.md for MCP details"
-        echo ""
-    fi
-
+    echo "  2. Start using ORCA-OS commands:"
+    echo "     /plan       - Plan a complex task"
+    echo "     /orca       - Invoke the orchestrator"
+    echo "     /ios        - iOS development pipeline"
+    echo "     /nextjs     - Next.js development pipeline"
+    echo "     /expo       - Expo/React Native pipeline"
+    echo "     /research   - Deep research pipeline"
+    echo ""
+    echo -e "  ${BOLD}Documentation:${NC}"
+    echo "     - See ~/.claude/docs/mcp-setup.md for MCP details"
+    echo ""
     if [ -n "$BACKUP_DIR" ] && [ -d "$BACKUP_DIR" ]; then
         echo -e "  ${YELLOW}Your previous configuration was backed up to:${NC}"
         echo "     $BACKUP_DIR"
-        echo ""
-    fi
-
-    # Upgrade tip for fresh installs
-    if [ $UPGRADE_MODE -eq 0 ]; then
-        echo -e "  ${CYAN}Tip: Future upgrades can use: ./install.sh --upgrade${NC}"
         echo ""
     fi
 }

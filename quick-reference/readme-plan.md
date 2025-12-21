@@ -193,4 +193,4 @@ Grand architects respect these tags and don't re-decide settled `#PATH_DECISION`
 
 ---
 
-*Part of ORCA OS 4.0*
+*Part of ORCA OS 3.0*

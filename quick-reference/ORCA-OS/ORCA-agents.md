@@ -2,7 +2,7 @@
 
 **Last Updated:** 2025-12-21
 **Version:** OS 4.0.0
-**Total Agents:** 102
+**Total Agents:** 90
 
 ---
 

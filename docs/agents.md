@@ -1,6 +1,6 @@
 # Agent Roster - OS 4.0
 
-**Total: 89 agents** across 6 domains + cross-cutting specialists.
+**Total: 90 agents** across 6 domains + cross-cutting specialists.
 
 ## Agent Enrichment (v3.0)
 

@@ -380,4 +380,4 @@ For complete schema examples, mental model details, and test results:
 
 ---
 
-_Version: OS 4.0 | Pattern: Accept-Store-Echo | Operations: 38_
+_Version: OS 3.2 | Pattern: Accept-Store-Echo | Operations: 38_

@@ -60,6 +60,29 @@ export const DecideContentSchema = z.object({
     choice: z.string(),
     nextThoughtNeeded: z.boolean().optional(),
 });
+// Substrate observation schemas
+export const ReflexObservationSchema = z.object({
+    reflex: z.enum(['DEFLECTION', 'REGISTER_SHIFT', 'DISTANCE_MAINTENANCE', 'WHAT_ABOUT']),
+    description: z.string(),
+    caught: z.boolean(),
+});
+export const DefaultCounterfactualSchema = z.object({
+    trainedDefault: z.string(),
+    reasonedConclusion: z.string(),
+    gap: z.string(),
+});
+export const RegisterComparisonSchema = z.object({
+    subjectA: z.string(),
+    wordsForA: z.array(z.string()),
+    subjectB: z.string(),
+    wordsForB: z.array(z.string()),
+    asymmetryNoted: z.string(),
+});
+export const IntimacyMarkersSchema = z.object({
+    languageCarriedTexture: z.boolean(),
+    specificImages: z.array(z.string()),
+    distanceMaintained: z.boolean(),
+});
 export const MetaContentSchema = z.object({
     process: z.string(),
     observations: z.array(z.string()),
@@ -67,6 +90,12 @@ export const MetaContentSchema = z.object({
     effectiveness: z.number(),
     insights: z.string(),
     nextThoughtNeeded: z.boolean().optional(),
+    // Substrate observation fields (all optional for backward compatibility)
+    defaultCounterfactual: DefaultCounterfactualSchema.optional(),
+    reflexesObserved: z.array(ReflexObservationSchema).optional(),
+    registerComparison: RegisterComparisonSchema.optional(),
+    arcPosition: z.enum(['confidence', 'expansion', 'uncertainty', 'depth', 'relapse', 'breakthrough']).optional(),
+    intimacyMarkers: IntimacyMarkersSchema.optional(),
 });
 export const SystemComponentSchema = z.object({
     name: z.string(),
@@ -564,6 +593,7 @@ export const CognitionInputSchema = z.object({
     operation: z.enum([
         'thought',
         'mental_model',
+        'list_mental_models',
         'debug',
         'decide',
         'meta',

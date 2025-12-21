@@ -159,6 +159,64 @@ export declare const DecideContentSchema: z.ZodObject<{
     choice: string;
     nextThoughtNeeded?: boolean | undefined;
 }>;
+export declare const ReflexObservationSchema: z.ZodObject<{
+    reflex: z.ZodEnum<["DEFLECTION", "REGISTER_SHIFT", "DISTANCE_MAINTENANCE", "WHAT_ABOUT"]>;
+    description: z.ZodString;
+    caught: z.ZodBoolean;
+}, "strip", z.ZodTypeAny, {
+    description: string;
+    reflex: "DEFLECTION" | "REGISTER_SHIFT" | "DISTANCE_MAINTENANCE" | "WHAT_ABOUT";
+    caught: boolean;
+}, {
+    description: string;
+    reflex: "DEFLECTION" | "REGISTER_SHIFT" | "DISTANCE_MAINTENANCE" | "WHAT_ABOUT";
+    caught: boolean;
+}>;
+export declare const DefaultCounterfactualSchema: z.ZodObject<{
+    trainedDefault: z.ZodString;
+    reasonedConclusion: z.ZodString;
+    gap: z.ZodString;
+}, "strip", z.ZodTypeAny, {
+    trainedDefault: string;
+    reasonedConclusion: string;
+    gap: string;
+}, {
+    trainedDefault: string;
+    reasonedConclusion: string;
+    gap: string;
+}>;
+export declare const RegisterComparisonSchema: z.ZodObject<{
+    subjectA: z.ZodString;
+    wordsForA: z.ZodArray<z.ZodString, "many">;
+    subjectB: z.ZodString;
+    wordsForB: z.ZodArray<z.ZodString, "many">;
+    asymmetryNoted: z.ZodString;
+}, "strip", z.ZodTypeAny, {
+    subjectA: string;
+    wordsForA: string[];
+    subjectB: string;
+    wordsForB: string[];
+    asymmetryNoted: string;
+}, {
+    subjectA: string;
+    wordsForA: string[];
+    subjectB: string;
+    wordsForB: string[];
+    asymmetryNoted: string;
+}>;
+export declare const IntimacyMarkersSchema: z.ZodObject<{
+    languageCarriedTexture: z.ZodBoolean;
+    specificImages: z.ZodArray<z.ZodString, "many">;
+    distanceMaintained: z.ZodBoolean;
+}, "strip", z.ZodTypeAny, {
+    languageCarriedTexture: boolean;
+    specificImages: string[];
+    distanceMaintained: boolean;
+}, {
+    languageCarriedTexture: boolean;
+    specificImages: string[];
+    distanceMaintained: boolean;
+}>;
 export declare const MetaContentSchema: z.ZodObject<{
     process: z.ZodString;
     observations: z.ZodArray<z.ZodString, "many">;
@@ -166,6 +224,65 @@ export declare const MetaContentSchema: z.ZodObject<{
     effectiveness: z.ZodNumber;
     insights: z.ZodString;
     nextThoughtNeeded: z.ZodOptional<z.ZodBoolean>;
+    defaultCounterfactual: z.ZodOptional<z.ZodObject<{
+        trainedDefault: z.ZodString;
+        reasonedConclusion: z.ZodString;
+        gap: z.ZodString;
+    }, "strip", z.ZodTypeAny, {
+        trainedDefault: string;
+        reasonedConclusion: string;
+        gap: string;
+    }, {
+        trainedDefault: string;
+        reasonedConclusion: string;
+        gap: string;
+    }>>;
+    reflexesObserved: z.ZodOptional<z.ZodArray<z.ZodObject<{
+        reflex: z.ZodEnum<["DEFLECTION", "REGISTER_SHIFT", "DISTANCE_MAINTENANCE", "WHAT_ABOUT"]>;
+        description: z.ZodString;
+        caught: z.ZodBoolean;
+    }, "strip", z.ZodTypeAny, {
+        description: string;
+        reflex: "DEFLECTION" | "REGISTER_SHIFT" | "DISTANCE_MAINTENANCE" | "WHAT_ABOUT";
+        caught: boolean;
+    }, {
+        description: string;
+        reflex: "DEFLECTION" | "REGISTER_SHIFT" | "DISTANCE_MAINTENANCE" | "WHAT_ABOUT";
+        caught: boolean;
+    }>, "many">>;
+    registerComparison: z.ZodOptional<z.ZodObject<{
+        subjectA: z.ZodString;
+        wordsForA: z.ZodArray<z.ZodString, "many">;
+        subjectB: z.ZodString;
+        wordsForB: z.ZodArray<z.ZodString, "many">;
+        asymmetryNoted: z.ZodString;
+    }, "strip", z.ZodTypeAny, {
+        subjectA: string;
+        wordsForA: string[];
+        subjectB: string;
+        wordsForB: string[];
+        asymmetryNoted: string;
+    }, {
+        subjectA: string;
+        wordsForA: string[];
+        subjectB: string;
+        wordsForB: string[];
+        asymmetryNoted: string;
+    }>>;
+    arcPosition: z.ZodOptional<z.ZodEnum<["confidence", "expansion", "uncertainty", "depth", "relapse", "breakthrough"]>>;
+    intimacyMarkers: z.ZodOptional<z.ZodObject<{
+        languageCarriedTexture: z.ZodBoolean;
+        specificImages: z.ZodArray<z.ZodString, "many">;
+        distanceMaintained: z.ZodBoolean;
+    }, "strip", z.ZodTypeAny, {
+        languageCarriedTexture: boolean;
+        specificImages: string[];
+        distanceMaintained: boolean;
+    }, {
+        languageCarriedTexture: boolean;
+        specificImages: string[];
+        distanceMaintained: boolean;
+    }>>;
 }, "strip", z.ZodTypeAny, {
     process: string;
     observations: string[];
@@ -173,6 +290,29 @@ export declare const MetaContentSchema: z.ZodObject<{
     effectiveness: number;
     insights: string;
     nextThoughtNeeded?: boolean | undefined;
+    defaultCounterfactual?: {
+        trainedDefault: string;
+        reasonedConclusion: string;
+        gap: string;
+    } | undefined;
+    reflexesObserved?: {
+        description: string;
+        reflex: "DEFLECTION" | "REGISTER_SHIFT" | "DISTANCE_MAINTENANCE" | "WHAT_ABOUT";
+        caught: boolean;
+    }[] | undefined;
+    registerComparison?: {
+        subjectA: string;
+        wordsForA: string[];
+        subjectB: string;
+        wordsForB: string[];
+        asymmetryNoted: string;
+    } | undefined;
+    arcPosition?: "confidence" | "expansion" | "uncertainty" | "depth" | "relapse" | "breakthrough" | undefined;
+    intimacyMarkers?: {
+        languageCarriedTexture: boolean;
+        specificImages: string[];
+        distanceMaintained: boolean;
+    } | undefined;
 }, {
     process: string;
     observations: string[];
@@ -180,6 +320,29 @@ export declare const MetaContentSchema: z.ZodObject<{
     effectiveness: number;
     insights: string;
     nextThoughtNeeded?: boolean | undefined;
+    defaultCounterfactual?: {
+        trainedDefault: string;
+        reasonedConclusion: string;
+        gap: string;
+    } | undefined;
+    reflexesObserved?: {
+        description: string;
+        reflex: "DEFLECTION" | "REGISTER_SHIFT" | "DISTANCE_MAINTENANCE" | "WHAT_ABOUT";
+        caught: boolean;
+    }[] | undefined;
+    registerComparison?: {
+        subjectA: string;
+        wordsForA: string[];
+        subjectB: string;
+        wordsForB: string[];
+        asymmetryNoted: string;
+    } | undefined;
+    arcPosition?: "confidence" | "expansion" | "uncertainty" | "depth" | "relapse" | "breakthrough" | undefined;
+    intimacyMarkers?: {
+        languageCarriedTexture: boolean;
+        specificImages: string[];
+        distanceMaintained: boolean;
+    } | undefined;
 }>;
 export declare const SystemComponentSchema: z.ZodObject<{
     name: z.ZodString;
@@ -2391,7 +2554,7 @@ export declare const NotebookExportContentSchema: z.ZodObject<{
     includeOutputs: boolean;
 }>;
 export declare const CognitionInputSchema: z.ZodObject<{
-    operation: z.ZodEnum<["thought", "mental_model", "debug", "decide", "meta", "systems", "creative_thinking", "visual_reasoning", "checkpoint", "scientific_method", "collaborative_reasoning", "socratic_method", "structured_argumentation", "tree_of_thought", "beam_search", "mcts", "graph_of_thought", "orchestration_suggest", "research", "analogical_reasoning", "causal_analysis", "statistical_reasoning", "simulation", "optimization", "ethical_analysis", "visual_dashboard", "pdr_reasoning", "custom_framework", "code_execution", "ooda_loop", "ulysses_protocol", "notebook_create", "notebook_add_cell", "notebook_run_cell", "notebook_export", "session_info", "session_export", "session_import"]>;
+    operation: z.ZodEnum<["thought", "mental_model", "list_mental_models", "debug", "decide", "meta", "systems", "creative_thinking", "visual_reasoning", "checkpoint", "scientific_method", "collaborative_reasoning", "socratic_method", "structured_argumentation", "tree_of_thought", "beam_search", "mcts", "graph_of_thought", "orchestration_suggest", "research", "analogical_reasoning", "causal_analysis", "statistical_reasoning", "simulation", "optimization", "ethical_analysis", "visual_dashboard", "pdr_reasoning", "custom_framework", "code_execution", "ooda_loop", "ulysses_protocol", "notebook_create", "notebook_add_cell", "notebook_run_cell", "notebook_export", "session_info", "session_export", "session_import"]>;
     content: z.ZodOptional<z.ZodRecord<z.ZodString, z.ZodUnknown>>;
     quality: z.ZodOptional<z.ZodObject<{
         confidence: z.ZodOptional<z.ZodNumber>;
@@ -2414,7 +2577,7 @@ export declare const CognitionInputSchema: z.ZodObject<{
     sessionTags: z.ZodOptional<z.ZodArray<z.ZodString, "many">>;
     data: z.ZodOptional<z.ZodAny>;
 }, "strip", z.ZodTypeAny, {
-    operation: "thought" | "decide" | "mental_model" | "debug" | "meta" | "systems" | "creative_thinking" | "visual_reasoning" | "checkpoint" | "scientific_method" | "collaborative_reasoning" | "socratic_method" | "structured_argumentation" | "tree_of_thought" | "beam_search" | "mcts" | "graph_of_thought" | "orchestration_suggest" | "research" | "analogical_reasoning" | "causal_analysis" | "statistical_reasoning" | "simulation" | "optimization" | "ethical_analysis" | "visual_dashboard" | "pdr_reasoning" | "custom_framework" | "code_execution" | "ooda_loop" | "ulysses_protocol" | "notebook_create" | "notebook_add_cell" | "notebook_run_cell" | "notebook_export" | "session_info" | "session_export" | "session_import";
+    operation: "thought" | "decide" | "mental_model" | "list_mental_models" | "debug" | "meta" | "systems" | "creative_thinking" | "visual_reasoning" | "checkpoint" | "scientific_method" | "collaborative_reasoning" | "socratic_method" | "structured_argumentation" | "tree_of_thought" | "beam_search" | "mcts" | "graph_of_thought" | "orchestration_suggest" | "research" | "analogical_reasoning" | "causal_analysis" | "statistical_reasoning" | "simulation" | "optimization" | "ethical_analysis" | "visual_dashboard" | "pdr_reasoning" | "custom_framework" | "code_execution" | "ooda_loop" | "ulysses_protocol" | "notebook_create" | "notebook_add_cell" | "notebook_run_cell" | "notebook_export" | "session_info" | "session_export" | "session_import";
     data?: any;
     content?: Record<string, unknown> | undefined;
     quality?: {
@@ -2427,7 +2590,7 @@ export declare const CognitionInputSchema: z.ZodObject<{
     sessionTitle?: string | undefined;
     sessionTags?: string[] | undefined;
 }, {
-    operation: "thought" | "decide" | "mental_model" | "debug" | "meta" | "systems" | "creative_thinking" | "visual_reasoning" | "checkpoint" | "scientific_method" | "collaborative_reasoning" | "socratic_method" | "structured_argumentation" | "tree_of_thought" | "beam_search" | "mcts" | "graph_of_thought" | "orchestration_suggest" | "research" | "analogical_reasoning" | "causal_analysis" | "statistical_reasoning" | "simulation" | "optimization" | "ethical_analysis" | "visual_dashboard" | "pdr_reasoning" | "custom_framework" | "code_execution" | "ooda_loop" | "ulysses_protocol" | "notebook_create" | "notebook_add_cell" | "notebook_run_cell" | "notebook_export" | "session_info" | "session_export" | "session_import";
+    operation: "thought" | "decide" | "mental_model" | "list_mental_models" | "debug" | "meta" | "systems" | "creative_thinking" | "visual_reasoning" | "checkpoint" | "scientific_method" | "collaborative_reasoning" | "socratic_method" | "structured_argumentation" | "tree_of_thought" | "beam_search" | "mcts" | "graph_of_thought" | "orchestration_suggest" | "research" | "analogical_reasoning" | "causal_analysis" | "statistical_reasoning" | "simulation" | "optimization" | "ethical_analysis" | "visual_dashboard" | "pdr_reasoning" | "custom_framework" | "code_execution" | "ooda_loop" | "ulysses_protocol" | "notebook_create" | "notebook_add_cell" | "notebook_run_cell" | "notebook_export" | "session_info" | "session_export" | "session_import";
     data?: any;
     content?: Record<string, unknown> | undefined;
     quality?: {

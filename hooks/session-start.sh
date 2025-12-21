@@ -175,7 +175,9 @@ fi
 # Count errors if any
 ERROR_COUNT=0
 if [ -f "$ERROR_LOG" ]; then
-  ERROR_COUNT=$(grep -c "ERROR:" "$ERROR_LOG" 2>/dev/null || echo 0)
+  ERROR_COUNT=$(grep -c "ERROR:" "$ERROR_LOG" 2>/dev/null | tr -d '[:space:]') || ERROR_COUNT=0
+  # Ensure ERROR_COUNT is a valid integer
+  [[ "$ERROR_COUNT" =~ ^[0-9]+$ ]] || ERROR_COUNT=0
 fi
 
 {

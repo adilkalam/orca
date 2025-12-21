@@ -1,6 +1,8 @@
 # ORCA-OS Distribution Exclusion Patterns
 # Used by rsync to filter out project-specific and internal files
 
+_deprecated/
+
 # Domain-specific agents (excluded from public dist)
 agents/OBDN/
 agents/shopify/

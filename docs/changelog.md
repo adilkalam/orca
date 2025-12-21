@@ -2,9 +2,29 @@
 
 ## v4.0.0 - 2025-12-21
 
-### Major Version Upgrade
+### Major Features
 
-This release marks a major upgrade with significant enhancements across the entire system.
+#### Memory Architecture Unification
+- **SQLite-based reads**: ProjectContext MCP now reads Workshop directly via `better-sqlite3` instead of broken CLI parsing
+- **CLI-based writes**: Writes still use Workshop CLI for schema migration compatibility
+- **Symlink consolidation**: Auto-creates `.workshop -> .claude/memory` symlink on macOS/Linux
+- **Root cause fix**: The `workshop why --json` flag doesn't exist - this was causing all `query_context` calls to return empty `pastDecisions`
+
+#### Cognition MCP Evolution
+- **39 operations**: Expanded from core reasoning to include mental models, creative thinking, visual reasoning
+- **15 mental model templates**: predator-prey, network-effects, second-order, etc.
+- **Accept-Store-Echo pattern**: MCP stores and echoes, never generates content
+- **Session continuity**: `sessionId` parameter maintains reasoning chains
+
+#### Enhanced Planning Commands
+- **/plan --deepthink**: Full 8-step pipeline (ORIENT→ANTICIPATE→GENERATE→EVALUATE→COMMIT)
+- **/challenge**: Adversarial analysis before implementation
+- **/contemplate**: Reasoning strategy advisor
+
+### Documentation Updates
+- Created `ORCA-OS.md` comprehensive internal reference (700+ lines)
+- Updated `docs/concepts/cognition-mcp.md` with full operation reference
+- Updated quick-reference files with v4.0 versioning
 
 ---
 

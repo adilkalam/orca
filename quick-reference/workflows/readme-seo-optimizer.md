@@ -140,4 +140,4 @@ Recommended patterns:
 
 ---
 
-_Version: OS 4.0.0 (SEO Optimizer Lane)_ 
+_Version: OS 3.0.0 (SEO Optimizer Lane)_ 

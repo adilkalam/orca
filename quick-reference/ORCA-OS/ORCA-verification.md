@@ -3,7 +3,7 @@
 **Version:** OS 4.0.0
 **Last Updated:** 2025-12-21
 
-Verification in OS 3.1 is **automated** within pipelines. This guide covers manual verification for edge cases.
+Verification in OS 4.0 is **automated** within pipelines. This guide covers manual verification for edge cases.
 
 ## Automated Verification
 

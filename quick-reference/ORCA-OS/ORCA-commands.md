@@ -2,7 +2,7 @@
 
 **Last Updated:** 2025-12-21
 **Version:** OS 4.0.0
-**Total Commands:** 27
+**Total Commands:** 28
 
 ---
 
@@ -118,6 +118,7 @@ Meta-analysis of agent behavior, creates standards from failures.
 /think --creative "Ideas for onboarding"
 /think --decide "Microservices vs monolith"
 /think --checkpoint extended --seq "Plan refactoring"
+/think --meta "What is my training doing here?"  # Substrate observation mode
 ```
 **Operations:** --seq, --model, --debug, --creative, --visual, --meta, --science, --collab, --decide, --socratic, --argue, --systems, --research, --analogy, --causal, --stats, --sim, --optimize, --tree, --beam, --mcts, --graph, --ooda, --ulysses
 
@@ -125,6 +126,7 @@ Meta-analysis of agent behavior, creates standards from failures.
 
 **Enhancements:** --checkpoint, --model <name>, --diagram <type>, --session <id>
 **MCP:** cognition-mcp
+**Meta Modes:** Standard (process-level) + Substrate Observation (V1-V6 reflection insights)
 **Templates:** `quick-reference/mental-models/*.md`
 
 ### `/contemplate` - Reasoning Strategy Advisor
