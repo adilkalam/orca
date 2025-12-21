@@ -11,15 +11,13 @@
 
 ```
 +------------------------------------------------------------------+
-|                                                                  |
-|   Make Claude Code think before it acts,                         |
-|   remember what it learns, and finish work.                      |
-|                                                                  |
-|   - Structured cognition before execution                        |
-|   - Specialized pipelines with verification gates                |
-|   - Persistent memory across sessions                            |
-|   - Self-improvement from every interaction                      |
-|                                                                  |
+
+Make Claude Code think before it acts, remember what it learns, and finish work.
+- Structured cognition before execution
+- Specialized pipelines with verification gates
+- Persistent memory across sessions
+- Self-improvement from every interaction
+
 +------------------------------------------------------------------+
 ```
 
