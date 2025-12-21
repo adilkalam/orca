@@ -1,0 +1,558 @@
+# Django + React TypeScript Pipeline Phase Configuration - OS 3.0
+# Full-Stack Development Workflow
+
+pipeline:
+  name: django-react
+  description: Django backend + React TypeScript frontend full-stack pipeline
+  version: 3.0
+
+# Phase State Schema (OS 3.1)
+phase_state:
+  # Top-level fields
+  domain: django-react
+  complexity_tier: simple | medium | complex
+  requirement_id: string | null           # Links to requirements/<id>
+  requirements_spec_path: string | null   # Path to 06-requirements-spec.md
+  current_phase: string
+  memory_summary: string | null           # Hits from memory-first search
+
+  # Mode Tracking (OS 3.1)
+  current_mode: planning | execution      # NEW: Explicit mode tracking
+  mode_history:                           # NEW: Track mode transitions
+    - mode: string
+      timestamp: string
+      reason: string
+
+  # Attempt Tracking (OS 3.1)
+  current_phase_attempts: 0               # NEW: Track retry attempts
+  max_attempts: 3                         # NEW: Hard limit per spec
+
+  # Phase entries (each has status, timestamps, data)
+  phases:
+    context_query: object
+    api_contract_design: object           # OpenAPI schema design (UNIQUE)
+    backend_planning: object
+    frontend_planning: object
+    backend_implementation: object
+    api_client_generation: object         # TypeScript client from OpenAPI (UNIQUE)
+    frontend_implementation: object
+    gates: object
+    verification: object
+    completion: object
+
+# Three-Tier Routing (OS 3.0)
+# Default runs gates. -tweak skips gates. --complex forces full pipeline.
+complexity_tiers:
+  default:
+    description: Light path WITH quality gates (most work)
+    flag: "(none)"
+    routing: django-react-light-orchestrator
+    mode: default  # Runs gates
+    spec_required: false
+    gates_required: true
+    gates:
+      - django-react-standards-enforcer
+    examples:
+      - Fix API field
+      - Change form validation
+      - Update React component
+      - Add simple endpoint
+
+  tweak:
+    description: Light path WITHOUT gates (pure speed)
+    flag: "-tweak"
+    routing: django-react-light-orchestrator
+    mode: tweak  # Skips gates
+    spec_required: false
+    gates_required: false  # User verifies
+    examples:
+      - Rapid iteration
+      - Exploring options
+      - Quick experiments
+
+  complex:
+    description: Full pipeline with grand-architect
+    flag: "--complex"
+    routing: full_pipeline
+    mode: complex
+    spec_required: true    # BLOCKS without spec
+    gates_required: true
+    examples:
+      - Multi-endpoint feature
+      - Authentication system
+      - Real-time features
+      - Database migrations
+
+# Context Integration (MANDATORY for medium/complex)
+context:
+  provider: ProjectContextServer
+  required: true
+  query_on_start: true
+  memory_first: true      # Check Workshop/vibe.db before ProjectContext
+
+# Tooling Preferences (CRITICAL)
+tooling:
+  backend:
+    package_manager: uv
+    test_command: "uv run pytest"
+    django_commands: "uv run manage.py"
+    migration_command: "uv run manage.py migrate"
+    check_command: "uv run manage.py check"
+  frontend:
+    package_manager: bun
+    test_command: "bun test"
+    build_command: "bun run build"
+    typecheck_command: "bun run typecheck"
+    lint_command: "bun run lint"
+
+# Pipeline Phases
+phases:
+  # Phase 1: API Contract Design (UNIQUE to this pipeline)
+  - name: api_contract_design
+    agent: api-contract-specialist
+    description: OpenAPI schema design/update for API changes
+    context_required: true
+    outputs:
+      - openapi_schema_path
+      - contract_changes
+    constraints:
+      scope: Schema definition only, no implementation
+      quality: OpenAPI 3.0+ compliant
+      integration: Use drf-spectacular for generation
+
+  # Phase 2: Backend Planning
+  - name: backend_planning
+    agent: django-react-architect
+    description: Django architecture and implementation plan
+    dependencies:
+      - api_contract_design
+    context_required: true
+    outputs:
+      - backend_plan
+      - affected_models
+      - affected_views
+      - migration_required
+    constraints:
+      scope: Planning only, no code edits
+      quality: Complete impact analysis
+
+  # Phase 3: Frontend Planning
+  - name: frontend_planning
+    agent: django-react-architect
+    description: React TypeScript architecture and implementation plan
+    dependencies:
+      - api_contract_design
+    context_required: true
+    outputs:
+      - frontend_plan
+      - affected_components
+      - state_management_changes
+      - type_updates_required
+    constraints:
+      scope: Planning only, no code edits
+      quality: Complete impact analysis
+
+  # Phase 4: Backend Implementation
+  - name: backend_implementation
+    agent: django-react-builder
+    specialists:
+      - django-master
+      - django-api-specialist
+      - django-security-specialist
+    description: Django implementation (models, views, serializers)
+    dependencies:
+      - backend_planning
+    context_required: true
+    outputs:
+      - implemented_code
+      - changes_manifest
+      - migrations_created
+      - ra_events          # OS 3.0: RA tags added during implementation
+    constraints:
+      scope: Backend only, follow plan strictly
+      quality: PEP8, type hints, docstrings
+      tooling: Use uv for all Python commands
+      verification: Run uv run pytest after changes
+
+  # Phase 5: API Client Generation (UNIQUE to this pipeline)
+  - name: api_client_generation
+    agent: api-contract-specialist
+    description: Generate TypeScript client from OpenAPI
+    dependencies:
+      - backend_implementation
+    context_required: true
+    outputs:
+      - typescript_client_path
+      - generated_types
+    constraints:
+      scope: Client generation only
+      quality: Strict TypeScript types
+      integration: Use openapi-ts or similar
+
+  # Phase 6: Frontend Implementation
+  - name: frontend_implementation
+    agent: django-react-builder
+    specialists:
+      - react-typescript-wizard
+      - react-state-specialist
+      - react-testing-specialist
+    description: React TypeScript implementation
+    dependencies:
+      - frontend_planning
+      - api_client_generation
+    context_required: true
+    outputs:
+      - implemented_code
+      - changes_manifest
+      - ra_events          # OS 3.0: RA tags added during implementation
+    constraints:
+      scope: Frontend only, follow plan strictly
+      quality: TypeScript strict mode, React best practices
+      tooling: Use bun for all frontend commands
+      verification: Run bun test after changes
+
+  # Phase 7: Standards Gate
+  - name: standards
+    agent: django-react-standards-enforcer
+    description: Code standards enforcement for both stacks
+    dependencies:
+      - backend_implementation
+      - frontend_implementation
+    context_required: true
+    inputs:
+      - implemented_code (backend)
+      - implemented_code (frontend)
+      - changes_manifest
+    outputs:
+      - backend_standards_score
+      - frontend_standards_score
+      - violations
+      - gate_decision
+      - ra_audit           # OS 3.0: RA tag scan results
+    quality_gates:
+      backend_standards_score:
+        threshold: 90
+        type: hard_block
+        message: Django code must meet standards (>=90)
+      frontend_standards_score:
+        threshold: 90
+        type: hard_block
+        message: React code must meet standards (>=90)
+      type_safety:
+        threshold: 100
+        type: hard_block
+        message: TypeScript strict mode must pass with no errors
+      python_type_hints:
+        threshold: 100
+        type: soft_warning
+        message: Type hints recommended for all public functions
+
+  # Phase 8: API Contract Gate
+  - name: api_contract_gate
+    agent: api-contract-specialist
+    description: Verify API contract alignment
+    dependencies:
+      - backend_implementation
+      - frontend_implementation
+    context_required: true
+    outputs:
+      - contract_aligned
+      - type_mismatches
+      - gate_decision
+    quality_gates:
+      api_contract:
+        threshold: warn
+        type: soft_warning
+        message: OpenAPI generation recommended for type safety
+
+  # Phase 9: Verification
+  - name: verification
+    agent: django-react-verification
+    description: Build and test verification for both stacks
+    dependencies:
+      - standards
+    context_required: true
+    inputs:
+      - implemented_code (backend)
+      - implemented_code (frontend)
+    outputs:
+      - backend_verification_status
+      - frontend_verification_status
+      - commands_run
+    quality_gates:
+      backend_build:
+        threshold: pass
+        type: hard_block
+        message: Django tests and checks must pass
+      frontend_build:
+        threshold: pass
+        type: hard_block
+        message: React build and tests must pass
+
+# Memory Integration
+memory:
+  ephemeral: AgentDB
+  persistent: vibe.db
+  learnings:
+    - architecture_patterns
+    - common_violations
+    - type_mismatches
+
+# Success Criteria
+success:
+  all_gates_pass: true
+  backend_standards_score_min: 90
+  frontend_standards_score_min: 90
+  no_hard_blocks: true
+
+# Phase State Contract (phase_state.json)
+phase_state:
+  location: ".claude/orchestration/phase_state.json"
+  domain: "django-react"
+
+  current_phase_values:
+    - context_query
+    - api_contract_design
+    - backend_planning
+    - frontend_planning
+    - backend_implementation
+    - api_client_generation
+    - frontend_implementation
+    - gates
+    - verification
+    - completion
+
+  phase_entries:
+    context_query:
+      description: "Initial ProjectContextServer query and lane detection"
+      fields:
+        - summary
+        - timestamp
+
+    api_contract_design:
+      description: "OpenAPI schema design/update"
+      fields:
+        - openapi_schema_path
+        - contract_changes
+        - generation_method   # drf-spectacular, manual
+
+    backend_planning:
+      description: "Django architecture and implementation plan"
+      fields:
+        - change_type         # model_change | view_change | serializer_change | migration
+        - affected_models
+        - affected_views
+        - affected_serializers
+        - migration_required
+        - risks
+
+    frontend_planning:
+      description: "React TypeScript implementation plan"
+      fields:
+        - change_type         # component | hook | state | type
+        - affected_components
+        - affected_hooks
+        - state_management_changes
+        - type_updates_required
+        - risks
+
+    backend_implementation:
+      description: "Django implementation by django-react-builder"
+      fields:
+        - files_modified
+        - changes_manifest
+        - migrations_created
+        - tests_run
+        - test_results
+
+    api_client_generation:
+      description: "TypeScript client generation from OpenAPI"
+      fields:
+        - typescript_client_path
+        - generated_types
+        - generation_tool     # openapi-ts, openapi-generator
+
+    frontend_implementation:
+      description: "React TypeScript implementation by django-react-builder"
+      fields:
+        - files_modified
+        - changes_manifest
+        - tests_run
+        - test_results
+
+    gates:
+      description: "Aggregated gate results after implementation"
+      fields:
+        - backend_standards_score
+        - frontend_standards_score
+        - api_contract_aligned
+        - violations
+        - gate_decision
+        - evidence_paths
+
+    verification:
+      description: "Build / test verification results"
+      fields:
+        - backend_verification_status   # pass | fail | partial
+        - frontend_verification_status  # pass | fail | partial
+        - commands_run                  # e.g. ["uv run pytest", "bun test", "bun run build"]
+
+    completion:
+      description: "Final outcome and learnings"
+      fields:
+        - outcome    # success | partial | failure
+        - learnings
+        - artifacts
+
+# Gate Definitions
+gates:
+  backend_standards_gate:
+    type: "quality"
+    description: "Enforce Django standards"
+    phase: "standards"
+    blocking: true
+    threshold: 90
+    metric: "backend_standards_score"
+
+  frontend_standards_gate:
+    type: "quality"
+    description: "Enforce React TypeScript standards"
+    phase: "standards"
+    blocking: true
+    threshold: 90
+    metric: "frontend_standards_score"
+
+  api_contract_gate:
+    type: "quality"
+    description: "Verify API contract alignment (soft warning)"
+    phase: "api_contract_gate"
+    blocking: false
+    threshold: warn
+    metric: "api_contract_aligned"
+
+  backend_build_gate:
+    type: "verification"
+    description: "Django build / test gate"
+    phase: "verification"
+    blocking: true
+    threshold: "success"
+    metric: "backend_verification_status"
+
+  frontend_build_gate:
+    type: "verification"
+    description: "React build gate"
+    phase: "verification"
+    blocking: true
+    threshold: "success"
+    metric: "frontend_verification_status"
+
+# Optional Phases (activated on risk/need)
+optional_phases:
+  - name: performance_analysis
+    agent: django-react-builder
+    trigger: performance_risk_detected
+    outputs:
+      - backend_performance_profile
+      - frontend_bundle_analysis
+      - optimization_recommendations
+
+  - name: security_audit
+    agent: django-security-specialist
+    trigger: auth_or_sensitive_data
+    outputs:
+      - security_assessment
+      - permission_review
+      - csrf_xss_analysis
+
+  - name: database_optimization
+    agent: django-master
+    trigger: complex_queries_detected
+    outputs:
+      - query_optimization_plan
+      - index_recommendations
+      - n_plus_one_fixes
+
+# Configuration
+config:
+  max_implementation_passes: 2
+  gate_failure_behavior: block_and_correct
+  evidence_path: .claude/orchestration/evidence/
+  phase_state_path: .claude/orchestration/phase_state.json
+
+  max_file_edits:
+    simple: 5
+    medium: 12
+    complex: 25
+
+  gate_strictness: "standard"  # relaxed | standard | strict
+
+  save_artifacts:
+    temp: ".claude/orchestration/temp/"
+    evidence: ".claude/orchestration/evidence/"
+    cleanup_temp_after: true
+
+  phase_state_location: ".claude/orchestration/phase_state.json"
+  vibe_db_location: ".claude/orchestration/vibe.db"
+
+# Architecture Decision Rules
+architecture_rules:
+  django_api_pattern:
+    condition: new_api_endpoint
+    choice: DRF + drf-spectacular for OpenAPI
+
+  state_management:
+    condition: complex_frontend_state
+    choices:
+      - zustand: "simple to medium complexity"
+      - tanstack_query: "server state management"
+      - redux_toolkit: "complex global state"
+
+  respect_existing:
+    condition: has_existing_patterns
+    choice: Follow existing patterns in codebase
+
+  type_generation:
+    condition: api_changes
+    choice: Generate TypeScript types from OpenAPI
+
+# Specialist Activation Matrix
+specialists:
+  django-master:
+    trigger: models OR orm OR migrations OR django_admin
+
+  django-api-specialist:
+    trigger: api_views OR serializers OR permissions OR throttling
+
+  django-security-specialist:
+    trigger: authentication OR authorization OR sensitive_data
+
+  react-typescript-wizard:
+    trigger: typescript_types OR complex_components OR generics
+
+  react-state-specialist:
+    trigger: state_management OR zustand OR tanstack_query
+
+  react-testing-specialist:
+    trigger: frontend_tests OR component_tests OR integration_tests
+
+  api-contract-specialist:
+    trigger: openapi_changes OR type_generation OR contract_first
+
+# Agent Count Summary
+agent_manifest:
+  total_agents: 13
+  core_agents:
+    - django-react-grand-architect
+    - django-react-architect
+    - django-react-builder
+    - django-react-light-orchestrator
+    - django-react-verification
+    - django-react-standards-enforcer
+  specialists:
+    - django-master
+    - django-api-specialist
+    - django-security-specialist
+    - react-typescript-wizard
+    - react-state-specialist
+    - react-testing-specialist
+    - api-contract-specialist

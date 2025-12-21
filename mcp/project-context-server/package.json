@@ -1,0 +1,24 @@
+{
+  "name": "@vibe/project-context-server",
+  "version": "2.0.0",
+  "description": "Mandatory context service for OS 2.0 - makes context amnesia structurally impossible",
+  "main": "dist/index.js",
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "start": "node dist/index.js"
+  },
+  "keywords": ["context", "memory", "mcp", "os2.0"],
+  "author": "Vibe Code OS",
+  "license": "MIT",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0",
+    "better-sqlite3": "^11.0.0"
+  },
+  "devDependencies": {
+    "@types/better-sqlite3": "^7.6.0",
+    "@types/node": "^20.0.0",
+    "typescript": "^5.0.0"
+  }
+}

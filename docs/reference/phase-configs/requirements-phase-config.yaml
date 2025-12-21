@@ -1,0 +1,74 @@
+# Requirements Pipeline Phase Configuration - OS 3.0
+
+pipeline:
+  name: requirements
+  description: Requirements gathering lane for OS 3.0
+  version: 3.0
+
+context:
+  provider: ProjectContextServer
+  required: true
+  query_on_start: true
+
+phases:
+  - name: setup
+    agent: requirements-helper
+    description: Initialize requirement folder, metadata, and initial context
+    context_required: true
+    outputs:
+      - requirement_folder
+      - metadata_json
+    constraints:
+      scope: Create docs only, no implementation
+
+  - name: discovery_questions
+    agent: requirements-helper
+    description: Ask 5 high-level yes/no discovery questions with smart defaults
+    dependencies:
+      - setup
+    context_required: true
+    outputs:
+      - discovery_questions
+      - discovery_answers
+    constraints:
+      scope: Problem-space only, no technical implementation
+      quality: Exactly 5 questions, yes/no with defaults
+
+  - name: context_findings
+    agent: requirements-helper
+    description: Targeted code/context analysis informed by discovery answers
+    dependencies:
+      - discovery_questions
+    context_required: true
+    outputs:
+      - context_findings
+      - context_files
+    constraints:
+      scope: Read-only analysis of codebase
+
+  - name: detail_questions
+    agent: requirements-helper
+    description: Ask 5 expert-level yes/no questions referencing specific code
+    dependencies:
+      - context_findings
+    context_required: true
+    outputs:
+      - detail_questions
+      - detail_answers
+    constraints:
+      scope: Behavior/requirements only, no implementation
+      quality: Exactly 5 questions, tied to concrete files/patterns
+
+  - name: spec
+    agent: requirements-helper
+    description: Generate final requirements spec and update indexes
+    dependencies:
+      - detail_questions
+    context_required: true
+    outputs:
+      - requirements_spec
+      - updated_metadata
+    constraints:
+      scope: Documentation only
+      integration: Log decision to vibe.db and update phase_state
+

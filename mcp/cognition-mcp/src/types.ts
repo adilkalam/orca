@@ -1,0 +1,846 @@
+/**
+ * Cognition MCP - TypeScript Types
+ * 
+ * Pure data structures. The MCP stores these exactly as received.
+ * No content generation, no transformation, no enhancement.
+ */
+
+// ============================================================================
+// OPERATION TYPES
+// ============================================================================
+
+export type OperationType =
+  | 'thought'
+  | 'mental_model'
+  | 'list_mental_models'
+  | 'debug'
+  | 'decide'
+  | 'meta'
+  | 'systems'
+  // Phase 1: Core operations
+  | 'creative_thinking'
+  | 'visual_reasoning'
+  | 'checkpoint'
+  | 'scientific_method'
+  // Phase 1: Collaborative operations
+  | 'collaborative_reasoning'
+  | 'socratic_method'
+  | 'structured_argumentation'
+  // Phase 2: Pattern operations
+  | 'tree_of_thought'
+  | 'beam_search'
+  | 'mcts'
+  | 'graph_of_thought'
+  | 'orchestration_suggest'
+  // Phase 3: Analysis operations
+  | 'research'
+  | 'analogical_reasoning'
+  | 'causal_analysis'
+  | 'statistical_reasoning'
+  | 'simulation'
+  | 'optimization'
+  | 'ethical_analysis'
+  | 'visual_dashboard'
+  | 'pdr_reasoning'
+  | 'custom_framework'
+  | 'code_execution'
+  // Phase 4: Strategic operations
+  | 'ooda_loop'
+  | 'ulysses_protocol'
+  // Phase 4: Notebook operations
+  | 'notebook_create'
+  | 'notebook_add_cell'
+  | 'notebook_run_cell'
+  | 'notebook_export'
+  // Session management
+  | 'session_info'
+  | 'session_export'
+  | 'session_import';
+
+// ============================================================================
+// CONTENT STRUCTURES (Claude provides ALL of this)
+// ============================================================================
+
+export interface ThoughtContent {
+  thought: string;
+  thoughtNumber: number;
+  totalThoughts: number;
+  nextThoughtNeeded: boolean;
+  branchId?: string;
+  branchFromThought?: number;
+  isRevision?: boolean;
+  revisesThought?: number;
+}
+
+export interface MentalModelContent {
+  modelName: string;
+  problem: string;
+  steps: string[];
+  reasoning: string;
+  conclusion: string;
+  nextThoughtNeeded?: boolean;
+}
+
+export interface DebugContent {
+  approach: string;
+  issue: string;
+  steps: string[];
+  findings: string;
+  resolution: string;
+  nextThoughtNeeded?: boolean;
+}
+
+export interface DecideContent {
+  statement: string;
+  options: DecisionOption[];
+  criteria: string[];
+  analysis: string;
+  choice: string;
+  nextThoughtNeeded?: boolean;
+}
+
+export interface DecisionOption {
+  name: string;
+  description: string;
+  pros?: string[];
+  cons?: string[];
+}
+
+export interface MetaContent {
+  process: string;
+  observations: string[];
+  adjustments: string[];
+  effectiveness: number;
+  insights: string;
+  nextThoughtNeeded?: boolean;
+}
+
+export interface SystemsContent {
+  system: string;
+  components: SystemComponent[];
+  relationships: SystemRelationship[];
+  feedbackLoops: string[];
+  nextThoughtNeeded?: boolean;
+}
+
+export interface SystemComponent {
+  name: string;
+  function: string;
+  interactions?: string[];
+}
+
+export interface SystemRelationship {
+  from: string;
+  to: string;
+  type: string;
+}
+
+// ============================================================================
+// PHASE 1: CORE CONTENT STRUCTURES
+// ============================================================================
+
+export interface CreativeIdea {
+  idea: string;
+  potential: string;
+  challenges: string[];
+}
+
+export interface CreativeThinkingContent {
+  prompt: string;
+  techniques: string[];
+  ideas: CreativeIdea[];
+  synthesis: string;
+  nextThoughtNeeded?: boolean;
+}
+
+export interface VisualElement {
+  name: string;
+  properties: string[];
+}
+
+export interface VisualRelationship {
+  from: string;
+  to: string;
+  type: string;
+}
+
+export interface VisualReasoningContent {
+  description: string;
+  elements: VisualElement[];
+  relationships: VisualRelationship[];
+  insights: string[];
+  nextThoughtNeeded?: boolean;
+}
+
+export interface CheckpointContent {
+  label: string;
+  summary: string;
+  keyFindings: string[];
+  openQuestions: string[];
+  nextSteps: string[];
+}
+
+export interface ScientificMethodContent {
+  question: string;
+  hypothesis: string;
+  experiment: string;
+  observations: string[];
+  analysis: string;
+  conclusion: string;
+  nextThoughtNeeded?: boolean;
+}
+
+// ============================================================================
+// PHASE 1: COLLABORATIVE CONTENT STRUCTURES
+// ============================================================================
+
+export interface Perspective {
+  role: string;
+  viewpoint: string;
+  arguments: string[];
+}
+
+export interface CollaborativeReasoningContent {
+  topic: string;
+  perspectives: Perspective[];
+  commonGround: string[];
+  tensions: string[];
+  synthesis: string;
+  nextThoughtNeeded?: boolean;
+}
+
+export interface SocraticQuestion {
+  question: string;
+  purpose: string;
+  response?: string;
+}
+
+export interface SocraticMethodContent {
+  initialClaim: string;
+  questions: SocraticQuestion[];
+  assumptions: string[];
+  refinedPosition: string;
+  nextThoughtNeeded?: boolean;
+}
+
+export interface Evidence {
+  point: string;
+  source?: string;
+  strength: string;
+}
+
+export interface Counterargument {
+  point: string;
+  rebuttal: string;
+}
+
+export interface StructuredArgumentationContent {
+  claim: string;
+  premises: string[];
+  evidence: Evidence[];
+  counterarguments: Counterargument[];
+  conclusion: string;
+  nextThoughtNeeded?: boolean;
+}
+
+// ============================================================================
+// PHASE 2: PATTERN CONTENT STRUCTURES
+// ============================================================================
+
+export interface TreeBranch {
+  id: string;
+  parent: string | null;
+  thought: string;
+  evaluation: string;
+  score: number;
+  children: string[];
+}
+
+export interface TreeOfThoughtContent {
+  root: string;
+  branches: TreeBranch[];
+  currentPath: string[];
+  bestPath: string[];
+  pruned: string[];
+  nextThoughtNeeded?: boolean;
+}
+
+export interface BeamCandidate {
+  id: string;
+  thought: string;
+  score: number;
+  rank: number;
+}
+
+export interface BeamSearchContent {
+  problem: string;
+  beamWidth: number;
+  candidates: BeamCandidate[];
+  iteration: number;
+  selected: string[];
+  nextThoughtNeeded?: boolean;
+}
+
+export interface MCTSNode {
+  id: string;
+  state: string;
+  visits: number;
+  value: number;
+  parent: string | null;
+  children: string[];
+}
+
+export interface MCTSContent {
+  problem: string;
+  simulations: number;
+  nodes: MCTSNode[];
+  bestAction: string;
+  confidence: number;
+  nextThoughtNeeded?: boolean;
+}
+
+export interface GraphNode {
+  id: string;
+  concept: string;
+  type: string;
+}
+
+export interface GraphEdge {
+  from: string;
+  to: string;
+  relationship: string;
+  strength: number;
+}
+
+export interface GraphCluster {
+  id: string;
+  name: string;
+  nodeIds: string[];
+}
+
+export interface GraphOfThoughtContent {
+  topic: string;
+  nodes: GraphNode[];
+  edges: GraphEdge[];
+  clusters: GraphCluster[];
+  insights: string[];
+  nextThoughtNeeded?: boolean;
+}
+
+export interface SuggestedOperation {
+  operation: string;
+  reason: string;
+  order: number;
+}
+
+export interface AlternativeApproach {
+  approach: string;
+  tradeoffs: string;
+}
+
+export interface OrchestrationSuggestContent {
+  task: string;
+  complexity: 'simple' | 'medium' | 'complex';
+  suggestedOperations: SuggestedOperation[];
+  alternativeApproaches: AlternativeApproach[];
+  recommendation: string;
+  nextThoughtNeeded?: boolean;
+}
+
+// ============================================================================
+// PHASE 3: ANALYSIS CONTENT STRUCTURES
+// ============================================================================
+
+export interface ResearchSource {
+  name: string;
+  type: string;
+  credibility: string;
+}
+
+export interface ResearchFinding {
+  source: string;
+  finding: string;
+  relevance: string;
+}
+
+export interface ResearchContent {
+  question: string;
+  sources: ResearchSource[];
+  findings: ResearchFinding[];
+  synthesis: string;
+  gaps: string[];
+  nextSteps: string[];
+  nextThoughtNeeded?: boolean;
+}
+
+export interface Analog {
+  domain: string;
+  description: string;
+  similarity: number;
+}
+
+export interface AnalogMapping {
+  targetElement: string;
+  analogElement: string;
+  relationship: string;
+}
+
+export interface AnalogicalReasoningContent {
+  target: string;
+  analogs: Analog[];
+  mappings: AnalogMapping[];
+  insights: string[];
+  limitations: string[];
+  nextThoughtNeeded?: boolean;
+}
+
+export interface Cause {
+  factor: string;
+  type: string;
+  strength: string;
+  evidence: string;
+}
+
+export interface Effect {
+  outcome: string;
+  likelihood: string;
+  timeframe: string;
+}
+
+export interface CausalChain {
+  sequence: string[];
+  probability: number;
+}
+
+export interface CausalAnalysisContent {
+  phenomenon: string;
+  causes: Cause[];
+  effects: Effect[];
+  chains: CausalChain[];
+  interventions: string[];
+  nextThoughtNeeded?: boolean;
+}
+
+export interface DataPoint {
+  variable: string;
+  observations: string;
+  distribution: string;
+}
+
+export interface StatisticalReasoningContent {
+  question: string;
+  data: DataPoint[];
+  analysis: string;
+  confidence: number;
+  caveats: string[];
+  conclusion: string;
+  nextThoughtNeeded?: boolean;
+}
+
+export interface SimulationCondition {
+  variable: string;
+  value: string;
+}
+
+export interface SimulationStep {
+  step: number;
+  action: string;
+  outcome: string;
+}
+
+export interface SimulationContent {
+  scenario: string;
+  initialConditions: SimulationCondition[];
+  steps: SimulationStep[];
+  finalState: string;
+  insights: string[];
+  alternativeOutcomes: string[];
+  nextThoughtNeeded?: boolean;
+}
+
+export interface OptimizationVariable {
+  name: string;
+  range: string;
+  impact: string;
+}
+
+export interface Tradeoff {
+  optionA: string;
+  optionB: string;
+  tradeoff: string;
+}
+
+export interface OptimizationContent {
+  objective: string;
+  constraints: string[];
+  variables: OptimizationVariable[];
+  tradeoffs: Tradeoff[];
+  recommendation: string;
+  sensitivity: string;
+  nextThoughtNeeded?: boolean;
+}
+
+export interface Stakeholder {
+  group: string;
+  interests: string;
+  impact: string;
+}
+
+export interface EthicalPrinciple {
+  principle: string;
+  application: string;
+  weight: number;
+}
+
+export interface EthicalOption {
+  option: string;
+  ethicalScore: number;
+  reasoning: string;
+}
+
+export interface EthicalAnalysisContent {
+  situation: string;
+  stakeholders: Stakeholder[];
+  principles: EthicalPrinciple[];
+  options: EthicalOption[];
+  recommendation: string;
+  dissent: string;
+  nextThoughtNeeded?: boolean;
+}
+
+export interface DashboardSection {
+  name: string;
+  type: string;
+  data: Record<string, unknown>;
+}
+
+export interface VisualDashboardContent {
+  title: string;
+  sections: DashboardSection[];
+  highlights: string[];
+  alerts: string[];
+  nextThoughtNeeded?: boolean;
+}
+
+export interface PDRDesign {
+  approach: string;
+  components: string[];
+  interactions: string[];
+}
+
+export interface PDRResolution {
+  steps: string[];
+  validation: string;
+  risks: string[];
+}
+
+export interface PDRReasoningContent {
+  problem: string;
+  constraints: string[];
+  design: PDRDesign;
+  resolution: PDRResolution;
+  nextThoughtNeeded?: boolean;
+}
+
+export interface CustomFrameworkStage {
+  name: string;
+  purpose: string;
+  outputs: string[];
+}
+
+export interface CustomFrameworkStageResult {
+  stage: string;
+  result: string;
+}
+
+export interface CustomFrameworkApplication {
+  problem: string;
+  stageResults: CustomFrameworkStageResult[];
+}
+
+export interface CustomFrameworkContent {
+  name: string;
+  description: string;
+  stages: CustomFrameworkStage[];
+  application: CustomFrameworkApplication;
+  conclusion: string;
+  nextThoughtNeeded?: boolean;
+}
+
+export interface CodeExecutionContent {
+  language: string;
+  purpose: string;
+  code: string;
+  inputs: Record<string, unknown>;
+  expectedOutput: string;
+  actualOutput: string;
+  analysis: string;
+  nextThoughtNeeded?: boolean;
+}
+
+// ============================================================================
+// PHASE 4: STRATEGIC CONTENT STRUCTURES
+// ============================================================================
+
+export interface OODAObserve {
+  data: string[];
+  environment: string;
+  changes: string[];
+}
+
+export interface OODAOrient {
+  analysis: string;
+  mentalModels: string[];
+  culturalFactors: string[];
+  previousExperience: string;
+}
+
+export interface OODADecide {
+  options: string[];
+  selectedOption: string;
+  reasoning: string;
+}
+
+export interface OODAAct {
+  action: string;
+  implementation: string[];
+  feedback: string;
+}
+
+export interface OODALoopContent {
+  situation: string;
+  observe: OODAObserve;
+  orient: OODAOrient;
+  decide: OODADecide;
+  act: OODAAct;
+  iteration: number;
+  nextThoughtNeeded?: boolean;
+}
+
+export interface UlyssesTemptation {
+  trigger: string;
+  temptation: string;
+  risk: string;
+}
+
+export interface UlyssesCommitment {
+  commitment: string;
+  enforcement: string;
+  consequences: string;
+}
+
+export interface UlyssesSafeguard {
+  safeguard: string;
+  trigger: string;
+}
+
+export interface UlyssesReview {
+  successes: string[];
+  failures: string[];
+  adjustments: string[];
+}
+
+export interface UlyssesProtocolContent {
+  goal: string;
+  temptations: UlyssesTemptation[];
+  commitments: UlyssesCommitment[];
+  safeguards: UlyssesSafeguard[];
+  accountability: string;
+  review: UlyssesReview;
+  nextThoughtNeeded?: boolean;
+}
+
+// ============================================================================
+// PHASE 4: NOTEBOOK CONTENT STRUCTURES
+// ============================================================================
+
+export interface NotebookCreateContent {
+  name: string;
+  description: string;
+  tags: string[];
+  metadata: Record<string, unknown>;
+}
+
+export interface NotebookAddCellContent {
+  notebookId: string;
+  cellType: string;  // "code", "markdown", "output"
+  content: string;
+  position: number;
+  metadata: Record<string, unknown>;
+}
+
+export interface NotebookRunCellContent {
+  notebookId: string;
+  cellId: string;
+  input: string;
+  output: string;
+  status: string;  // "success", "error", "pending"
+  executionTime: number;
+}
+
+export interface NotebookExportContent {
+  notebookId: string;
+  format: string;  // "json", "markdown", "html"
+  includeOutputs: boolean;
+  content: string;
+}
+
+// ============================================================================
+// QUALITY METRICS (Claude's self-assessment, stored unchanged)
+// ============================================================================
+
+export interface QualityMetrics {
+  confidence?: number;      // 0-1, Claude rates their confidence
+  consistency?: number;     // 0-5, Claude rates logical flow
+  completeness?: number;    // 0-5, Claude rates coverage
+  bias_check?: string;      // Claude identifies potential bias
+}
+
+// ============================================================================
+// STORED ENTRIES (Content + Timestamp)
+// ============================================================================
+
+export interface StoredEntry<T> {
+  content: T;
+  quality?: QualityMetrics;
+  timestamp: number;
+}
+
+export type ThoughtEntry = StoredEntry<ThoughtContent>;
+export type MentalModelEntry = StoredEntry<MentalModelContent>;
+export type DebugEntry = StoredEntry<DebugContent>;
+export type DecideEntry = StoredEntry<DecideContent>;
+export type MetaEntry = StoredEntry<MetaContent>;
+export type SystemsEntry = StoredEntry<SystemsContent>;
+
+// ============================================================================
+// SESSION STATE
+// ============================================================================
+
+export interface SessionMetadata {
+  id: string;
+  title: string;
+  tags: string[];
+  createdAt: number;
+  lastAccessedAt: number;
+  status: 'active' | 'complete';
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export interface SessionStores {
+  thoughts: StoredEntry<any>[];
+  mentalModels: StoredEntry<any>[];
+  debugging: StoredEntry<any>[];
+  decisions: StoredEntry<any>[];
+  meta: StoredEntry<any>[];
+  systems: StoredEntry<any>[];
+  // Phase 1: Core stores
+  creative: StoredEntry<any>[];
+  visual: StoredEntry<any>[];
+  checkpoints: StoredEntry<any>[];
+  scientific: StoredEntry<any>[];
+  // Phase 1: Collaborative stores
+  collaborative: StoredEntry<any>[];
+  socratic: StoredEntry<any>[];
+  argumentation: StoredEntry<any>[];
+  // Phase 2: Pattern stores
+  tree: StoredEntry<any>[];
+  beam: StoredEntry<any>[];
+  mcts: StoredEntry<any>[];
+  graph: StoredEntry<any>[];
+  orchestration: StoredEntry<any>[];
+  // Phase 3: Analysis stores
+  research: StoredEntry<any>[];
+  analogical: StoredEntry<any>[];
+  causal: StoredEntry<any>[];
+  statistical: StoredEntry<any>[];
+  simulation: StoredEntry<any>[];
+  optimization: StoredEntry<any>[];
+  ethical: StoredEntry<any>[];
+  dashboard: StoredEntry<any>[];
+  pdr: StoredEntry<any>[];
+  customFramework: StoredEntry<any>[];
+  codeExecution: StoredEntry<any>[];
+  // Phase 4: Strategic stores
+  ooda: StoredEntry<any>[];
+  ulysses: StoredEntry<any>[];
+  // Phase 4: Notebook stores
+  notebookCreate: StoredEntry<any>[];
+  notebookCell: StoredEntry<any>[];
+  notebookRun: StoredEntry<any>[];
+  notebookExport: StoredEntry<any>[];
+}
+
+export interface SessionExport {
+  metadata: SessionMetadata;
+  stores: SessionStores;
+  exportedAt: number;
+}
+
+// ============================================================================
+// REQUEST / RESPONSE
+// ============================================================================
+
+export interface CognitionRequest {
+  operation: OperationType;
+  content?: Record<string, unknown>;
+  quality?: QualityMetrics;
+  sessionId?: string;
+  sessionTitle?: string;
+  sessionTags?: string[];
+  // For session_import
+  data?: SessionExport;
+}
+
+export interface SessionContext {
+  sessionId: string;
+  entryCount: number;
+  totalEntries: number;
+  sessionDuration: number;
+  continuation: string | null;
+}
+
+export interface CognitionResponse {
+  // Echo of input content (unchanged)
+  content?: Record<string, unknown>;
+  // Echo of quality (unchanged)
+  quality?: QualityMetrics;
+  // Status
+  status: 'stored' | 'exported' | 'info' | 'imported' | 'error';
+  // Session context
+  sessionContext: SessionContext;
+  // For errors
+  error?: string;
+}
+
+// ============================================================================
+// HANDLER TYPES
+// ============================================================================
+
+export interface HandlerResult {
+  content: Array<{ type: string; text: string }>;
+}
+
+export type OperationHandler = (
+  args: CognitionRequest,
+  session: SessionStateInterface
+) => Promise<HandlerResult>;
+
+// ============================================================================
+// SESSION STATE INTERFACE
+// ============================================================================
+
+export interface SessionStateInterface {
+  id: string;
+  metadata: SessionMetadata;
+  stores: SessionStores;
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  add(type: keyof SessionStores, entry: StoredEntry<any>): void;
+  getCount(type: keyof SessionStores): number;
+  getTotalCount(): number;
+  getAll<T>(type: keyof SessionStores): StoredEntry<T>[];
+  getDuration(): number;
+  toExport(): SessionExport;
+  markComplete(): void;
+}

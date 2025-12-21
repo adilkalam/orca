@@ -1,0 +1,602 @@
+# ORCA-OS Dependency Graph Specification
+# Source of truth for artifact relationships
+# Used by /orca-os-dev to trace impacts and sync documentation
+#
+# Version: 4.0.0
+# Last Updated: 2025-12-21
+
+version: "4.0.0"
+
+# =============================================================================
+# ARTIFACT TYPE DEFINITIONS
+# =============================================================================
+artifact_types:
+  lane:
+    description: "A domain-specific pipeline (e.g., ios, nextjs, expo)"
+    contains:
+      - agents          # agents/{lane}/ directory
+      - command         # commands/{lane}.md
+      - pipeline_doc    # docs/pipelines/{lane}-pipeline.md
+      - phase_config    # docs/reference/phase-configs/{lane}-phase-config.yaml
+      - workflow_readme # quick-reference/workflows/readme-{lane}.md
+    uses:
+      - mcps           # Project-specific MCPs
+    documented_in:
+      - ORCA-architecture.md
+      - ORCA-agents.md (domain section)
+      - ORCA-commands.md (command entry)
+
+  command:
+    description: "A slash command (e.g., /ios, /nextjs, /expo)"
+    orchestrates:
+      - agents         # Via Task tool subagent_type
+    documented_in:
+      - ORCA-commands.md
+      - workflow_readme (if domain command)
+
+  agent:
+    description: "A specialized worker (e.g., ios-builder, nextjs-architect)"
+    requires:
+      - mcps           # Via tools: section
+      - skills         # Via skills: section (optional)
+    belongs_to:
+      - lane           # agents/{lane}/ directory
+    documented_in:
+      - ORCA-agents.md (domain section + count)
+      - pipeline_doc (team roster)
+
+  mcp:
+    description: "Model Context Protocol server (e.g., alphavantage, XcodeBuildMCP)"
+    enables:
+      - agents         # Agents list MCPs in tools: section
+    scopes:
+      - global         # In ~/.claude.json mcpServers
+      - project        # In {project}/.mcp.json + enabledMcpjsonServers
+    documented_in:
+      - ORCA-mcps.md
+      - mcp-scoping-strategy.md
+
+  skill:
+    description: "Reusable behavior pattern (e.g., debugging-first)"
+    used_by:
+      - agents         # Agents list skills in skills: section
+    may_use:
+      - mcps
+    documented_in:
+      - skills catalog (TBD)
+
+# =============================================================================
+# DOCUMENTATION MAP
+# What files track what artifacts
+# =============================================================================
+documentation_map:
+  "quick-reference/ORCA-OS/ORCA-agents.md":
+    tracks: [agents]
+    auto_sections:
+      - domain_rosters: "Per-lane agent listings"
+      - count_table: "Agent counts by domain"
+      - total_count: "Total agent count"
+    update_triggers: [agent_add, agent_remove, agent_modify, lane_add]
+
+  "quick-reference/ORCA-OS/ORCA-commands.md":
+    tracks: [commands]
+    auto_sections:
+      - command_list: "All slash commands"
+      - usage_docs: "Flags, examples per command"
+    update_triggers: [command_add, command_remove, command_modify]
+
+  "quick-reference/ORCA-OS/ORCA-mcps.md":
+    tracks: [mcps]
+    auto_sections:
+      - mcp_configs: "Configuration examples"
+      - scoping_rules: "Global vs project scoping"
+      - agent_usage: "Which agents use which MCPs"
+    update_triggers: [mcp_add, mcp_remove, mcp_scope_change]
+
+  "quick-reference/ORCA-OS/ORCA-architecture.md":
+    tracks: [lanes, memory_systems]
+    auto_sections:
+      - lane_list: "All domain lanes"
+      - routing_flow: "How requests route to lanes"
+    update_triggers: [lane_add, lane_remove, architecture_change]
+
+  "docs/pipelines/{lane}-pipeline.md":
+    tracks: [agents]
+    scope: per_lane
+    auto_sections:
+      - agent_roster: "Team members"
+      - phase_assignments: "Which agent handles which phase"
+    update_triggers: [agent_add, agent_remove, agent_modify]
+
+  "quick-reference/workflows/readme-{lane}.md":
+    tracks: [commands, agents]
+    scope: per_lane
+    auto_sections:
+      - workflow_steps: "How to use this lane"
+      - examples: "Common usage patterns"
+    update_triggers: [command_modify, workflow_change]
+
+  "quick-reference/mental-models/":
+    tracks: [mental_models]
+    scope: global
+    description: "Markdown templates for structured thinking frameworks"
+    auto_sections:
+      - frontmatter: "name, title, tags metadata"
+      - process_steps: "Step-by-step application guide"
+      - examples: "Concrete usage examples"
+    update_triggers: [mental_model_add, mental_model_modify]
+    referenced_by:
+      - "commands/think.md (--model flag)"
+      - "mcp/cognition-mcp (list_mental_models operation)"
+      - "docs/concepts/cognition-mcp.md"
+
+  "CLAUDE.md":
+    tracks: [counts]
+    auto_sections:
+      - agent_count: "Total agent count in overview"
+    update_triggers: [agent_add, agent_remove]
+
+# =============================================================================
+# LANE DEFINITIONS
+# Complete registry of all lanes
+# =============================================================================
+lanes:
+  ios:
+    command: ios
+    agents_dir: agents/iOS
+    agent_count: 19
+    agents:
+      - ios-grand-architect
+      - ios-architect
+      - ios-builder
+      - ios-light-orchestrator
+      - ios-swiftui-specialist
+      - ios-uikit-specialist
+      - ios-persistence-specialist
+      - ios-networking-specialist
+      - ios-testing-specialist
+      - ios-ui-testing-specialist
+      - ios-performance-specialist
+      - ios-security-specialist
+      - ios-accessibility-specialist
+      - ios-fastlane-specialist
+      - ios-spm-config-specialist
+      - ios-standards-enforcer
+      - ios-ui-reviewer
+      - ios-verification
+      - design-dna-guardian
+    mcp_requirements:
+      - XcodeBuildMCP
+    projects: []
+
+  nextjs:
+    command: nextjs
+    agents_dir: agents/dev
+    agent_prefix: nextjs-
+    agent_count: 17
+    agents:
+      - nextjs-grand-architect
+      - nextjs-architect
+      - nextjs-builder
+      - nextjs-light-orchestrator
+      - nextjs-layout-analyzer
+      - nextjs-layout-specialist
+      - nextjs-css-specialist
+      - nextjs-css-architecture-gate
+      - tailwind-specialist
+      - shadcn-specialist
+      - nextjs-typescript-specialist
+      - nextjs-performance-specialist
+      - nextjs-seo-specialist
+      - nextjs-accessibility-specialist
+      - nextjs-standards-enforcer
+      - nextjs-design-reviewer
+      - nextjs-verification-agent
+    mcp_requirements:
+      - chrome-devtools
+      - puppeteer
+    projects: []
+
+  django-react:
+    command: django-react
+    agents_dir: agents/django-react
+    agent_count: 13
+    agents:
+      # Orchestration
+      - django-react-grand-architect
+      - django-react-architect
+      - django-react-light-orchestrator
+      # Implementation
+      - django-react-builder
+      # Backend specialists
+      - django-master                    # Models, ORM, migrations, admin
+      - django-api-specialist            # DRF, serializers, viewsets
+      - django-security-specialist       # JWT, permissions, CSRF
+      # Integration
+      - api-contract-specialist          # OpenAPI schema (drf-spectacular), TypeScript client (openapi-ts)
+      # Frontend specialists
+      - react-typescript-wizard          # React 18+, hooks, TypeScript
+      - react-state-specialist           # TanStack Query, Zustand, RHF, Zod
+      - react-testing-specialist         # Jest, RTL, Cypress E2E
+      # Gates
+      - django-react-standards-enforcer  # Python/Django + TypeScript/React standards (90/100 hard block)
+      - django-react-verification
+    mcp_requirements: []
+    projects: []
+
+  expo:
+    command: expo
+    agents_dir: agents/expo
+    agent_count: 11
+    agents:
+      - expo-grand-orchestrator
+      - expo-architect-agent
+      - expo-builder-agent
+      - expo-light-orchestrator
+      - expo-aesthetics-specialist
+      - expo-verification-agent
+      - api-guardian
+      - bundle-assassin
+      - impact-analyzer
+      - refactor-surgeon
+      - test-generator
+    mcp_requirements: []
+    projects: []
+
+  research:
+    command: research
+    agents_dir: agents/research
+    agent_count: 7
+    agents:
+      - research-web-search-subagent
+      - research-site-crawler-subagent
+      - research-answer-writer
+      - research-deep-writer
+      - research-fact-checker
+      - research-citation-gate
+      - research-consistency-gate
+    mcp_requirements:
+      - crawl4ai
+    projects: []
+
+  seo:
+    command: seo
+    agents_dir: agents/seo
+    agent_count: 4
+    agents:
+      - seo-research-specialist
+      - seo-brief-strategist
+      - seo-draft-writer
+      - seo-quality-guardian
+    mcp_requirements: []
+    projects: []
+
+  data:
+    command: null  # No dedicated orchestrator command
+    agents_dir: agents/data
+    agent_count: 4
+    agents:
+      - data-researcher
+      - research-specialist
+      - python-analytics-expert
+      - competitive-analyst
+    mcp_requirements: []
+    projects: []
+
+  os-dev:
+    command: orca-os-dev
+    agents_dir: agents/dev
+    agent_prefix: os-dev-
+    agent_count: 5
+    agents:
+      - os-dev-grand-architect
+      - os-dev-architect
+      - os-dev-builder
+      - os-dev-standards-enforcer
+      - os-dev-verification
+    mcp_requirements: []
+    projects: []
+
+# =============================================================================
+# CROSS-CUTTING AGENTS
+# Agents at root level used across multiple lanes
+# =============================================================================
+cross_cutting:
+  agents_dir: agents/
+  agent_count: 9
+  agents:
+    - a11y-enforcer
+    - crash-analyzer        # NEW: Cross-domain crash analysis (OS 3.1)
+    - debt-eliminator       # NEW: Technical debt identification (OS 3.1)
+    - design-system-architect
+    - design-token-guardian
+    - performance-enforcer
+    - performance-prophet
+    - security-specialist
+    - version-shield        # NEW: Dependency version management (OS 3.1)
+  used_by_lanes:
+    - expo
+    - nextjs
+    - ios
+    - django-react
+    - os-dev
+
+# =============================================================================
+# MCP REGISTRY
+# All MCPs with their scoping
+# =============================================================================
+mcps:
+  # Global MCPs (available to all projects)
+  global:
+    - name: cognition-mcp
+      description: "Sequential thinking storage with accept-store-echo pattern"
+      tools: [cognition]
+      operations: [thought, mental_model, debug, decide, meta, systems, session_info, session_export, session_import]
+      pattern: "accept-store-echo (MCP stores and echoes, never generates)"
+      used_by: [/think, /challenge]
+    - name: sequential-thinking
+      description: "Extended reasoning"
+      tools: [sequentialthinking]
+    - name: project-context
+      description: "Project context queries"
+      tools: [query_context, save_decision, save_standard, save_task_history]
+    - name: context7
+      description: "Library documentation"
+      tools: [resolve-library-id, get-library-docs]
+      default_disabled: true
+
+  # Project-scoped MCPs
+  project_scoped:
+    - name: XcodeBuildMCP
+      description: "iOS/macOS build automation"
+      lanes: [ios]
+    - name: chrome-devtools
+      description: "Browser DevTools"
+      lanes: [nextjs]
+    - name: puppeteer
+      description: "Browser automation (simpler, lighter alternative to Playwright)"
+      lanes: [nextjs]
+    - name: crawl4ai
+      description: "Web content extraction"
+      lanes: [research, nextjs]
+      requires_manual_start: true
+
+# =============================================================================
+# COMMAND REGISTRY
+# All commands with their agent dependencies
+# =============================================================================
+commands:
+  # Lane orchestrators
+  - name: ios
+    type: lane_orchestrator
+    lane: ios
+    agents_called:
+      - ios-light-orchestrator
+      - ios-grand-architect
+      - ios-architect
+      - ios-builder
+      - ios-standards-enforcer
+      - ios-ui-reviewer
+      - ios-verification
+
+  - name: nextjs
+    type: lane_orchestrator
+    lane: nextjs
+    agents_called:
+      - nextjs-light-orchestrator
+      - nextjs-grand-architect
+      - nextjs-architect
+      - nextjs-builder
+      - nextjs-standards-enforcer
+      - nextjs-design-reviewer
+      - nextjs-verification-agent
+
+  - name: expo
+    type: lane_orchestrator
+    lane: expo
+    agents_called:
+      - expo-light-orchestrator
+      - expo-grand-orchestrator
+      - expo-architect-agent
+      - expo-builder-agent
+      - expo-verification-agent
+
+  - name: research
+    type: lane_orchestrator
+    lane: research
+    agents_called:
+      - research-web-search-subagent
+      - research-site-crawler-subagent
+      - research-answer-writer
+      - research-deep-writer
+      - research-citation-gate
+      - research-consistency-gate
+
+  - name: seo
+    type: lane_orchestrator
+    lane: seo
+    agents_called:
+      - seo-research-specialist
+      - seo-brief-strategist
+      - seo-draft-writer
+      - seo-quality-guardian
+
+  - name: orca-os-dev
+    type: lane_orchestrator
+    lane: os-dev
+    agents_called:
+      - os-dev-architect
+      - os-dev-builder
+      - os-dev-standards-enforcer
+      - os-dev-verification
+
+  - name: django-react
+    type: lane_orchestrator
+    lane: django-react
+    agents_called:
+      - django-react-light-orchestrator
+      - django-react-grand-architect
+      - django-react-architect
+      - django-react-builder
+      - django-master
+      - django-api-specialist
+      - django-security-specialist
+      - react-typescript-wizard
+      - react-state-specialist
+      - react-testing-specialist
+      - django-react-verification
+
+  # Utility commands
+  - name: plan
+    type: utility
+    agents_called: []
+
+  - name: audit
+    type: utility
+    agents_called: []
+
+  - name: contemplate
+    type: utility
+    agents_called: []
+
+  - name: think
+    type: utility
+    mcps: [cognition-mcp]
+    agents_called: []
+
+  - name: ultra-think
+    type: utility
+    agents_called: []
+
+  - name: enhance
+    type: utility
+    agents_called: []
+
+  - name: challenge
+    type: utility
+    agents_called: []
+
+  - name: root-cause
+    type: utility
+    agents_called: []
+
+  - name: reflect
+    type: utility
+    agents_called: []
+
+  - name: self-improve
+    type: utility
+    agents_called: []
+
+  - name: design-dna
+    type: utility
+    agents_called:
+      - design-system-architect
+      - design-dna-guardian
+
+  - name: design-review
+    type: utility
+    agents_called:
+      - nextjs-design-reviewer
+
+  - name: clone-website
+    type: utility
+    agents_called: []
+
+  - name: session-save
+    type: utility
+    agents_called: []
+
+  - name: session-resume
+    type: utility
+    agents_called: []
+
+  - name: project-memory
+    type: utility
+    agents_called: []
+
+  - name: project-code
+    type: utility
+    agents_called: []
+
+# =============================================================================
+# COUNTS (for verification)
+# =============================================================================
+counts:
+  total_agents: 89
+  total_commands: 25
+  agents_by_domain:
+    ios: 19
+    nextjs: 17             # +tailwind-specialist, +shadcn-specialist
+    django-react: 13       # 3 orchestration + 1 implementation + 3 backend + 1 integration + 3 frontend + 2 gates
+    expo: 11
+    research: 7
+    seo: 4
+    data: 4
+    os-dev: 5
+    cross-cutting: 9       # a11y-enforcer, crash-analyzer, debt-eliminator, design-system-architect, design-token-guardian, performance-enforcer, performance-prophet, security-specialist, version-shield
+
+# =============================================================================
+# CHANGE IMPACT RULES
+# How to trace dependencies when something changes
+# =============================================================================
+impact_rules:
+  lane_add:
+    create:
+      - "agents/{lane}/*.md (minimum: architect, builder, light-orchestrator, standards-enforcer, verification)"
+      - "commands/{lane}.md"
+      - "docs/pipelines/{lane}-pipeline.md"
+      - "docs/reference/phase-configs/{lane}-phase-config.yaml"
+      - "quick-reference/workflows/readme-{lane}.md"
+    update:
+      - "quick-reference/ORCA-OS/ORCA-agents.md"
+      - "quick-reference/ORCA-OS/ORCA-commands.md"
+      - "quick-reference/ORCA-OS/ORCA-architecture.md"
+      - "CLAUDE.md (agent count)"
+      - "docs/reference/os-dependency-graph.yaml (this file)"
+    if_mcp_required:
+      - "Create {project}/.mcp.json"
+      - "Update ~/.claude.json enabledMcpjsonServers"
+      - "Update quick-reference/ORCA-OS/ORCA-mcps.md"
+
+  agent_add:
+    create:
+      - "agents/{domain}/{agent-name}.md"
+    update:
+      - "docs/pipelines/{domain}-pipeline.md (add to roster)"
+      - "quick-reference/ORCA-OS/ORCA-agents.md (count + section)"
+      - "quick-reference/workflows/readme-{domain}.md (if significant)"
+      - "CLAUDE.md (if count changes)"
+      - "docs/reference/os-dependency-graph.yaml"
+    verify:
+      - "All MCPs in tools: section exist"
+      - "All skills in skills: section exist"
+      - "Command that orchestrates this agent references it"
+
+  command_add:
+    create:
+      - "commands/{command}.md"
+    update:
+      - "quick-reference/ORCA-OS/ORCA-commands.md"
+      - "quick-reference/workflows/readme-{domain}.md (if domain command)"
+      - "docs/reference/os-dependency-graph.yaml"
+    verify:
+      - "All subagent_types reference existing agents"
+
+  mcp_add:
+    create:
+      - "{project}/.mcp.json (if project-scoped)"
+      - "mcp/{name}/ (if custom)"
+    update:
+      - "~/.claude.json (mcpServers or enabledMcpjsonServers)"
+      - "quick-reference/ORCA-OS/ORCA-mcps.md"
+      - "docs/reference/mcp-scoping-strategy.md (if scoping decision)"
+      - "agents that use it (tools: section)"
+      - "docs/reference/os-dependency-graph.yaml"
+
+  skill_add:
+    create:
+      - "skills/{skill-name}.md or skills/{skill-name}/"
+    update:
+      - "agents that use it (skills: section)"
+      - "docs/reference/os-dependency-graph.yaml"

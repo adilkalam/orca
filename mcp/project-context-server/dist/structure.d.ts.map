@@ -1,0 +1,1 @@
+{"version":3,"file":"structure.d.ts","sourceRoot":"","sources":["../src/structure.ts"],"names":[],"mappings":"AAAA;;;GAGG;AAIH,OAAO,KAAK,EAAE,YAAY,EAA+B,MAAM,YAAY,CAAC;AAE5E,qBAAa,iBAAiB;IAC5B;;OAEG;IACG,cAAc,CAAC,WAAW,EAAE,MAAM,GAAG,OAAO,CAAC,YAAY,CAAC;IAahE;;OAEG;YACW,aAAa;IA8C3B;;OAEG;YACW,cAAc;IA+B5B;;OAEG;YACW,gBAAgB;CAc/B"}

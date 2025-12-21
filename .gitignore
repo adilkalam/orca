@@ -1,0 +1,24 @@
+# ORCA-OS Distribution .gitignore
+# Minimal - only runtime artifacts that get created during use
+
+# System files
+.DS_Store
+*.log
+*.tmp
+
+# Database files (created at runtime)
+*.db
+*.db-shm
+*.db-wal
+
+# Dependencies (installed fresh)
+node_modules/
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+
+# User-specific runtime data (created during installation/use)
+.claude/memory/
+.claude/orchestration/temp/
+.claude/orchestration/evidence/

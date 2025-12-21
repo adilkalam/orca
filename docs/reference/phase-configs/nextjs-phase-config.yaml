@@ -1,0 +1,357 @@
+# Nextjs Pipeline Phase Configuration - OS 3.0
+# Nextjs / Frontend Workflow
+
+pipeline:
+  name: nextjs
+  description: Nextjs frontend development pipeline with design-first approach
+  version: 3.0
+
+# Phase State Schema (OS 3.1)
+phase_state:
+  # Top-level fields
+  domain: nextjs
+  complexity_tier: simple | medium | complex
+  requirement_id: string | null           # Links to requirements/<id>
+  requirements_spec_path: string | null   # Path to 06-requirements-spec.md
+  current_phase: string
+  memory_summary: string | null           # Hits from memory-first search
+
+  # Mode Tracking (OS 3.1)
+  current_mode: planning | execution      # NEW: Explicit mode tracking
+  mode_history:                           # NEW: Track mode transitions
+    - mode: string
+      timestamp: string
+      reason: string
+
+  # Attempt Tracking (OS 3.1)
+  current_phase_attempts: 0               # NEW: Track retry attempts
+  max_attempts: 3                         # NEW: Hard limit per spec
+
+  # Phase entries (each has status, timestamps, data)
+  phases:
+    context_query: object
+    requirements_impact: object
+    planning: object
+    analysis: object
+    implementation_pass1: object
+    gates: object
+    implementation_pass2: object | null   # Only if gate failed
+    verification: object
+    completion: object
+
+# Three-Tier Routing (OS 3.0)
+# Default now runs gates. -tweak skips gates. --complex forces full pipeline.
+complexity_tiers:
+  default:
+    description: Light path WITH quality gates (most work)
+    flag: "(none)"
+    routing: nextjs-light-orchestrator
+    mode: default  # Runs gates
+    spec_required: false
+    gates_required: true   # DEFAULT NOW RUNS GATES
+    gates:
+      - nextjs-standards-enforcer
+      - nextjs-design-reviewer
+    examples:
+      - Fix button spacing
+      - Change text label
+      - Update color to token
+      - Add icon
+      - Modify single component
+
+  tweak:
+    description: Light path WITHOUT gates (pure speed)
+    flag: "-tweak"
+    routing: nextjs-light-orchestrator
+    mode: tweak  # Skips gates
+    spec_required: false
+    gates_required: false  # User verifies
+    examples:
+      - Rapid iteration
+      - Exploring options
+      - Quick experiments
+
+  complex:
+    description: Full pipeline with grand-architect (includes refactor mode)
+    flag: "--complex"
+    routing: full_pipeline
+    mode: complex
+    spec_required: true    # BLOCKS without spec
+    gates_required: true
+    refactor_modes:
+      css_architecture:
+        description: Structural CSS/layout refactor (allows targeted rewrites)
+        allow_rewrites: true
+        extra_gates:
+          - nextjs-css-architecture-gate
+    examples:
+      - Multi-page flow
+      - Authentication UI
+      - Data fetching architecture
+      - SEO-critical changes
+
+# Context Integration (MANDATORY for medium/complex)
+context:
+  provider: ProjectContextServer
+  required: true
+  query_on_start: true
+  memory_first: true      # Check Workshop/vibe.db before ProjectContext
+
+# Pipeline Phases
+phases:
+  # Phase 1: Layout Analysis
+  - name: analysis
+    agent: nextjs-layout-analyzer
+    description: Structure-first layout analysis before changes
+    context_required: true
+    outputs:
+      - layout_structure
+      - component_hierarchy
+      - style_sources
+    constraints:
+      scope: Read-only analysis, no code edits
+      quality: Complete component tree mapping
+      integration: Must identify all CSS/token sources
+
+  # Phase 2: Implementation
+  - name: implementation
+    agent: nextjs-builder
+    description: Component construction with design system integration
+    dependencies:
+      - analysis
+    context_required: true
+    inputs:
+      - layout_structure
+      - component_hierarchy
+    outputs:
+      - implemented_code
+      - changes_manifest
+      - ra_events          # OS 3.0: RA tags added during implementation
+    constraints:
+      scope: Edit-not-rewrite, scoped diffs only  # CSS refactor mode may relax this for style/layout layers
+      quality: design-dna.json enforcement
+      integration: Lint and typecheck before gates
+      resource: Token-conscious, no unnecessary refactors
+
+  # Phase 3: Design QA
+  - name: design_qa
+    agent: nextjs-design-reviewer
+    description: Visual quality assurance gate
+    dependencies:
+      - implementation
+    context_required: true
+    inputs:
+      - implemented_code
+      - layout_structure
+    outputs:
+      - design_score
+      - visual_issues
+      - gate_decision
+    quality_gates:
+      design_score:
+        threshold: 90
+        type: hard_block
+        message: Design QA score must be ≥90 for completion
+
+  # Phase 4: Standards Enforcement
+  - name: standards
+    agent: nextjs-standards-enforcer
+    description: Code-level standards and compliance gate
+    dependencies:
+      - implementation
+    context_required: true
+    inputs:
+      - implemented_code
+      - changes_manifest
+    outputs:
+      - standards_score
+      - violations
+      - gate_decision
+      - ra_audit           # OS 3.0: RA tag scan results
+    quality_gates:
+      standards_score:
+        threshold: 90
+        type: hard_block
+        message: Standards violations detected
+      inline_styles:
+        threshold: 0
+        type: hard_block
+        message: Inline styles not allowed
+      token_violations:
+        threshold: 0
+        type: hard_block
+        message: Design token violations
+
+# Additional Enforcers (Optional)
+optional_phases:
+  - name: css_architecture
+    agent: nextjs-css-architecture-gate
+    description: CSS/layout architecture quality gate for refactor mode
+    trigger: on_refactor   # Only when task is explicitly a CSS/layout refactor
+
+  - name: accessibility
+    agent: a11y-enforcer
+    description: Accessibility compliance check
+    trigger: on_demand
+
+  - name: performance
+    agent: performance-enforcer
+    description: Performance impact analysis
+    trigger: on_demand
+
+  - name: security
+    agent: security-specialist
+    description: Security vulnerability scan
+    trigger: on_demand
+
+# Memory Integration
+memory:
+  ephemeral: AgentDB
+  persistent: vibe.db
+  learnings:
+    - design_patterns
+    - common_violations
+    - user_preferences
+
+# Success Criteria
+success:
+  all_gates_pass: true
+  design_score_min: 90
+  standards_score_min: 90
+  no_hard_blocks: true
+
+# Phase State Contract (phase_state.json)
+# This describes how Nextjs phases should be recorded in:
+# .claude/orchestration/phase_state.json
+phase_state:
+  location: ".claude/orchestration/phase_state.json"
+  domain: "nextjs"
+
+  current_phase_values:
+    - context_query
+    - requirements_impact
+    - planning
+    - analysis
+    - implementation_pass1
+    - gates
+    - implementation_pass2
+    - verification
+    - completion
+
+  phase_entries:
+    context_query:
+      description: "Initial ProjectContextServer query and lane detection"
+      fields:
+        - summary          # short description of context
+        - timestamp        # ISO string when completed
+
+    requirements_impact:
+      description: "Request clarification, scope, and impact analysis"
+      fields:
+        - change_type      # bugfix | small_feature | page_feature | multi_page_feature | architecture_change
+        - scope            # in-scope vs out-of-scope notes
+        - affected_routes  # list of app/** or pages/** routes
+        - affected_components
+        - risks            # UX / performance / SEO / architecture risks
+
+    planning:
+      description: "Architecture & implementation plan for the Nextjs task"
+      fields:
+        - architecture_path  # e.g. "Next.js App Router + Tailwind + shadcn/ui"
+        - plan_summary       # short list of planned steps
+        - assigned_agents    # agents expected in downstream phases
+
+    analysis:
+      description: "Layout and component analysis before implementation"
+      fields:
+        - layout_structure
+        - component_hierarchy
+        - style_sources
+
+    implementation_pass1:
+      description: "First implementation pass by nextjs-builder"
+      fields:
+        - files_modified
+        - changes_manifest
+
+    gates:
+      description: "Aggregated gate results after implementation"
+      fields:
+        - standards_score
+        - design_score
+        - a11y_score
+        - performance_score
+        - violations
+        - visual_issues
+        - gate_decision
+        - evidence_paths    # array of evidence file paths (e.g. design review reports)
+
+    implementation_pass2:
+      description: "Optional corrective implementation pass"
+      fields:
+        - files_modified
+        - fixes_applied
+
+    verification:
+      description: "Build / test verification results"
+      fields:
+        - verification_status  # pass | fail | partial
+        - commands_run         # e.g. ["npm run lint", "npm run build"]
+
+    completion:
+      description: "Final outcome and learnings"
+      fields:
+        - outcome    # success | partial | failure
+        - learnings  # short text summary
+        - artifacts  # important evidence paths
+
+# Gate Definitions
+gates:
+  customization_gate:
+    type: "pre_implementation"
+    description: "Block implementation until design-dna/customization needs are resolved"
+    phase: "planning"
+    blocking: true
+
+  standards_gate:
+    type: "quality"
+    description: "Enforce Nextjs standards and constraints"
+    phase: "standards"
+    blocking: true
+    threshold: 90
+    metric: "standards_score"
+
+  design_qa_gate:
+    type: "quality"
+    description: "Visual QA gate (design-dna + multi-viewport)"
+    phase: "design_qa"
+    blocking: true
+    threshold: 90
+    metric: "design_score"
+
+  build_gate:
+    type: "verification"
+    description: "Build / verification gate"
+    phase: "verification"
+    blocking: true
+    threshold: "success"
+    metric: "verification_status"
+
+# Configuration
+config:
+  max_implementation_passes: 2
+
+  max_file_edits:
+    simple: 3
+    medium: 7
+    complex: 12
+
+  gate_strictness: "standard"  # relaxed | standard | strict
+
+  save_artifacts:
+    temp: ".claude/orchestration/temp/"
+    evidence: ".claude/orchestration/evidence/"
+    cleanup_temp_after: true
+
+  phase_state_location: ".claude/orchestration/phase_state.json"
+  vibe_db_location: ".claude/orchestration/vibe.db"

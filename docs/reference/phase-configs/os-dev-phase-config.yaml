@@ -1,0 +1,243 @@
+/opt/homebrew/Library/Homebrew/cmd/shellenv.sh: line 18: /bin/ps: Operation not permitted
+# OS-Dev Pipeline Phase Configuration - OS 3.0
+# OS / Claude Code / Tooling Configuration Workflow
+#
+# NOTE: This pipeline is LOCAL to claude-vibe-config repo only.
+# It is NOT deployed to ~/.claude global config.
+#
+# SACRED DEPLOYMENT LAWS (NEVER VIOLATE):
+# 1. BUILD here, DEPLOY there: All development in ORCA-OS repo. Deploy to ~/.claude.
+# 2. NEVER deploy archive/deprecated: No *archive*, *deprecated* files ever reach ~/.claude.
+# 3. SUBDIRECTORIES ONLY: Deploy to ~/.claude/agents/, ~/.claude/commands/, etc. NEVER to ~/.claude root.
+# 4. ~/.claude is CLEAN: No archive/deprecated directories in ~/.claude.
+#
+# MANDATORY COMPLETE UPDATE PROTOCOL:
+# ANY change MUST update ALL related files together:
+# - Command change: commands/*.md + ORCA-commands.md + os-dependency-graph.yaml
+# - Agent change: agents/**/*.md + ORCA-agents.md + os-dependency-graph.yaml
+# - MCP change: mcp/ + ORCA-mcps.md + os-dependency-graph.yaml
+# - Script change: scripts/*.sh or *.py + CLAUDE.md (if referenced) + os-dependency-graph.yaml
+# - Pipeline change: docs/pipelines/*.md + phase-configs/*.yaml
+# - Lane change: Pipeline + Phase config + ORCA-architecture.md
+# - Skill change: skills/ + relevant agent docs
+
+pipeline:
+  name: os-dev
+  description: OS 3.0 / Claude Code configuration and orchestration pipeline
+  version: 3.0
+
+context:
+  provider: ProjectContextServer
+  required: true
+  query_on_start: true
+  memory_first: true      # Check Workshop/vibe.db before ProjectContext
+
+phases:
+  - name: intake
+    agent: os-dev-grand-architect
+    description: Initial classification of task and complexity tier
+    context_required: false
+    outputs:
+      - task_summary
+      - complexity_tier
+      - initial_risks
+
+  - name: context_query
+    agent: os-dev-grand-architect
+    description: Memory-first context and ProjectContext query
+    context_required: false
+    outputs:
+      - memory_summary
+      - context_bundle_summary
+
+  - name: planning
+    agent: os-dev-architect
+    description: Plan and constraints for OS-Dev change
+    dependencies:
+      - intake
+      - context_query
+    context_required: true
+    inputs:
+      - complexity_tier
+      - memory_summary
+      - context_bundle
+    outputs:
+      - plan_summary
+      - files_targeted
+      - change_type
+      - risk_assessment
+      - ra_events
+
+  - name: implementation_pass1
+    agent: os-dev-builder
+    description: Primary implementation of planned OS-Dev change
+    dependencies:
+      - planning
+    context_required: true
+    inputs:
+      - plan_summary
+      - files_targeted
+    outputs:
+      - files_modified
+      - changes_manifest
+      - rollback_notes
+      - ra_events
+    constraints:
+      scope: Edit-not-rewrite, minimal diffs in allowed config surfaces
+      resource: Single coherent diff per pass
+
+  - name: os_dev_standards_gate
+    agent: os-dev-standards-enforcer
+    description: Standards and safety verification for OS-Dev changes
+    dependencies:
+      - implementation_pass1
+    context_required: true
+    inputs:
+      - files_modified
+      - changes_manifest
+      - related_standards
+    outputs:
+      - standards_score
+      - gate_decision
+      - violations
+      - ra_status
+    quality_gates:
+      standards_score:
+        threshold: 90
+        type: hard_block
+        message: OS-Dev standards score must be ≥90
+
+  - name: implementation_pass2
+    agent: os-dev-builder
+    description: Corrective implementation for gate failures
+    dependencies:
+      - os_dev_standards_gate
+    condition: any_gate_failed
+    context_required: true
+    inputs:
+      - violations
+    outputs:
+      - files_modified
+      - fixes_applied
+    constraints:
+      scope: Fix gate violations only, no new features
+
+  - name: verification
+    agent: os-dev-verification
+    description: Syntax and smoke-test verification
+    dependencies:
+      - os_dev_standards_gate
+    context_required: false
+    outputs:
+      - verification_status
+      - commands_run
+      - errors
+
+  - name: deployment
+    agent: orchestrator  # Orchestrator handles deployment directly
+    description: Deploy all changes to ~/.claude (MANDATORY)
+    dependencies:
+      - verification
+    context_required: false
+    outputs:
+      - directories_deployed
+      - files_synced
+      - deployment_confirmed
+    constraints:
+      sacred_laws:
+        - "Deploy to subdirectories ONLY, NEVER to ~/.claude root"
+        - "NEVER deploy archive or deprecated files"
+        - "NEVER use --delete flag"
+      deployment_command: |
+        rsync -av --exclude='*archive*' --exclude='*deprecated*' $ORCA_OS_PATH/agents/ ~/.claude/agents/
+        rsync -av --exclude='*archive*' --exclude='*deprecated*' $ORCA_OS_PATH/commands/ ~/.claude/commands/
+        rsync -av --exclude='*archive*' --exclude='*deprecated*' $ORCA_OS_PATH/docs/ ~/.claude/docs/
+        rsync -av --exclude='*archive*' --exclude='*deprecated*' $ORCA_OS_PATH/quick-reference/ ~/.claude/quick-reference/
+        rsync -av --exclude='*archive*' --exclude='*deprecated*' $ORCA_OS_PATH/scripts/ ~/.claude/scripts/
+        rsync -av --exclude='*archive*' --exclude='*deprecated*' $ORCA_OS_PATH/hooks/ ~/.claude/hooks/
+        rsync -av --exclude='*archive*' --exclude='*deprecated*' $ORCA_OS_PATH/skills/ ~/.claude/skills/
+
+optional_phases: []
+
+memory:
+  persistent: vibe.db
+  learnings:
+    - os_dev_standards
+    - prior_incidents
+    - lane_patterns
+
+success:
+  all_gates_pass: true
+  standards_score_min: 90
+
+phase_state:
+  location: ".claude/orchestration/phase_state.json"
+  domain: "os-dev"
+
+  top_level_fields:
+    - requirement_id
+    - requirements_spec_path
+    - complexity_tier
+    - current_mode               # NEW OS 3.1: planning | execution
+    - mode_history               # NEW OS 3.1: Track mode transitions
+    - current_phase_attempts     # NEW OS 3.1: Track retry attempts (max 3)
+
+  phase_entries:
+    intake:
+      description: "Initial task summary and complexity classification"
+      fields:
+        - task_summary
+        - complexity_tier
+        - initial_risks
+
+    context_query:
+      description: "Memory-first and ProjectContext query results"
+      fields:
+        - memory_summary
+        - context_bundle_summary
+
+    planning:
+      description: "Plan and constraints for OS-Dev change"
+      fields:
+        - plan_summary
+        - files_targeted
+        - change_type
+        - risk_assessment
+        - ra_events
+
+    implementation_pass1:
+      description: "First implementation pass for OS-Dev change"
+      fields:
+        - files_modified
+        - changes_manifest
+        - rollback_notes
+        - ra_events
+
+    os_dev_standards_gate:
+      description: "OS-Dev standards and safety gate"
+      fields:
+        - standards_score
+        - gate_decision
+        - violations
+        - ra_status
+
+    implementation_pass2:
+      description: "Corrective implementation for OS-Dev gate failures"
+      fields:
+        - files_modified
+        - fixes_applied
+
+    verification:
+      description: "Verification of OS-Dev changes"
+      fields:
+        - verification_status
+        - commands_run
+        - errors
+
+    deployment:
+      description: "Deployment to ~/.claude (MANDATORY)"
+      fields:
+        - directories_deployed
+        - files_synced
+        - deployment_confirmed
+        - deployment_table  # Confirmation table shown to user

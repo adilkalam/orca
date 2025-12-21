@@ -1,0 +1,376 @@
+# Expo Pipeline Phase Configuration - OS 3.0
+# React Native / Expo Mobile Development Workflow
+
+pipeline:
+  name: expo
+  description: Expo/React Native mobile development with design tokens, a11y, perf, and security gates
+  version: 3.0
+  sdk_versions:
+    expo: "50+"
+    react_native: "0.74+"
+    typescript: required
+
+# Phase State Schema (OS 3.1)
+phase_state:
+  # Top-level fields
+  domain: expo
+  complexity_tier: simple | medium | complex
+  requirement_id: string | null           # Links to requirements/<id>
+  requirements_spec_path: string | null   # Path to 06-requirements-spec.md
+  current_phase: string
+  memory_summary: string | null           # Hits from memory-first search
+
+  # Mode Tracking (OS 3.1)
+  current_mode: planning | execution      # NEW: Explicit mode tracking
+  mode_history:                           # NEW: Track mode transitions
+    - mode: string
+      timestamp: string
+      reason: string
+
+  # Attempt Tracking (OS 3.1)
+  current_phase_attempts: 0               # NEW: Track retry attempts
+  max_attempts: 3                         # NEW: Hard limit per spec
+
+  # Phase entries (each has status, timestamps, data)
+  phases:
+    context_query: object
+    requirements_impact: object
+    architecture_plan: object
+    implementation_pass1: object
+    standards_budgets: object
+    power_checks: object | null           # Only if high-risk
+    implementation_pass2: object | null   # Only if gate failed
+    verification: object
+    completion: object
+
+# Three-Tier Routing (OS 3.0)
+# Default now runs gates. -tweak skips gates. --complex forces full pipeline.
+complexity_tiers:
+  default:
+    description: Light path WITH quality gates (most work)
+    flag: "(none)"
+    routing: expo-light-orchestrator
+    mode: default  # Runs gates
+    spec_required: false
+    gates_required: true   # DEFAULT NOW RUNS GATES
+    gates:
+      - design-token-guardian
+      - expo-aesthetics-specialist
+    examples:
+      - Fix button spacing
+      - Change label text
+      - Add haptic feedback
+      - Update color to token
+      - Modify single component
+
+  tweak:
+    description: Light path WITHOUT gates (pure speed)
+    flag: "-tweak"
+    routing: expo-light-orchestrator
+    mode: tweak  # Skips gates
+    spec_required: false
+    gates_required: false  # User verifies
+    examples:
+      - Rapid iteration
+      - Exploring options
+      - Quick experiments
+
+  complex:
+    description: Full pipeline with grand-orchestrator
+    flag: "--complex"
+    routing: full_pipeline
+    mode: complex
+    spec_required: true    # BLOCKS without spec
+    gates_required: true
+    examples:
+      - Multi-screen flow
+      - Authentication UI
+      - Offline-first features
+      - Payment integration
+
+# Context Integration (MANDATORY for medium/complex)
+context:
+  provider: ProjectContextServer
+  required: true
+  query_on_start: true
+  memory_first: true      # Check Workshop/vibe.db before ProjectContext
+  max_files: 15
+  include_history: true
+
+# Pipeline Phases
+phases:
+  # Phase 1: Context Query (handled by ORCA automatically)
+
+  # Phase 2: Requirements & Impact
+  - name: requirements
+    agent: expo-architect-agent
+    description: Analyze request, identify affected components, classify change type (Requirements & Impact)
+    context_required: true
+    outputs:
+      - impact_summary
+      - change_classification
+      - affected_modules
+      - risk_areas
+    constraints:
+      scope: Analysis only, no code changes
+      quality: Clear categorization (bugfix/feature/multi-feature/architecture_change)
+      integration: Map to navigation, state management, and cross-cutting concerns
+
+  # Phase 3: Architecture & Plan
+  - name: planning
+    agent: expo-architect-agent
+    description: Choose architecture path, decompose into tasks, map to agents (Architecture & Plan)
+    dependencies:
+      - requirements
+    context_required: true
+    inputs:
+      - impact_summary
+      - change_classification
+    outputs:
+      - architecture_plan
+      - task_breakdown
+      - agent_mapping
+    constraints:
+      scope: Feature-based folder structure, navigation choice, state management
+      quality: Atomic tasks with clear success criteria
+      integration: Aligned with Expo Router / React Navigation / state patterns
+
+  # Phase 4: Implementation - Pass 1
+  - name: implementation
+    agent: expo-builder-agent
+    description: Implement UI, navigation, state flow, maintain design tokens (Implementation Pass 1)
+    dependencies:
+      - planning
+    context_required: true
+    inputs:
+      - architecture_plan
+      - task_breakdown
+    outputs:
+      - implemented_code
+      - modified_files
+      - test_coverage
+      - ra_events          # OS 3.0: RA tags added during implementation
+    constraints:
+      scope: Localized edits, no sweeping rewrites
+      quality: TypeScript, Expo SDK 50+, Fabric architecture where applicable
+      integration: Follow RN best practices, maintain platform conventions
+      resource: Run expo doctor, local tests before gates
+
+  # Phase 5: Design Token Guardian
+  - name: design_tokens
+    agent: design-token-guardian
+    description: Validate design token usage, no hard-coded values
+    dependencies:
+      - implementation
+    context_required: true
+    inputs:
+      - implemented_code
+      - modified_files
+    outputs:
+      - token_score
+      - token_violations
+      - gate_decision
+    quality_gates:
+      token_score:
+        threshold: 90
+        type: hard
+        message: Design token compliance must be ≥90
+
+  # Phase 5b: Accessibility Enforcement
+  - name: accessibility
+    agent: a11y-enforcer
+    description: WCAG 2.2 validation - labels, roles, focus, contrast, touch targets
+    dependencies:
+      - implementation
+    context_required: true
+    inputs:
+      - implemented_code
+      - modified_files
+    outputs:
+      - a11y_violations
+      - critical_issues
+      - gate_decision
+    quality_gates:
+      critical_violations:
+        threshold: 0
+        type: hard
+        message: Critical WCAG violations must be resolved
+
+  # Phase 5c: Aesthetics Quality
+  - name: aesthetics
+    agent: expo-aesthetics-specialist
+    description: Visual quality review - typography, color, spacing, hierarchy, "AI slop" prevention
+    dependencies:
+      - implementation
+    context_required: true
+    inputs:
+      - implemented_code
+      - modified_files
+      - design_dna
+      - theme_tokens
+    outputs:
+      - aesthetics_score
+      - aesthetic_findings
+      - gate_decision
+    quality_gates:
+      aesthetics_score:
+        threshold: 75
+        type: soft
+        message: Aesthetics score below 75 suggests visual refinement needed
+      block_threshold:
+        threshold: 60
+        type: advisory
+        message: Score below 60 indicates generic "AI slop" UI requiring UX rethink
+
+  # Phase 5d: Performance Enforcement
+  - name: performance_budget
+    agent: performance-enforcer
+    description: Check bundle size, critical path, runtime budgets
+    dependencies:
+      - implementation
+    context_required: true
+    inputs:
+      - implemented_code
+      - modified_files
+    outputs:
+      - perf_metrics
+      - performance_issues
+      - gate_decision
+      - ra_audit           # OS 3.0: RA tag scan results
+    quality_gates:
+      budget_exceeded:
+        threshold: false
+        type: hard
+        message: Performance budgets must not be exceeded
+
+  # Phase 6: Performance Prophet (Optional Power Check)
+  - name: perf_analysis
+    agent: performance-prophet
+    description: Predictive performance analysis, identify emerging bottlenecks
+    dependencies:
+      - performance_budget
+    context_required: true
+    optional: true
+    inputs:
+      - implemented_code
+      - perf_metrics
+    outputs:
+      - perf_predictions
+      - optimization_recommendations
+    constraints:
+      scope: Advisory only, not blocking
+
+  # Phase 6b: Security Specialist (Optional Power Check)
+  - name: security_audit
+    agent: security-specialist
+    description: OWASP Mobile Top 10 audit - storage, network, auth, env vars
+    dependencies:
+      - implementation
+    context_required: true
+    optional: true
+    inputs:
+      - implemented_code
+      - modified_files
+    outputs:
+      - security_issues
+      - owasp_compliance
+    quality_gates:
+      critical_security:
+        threshold: 0
+        type: hard
+        message: Critical OWASP issues must be resolved
+
+  # Phase 4b: Implementation - Pass 2 (Corrective, if gates fail)
+  - name: correction
+    agent: expo-builder-agent
+    description: Address issues from design/a11y/aesthetics/perf/security gates (Implementation Pass 2 - ONE pass only)
+    dependencies:
+      - design_tokens
+      - accessibility
+      - aesthetics
+      - performance_budget
+    trigger: gate_failure
+    max_iterations: 1
+    context_required: true
+    inputs:
+      - token_violations
+      - a11y_violations
+      - aesthetic_findings
+      - perf_metrics
+      - security_issues
+    outputs:
+      - corrected_code
+      - retest_results
+    constraints:
+      scope: Fix reported issues only, no new features
+      quality: Must pass gates on second attempt or escalate
+      priority: Critical gates (a11y, security) before aesthetics refinements
+
+  # Phase 7: Verification (Build/Test)
+  - name: verification
+    agent: expo-verification-agent
+    description: Run build, tests, expo doctor (Verification Gate)
+    dependencies:
+      - correction
+    context_required: true
+    inputs:
+      - implemented_code
+    outputs:
+      - build_status
+      - test_results
+      - doctor_results
+    quality_gates:
+      build_success:
+        threshold: true
+        type: hard
+        message: Build and tests must pass
+    constraints:
+      scope: Run npm test / expo doctor / E2E if configured
+      integration: Capture logs and errors
+
+  # Phase 8: Completion & Learning
+  - name: completion
+    agent: orca
+    description: Save task history, update vibe.db, store artifacts
+    dependencies:
+      - verification
+    context_required: true
+    inputs:
+      - all_phase_outputs
+      - gate_results
+    outputs:
+      - task_history_record
+      - memory_updates
+      - final_summary
+    actions:
+      - save_task_history
+      - save_standards
+      - save_decisions
+      - store_artifacts
+
+# Gate Configuration
+gates:
+  standards:
+    threshold: 90
+    type: warning
+    retry: allow_one_pass
+
+  accessibility:
+    threshold: 0_critical_violations
+    type: hard
+    retry: allow_one_pass
+
+  aesthetics:
+    threshold: 75
+    type: soft
+    retry: allow_one_pass
+    note: "Soft gate - CAUTION/FAIL don't block. BLOCK (<60) requires UX rethink."
+
+  performance:
+    threshold: within_budgets
+    type: hard
+    retry: allow_one_pass
+
+  security:
+    threshold: 0_critical_owasp
+    type: hard

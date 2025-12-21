@@ -1,0 +1,328 @@
+# Research Pipeline Phase Configuration - OS 3.0
+# Multi-agent deep research workflow (Crawl4AI + memory + writers)
+
+pipeline:
+  name: research
+  description: >
+    Multi-agent research pipeline using Crawl4AI MCP, memory systems, and
+    writer/citation agents to produce cited, structured research reports.
+  version: 3.0
+
+# Context Integration
+context:
+  provider: ProjectContextServer
+  required: false            # Many research tasks aren't tied to a repo
+  query_on_start: false      # Only call when project-specific
+  memory_first: true         # Always check Workshop/vibe.db first
+
+# Complexity tiers for /research
+complexity_tiers:
+  simple:
+    description: Narrow factual questions or quick lookups
+    routing: direct-delegate        # /research handles directly
+    spec_required: false
+    gates_required: false
+    examples:
+      - "When was Swift 6 released?"
+      - "What is the default depth limit for Crawl4AI crawl?"
+
+  medium:
+    description: Multi-part questions requiring several sources and synthesis
+    routing: full-pipeline          # Uses research-lead-agent
+    spec_required: false
+    gates_required: true
+    examples:
+      - "Compare SwiftData, Core Data, and GRDB for offline-first iOS apps."
+      - "Summarize the latest papers on tool-using language models."
+
+  deep:
+    description: >
+      Long-horizon, deep research (many subquestions, multiple Crawl4AI passes,
+      strict gates, and long-form report output).
+    routing: full-pipeline          # Uses research-lead-agent
+    spec_required: recommended      # Optionally gated by /plan in future
+    gates_required: true
+    examples:
+      - "Full market map of AI agent platforms with business models and moats."
+      - "Write an academic-style literature review on multi-agent research systems."
+
+# Pipeline Phases
+phases:
+  # Phase 0: Scoping & Complexity Classification
+  - name: scoping
+    agent: research-lead-agent
+    description: Clarify intent, depth, timeframe, and classify complexity.
+    context_required: false
+    outputs:
+      - user_intent
+      - research_scope
+      - complexity_tier
+      - timeframe
+      - constraints
+      - initial_questions
+
+  # Phase 0.5: Memory-First Context
+  - name: memory_context
+    agent: research-lead-agent
+    description: Memory-first search for prior research, decisions, and specs.
+    context_required: false
+    outputs:
+      - memory_summary
+      - prior_research_refs
+      - project_links
+
+  # Phase 1: Research Plan
+  - name: research_plan
+    agent: research-lead-agent
+    description: Decompose into subquestions and decide tools/agents per aspect.
+    dependencies:
+      - scoping
+    context_required: false
+    outputs:
+      - subquestions
+      - plan_strategy
+      - crawl4ai_strategy
+      - fallback_strategy
+      - evaluation_criteria
+
+  # Phase 2: Evidence Gathering (Crawl4AI-first)
+  - name: evidence_gathering
+    agent: research-lead-agent
+    description: >
+      Coordinate Crawl4AI-powered subagents to gather evidence for each
+      subquestion, with WebSearch/memory fallbacks when needed.
+    dependencies:
+      - research_plan
+      - memory_context
+    context_required: false
+    outputs:
+      - evidence_artifacts
+      - sources_summary
+      - tool_status
+      - research_ra_events
+
+  # Phase 3: Synthesis – Pass 1
+  - name: synthesis_pass1
+    agent: research-lead-agent
+    description: Synthesize evidence into outline and preliminary conclusions.
+    dependencies:
+      - evidence_gathering
+    context_required: false
+    outputs:
+      - outline
+      - key_findings
+      - remaining_gaps
+      - research_ra_events
+
+  # Phase 3.5: Gap Analysis (Iterative Loop)
+  - name: gap_analysis
+    agent: research-lead-agent
+    description: Evaluate coverage and decide whether to loop for more evidence.
+    dependencies:
+      - synthesis_pass1
+    context_required: false
+    outputs:
+      - additional_queries
+      - unresolved_questions
+      - decision_more_research
+      - tool_status
+    condition: may_loop
+
+  # Phase 4: Report Draft
+  - name: report_draft
+    agent: research-answer-writer  # or research-deep-writer based on mode
+    # Note: Agent chosen based on mode: standard → research-answer-writer, deep → research-deep-writer
+    description: >
+      Produce first draft report using outline + evidence
+      (Perplexity-style writer for normal mode, deep academic writer for --deep).
+    dependencies:
+      - synthesis_pass1
+    context_required: false
+    inputs:
+      - outline
+      - key_findings
+      - evidence_artifacts
+    outputs:
+      - report_draft_path
+      - report_style
+      - research_ra_events
+
+  # Phase 5: Citation Gate
+  - name: citation_gate
+    agent: research-citation-gate
+    description: Insert and validate citations throughout the draft report.
+    dependencies:
+      - report_draft
+    context_required: false
+    inputs:
+      - report_draft_path
+      - evidence_artifacts
+    outputs:
+      - report_with_citations_path
+      - citations_status
+      - missing_citations
+
+  # Phase 6: Consistency & Quality Gate
+  - name: consistency_gate
+    agent: research-consistency-gate
+    description: Check factual consistency, coverage, RA tags, and limitations.
+    dependencies:
+      - citation_gate
+    context_required: false
+    inputs:
+      - report_with_citations_path
+      - research_ra_events
+      - sources_summary
+      - tool_status
+    outputs:
+      - quality_score
+      - gate_decision
+      - issues
+      - recommended_fixes
+
+  # Phase 7: Completion & Learning
+  - name: completion
+    agent: research-lead-agent
+    description: Finalize report, record history, and surface limitations.
+    dependencies:
+      - consistency_gate
+    context_required: false
+    outputs:
+      - final_report_path
+      - outcome
+      - learnings
+      - saved_task_history
+
+optional_phases:
+  - name: fact_check_gate
+    agent: research-fact-checker
+    trigger: high_risk_topic OR user_requested
+    outputs:
+      - fact_check_status
+      - fact_check_notes
+      - corrected_sections
+
+config:
+  evidence_path: .claude/orchestration/evidence/
+  reports_path: reports/
+  phase_state_path: .claude/orchestration/phase_state.json
+
+phase_state:
+  location: ".claude/orchestration/phase_state.json"
+  domain: "research"
+
+  top_level_fields:
+    - mode                  # "standard" | "deep"
+    - complexity_tier       # "simple" | "medium" | "deep"
+    - current_phase
+    - user_intent
+    - research_scope
+    - timeframe
+    - tool_status           # e.g. { crawl4ai: "ok" | "error" | "unavailable" }
+    - tool_error_events     # array of structured Crawl4AI/WebSearch error events
+
+  # Research-specific workflow control (OS 3.0)
+  research:
+    time_budget:
+      total_minutes: number | null    # null = unlimited
+      synthesis_reserve_minutes: number  # default 1.5
+      started_at: ISO timestamp       # when research began
+
+    iteration:
+      current: number                 # starts at 1
+      max: number                     # 3 for standard, 7 for deep
+
+    retry_tracking:
+      subquestions: object            # { "sq-id": { attempts: N, status: "pending"|"complete"|"exhausted" } }
+      total_exhausted: number         # count of subquestions that hit max retries
+
+    gap_analysis:
+      loop_decision:
+        iteration: number
+        summary: string
+        gaps: string[]
+        shouldContinue: boolean
+        nextSearchTopic: string | null
+        urlToSearch: string | null
+        timeRemainingMinutes: number | null
+
+  phase_entries:
+    scoping:
+      description: "Initial scoping and complexity classification for the research task."
+      fields:
+        - user_intent
+        - research_scope
+        - complexity_tier
+        - timeframe
+        - constraints
+        - initial_questions
+
+    memory_context:
+      description: "Workshop/vibe.db/ProjectContext hits relevant to this research task."
+      fields:
+        - memory_summary
+        - prior_research_refs
+        - project_links
+
+    research_plan:
+      description: "Decomposition into subquestions and overall research plan."
+      fields:
+        - subquestions
+        - plan_strategy
+        - crawl4ai_strategy
+        - fallback_strategy
+        - evaluation_criteria
+
+    evidence_gathering:
+      description: "Evidence collected from Crawl4AI and fallbacks."
+      fields:
+        - evidence_artifacts
+        - sources_summary
+        - tool_status
+        - research_ra_events
+
+    synthesis_pass1:
+      description: "First synthesis pass and outline based on collected evidence."
+      fields:
+        - outline
+        - key_findings
+        - remaining_gaps
+        - research_ra_events
+
+    gap_analysis:
+      description: "Coverage check and decision on further evidence loops."
+      fields:
+        - additional_queries
+        - unresolved_questions
+        - decision_more_research
+        - tool_status
+
+    report_draft:
+      description: "Draft report produced from outline and evidence."
+      fields:
+        - report_draft_path
+        - report_style
+        - research_ra_events
+
+    citation_gate:
+      description: "Citation insertion and completeness status."
+      fields:
+        - report_with_citations_path
+        - citations_status
+        - missing_citations
+
+    consistency_gate:
+      description: "Overall research quality and consistency gate."
+      fields:
+        - quality_score
+        - gate_decision
+        - issues
+        - recommended_fixes
+
+    completion:
+      description: "Final report location and learning loop."
+      fields:
+        - final_report_path
+        - outcome
+        - learnings
+        - saved_task_history
