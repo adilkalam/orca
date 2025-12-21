@@ -7,7 +7,7 @@
                                     v4.0
 ```
 
-**Orchestrated Reasoning & Coordination Architecture for Claude Code**
+#### Orchestrated Reasoning & Coordination Architecture for Claude Code**
 
 
 +------------------------------------------------------------------+
@@ -17,8 +17,6 @@ Make Claude Code think before it acts, remember what it learns, and finish work.
 - Specialized pipelines with verification gates
 - Persistent memory across sessions
 - Self-improvement from every interaction
-
-+------------------------------------------------------------------+
 
 
 **→ [Quick Start Guide](QUICK-START.md)**
