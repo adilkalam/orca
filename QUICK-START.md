@@ -4,8 +4,6 @@
 
 ORCA-OS transforms Claude Code from a coding assistant into a sophisticated multi-agent operating system with memory, self-improvement, and domain-specific orchestration.
 
-> **Want to understand how it works?** See [ORCA-OS.md](ORCA-OS.md) for architecture and design philosophy.
-
 ---
 
 ## What's Inside
@@ -43,6 +41,22 @@ The installer will:
 3. Install ORCA-OS files to `~/.claude`
 4. Configure MCP servers in `~/.claude.json`
 5. Initialize memory systems
+
+### Upgrade
+
+Already have ORCA-OS? Use the fast upgrade path:
+
+```bash
+cd orca-os
+git pull
+./dist/install.sh --upgrade
+```
+
+Upgrade mode:
+- Auto-backups without prompting
+- Skips unchanged dependencies
+- Preserves your optional MCP choices
+- Completes in ~10-30 seconds
 
 ### Verify Installation
 
