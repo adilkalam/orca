@@ -7,7 +7,7 @@
                                     v4.0
 ```
 
-#### Orchestrated Reasoning & Coordination Architecture for Claude Code**
+### Orchestrated Reasoning & Coordination Architecture for Claude Code
 
 
 +------------------------------------------------------------------+
