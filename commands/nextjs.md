@@ -250,7 +250,7 @@ If memory hits are relevant:
 - Note them for context
 - May skip or reduce ProjectContext query scope
 
-### 1.1.1 Reflexion Loading & Constraint Injection (OS 3.1)
+### 1.1.1 Reflexion Loading & Constraint Injection (OS 4.1)
 
 Load relevant reflexions from past gate failures:
 
@@ -261,7 +261,7 @@ workshop --workspace .claude/memory search "reflexion" -t nextjs --limit 5 2>/de
 Pass any reflexions found to agents in the ContextBundle under `prior_reflexions`.
 This helps agents avoid repeating past mistakes.
 
-**Constraint Injection (OS 3.1):**
+**Constraint Injection (OS 4.1):**
 
 For agents that generated past reflexions, synthesize constraint bullets and inject into `phase_state.plan.constraints`:
 

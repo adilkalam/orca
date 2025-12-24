@@ -1,4 +1,4 @@
-# Unified Improvement Bus (OS 3.1)
+# Unified Improvement Bus (OS 4.1)
 
 The Improvement Bus unifies all self-improvement mechanisms into a single event stream with explicit routing to appropriate sinks.
 

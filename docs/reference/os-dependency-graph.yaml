@@ -2,10 +2,10 @@
 # Source of truth for artifact relationships
 # Used by /orca-os-dev to trace impacts and sync documentation
 #
-# Version: 3.1.0
-# Last Updated: 2025-12-17
+# Version: 4.1
+# Last Updated: 2025-12-24
 
-version: "3.1.0"
+version: "4.1"
 
 # =============================================================================
 # ARTIFACT TYPE DEFINITIONS
@@ -129,6 +129,31 @@ documentation_map:
       - "commands/think.md (--model flag)"
       - "mcp/cognition-mcp (list_mental_models operation)"
       - "docs/concepts/cognition-mcp.md"
+
+  "docs/playbooks/":
+    tracks: [playbooks]
+    scope: global
+    description: "Detailed implementation examples extracted from agent docs"
+    auto_sections:
+      - examples: "Comprehensive planning examples with thinking process"
+      - best_practices: "Key takeaways from examples"
+    update_triggers: [playbook_add, playbook_modify]
+    referenced_by:
+      - "agents/expo/expo-architect-agent.md (Section 6)"
+
+  "docs/reference/phase-configs/":
+    tracks: [phase_configs]
+    scope: per_lane
+    description: "YAML configuration files defining pipeline phases for each lane"
+    auto_sections:
+      - pipeline: "Pipeline metadata"
+      - phase_state: "Phase state schema"
+      - complexity_tiers: "Three-tier routing configuration"
+      - phases: "Phase definitions"
+      - specialists: "Specialist activation matrix"
+    update_triggers: [lane_add, phase_config_add, phase_config_modify]
+    referenced_by:
+      - "docs/pipelines/{lane}-pipeline.md"
 
   "CLAUDE.md":
     tracks: [counts]

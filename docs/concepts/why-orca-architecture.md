@@ -133,6 +133,13 @@ ORCA-OS isn't over-engineered. It's correctly engineered for:
 
 The "simple is better" guidance is for Claude Desktop consumers. Anthropic's own production systems use the same patterns as ORCA-OS.
 
+## See Also
+
+- [Pipeline Model](pipeline-model.md) - Multi-lane pipeline architecture
+- [Complexity Routing](complexity-routing.md) - Three-tier task routing
+- [Memory Systems](memory-systems.md) - Workshop + vibe.db + ProjectContext
+- [Self-Improvement](self-improvement.md) - Agent learning systems
+
 ---
 
 *Document created from conversation on 2025-12-16. See Workshop entries tagged #architecture #validation #anthropic for related reasoning.*

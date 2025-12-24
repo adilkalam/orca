@@ -1,11 +1,11 @@
 # OS 4.1 MCP Reference
 
 **Last Updated:** 2025-12-21
-**Version:** OS 4.1.0
+**Version:** OS 4.1
 
 ---
 
-## MCP Scoping Strategy (OS 3.1)
+## MCP Scoping Strategy (OS 4.1)
 
 MCPs are now project-scoped to reduce token bloat:
 
@@ -95,7 +95,7 @@ Mandatory context provider for all agents.
 - `save_standard` - Create standards
 - `save_task_history` - Record task completion
 
-**Implementation (OS 3.2):**
+**Implementation (OS 4.1):**
 - **Reads:** SQLite direct access to `workshop.db` via `better-sqlite3`
 - **Writes:** Workshop CLI for schema migration compatibility
 - **Symlink:** Auto-creates `.workshop -> .claude/memory` on macOS/Linux

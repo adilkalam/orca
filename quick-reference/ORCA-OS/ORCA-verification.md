@@ -1,6 +1,6 @@
 # Verification & Evidence Quick Reference (OS 4.1)
 
-**Version:** OS 4.1.0
+**Version:** OS 4.1
 **Last Updated:** 2025-12-21
 
 Verification in OS 4.1 is **automated** within pipelines. This guide covers manual verification for edge cases.

@@ -1,7 +1,7 @@
 # OS 4.1 Architecture Quick Reference
 
 **Last Updated:** 2025-12-21
-**Version:** OS 4.1.0
+**Version:** OS 4.1
 
 ---
 
@@ -113,7 +113,7 @@ No gates, no architect, user verifies.
 **vibe.db:** Code chunks, symbols, embeddings (`.claude/memory/vibe.db`)
 **project-meta:** Project type, dependencies, tokens (MCP cache)
 
-### ProjectContext Implementation (OS 3.2)
+### ProjectContext Implementation (OS 4.1)
 
 The MCP uses a hybrid approach:
 - **Reads:** Direct SQLite queries via `better-sqlite3` (reliable, no CLI parsing)

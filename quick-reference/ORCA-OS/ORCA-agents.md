@@ -1,8 +1,8 @@
 # OS 4.1 Agents Quick Reference
 
-**Last Updated:** 2025-12-21
-**Version:** OS 4.1.0
-**Total Agents:** 90
+**Last Updated:** 2025-12-24
+**Version:** OS 4.1
+**Total Agents:** 90 (89 active + 1 deprecated)
 
 ---
 

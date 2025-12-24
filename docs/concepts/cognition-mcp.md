@@ -703,6 +703,13 @@ For full research context, see `/docs/concepts/llm-introspection-analysis.md`.
 | Session (3) | 5.0 | 4.0 | 4.3 |
 | **Overall (34)** | **5.0** | **4.4** | **4.0** |
 
+## See Also
+
+- [Pipeline Model](pipeline-model.md) - How cognition integrates with pipelines
+- [Self-Improvement](self-improvement.md) - Agent learning and reflexion
+- [Response Awareness](response-awareness.md) - RA tagging for assumptions
+- [/think Command](../../quick-reference/guide-think.md) - Using cognition via /think
+
 ---
 
-_Version: OS 3.2 | Last tested: December 2024_
+_Version: OS 4.1 | Last tested: December 2024_

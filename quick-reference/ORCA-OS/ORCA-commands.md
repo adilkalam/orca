@@ -1,8 +1,8 @@
 # OS 4.1 Commands Quick Reference
 
-**Last Updated:** 2025-12-23
-**Version:** OS 4.1.0
-**Total Commands:** 29
+**Last Updated:** 2025-12-24
+**Version:** OS 4.1
+**Total Commands:** 31
 
 ---
 
@@ -44,7 +44,7 @@ All `/orca-*` lane commands support three execution modes:
 /django-react -tweak "try new endpoint"    # Tweak: no gates
 /django-react --complex "auth system"      # Complex: full pipeline
 ```
-**Agents:** django-react-grand-architect, django-backend-builder, react-frontend-builder, django-react-standards-enforcer
+**Agents:** django-react-grand-architect, django-react-builder, django-react-standards-enforcer, django-react-verification
 
 ### `/expo` - Expo/React Native Lane
 ```bash
@@ -65,7 +65,7 @@ All `/orca-*` lane commands support three execution modes:
 /research "How do mTOR inhibitors work?"
 /research --deep "Complete mechanism analysis"
 ```
-**Agents:** research-lead-agent, research-web-search-subagent, research-site-crawler-subagent
+**Agents:** research-web-search-subagent, research-site-crawler-subagent, research-answer-writer, research-fact-checker
 **MCP:** crawl4ai
 
 ### `/orca-os-dev` - OS Development Lane
@@ -104,7 +104,7 @@ Creates: `.claude/requirements/<id>/06-requirements-spec.md`
 
 ---
 
-## Reasoning Commands (4)
+## Reasoning Commands (5)
 
 ### `/think` - Enhanced Cognitive Scaffolding
 ```bash
@@ -139,6 +139,14 @@ Recommends which /think operations to use.
 /ultra-think "complex architectural problem"
 ```
 
+### `/deepthink` - Automated 8-Step Complex Problem Pipeline
+```bash
+/deepthink "How should we architect the notification system?"
+/deepthink "What's causing our performance regression?"
+```
+Runs full ORIENT→ANTICIPATE→GENERATE→EVALUATE→COMMIT cycle.
+**MCP:** cognition-mcp
+
 ### `/challenge` - Adversarial Proposal Analysis
 ```bash
 /challenge "Use microservices for this feature"
@@ -172,17 +180,7 @@ Systematically attacks proposals using cognition-mcp.
 
 ---
 
-## Utility Commands (10)
-
-### `/context` - Natural Language Context Loading
-```bash
-/context "help me understand auth flow"
-/context "what decisions about routing?"
-/context --full "everything about payments"
-```
-Load project context on demand using natural language. Returns summarized output (~1000 tokens) by default, or complete ContextBundle with `--full` flag.
-**MCP:** project-context
-**Domain Inference:** Automatically detects domain from keywords (swift→ios, react→nextjs, etc.)
+## Utility Commands (12)
 
 ### `/enhance` - Prompt Enhancement
 ```bash
@@ -208,6 +206,12 @@ Load project context on demand using natural language. Returns summarized output
 /design-review                      # Full design review
 ```
 
+### `/design-review-from-screenshot` - Screenshot-Based Design Review
+```bash
+/design-review-from-screenshot /path/to/screenshot.png
+```
+Performs design review from a screenshot image. Useful for reviewing mockups or external designs.
+
 ### `/clone-website` - Website Cloning
 ```bash
 /clone-website https://example.com
@@ -225,6 +229,12 @@ Load project context on demand using natural language. Returns summarized output
 /project-memory why "auth"          # Query decisions
 /project-memory recent              # Recent activity
 ```
+
+### `/memory-search` - Unified Memory Search
+```bash
+/memory-search "auth decisions"     # Search across Workshop + vibe.db
+```
+Searches all memory systems for relevant context and decisions.
 
 ### `/project-code` - Code Intelligence
 ```bash
@@ -285,9 +295,9 @@ $ORCA_OS_PATH/commands/
 |---------|----------------|
 | `/ios` | ios-grand-architect, ios-builder, ios-verification |
 | `/nextjs` | nextjs-grand-architect, nextjs-builder, nextjs-verification-agent |
-| `/django-react` | django-react-grand-architect, django-backend-builder, react-frontend-builder |
+| `/django-react` | django-react-grand-architect, django-react-builder, django-react-verification |
 | `/expo` | expo-grand-orchestrator, expo-builder-agent, expo-verification-agent |
-| `/research` | research-lead-agent, research-web-search-subagent |
+| `/research` | research-web-search-subagent, research-site-crawler-subagent, research-answer-writer |
 | `/seo` | seo-research-specialist, seo-brief-strategist, seo-draft-writer |
 | `/orca-os-dev` | os-dev-architect, os-dev-builder, os-dev-standards-enforcer |
 
