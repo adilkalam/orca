@@ -1,12 +1,12 @@
-# OS 4.0 Agents Quick Reference
+# OS 4.1 Agents Quick Reference
 
 **Last Updated:** 2025-12-21
-**Version:** OS 4.0.0
+**Version:** OS 4.1.0
 **Total Agents:** 90
 
 ---
 
-## Agent Architecture (OS 4.0)
+## Agent Architecture (OS 4.1)
 
 **All Agents Use Opus 4.5:**
 - Grand architects (coordination & architecture)

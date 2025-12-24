@@ -60,6 +60,8 @@ const STORE_FILES: Record<keyof SessionStores, string> = {
   notebookCell: 'notebook-cell.jsonl',
   notebookRun: 'notebook-run.jsonl',
   notebookExport: 'notebook-export.jsonl',
+  // Codebase audit store
+  audit: 'audit.jsonl',
 };
 
 /**

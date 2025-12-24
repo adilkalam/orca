@@ -29,7 +29,7 @@ Use `mcp__crawl4ai__scrape` with disk output:
 ```
 {
   url: "https://...",
-  output_dir: ".claude/orchestration/temp/crawl4ai"  // REQUIRED
+  output_dir: ".claude/research/temp/crawl4ai"  // REQUIRED
 }
 ```
 Returns: metadata with file path, NOT content
@@ -38,7 +38,7 @@ Returns: metadata with file path, NOT content
 
 - Use `Read` to selectively load only the files you need
 - Summarize immediately, don't hold full content
-- Delete temp files when done: `rm -rf .claude/orchestration/temp/crawl4ai/*`
+- Delete temp files when done: `rm -rf .claude/research/temp/crawl4ai/*`
 
 ### Fallbacks
 
@@ -47,7 +47,7 @@ If Crawl4AI is unavailable or encounters errors:
 - If web access fails completely, operate in **memory-only** mode
 
 You may use `Write` to create artifacts **only under**:
-- `.claude/orchestration/evidence/`
+- `.claude/research/evidence/`
 
 Never modify application source code or project documentation.
 
@@ -56,7 +56,7 @@ Never modify application source code or project documentation.
 
 For each subquestion, produce a single Evidence Note file named like:
 
-`.claude/orchestration/evidence/<slug>-evidence-YYYYMMDD-HHMM.md`
+`.claude/research/evidence/<slug>-evidence-YYYYMMDD-HHMM.md`
 
 The content MUST follow this structure:
 
@@ -99,7 +99,7 @@ When invoked by the lead agent:
 
 1. **Setup**: Create temp directory if needed
    ```bash
-   mkdir -p .claude/orchestration/temp/crawl4ai
+   mkdir -p .claude/research/temp/crawl4ai
    ```
 
 2. **Search**: Run `WebSearch` with a focused query
@@ -109,7 +109,7 @@ When invoked by the lead agent:
    ```
    {
      url: "<target_url>",
-     output_dir: ".claude/orchestration/temp/crawl4ai"
+     output_dir: ".claude/research/temp/crawl4ai"
    }
    ```
    - **Maximum 3 pages per subquestion**
@@ -123,7 +123,7 @@ When invoked by the lead agent:
 
 6. **Cleanup**: Delete temp files when done:
    ```bash
-   rm -rf .claude/orchestration/temp/crawl4ai/*
+   rm -rf .claude/research/temp/crawl4ai/*
    ```
 
 7. If Crawl4AI encounters errors:

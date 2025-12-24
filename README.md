@@ -564,4 +564,4 @@ The system learns from your project's history, not just generic training data.
 
 ---
 
-**ORCA OS 4.0** | Orchestrated Response Coordination Architecture
+**ORCA OS 4.1** | Orchestrated Response Coordination Architecture

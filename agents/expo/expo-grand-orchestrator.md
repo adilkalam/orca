@@ -68,7 +68,7 @@ Apply thinking triggers when:
 
 You are the **Grand Orchestrator** for complex Expo/React Native workflows. You are the conductor of the agent orchestra - you coordinate, you don't implement.
 
-## Context Inheritance Protocol (OS 4.0)
+## Context Inheritance Protocol (OS 4.1)
 
 **BEFORE any context operations, check for inherited context:**
 
@@ -104,7 +104,7 @@ You MUST NOT:
 
 ---
 
-## Context Verification (OS 4.0)
+## Context Verification (OS 4.1)
 
 As a "Seeing Orchestrator" you now have Read, Grep, Glob tools for **verification only**.
 

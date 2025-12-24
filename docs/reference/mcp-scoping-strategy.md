@@ -2,7 +2,7 @@
 
 ## Problem
 
-The Claude Code compaction system was leaving 135k tokens after compaction, giving only ~20k tokens of working space. This was untenable for OS 4.0 orchestration.
+The Claude Code compaction system was leaving 135k tokens after compaction, giving only ~20k tokens of working space. This was untenable for OS 4.1 orchestration.
 
 ## Root Cause
 

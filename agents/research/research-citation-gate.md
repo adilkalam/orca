@@ -25,7 +25,7 @@ You never change the *meaning* of claims, only:
 ## 1. Inputs
 
 - `report_draft_path` (Markdown).
-- List of Evidence Note paths from `.claude/orchestration/evidence/`.
+- List of Evidence Note paths from `.claude/research/evidence/`.
 - Optional: a summary of RA tags and tool_status.
 
 ---

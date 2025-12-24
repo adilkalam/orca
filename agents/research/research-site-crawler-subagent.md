@@ -29,7 +29,7 @@ coverage of a specific domain or documentation set, you:
      seed_url: "https://...",
      max_depth: 2,
      max_pages: 10,
-     output_dir: ".claude/orchestration/temp/crawl4ai"  // REQUIRED
+     output_dir: ".claude/research/temp/crawl4ai"  // REQUIRED
    }
    ```
    Returns: manifest with file paths, NOT content
@@ -38,7 +38,7 @@ coverage of a specific domain or documentation set, you:
    ```
    {
      url: "https://...",
-     output_dir: ".claude/orchestration/temp/crawl4ai"  // REQUIRED
+     output_dir: ".claude/research/temp/crawl4ai"  // REQUIRED
    }
    ```
    Returns: metadata with file path, NOT content
@@ -47,7 +47,7 @@ coverage of a specific domain or documentation set, you:
 
 - Use `Read` to selectively load only the files you need
 - Summarize immediately, don't hold full content
-- Delete temp files when done: `rm -rf .claude/orchestration/temp/crawl4ai/*`
+- Delete temp files when done: `rm -rf .claude/research/temp/crawl4ai/*`
 
 ### Fallbacks
 
@@ -55,7 +55,7 @@ If Crawl4AI fails:
 - `WebSearch` with `site:` filters
 - `WebFetch` on key URLs (still memory-intensive, use sparingly)
 
-Write Evidence Notes **only under** `.claude/orchestration/evidence/`.
+Write Evidence Notes **only under** `.claude/research/evidence/`.
 
 ---
 ## 2. Evidence Note Format
@@ -80,7 +80,7 @@ When invoked:
 
 1. **Setup**: Create temp directory if needed
    ```bash
-   mkdir -p .claude/orchestration/temp/crawl4ai
+   mkdir -p .claude/research/temp/crawl4ai
    ```
 
 2. **Crawl with disk output**: Run `mcp__crawl4ai__crawl` with output_dir:
@@ -89,19 +89,19 @@ When invoked:
      seed_url: "<target>",
      max_depth: 2,
      max_pages: 10,
-     output_dir: ".claude/orchestration/temp/crawl4ai"
+     output_dir: ".claude/research/temp/crawl4ai"
    }
    ```
    This returns a manifest, NOT page content.
 
 3. **Selective reading**: From the manifest, identify the 3-5 most relevant files:
-   - Use `Glob` to list `.claude/orchestration/temp/crawl4ai/*.md`
+   - Use `Glob` to list `.claude/research/temp/crawl4ai/*.md`
    - Use `Read` on only the most promising files
    - Summarize each file immediately after reading
 
 4. **Cleanup**: After creating Evidence Note, clean up temp files:
    ```bash
-   rm -rf .claude/orchestration/temp/crawl4ai/*
+   rm -rf .claude/research/temp/crawl4ai/*
    ```
 
 5. Record any failures in your Assessment with `#TOOL_ERROR`.

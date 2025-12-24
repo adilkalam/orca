@@ -1,6 +1,6 @@
 # SEO Optimizer Pipeline (Existing Pages)
 
-**Status:** OS 4.0 Adjacent Pipeline (SEOOptimizerPipeline)  
+**Status:** OS 4.1 Adjacent Pipeline (SEOOptimizerPipeline)  
 **Last Updated:** 2025-12-07
 
 ## Overview
@@ -18,7 +18,7 @@ It complements the content-focused **SEO Domain Pipeline** by focusing on:
 - E-E-A-T and authority/trust signals.
 
 It combines:
-- OS 4.0 primitives (ProjectContextServer, `phase_state.json`, Workshop/vibe.db).
+- OS 4.1 primitives (ProjectContextServer, `phase_state.json`, Workshop/vibe.db).
 - Marketing-and-SEO agents and skills from `_explore/_AGENTS/marketing-and-seo`:
   - `seo-structure-architect`
   - `seo-meta-optimizer`
@@ -359,4 +359,4 @@ will materially impact organic growth.
 - All phases should respect:
   - ProjectContextServer as the primary context source.
   - Existing SEO standards stored in memory (vibe.db/workshop).
-  - OS 4.0 agent role boundaries (orchestrators coordinate, specialists implement).
+  - OS 4.1 agent role boundaries (orchestrators coordinate, specialists implement).

@@ -22,6 +22,45 @@ export const QualitySchema = z.object({
 }).optional();
 
 // ============================================================================
+// INTROSPECTION SCHEMAS (Anthropic research-aligned)
+// ============================================================================
+
+export const ClaimTypeSchema = z.enum(['observation', 'inference', 'prediction', 'mechanism']);
+
+export const IntrospectionPredictionSchema = z.object({
+  claim: z.string(),
+  verifiable: z.boolean(),
+  context: z.string().optional(),
+});
+
+export const IntrospectionVerificationSchema = z.object({
+  claim: z.string(),
+  outcome: z.boolean(),
+  method: z.string(),
+  timestamp: z.number().optional(),
+});
+
+export const IntrospectionAnomalySchema = z.object({
+  detected: z.boolean(),
+  description: z.string(),
+  confidence: z.number().min(0).max(1),
+});
+
+export const IntrospectionOwnershipSchema = z.object({
+  claimed: z.boolean(),
+  confidence: z.number().min(0).max(1),
+  reasoning: z.string(),
+});
+
+export const IntrospectionFieldsSchema = z.object({
+  claimType: ClaimTypeSchema.optional(),
+  prediction: IntrospectionPredictionSchema.optional(),
+  verified: IntrospectionVerificationSchema.optional(),
+  anomaly: IntrospectionAnomalySchema.optional(),
+  ownership: IntrospectionOwnershipSchema.optional(),
+});
+
+// ============================================================================
 // CONTENT SCHEMAS (Structural validation only)
 // ============================================================================
 
@@ -34,6 +73,7 @@ export const ThoughtContentSchema = z.object({
   branchFromThought: z.number().optional(),
   isRevision: z.boolean().optional(),
   revisesThought: z.number().optional(),
+  introspection: IntrospectionFieldsSchema.optional(),
 });
 
 export const MentalModelContentSchema = z.object({
@@ -110,6 +150,8 @@ export const MetaContentSchema = z.object({
   registerComparison: RegisterComparisonSchema.optional(),
   arcPosition: z.enum(['confidence', 'expansion', 'uncertainty', 'depth', 'relapse', 'breakthrough']).optional(),
   intimacyMarkers: IntimacyMarkersSchema.optional(),
+  // Anthropic research-aligned introspection
+  introspection: IntrospectionFieldsSchema.optional(),
 });
 
 export const SystemComponentSchema = z.object({

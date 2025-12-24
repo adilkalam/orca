@@ -1,5 +1,5 @@
 ---
-description: "OS 4.0 orchestrator entrypoint for native iOS tasks"
+description: "OS 4.1 orchestrator entrypoint for native iOS tasks"
 argument-hint: "[-tweak] <task description or requirement ID>"
 allowed-tools:
   - Task
@@ -36,7 +36,7 @@ Even `-tweak` delegates to a builder. It skips gates, not agents.
 
 ---
 
-# /ios - iOS Lane Orchestrator (OS 4.0)
+# /ios - iOS Lane Orchestrator (OS 4.1)
 
 Use this command for native iOS work (Swift/SwiftUI/UIKit, Xcode, device features).
 
@@ -72,7 +72,7 @@ No flag → Default path (light + design gates)
 
 ---
 
-## 0.1 Telemetry (OS 4.0) - MUST EXECUTE
+## 0.1 Telemetry (OS 4.1) - MUST EXECUTE
 
 **Reference:** `docs/reference/telemetry-standard.md`
 
@@ -255,7 +255,7 @@ If memory hits are relevant:
 - Note them for context
 - May skip or reduce ProjectContext query scope
 
-### 1.1.1 Reflexion Loading (OS 4.0)
+### 1.1.1 Reflexion Loading (OS 4.1)
 
 Load relevant reflexions from past gate failures:
 
@@ -507,7 +507,7 @@ Initialize phase_state.json:
 
 Delegate to `ios-grand-architect` with Context Inheritance:
 
-**Context Inheritance Protocol (OS 4.0):**
+**Context Inheritance Protocol (OS 4.1):**
 
 When delegating, wrap the ContextBundle with inheritance headers:
 

@@ -1,5 +1,5 @@
 ---
-description: "OS 4.0 Research lane entrypoint for deep, cited research"
+description: "OS 4.1 Research lane entrypoint for deep, cited research"
 argument-hint: "[--deep] [--time N] <research question>"
 allowed-tools:
   - Task
@@ -94,7 +94,7 @@ Task tool call:
   prompt: |
     Research subquestion: [specific question]
     Timeframe: [recency requirements if any]
-    Write Evidence Note to .claude/orchestration/evidence/
+    Write Evidence Note to .claude/research/evidence/
 ```
 
 2. **Wait for it to complete and return**
@@ -120,12 +120,12 @@ Task tool call:
 
 After all subagents return:
 
-1. Read all Evidence Notes from `.claude/orchestration/evidence/`
+1. Read all Evidence Notes from `.claude/research/evidence/`
 2. Check for gaps or conflicts
 3. If critical gaps AND iteration < 3: spawn more subagents for gaps
 4. If iteration >= 3 OR gaps minor: proceed to writing
 
-Document synthesis in `.claude/orchestration/evidence/research-synthesis.md`
+Document synthesis in `.claude/research/evidence/research-synthesis.md`
 
 ---
 
@@ -140,8 +140,8 @@ Task tool call:
   prompt: |
     Write research report on: [topic]
     Evidence files:
-    - .claude/orchestration/evidence/[file1].md
-    - .claude/orchestration/evidence/[file2].md
+    - .claude/research/evidence/[file1].md
+    - .claude/research/evidence/[file2].md
     ...
 ```
 

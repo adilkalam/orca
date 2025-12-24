@@ -1,20 +1,20 @@
 # Requirements Domain Pipeline
 
-**Status:** OS 4.0 Core Requirements Pipeline
+**Status:** OS 4.1 Core Requirements Pipeline
 **Last Updated:** 2025-11-27
 
 ## Overview
 
 The requirements pipeline turns fuzzy feature requests into **structured, code-aware specs** before any heavy implementation. It combines:
 
-- OS 4.0 primitives (ProjectContextServer, phase_state.json, vibe.db, Workshop)
+- OS 4.1 primitives (ProjectContextServer, phase_state.json, vibe.db, Workshop)
 - The Claude Requirements Builder workflow (00–06 docs)
 - Response Awareness tags for metacognitive tracking
 - **Three-tier planning depth** matching `/orca-*` execution tiers
 
 Output: a durable `06-requirements-spec.md` that upstreams into `/orca` domain pipelines.
 
-## Role in OS 4.0
+## Role in OS 4.1
 
 **The requirements pipeline is NOT a separate execution path.** It is:
 
@@ -33,7 +33,7 @@ Output: a durable `06-requirements-spec.md` that upstreams into `/orca` domain p
 - **Architects** (nextjs-architect, expo-architect-agent, ios-architect) read spec first
 - **Spec is authoritative** - constraints and acceptance criteria override analysis
 
-### Three-Tier Planning Depth (OS 4.0)
+### Three-Tier Planning Depth (OS 4.1)
 
 `/plan` supports three planning depths that align with `/orca-*` execution tiers:
 
@@ -50,7 +50,7 @@ Output: a durable `06-requirements-spec.md` that upstreams into `/orca` domain p
 
 **Auto-detection:** If no flag is provided, `/plan` analyzes the task and recommends a tier. User can override.
 
-### Complexity Gating (OS 4.0)
+### Complexity Gating (OS 4.1)
 
 | Complexity | Spec Required | Behavior |
 |------------|---------------|----------|

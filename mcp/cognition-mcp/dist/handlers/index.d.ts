@@ -14,6 +14,7 @@ import { handleDecide } from './decide.js';
 import { handleMeta } from './meta.js';
 import { handleSystems } from './systems.js';
 import { handleSessionInfo, handleSessionExport, handleSessionImport } from './session.js';
+import { handleAudit } from './audit.js';
 import { handleCreativeThinking } from './core/creative.js';
 import { handleVisualReasoning } from './core/visual.js';
 import { handleCheckpoint } from './core/checkpoint.js';
@@ -48,5 +49,5 @@ import { handleNotebookExport } from './notebook/export.js';
  * Returns error response for unknown operations.
  */
 export declare function routeOperation(args: CognitionRequest, session: SessionState): Promise<HandlerResult>;
-export { handleThought, handleMentalModel, handleListMentalModels, handleDebug, handleDecide, handleMeta, handleSystems, handleCreativeThinking, handleVisualReasoning, handleCheckpoint, handleScientificMethod, handleCollaborativeReasoning, handleSocraticMethod, handleStructuredArgumentation, handleTreeOfThought, handleBeamSearch, handleMCTS, handleGraphOfThought, handleOrchestrationSuggest, handleResearch, handleAnalogicalReasoning, handleCausalAnalysis, handleStatisticalReasoning, handleSimulation, handleOptimization, handleEthicalAnalysis, handleVisualDashboard, handlePDRReasoning, handleCustomFramework, handleCodeExecution, handleOODALoop, handleUlyssesProtocol, handleNotebookCreate, handleNotebookAddCell, handleNotebookRunCell, handleNotebookExport, handleSessionInfo, handleSessionExport, handleSessionImport, };
+export { handleThought, handleMentalModel, handleListMentalModels, handleDebug, handleDecide, handleMeta, handleSystems, handleAudit, handleCreativeThinking, handleVisualReasoning, handleCheckpoint, handleScientificMethod, handleCollaborativeReasoning, handleSocraticMethod, handleStructuredArgumentation, handleTreeOfThought, handleBeamSearch, handleMCTS, handleGraphOfThought, handleOrchestrationSuggest, handleResearch, handleAnalogicalReasoning, handleCausalAnalysis, handleStatisticalReasoning, handleSimulation, handleOptimization, handleEthicalAnalysis, handleVisualDashboard, handlePDRReasoning, handleCustomFramework, handleCodeExecution, handleOODALoop, handleUlyssesProtocol, handleNotebookCreate, handleNotebookAddCell, handleNotebookRunCell, handleNotebookExport, handleSessionInfo, handleSessionExport, handleSessionImport, };
 //# sourceMappingURL=index.d.ts.map

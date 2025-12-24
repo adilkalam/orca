@@ -1,7 +1,7 @@
-# OS 4.0 MCP Reference
+# OS 4.1 MCP Reference
 
 **Last Updated:** 2025-12-21
-**Version:** OS 4.0.0
+**Version:** OS 4.1.0
 
 ---
 

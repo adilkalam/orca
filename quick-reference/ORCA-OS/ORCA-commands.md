@@ -1,8 +1,8 @@
-# OS 4.0 Commands Quick Reference
+# OS 4.1 Commands Quick Reference
 
 **Last Updated:** 2025-12-23
-**Version:** OS 4.0.0
-**Total Commands:** 28
+**Version:** OS 4.1.0
+**Total Commands:** 29
 
 ---
 
@@ -172,7 +172,17 @@ Systematically attacks proposals using cognition-mcp.
 
 ---
 
-## Utility Commands (9)
+## Utility Commands (10)
+
+### `/context` - Natural Language Context Loading
+```bash
+/context "help me understand auth flow"
+/context "what decisions about routing?"
+/context --full "everything about payments"
+```
+Load project context on demand using natural language. Returns summarized output (~1000 tokens) by default, or complete ContextBundle with `--full` flag.
+**MCP:** project-context
+**Domain Inference:** Automatically detects domain from keywords (swift→ios, react→nextjs, etc.)
 
 ### `/enhance` - Prompt Enhancement
 ```bash

@@ -4,7 +4,7 @@ description: Validates API contracts and detects breaking changes in API respons
 tools: Read, Grep, Bash, Edit
 model: inherit
 
-# OS 4.0 Constraint Framework
+# OS 4.1 Constraint Framework
 required_context:
   - query_context: "MANDATORY - Must call ProjectContextServer.query_context() (domain: expo) before validating APIs"
   - context_bundle: "Use ContextBundle.relevantFiles to identify API contract files and integration points"

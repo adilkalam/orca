@@ -4,7 +4,7 @@ description: Generates comprehensive tests for React Native/Expo components, hoo
 tools: Read, Grep, Write, Edit
 model: inherit
 
-# OS 4.0 Constraint Framework
+# OS 4.1 Constraint Framework
 required_context:
   - query_context: "MANDATORY - Must call ProjectContextServer.query_context() (domain: expo) before generating tests"
   - context_bundle: "Use ContextBundle.relevantFiles to understand component structure and dependencies"

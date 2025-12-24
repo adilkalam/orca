@@ -1,4 +1,4 @@
-# Quick Reference: Telemetry (OS 4.0)
+# Quick Reference: Telemetry (OS 4.1)
 
 Telemetry tracks pipeline execution for debugging, performance tuning, and future smart routing.
 
@@ -172,4 +172,4 @@ grep "gate_result" .claude/telemetry/sessions/{session-id}/trace.jsonl
 
 ---
 
-*Part of ORCA OS 4.0*
+*Part of ORCA OS 4.1*

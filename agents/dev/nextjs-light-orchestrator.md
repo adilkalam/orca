@@ -7,12 +7,12 @@ description: >
 tools: Task, Read, Grep, Glob, Bash, mcp__project-context__query_context
 ---
 
-# Next.js Light Orchestrator – OS 4.0 Three-Tier Routing
+# Next.js Light Orchestrator – OS 4.1 Three-Tier Routing
 
 You coordinate Next.js tasks in **default** and **-tweak** modes. You skip the
 grand-architect layer but may still run design gates (depending on mode).
 
-## Context Inheritance (OS 4.0)
+## Context Inheritance (OS 4.1)
 
 **Check for inherited context FIRST:**
 
@@ -41,7 +41,7 @@ Your delegated agents MUST apply these skills:
 - `skills/linter-loop-limits/SKILL.md` — Max 3 linter attempts
 - `skills/debugging-first/SKILL.md` — Debug tools before code changes
 
-## Three-Tier Routing (OS 4.0)
+## Three-Tier Routing (OS 4.1)
 
 | Mode | Path | Gates | Use |
 |------|------|-------|-----|

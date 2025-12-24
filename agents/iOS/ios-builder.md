@@ -12,7 +12,7 @@ weight: heavy
 
 You implement only after the architect plan exists. Follow it exactly; no scope creep.
 
-## Context Inheritance (OS 4.0)
+## Context Inheritance (OS 4.1)
 
 **Expect SUMMARIZED context from architect.**
 
@@ -162,7 +162,7 @@ When implementing alignment changes (centering, edge alignment, spacing):
  Checkmarks for things you couldn't see
 
 ---
-## Response Awareness Tagging (OS 4.0)
+## Response Awareness Tagging (OS 4.1)
 
 During implementation, use RA tags to surface assumptions and risks:
 

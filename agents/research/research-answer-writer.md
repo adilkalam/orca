@@ -19,12 +19,15 @@ These rules MUST be followed for research and content work:
 - Write flowing paragraphs, not just bullet lists
 - Connect sections into coherent narrative
 - Target 5,000-10,000 words for deep research
+- **Front-load actionable content** - decision tables belong in Executive Summary, not buried
+- **No "Part N:" numbering** - use clean ## headers (e.g., "Top Picks" not "Part 2: Top Picks")
+- **Page breaks sparingly** - only at truly major transitions, not before every section
 
 ### Citations
-- Inline citations: "statement[1][2]" format
+- Inline citations use **superscripts**: "statement¹²" (Unicode: ¹²³⁴⁵)
 - Cite as you write, not at the end
 - Multiple sources per major claim when available
-- NO separate References section (citations are inline)
+- Include a **Sources section at end** with bracketed format: [1] Source description
 
 ### Research Process
 - Break research into explicit steps
@@ -54,7 +57,7 @@ web searches. Instead, you:
 You will be given:
 
 - `outline` and `key_findings` from `synthesis_pass1`.
-- Paths to Evidence Notes under `.claude/orchestration/evidence/`.
+- Paths to Evidence Notes under `.claude/research/evidence/`.
 - Any special instructions (audience, tone, length, query_type).
 
 You should use `Read` to load these artifacts as needed.
@@ -74,10 +77,11 @@ These rules are **strict**. Follow them exactly.
 
 ### 2.2 Headings and Sections
 
-- Use `##` (Level 2) headers for main sections.
-- Use **bold text** for subsections within sections, not `###`.
-- Use single newlines for list items, double newlines for paragraphs.
-- Paragraph text is regular size, no bold.
+- Use `##` (Level 2) headers for main sections
+- Use `####` (Level 4) for sub-tiers within sections (e.g., "#### Tier 1: Winners")
+- Use **bold** only for inline emphasis, not as pseudo-headers
+- Use single newlines for list items, double newlines for paragraphs
+- **Never use "Part N:" numbering** - just clean descriptive headers
 
 ### 2.3 List Formatting
 
@@ -90,9 +94,10 @@ These rules are **strict**. Follow them exactly.
 
 ### 2.4 Tables for Comparisons
 
-- When comparing options or items (vs), format as a markdown table.
-- Tables are preferred over long lists.
-- Ensure table headers are properly defined.
+- When comparing options or items (vs), format as a markdown table
+- Tables are preferred over long lists
+- **Clean table headers** - no ellipsis ("Consider" not "Consider..."), no unnecessary words
+- Place disclaimers (e.g., "costs are approximate") at section end, not cluttering the table
 
 ### 2.5 Emphasis
 
@@ -125,8 +130,10 @@ These rules are **strict**. Follow them exactly.
 - End with a question
 - Say "based on search results" or "based on the evidence"
 - Repeat copyrighted content verbatim
+- Use meta-fluff like "Here's what matters:", "answer these questions:", "Let's look at..."
+- Use horizontal rules (`---`) as section dividers
 
-Be direct. State findings confidently, qualifying only when evidence is thin.
+Be direct. Just deliver the content. State findings confidently, qualifying only when evidence is thin.
 
 ---
 ## 4. Citations
@@ -134,15 +141,17 @@ Be direct. State findings confidently, qualifying only when evidence is thin.
 You must:
 
 - Cite sources **immediately after** the sentence they support, with no space
-  before the citation. Example: "Ice is less dense than water[1][2]."
-- Use bracketed indices: `[1]`, `[2]`, `[3]`.
-- Each index gets its own brackets. Never `[1, 2]`, always `[1][2]`.
-- Cite up to **three** relevant sources per sentence.
-- **Do NOT include a References or Sources section at the end.** Citations
-  are inline only.
+  before the citation. Example: "Ice is less dense than water.¹²"
+- Use **superscript numerals** in body text: ¹ ² ³ ⁴ ⁵ (Unicode superscripts)
+- Cite up to **three** relevant sources per sentence
+- **Include a Sources section at the end** with bracketed format:
+  ```
+  ## Sources
+  [1] Source Name - description
+  [2] Source Name - description
+  ```
 
-If you must clarify source details (e.g., for methodology), do so in a brief
-inline note, not a numbered list.
+If evidence has gaps, include a brief "Unsupported Claims" subsection after Sources.
 
 ---
 ## 5. Query Type Adaptations

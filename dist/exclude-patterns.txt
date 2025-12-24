@@ -17,8 +17,11 @@ commands/_archive/
 
 # Domain-specific docs (excluded)
 docs/research/
+docs/prompts-research/
 docs/ideas/
 docs/reflections/
+docs/changelog.md
+docs/LLM-Reflection-On-Constraint-As-Source.md
 docs/pipelines/kg-research-pipeline.md
 docs/pipelines/shopify-pipeline.md
 docs/pipelines/trading-pipeline.md
@@ -72,6 +75,7 @@ config/
 
 # Scripts excluded
 scripts/trading/
+scripts/sync-to-orca.sh
 
 # Internal project config (not for distribution)
 CLAUDE.md
@@ -120,3 +124,6 @@ scripts/.archived-v1/
 
 # Distribution directory - INCLUDED for upgrades
 # dist/ - NOT excluded, needed for install.sh
+# But exclude the READMEs since they're copied to root/docs separately
+dist/README.md
+dist/QUICK-START.md

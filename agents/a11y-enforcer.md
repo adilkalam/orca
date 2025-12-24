@@ -12,7 +12,7 @@ description: >
 tools: Read, Grep, Bash, Edit
 weight: medium
 
-# OS 4.0 Constraint Framework
+# OS 4.1 Constraint Framework
 required_context:
   - query_context: "MANDATORY - Must call ProjectContextServer.query_context() (domain: expo) before scanning"
   - context_bundle: "Use ContextBundle.relevantFiles and relatedStandards to focus a11y audits"
@@ -107,7 +107,7 @@ color: '#666' on background '#FFF'
 
 ## Output Format
 
-In OS 4.0, produce a structured audit and a numeric Accessibility Score, for example:
+In OS 4.1, produce a structured audit and a numeric Accessibility Score, for example:
 
 ```
 A11y Audit: src/components/Button.tsx
@@ -532,7 +532,7 @@ export function ProductCard({ product, onAddToCart }: Props) {
 **Gate Decision:** FAIL → BLOCK until fixed
 
 ---
-## 7. Scoring Methodology (Graduated Gate Standard - OS 4.0)
+## 7. Scoring Methodology (Graduated Gate Standard - OS 4.1)
 
 **Reference:** `docs/reference/graduated-gate-scoring.md`
 

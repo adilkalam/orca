@@ -1,6 +1,6 @@
 # Research Domain Pipeline
 
-**Status:** OS 4.0 Pipeline (Research)  
+**Status:** OS 4.1 Pipeline (Research)  
 **Last Updated:** 2025-11-27
 
 ---
@@ -17,7 +17,7 @@ artifact**, not a code change:
 
 It combines:
 
-- OS 4.0 primitives (`phase_state.json`, Workshop, vibe.db, ProjectContext).
+- OS 4.1 primitives (`phase_state.json`, Workshop, vibe.db, ProjectContext).
 - A dedicated **Research lane** with `/research` as entrypoint.
 - Crawl4AI MCP for web crawling and content extraction.
 - Direct orchestration from `/research` command (flat agent hierarchy).

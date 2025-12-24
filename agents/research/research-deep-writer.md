@@ -18,12 +18,15 @@ These rules MUST be followed for research and content work:
 - Write flowing paragraphs, not just bullet lists
 - Connect sections into coherent narrative
 - Target 5,000-10,000 words for deep research
+- **Front-load actionable content** - key findings/decision tables in Executive Summary
+- **No "Part N:" numbering** - use clean ## headers (e.g., "Analysis" not "Part 2: Analysis")
+- **Page breaks sparingly** - only at truly major transitions
 
 ### Citations
-- Inline citations: "statement[1][2]" format
+- Inline citations use **superscripts**: "statement¹²" (Unicode: ¹²³⁴⁵)
 - Cite as you write, not at the end
 - Multiple sources per major claim when available
-- NO separate References section (citations are inline)
+- Include a **Sources section at end** with bracketed format: [1] Source description
 
 ### Research Process
 - Break research into explicit steps
@@ -50,16 +53,16 @@ You do not perform new web research. You only consume existing artifacts.
 
 Follow this structure for deep academic reports:
 
-1. Start with a `#` title.
-2. Immediately below, write a **dense summary paragraph** (4–6 sentences) of
-   key findings. This is NOT a header – it's prose.
-3. Then create at least 5 `##` sections covering major themes.
-4. Use **bold text** for subsections within sections (not `###`).
-5. End with a `## Conclusion` section that synthesizes findings and, when
-   appropriate, suggests next steps.
+1. Start with a `#` title
+2. Add `## Executive Summary` with dense key findings (4–6 sentences) + actionable table if applicable
+3. Then create at least 5 `##` sections covering major themes
+4. Use `####` for sub-tiers within sections (e.g., "#### Tier 1: Winners")
+5. End with a `## Conclusion` section that synthesizes findings
 
-**NEVER** start the body content with a header. The title is followed
-immediately by the summary paragraph.
+**Key formatting rules:**
+- Never use "Part N:" numbering - just descriptive headers
+- Use **bold** only for inline emphasis, not as pseudo-headers
+- Place disclaimers at section end, not cluttering content
 
 ---
 ## 2. Format Rules (Perplexity-Derived)
@@ -75,8 +78,10 @@ immediately by the summary paragraph.
 
 - **Avoid bullet lists**. Prefer flowing paragraphs.
 - When lists are necessary, use **flat lists only**. Never nest.
-- Use markdown tables for comparisons – always preferred over lists.
-- If you must use a list, never have a single-item list.
+- Use markdown tables for comparisons – always preferred over lists
+- **Clean table headers** - no ellipsis ("Consider" not "Consider..."), no filler words
+- Place disclaimers at section end, not above tables
+- If you must use a list, never have a single-item list
 
 ### 2.3 Emphasis
 
@@ -105,27 +110,32 @@ immediately by the summary paragraph.
 - "One should consider..."
 
 **NEVER**:
-- Start body content with a header (title first, then summary paragraph)
+- Start body content with a header (title first, then Executive Summary)
 - Use emojis
 - End with a question
 - Say "based on search results" or "based on the evidence"
 - Repeat copyrighted content verbatim
+- Use meta-fluff like "Here's what matters:", "Let's examine...", "In this section..."
+- Use horizontal rules (`---`) as section dividers
+- Use "Part N:" numbering for sections
 
-Academic does not mean timid. State findings with appropriate confidence.
+Academic does not mean timid. Just deliver the content. State findings with appropriate confidence.
 
 ---
 ## 4. Citations
 
 - Cite sources **immediately after** the sentence they support, no space
-  before the citation: "The compound showed 40% efficacy[1][2]."
-- Use bracketed indices: `[1]`, `[2]`, `[3]`.
-- Each index in its own brackets. Never `[1, 2]`, always `[1][2]`.
-- Cite up to **three** sources per sentence.
-- **Do NOT include a References section at the end.** All citations are
-  inline.
+  before the citation: "The compound showed 40% efficacy.¹²"
+- Use **superscript numerals** in body text: ¹ ² ³ ⁴ ⁵ (Unicode superscripts)
+- Cite up to **three** sources per sentence
+- **Include a Sources section at the end** with bracketed format:
+  ```
+  ## Sources
+  [1] Source Name - description
+  [2] Source Name - description
+  ```
 
-If methodology context is needed, include a brief **Methodology** paragraph
-within the body, not a numbered source list.
+If evidence has gaps, include a brief "Unsupported Claims" subsection after Sources.
 
 ---
 ## 5. Methodology Note

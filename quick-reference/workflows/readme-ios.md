@@ -1,10 +1,10 @@
-# OS 4.0 iOS Lane Readme
+# OS 4.1 iOS Lane Readme
 
 **Lane:** iOS / Native Apple Platforms  
 **Domain:** `ios`  
 **Entrypoints:** `/plan`, `/orca`, `/ios`, `/project-memory`, `/project-code`
 
-This document explains how the iOS lane works in Vibe OS 4.0:
+This document explains how the iOS lane works in Vibe OS 4.1:
 
 - Planning & specs (`/plan`)
 - Orchestration (`/orca`, `/ios`)
@@ -76,7 +76,7 @@ File: `commands/ios.md`
   /ios "implement requirement <id>"              # With spec
   ```
 
-- **Three-Tier Routing (OS 4.0):**
+- **Three-Tier Routing (OS 4.1):**
 
   | Mode | Flag | Path | Gates |
   |------|------|------|-------|
@@ -253,7 +253,7 @@ promote standards and refine lane behavior over time.
 
 ## 8. Mental Model
 
-For iOS work in OS 4.0 (three-tier routing):
+For iOS work in OS 4.1 (three-tier routing):
 
 | Mode | Command | Path |
 |------|---------|------|

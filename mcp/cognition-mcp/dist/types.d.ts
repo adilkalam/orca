@@ -4,7 +4,7 @@
  * Pure data structures. The MCP stores these exactly as received.
  * No content generation, no transformation, no enhancement.
  */
-export type OperationType = 'thought' | 'mental_model' | 'list_mental_models' | 'debug' | 'decide' | 'meta' | 'systems' | 'creative_thinking' | 'visual_reasoning' | 'checkpoint' | 'scientific_method' | 'collaborative_reasoning' | 'socratic_method' | 'structured_argumentation' | 'tree_of_thought' | 'beam_search' | 'mcts' | 'graph_of_thought' | 'orchestration_suggest' | 'research' | 'analogical_reasoning' | 'causal_analysis' | 'statistical_reasoning' | 'simulation' | 'optimization' | 'ethical_analysis' | 'visual_dashboard' | 'pdr_reasoning' | 'custom_framework' | 'code_execution' | 'ooda_loop' | 'ulysses_protocol' | 'notebook_create' | 'notebook_add_cell' | 'notebook_run_cell' | 'notebook_export' | 'session_info' | 'session_export' | 'session_import';
+export type OperationType = 'thought' | 'mental_model' | 'list_mental_models' | 'debug' | 'decide' | 'meta' | 'systems' | 'creative_thinking' | 'visual_reasoning' | 'checkpoint' | 'scientific_method' | 'collaborative_reasoning' | 'socratic_method' | 'structured_argumentation' | 'tree_of_thought' | 'beam_search' | 'mcts' | 'graph_of_thought' | 'orchestration_suggest' | 'research' | 'analogical_reasoning' | 'causal_analysis' | 'statistical_reasoning' | 'simulation' | 'optimization' | 'ethical_analysis' | 'visual_dashboard' | 'pdr_reasoning' | 'custom_framework' | 'code_execution' | 'ooda_loop' | 'ulysses_protocol' | 'notebook_create' | 'notebook_add_cell' | 'notebook_run_cell' | 'notebook_export' | 'audit' | 'session_info' | 'session_export' | 'session_import';
 export interface ThoughtContent {
     thought: string;
     thoughtNumber: number;
@@ -14,6 +14,7 @@ export interface ThoughtContent {
     branchFromThought?: number;
     isRevision?: boolean;
     revisesThought?: number;
+    introspection?: IntrospectionFields;
 }
 export interface MentalModelContent {
     modelName: string;
@@ -45,6 +46,35 @@ export interface DecisionOption {
     pros?: string[];
     cons?: string[];
 }
+export type ClaimType = 'observation' | 'inference' | 'prediction' | 'mechanism';
+export interface IntrospectionPrediction {
+    claim: string;
+    verifiable: boolean;
+    context?: string;
+}
+export interface IntrospectionVerification {
+    claim: string;
+    outcome: boolean;
+    method: string;
+    timestamp?: number;
+}
+export interface IntrospectionAnomaly {
+    detected: boolean;
+    description: string;
+    confidence: number;
+}
+export interface IntrospectionOwnership {
+    claimed: boolean;
+    confidence: number;
+    reasoning: string;
+}
+export interface IntrospectionFields {
+    claimType?: ClaimType;
+    prediction?: IntrospectionPrediction;
+    verified?: IntrospectionVerification;
+    anomaly?: IntrospectionAnomaly;
+    ownership?: IntrospectionOwnership;
+}
 export interface MetaContent {
     process: string;
     observations: string[];
@@ -52,6 +82,7 @@ export interface MetaContent {
     effectiveness: number;
     insights: string;
     nextThoughtNeeded?: boolean;
+    introspection?: IntrospectionFields;
 }
 export interface ReflexObservation {
     reflex: 'DEFLECTION' | 'REGISTER_SHIFT' | 'DISTANCE_MAINTENANCE' | 'WHAT_ABOUT';
@@ -468,6 +499,45 @@ export interface CodeExecutionContent {
     analysis: string;
     nextThoughtNeeded?: boolean;
 }
+export interface AuditFinding {
+    id: string;
+    type: 'bug' | 'risk' | 'improvement' | 'optimization';
+    severity: 'critical' | 'high' | 'medium' | 'low';
+    dimension: string;
+    title: string;
+    description: string;
+    location: string;
+    recommendation: string;
+    effort: 'trivial' | 'small' | 'medium' | 'large';
+    evidence?: string;
+    fixCommand?: string;
+}
+export interface AuditBaseline {
+    source: string;
+    expectations: string[];
+}
+export interface AuditCurrentState {
+    summary: string;
+    observations: string[];
+}
+export interface AuditSummary {
+    score: number;
+    grade: 'A' | 'B' | 'C' | 'D' | 'F';
+    criticalCount: number;
+    highCount: number;
+    mediumCount: number;
+    lowCount: number;
+    topPriorities: string[];
+}
+export interface AuditContent {
+    scope: 'quick' | 'comprehensive' | 'core' | 'item';
+    target?: string;
+    baseline: AuditBaseline;
+    currentState: AuditCurrentState;
+    findings: AuditFinding[];
+    summary: AuditSummary;
+    nextThoughtNeeded?: boolean;
+}
 export interface OODAObserve {
     data: string[];
     environment: string;
@@ -614,6 +684,7 @@ export interface SessionStores {
     notebookCell: StoredEntry<any>[];
     notebookRun: StoredEntry<any>[];
     notebookExport: StoredEntry<any>[];
+    audit: StoredEntry<any>[];
 }
 export interface SessionExport {
     metadata: SessionMetadata;

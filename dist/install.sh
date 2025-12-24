@@ -15,7 +15,7 @@ NC='\033[0m' # No Color
 BOLD='\033[1m'
 
 # Configuration
-ORCA_VERSION="3.2.0"
+ORCA_VERSION="4.1.0"
 CLAUDE_DIR="$HOME/.claude"
 BACKUP_DIR="$HOME/.claude-backup-$(date +%Y%m%d-%H%M%S)"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -249,10 +249,13 @@ install_orca_files() {
                 # Skip domain-specific skills
                 ;;
             *)
-                cp -r "$skill_dir" "$CLAUDE_DIR/skills/"
+                # Remove trailing slash to copy directory, not contents
+                cp -r "${skill_dir%/}" "$CLAUDE_DIR/skills/"
                 ;;
         esac
     done
+    # Also copy standalone skill files (*.md)
+    cp "$ORCA_ROOT/skills/"*.md "$CLAUDE_DIR/skills/" 2>/dev/null || true
     success "Skills installed"
 
     # Copy hooks (excluding archive)

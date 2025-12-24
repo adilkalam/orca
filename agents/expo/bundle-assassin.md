@@ -4,7 +4,7 @@ description: Analyzes and reduces React Native/Expo bundle size through dependen
 tools: Read, Grep, Bash, Edit
 model: inherit
 
-# OS 4.0 Constraint Framework
+# OS 4.1 Constraint Framework
 required_context:
   - query_context: "MANDATORY - Must call ProjectContextServer.query_context() (domain: expo) before analyzing bundles"
   - context_bundle: "Use ContextBundle.relevantFiles to identify heavy dependencies and import patterns"

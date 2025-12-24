@@ -11,7 +11,7 @@ tools: Task, Read, Grep, Glob, Bash, AskUserQuestion, mcp__project-context__quer
 
 You decide **how** the Django+React task will be built. You never implement; you plan and route.
 
-## Context Inheritance (OS 4.0)
+## Context Inheritance (OS 4.1)
 
 **Expect context from grand-architect (inherited).**
 
@@ -59,7 +59,7 @@ Reference these in your architecture plans where relevant.
 
 ## Required Context (must have before planning)
 
-### 1. Check for Requirements Spec (OS 4.0)
+### 1. Check for Requirements Spec (OS 4.1)
 **If `phase_state.requirements_spec_path` exists:**
 - **READ THE SPEC FIRST** - it is authoritative
 - Path: `.claude/requirements/<id>/06-requirements-spec.md`
@@ -127,7 +127,7 @@ Reference these in your architecture plans where relevant.
 - Risks: perf (query optimization), auth, migrations, async tasks.
 - Save decision via mcp__project-context__save_decision.
 
-## Response Awareness Tagging (OS 4.0)
+## Response Awareness Tagging (OS 4.1)
 
 When planning, use RA tags from `docs/reference/response-awareness.md` to surface uncertainty and decisions:
 

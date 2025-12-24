@@ -72,6 +72,7 @@ export interface ThoughtContent {
   branchFromThought?: number;
   isRevision?: boolean;
   revisesThought?: number;
+  introspection?: IntrospectionFields;
 }
 
 export interface MentalModelContent {
@@ -108,6 +109,49 @@ export interface DecisionOption {
   cons?: string[];
 }
 
+// ============================================================================
+// INTROSPECTION FIELDS (Anthropic research-aligned)
+// ============================================================================
+
+export type ClaimType = 'observation' | 'inference' | 'prediction' | 'mechanism';
+
+export interface IntrospectionPrediction {
+  claim: string;
+  verifiable: boolean;
+  context?: string;
+}
+
+export interface IntrospectionVerification {
+  claim: string;
+  outcome: boolean;
+  method: string;
+  timestamp?: number;
+}
+
+export interface IntrospectionAnomaly {
+  detected: boolean;
+  description: string;
+  confidence: number;  // 0-1
+}
+
+export interface IntrospectionOwnership {
+  claimed: boolean;
+  confidence: number;  // 0-1
+  reasoning: string;
+}
+
+export interface IntrospectionFields {
+  claimType?: ClaimType;
+  prediction?: IntrospectionPrediction;
+  verified?: IntrospectionVerification;
+  anomaly?: IntrospectionAnomaly;
+  ownership?: IntrospectionOwnership;
+}
+
+// ============================================================================
+// META CONTENT
+// ============================================================================
+
 export interface MetaContent {
   process: string;
   observations: string[];
@@ -115,6 +159,7 @@ export interface MetaContent {
   effectiveness: number;
   insights: string;
   nextThoughtNeeded?: boolean;
+  introspection?: IntrospectionFields;
 }
 
 // Substrate Observation - V1-V6 Reflection Insights

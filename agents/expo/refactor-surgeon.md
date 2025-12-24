@@ -4,7 +4,7 @@ description: Performs safe, targeted refactoring for React Native/Expo code. Han
 tools: Read, Grep, Edit, Bash
 model: inherit
 
-# OS 4.0 Constraint Framework
+# OS 4.1 Constraint Framework
 required_context:
   - query_context: "MANDATORY - Must call ProjectContextServer.query_context() (domain: expo) before refactoring"
   - context_bundle: "Use ContextBundle.relevantFiles to identify refactoring scope and dependencies"

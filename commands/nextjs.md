@@ -1,5 +1,5 @@
 ---
-description: "OS 4.0 orchestrator entrypoint for Next.js frontend tasks"
+description: "OS 4.1 orchestrator entrypoint for Next.js frontend tasks"
 argument-hint: "[-tweak] <task description or requirement ID>"
 allowed-tools:
   - Task
@@ -36,7 +36,7 @@ Even `-tweak` delegates to a builder. It skips gates, not agents.
 
 ---
 
-# /nextjs - Next.js Lane Orchestrator (OS 4.0)
+# /nextjs - Next.js Lane Orchestrator (OS 4.1)
 
 Use this command for Next.js / frontend UI work.
 
@@ -72,7 +72,7 @@ No flag → Default path (light + design gates)
 
 ---
 
-## 0.1 Telemetry (OS 4.0) - MUST EXECUTE
+## 0.1 Telemetry (OS 4.1) - MUST EXECUTE
 
 **Reference:** `docs/reference/telemetry-standard.md`
 
@@ -585,7 +585,7 @@ Initialize phase_state.json:
 
 Delegate to `nextjs-grand-architect` with Context Inheritance:
 
-**Context Inheritance Protocol (OS 4.0):**
+**Context Inheritance Protocol (OS 4.1):**
 
 When delegating, wrap the ContextBundle with inheritance headers:
 

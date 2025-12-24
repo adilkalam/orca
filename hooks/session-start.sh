@@ -237,46 +237,6 @@ if [ "$WORKSHOP_STATUS" = "loaded" ] && command -v workshop >/dev/null 2>&1; the
   echo ""
 fi
 
-# Show last session summary for continuity
-if [ "$WORKSHOP_STATUS" = "loaded" ] && command -v workshop >/dev/null 2>&1; then
-  echo ""
-  echo "═══════════════════════════════════════════════════════════"
-  echo "LAST SESSION SUMMARY"
-  echo "═══════════════════════════════════════════════════════════"
-  echo ""
-
-  # Get last session details
-  LAST_SESSION=$(workshop --workspace "$WORKSHOP_DIR" session last 2>/dev/null)
-
-  if [ -n "$LAST_SESSION" ]; then
-    # Extract session timestamp if available (format: YYYY-MM-DD HH:MM:SS)
-    SESSION_TIME=$(echo "$LAST_SESSION" | grep -oE '[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}' | head -1)
-
-    if [ -n "$SESSION_TIME" ]; then
-      # Calculate age in hours (rough estimate using date commands)
-      NOW_TS=$(date -u +%s 2>/dev/null)
-      SESSION_TS=$(date -j -f "%Y-%m-%d %H:%M:%S" "$SESSION_TIME" +%s 2>/dev/null || echo "0")
-
-      if [ "$SESSION_TS" != "0" ] && [ "$NOW_TS" -gt "$SESSION_TS" ]; then
-        AGE_HOURS=$(( (NOW_TS - SESSION_TS) / 3600 ))
-
-        if [ "$AGE_HOURS" -gt 24 ]; then
-          echo "⚠️  Last session was ${AGE_HOURS}h ago (>24h - may be stale)"
-          echo ""
-        fi
-      fi
-    fi
-
-    echo "$LAST_SESSION"
-  else
-    echo "(No previous session recorded)"
-    echo ""
-    echo "Tip: Session data is captured automatically when you use /think, /plan,"
-    echo "     or other commands that integrate with Workshop."
-  fi
-  echo ""
-fi
-
 # Architecture reminder for this repo
 echo ""
 echo "═══════════════════════════════════════════════════════════"

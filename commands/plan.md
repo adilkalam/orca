@@ -1,5 +1,5 @@
 ---
-description: "Unified OS 4.0 planner – requirements + RA blueprint (no implementation)"
+description: "Unified OS 4.1 planner – requirements + RA blueprint (no implementation)"
 argument-hint: "[-tweak] [-complex] [--visual|--systems|--debug|--model|--creative|--deepthink] <high-level task description>"
 allowed-tools:
   ["Task", "Read", "Write", "Edit", "Glob", "Grep",
@@ -12,7 +12,7 @@ allowed-tools:
 Use this command to produce a **blueprint-quality requirements spec** for a task
 before running any domain lane (`/nextjs`, `/ios`, `/expo`, etc.).
 It combines:
-- The OS 4.0 **requirements pipeline** (requirements folder + docs),
+- The OS 4.1 **requirements pipeline** (requirements folder + docs),
 - **Response Awareness** tagging (RA tags as per `docs/reference/response-awareness.md`),
 - **Cognition analysis** (optional) for deeper problem understanding,
 - ProjectContextServer for context-aware analysis.
@@ -21,7 +21,7 @@ You never implement code from `/plan`; you only plan.
 
 ---
 
-## 0. Cognition Integration (OS 4.0)
+## 0. Cognition Integration (OS 4.1)
 
 `/plan` supports optional cognition-mcp analysis modes that run **before** discovery questions. This produces smarter, context-aware questions instead of generic ones.
 

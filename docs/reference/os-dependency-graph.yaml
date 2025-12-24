@@ -523,12 +523,38 @@ commands:
     type: utility
     agents_called: []
 
+  - name: context
+    type: utility
+    mcps: [project-context]
+    agents_called: []
+    outputs:
+      - "Console output (summarized or full ContextBundle)"
+
+  - name: orca
+    type: universal_router
+    routes_to: [ios, nextjs, expo, django-react, research, seo, orca-os-dev]
+    agents_called: []
+
+  - name: deepthink
+    type: utility
+    mcps: [cognition-mcp, sequential-thinking]
+    agents_called: []
+
+  - name: design-review-from-screenshot
+    type: utility
+    agents_called:
+      - nextjs-design-reviewer
+
+  - name: memory-search
+    type: utility
+    agents_called: []
+
 # =============================================================================
 # COUNTS (for verification)
 # =============================================================================
 counts:
   total_agents: 89
-  total_commands: 26
+  total_commands: 29
   agents_by_domain:
     ios: 19
     nextjs: 17             # +tailwind-specialist, +shadcn-specialist

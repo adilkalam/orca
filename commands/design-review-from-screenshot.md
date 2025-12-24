@@ -30,7 +30,7 @@ state (mockup, past build, or design export) for a frontend route (typically
 Nextjs/App Router) and want to:
 - Ensure the current live UI still matches that visual reference.
 - Validate the live UI against the project’s design-dna and design rules.
-- Get a scored, OS 4.0–style Design QA report.
+- Get a scored, OS 4.1–style Design QA report.
 
 This command is primarily oriented toward the Nextjs/frontend lane. It:
 1. Captures the current live UI with Puppeteer at matching breakpoints.
@@ -157,9 +157,9 @@ If appropriate, suggest follow-up:
 This runs the unified pipeline with Design QA findings as input.
 
 ---
-## 6. OS 4.0 Integration (Nextjs Lane)
+## 6. OS 4.1 Integration (Nextjs Lane)
 
-To integrate this command cleanly with the OS 4.0 Nextjs pipeline:
+To integrate this command cleanly with the OS 4.1 Nextjs pipeline:
 
 1. **Store Evidence**
    - Ensure screenshots and the Design QA summary are saved under:

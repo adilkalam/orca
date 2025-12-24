@@ -56,6 +56,8 @@ const STORE_FILES = {
     notebookCell: 'notebook-cell.jsonl',
     notebookRun: 'notebook-run.jsonl',
     notebookExport: 'notebook-export.jsonl',
+    // Codebase audit store
+    audit: 'audit.jsonl',
 };
 /**
  * Ensure all required directories exist.

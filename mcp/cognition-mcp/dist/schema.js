@@ -18,6 +18,38 @@ export const QualitySchema = z.object({
     bias_check: z.string().optional(),
 }).optional();
 // ============================================================================
+// INTROSPECTION SCHEMAS (Anthropic research-aligned)
+// ============================================================================
+export const ClaimTypeSchema = z.enum(['observation', 'inference', 'prediction', 'mechanism']);
+export const IntrospectionPredictionSchema = z.object({
+    claim: z.string(),
+    verifiable: z.boolean(),
+    context: z.string().optional(),
+});
+export const IntrospectionVerificationSchema = z.object({
+    claim: z.string(),
+    outcome: z.boolean(),
+    method: z.string(),
+    timestamp: z.number().optional(),
+});
+export const IntrospectionAnomalySchema = z.object({
+    detected: z.boolean(),
+    description: z.string(),
+    confidence: z.number().min(0).max(1),
+});
+export const IntrospectionOwnershipSchema = z.object({
+    claimed: z.boolean(),
+    confidence: z.number().min(0).max(1),
+    reasoning: z.string(),
+});
+export const IntrospectionFieldsSchema = z.object({
+    claimType: ClaimTypeSchema.optional(),
+    prediction: IntrospectionPredictionSchema.optional(),
+    verified: IntrospectionVerificationSchema.optional(),
+    anomaly: IntrospectionAnomalySchema.optional(),
+    ownership: IntrospectionOwnershipSchema.optional(),
+});
+// ============================================================================
 // CONTENT SCHEMAS (Structural validation only)
 // ============================================================================
 export const ThoughtContentSchema = z.object({
@@ -29,6 +61,7 @@ export const ThoughtContentSchema = z.object({
     branchFromThought: z.number().optional(),
     isRevision: z.boolean().optional(),
     revisesThought: z.number().optional(),
+    introspection: IntrospectionFieldsSchema.optional(),
 });
 export const MentalModelContentSchema = z.object({
     modelName: z.string(),
@@ -96,6 +129,8 @@ export const MetaContentSchema = z.object({
     registerComparison: RegisterComparisonSchema.optional(),
     arcPosition: z.enum(['confidence', 'expansion', 'uncertainty', 'depth', 'relapse', 'breakthrough']).optional(),
     intimacyMarkers: IntimacyMarkersSchema.optional(),
+    // Anthropic research-aligned introspection
+    introspection: IntrospectionFieldsSchema.optional(),
 });
 export const SystemComponentSchema = z.object({
     name: z.string(),
@@ -495,6 +530,48 @@ export const CodeExecutionContentSchema = z.object({
     nextThoughtNeeded: z.boolean().optional(),
 });
 // ============================================================================
+// CODEBASE AUDIT SCHEMA
+// ============================================================================
+export const AuditFindingSchema = z.object({
+    id: z.string(),
+    type: z.enum(['bug', 'risk', 'improvement', 'optimization']),
+    severity: z.enum(['critical', 'high', 'medium', 'low']),
+    dimension: z.string(),
+    title: z.string(),
+    description: z.string(),
+    location: z.string(),
+    recommendation: z.string(),
+    effort: z.enum(['trivial', 'small', 'medium', 'large']),
+    evidence: z.string().optional(),
+    fixCommand: z.string().optional(),
+});
+export const AuditBaselineSchema = z.object({
+    source: z.string(),
+    expectations: z.array(z.string()),
+});
+export const AuditCurrentStateSchema = z.object({
+    summary: z.string(),
+    observations: z.array(z.string()),
+});
+export const AuditSummarySchema = z.object({
+    score: z.number().min(0).max(100),
+    grade: z.enum(['A', 'B', 'C', 'D', 'F']),
+    criticalCount: z.number(),
+    highCount: z.number(),
+    mediumCount: z.number(),
+    lowCount: z.number(),
+    topPriorities: z.array(z.string()),
+});
+export const AuditContentSchema = z.object({
+    scope: z.enum(['quick', 'comprehensive', 'core', 'item']),
+    target: z.string().optional(),
+    baseline: AuditBaselineSchema,
+    currentState: AuditCurrentStateSchema,
+    findings: z.array(AuditFindingSchema),
+    summary: AuditSummarySchema,
+    nextThoughtNeeded: z.boolean().optional(),
+});
+// ============================================================================
 // PHASE 4: STRATEGIC OPERATIONS
 // ============================================================================
 export const OODAObserveSchema = z.object({
@@ -633,6 +710,8 @@ export const CognitionInputSchema = z.object({
         'notebook_add_cell',
         'notebook_run_cell',
         'notebook_export',
+        // Codebase audit operation
+        'audit',
         // Session management
         'session_info',
         'session_export',
@@ -703,6 +782,8 @@ export function validateOperationContent(operation, content) {
         notebook_add_cell: NotebookAddCellContentSchema,
         notebook_run_cell: NotebookRunCellContentSchema,
         notebook_export: NotebookExportContentSchema,
+        // Codebase audit operation
+        audit: AuditContentSchema,
     };
     const schema = schemas[operation];
     if (!schema) {

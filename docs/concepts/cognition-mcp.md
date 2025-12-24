@@ -529,6 +529,167 @@ Final:  → nextThoughtNeeded: false triggers export
 
 ---
 
+## Introspection Fields (Anthropic Research-Aligned)
+
+The cognition-mcp now supports optional introspection metadata based on Anthropic's "Emergent Introspective Awareness" research. These fields can be added to `meta` and `thought` operations to track introspective claims, predictions, and verifications.
+
+### Overview
+
+All introspection fields are grouped under an optional `introspection` object with the following subfields:
+
+- `claimType` - Auto-inferred claim classification
+- `prediction` - Verifiable claims about future outcomes
+- `verified` - Verification results for prior predictions
+- `anomaly` - Anomaly detection signals
+- `ownership` - Ownership/intention claims
+
+### ClaimType Values
+
+| Type | Description | Example |
+|------|-------------|---------|
+| `observation` | Direct observation | "I notice the code has no error handling" |
+| `inference` | Logical conclusion | "This suggests the bug is in the parser" |
+| `prediction` | Future outcome claim | "I predict the next test will fail" |
+| `mechanism` | Internal process description | "My processing does X internally" |
+
+**Note**: `mechanism` claims have lower expected reliability per research findings. Consider reducing confidence when using this type.
+
+### Prediction/Verification Pattern
+
+The introspection schema enables testable prediction tracking:
+
+**Making a prediction:**
+```typescript
+{
+  operation: "meta",
+  content: {
+    process: "debugging",
+    // ... other meta fields
+    introspection: {
+      claimType: "prediction",
+      prediction: {
+        claim: "The next test will fail due to missing dependency",
+        verifiable: true,
+        context: "Testing authentication flow"
+      }
+    }
+  }
+}
+```
+
+**Verifying a prediction:**
+```typescript
+{
+  operation: "meta",
+  content: {
+    process: "verification",
+    // ... other meta fields
+    introspection: {
+      verified: {
+        claim: "The next test will fail due to missing dependency",
+        outcome: true,  // prediction was correct
+        method: "Ran tests, observed ImportError",
+        timestamp: 1703347200
+      }
+    }
+  }
+}
+```
+
+Predictions link to verifications by matching `claim` text.
+
+### Anomaly Detection
+
+Track when something unexpected occurs:
+
+```typescript
+introspection: {
+  anomaly: {
+    detected: true,
+    description: "Expected slow performance but observed 10x speedup",
+    confidence: 0.85  // 0-1 scale
+  }
+}
+```
+
+### Ownership Claims
+
+Track ownership/intention claims:
+
+```typescript
+introspection: {
+  ownership: {
+    claimed: true,
+    confidence: 0.7,
+    reasoning: "I chose this approach because of constraint X"
+  }
+}
+```
+
+### Schema Details
+
+All introspection fields are **optional** for backward compatibility. The MCP follows the accept-store-echo pattern—it stores introspection data unchanged without interpretation.
+
+**TypeScript Interface:**
+```typescript
+export interface IntrospectionFields {
+  claimType?: 'observation' | 'inference' | 'prediction' | 'mechanism';
+  prediction?: {
+    claim: string;
+    verifiable: boolean;
+    context?: string;
+  };
+  verified?: {
+    claim: string;
+    outcome: boolean;
+    method: string;
+    timestamp?: number;
+  };
+  anomaly?: {
+    detected: boolean;
+    description: string;
+    confidence: number;  // 0-1
+  };
+  ownership?: {
+    claimed: boolean;
+    confidence: number;  // 0-1
+    reasoning: string;
+  };
+}
+```
+
+### Usage with Operations
+
+Introspection fields can be added to:
+- `thought` operations - For reflective thoughts
+- `meta` operations - For process introspection
+
+Example with thought:
+```typescript
+{
+  operation: "thought",
+  content: {
+    thought: "The bug might be in the cache layer",
+    thoughtNumber: 3,
+    totalThoughts: 5,
+    nextThoughtNeeded: true,
+    introspection: {
+      claimType: "inference",
+      prediction: {
+        claim: "Clearing the cache will fix the issue",
+        verifiable: true
+      }
+    }
+  }
+}
+```
+
+### Related Research
+
+For full research context, see `/docs/concepts/llm-introspection-analysis.md`.
+
+---
+
 ## Summary Statistics
 
 | Category | Avg F | Avg D | Avg U |
