@@ -1,6 +1,6 @@
 # OS 4.0 Commands Quick Reference
 
-**Last Updated:** 2025-12-21
+**Last Updated:** 2025-12-23
 **Version:** OS 4.0.0
 **Total Commands:** 28
 
@@ -78,12 +78,16 @@ All `/orca-*` lane commands support three execution modes:
 ### `/orca` - Universal Router
 ```bash
 /orca "task description"
+/orca --audit                     # Audit last 5 tasks
+/orca --audit "last 10 tasks"     # Audit with scope
+/orca --audit "iOS work"          # Audit specific domain
 ```
 Detects domain and routes to appropriate lane command.
+**Special Mode:** `--audit` runs Response-Aware behavior analysis instead of pipeline execution.
 
 ---
 
-## Planning Commands (2)
+## Planning Commands (1)
 
 ### `/plan` - Unified Requirements + RA Blueprint
 ```bash
@@ -97,13 +101,6 @@ Detects domain and routes to appropriate lane command.
 **Cognition Flags:** `--visual`, `--systems`, `--debug`, `--model`, `--creative`, `--causal`, `--decide`, `--deepthink`
 **Tier Flags:** `-tweak` (quick), (none) (standard), `-complex` (deep)
 Creates: `.claude/requirements/<id>/06-requirements-spec.md`
-
-### `/audit` - Response-Aware Behavior Review
-```bash
-/audit "last 10 tasks"
-/audit "recent iOS work"
-```
-Meta-analysis of agent behavior, creates standards from failures.
 
 ---
 
@@ -151,6 +148,27 @@ Recommends which /think operations to use.
 Systematically attacks proposals using cognition-mcp.
 **Modes:** --quick (causal_analysis), default (+ argumentation + decide), --deep (+ simulation + ethical)
 **MCP:** cognition-mcp (sessions persisted to ~/.orca-cognition/)
+
+---
+
+## Audit Commands (1)
+
+### `/audit` - Codebase Quality Auditing
+```bash
+/audit                           # Quick health check (~2 min)
+/audit --comprehensive           # All 10 dimensions (~25 min)
+/audit --core                    # Core 5 dimensions (~10 min)
+/audit --item design-system      # Focused audit on specific area
+/audit --item page /checkout
+/audit --verbose                 # Full findings (default: TL;DR)
+```
+**Operations:** Proactive quality surfacing across 10 dimensions
+**Dimensions (Core 5):** Architecture, Security, Performance, Types, Standards
+**Dimensions (Extended 5):** Accessibility, Dependencies, Documentation, Design System, Test Coverage
+**Output:** `.claude/audit/YYYY-MM-DD-<scope>.md` + `audit-index.json`
+**Finding Format:** AUD-YYYY-NNN with type, severity, location, recommendation, effort, fixCommand
+**Integration:** `/orca fix AUD-YYYY-NNN` to route fixes to appropriate lane
+**MCP:** cognition-mcp (audit operation)
 
 ---
 

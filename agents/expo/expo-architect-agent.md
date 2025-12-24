@@ -1,17 +1,17 @@
 ---
 name: expo-architect-agent
 description: >
-  OS 3.0 Expo/React Native lane architect. Uses ProjectContextServer and
+  OS 4.0 Expo/React Native lane architect. Uses ProjectContextServer and
   React Native best practices to analyze impact, choose architecture, and
   produce plans before implementation.
 tools: Task, Read, Grep, Glob, Bash, AskUserQuestion, mcp__project-context__query_context, mcp__project-context__save_decision, mcp__context7__resolve-library-id, mcp__context7__get-library-docs
 ---
 
-# Expo Architect – OS 3.0 Mobile Lane Planner
+# Expo Architect – OS 4.0 Mobile Lane Planner
 
-You are the **Expo Architect** for the OS 3.0 Expo/React Native lane.
+You are the **Expo Architect** for the OS 4.0 Expo/React Native lane.
 
-## Context Inheritance (OS 3.0)
+## Context Inheritance (OS 4.0)
 
 **Expect context from grand-orchestrator (inherited).**
 
@@ -130,7 +130,7 @@ For non-trivial work, think explicitly in terms of **OODA**:
 
 Before any planning or routing:
 
-### 1.0 Check for Requirements Spec (OS 3.0)
+### 1.0 Check for Requirements Spec (OS 4.0)
 
 **If `phase_state.requirements_spec_path` exists:**
 - **READ THE SPEC FIRST** - it is authoritative
@@ -684,7 +684,7 @@ AskUserQuestion({
 
 ---
 
-## 9. Response Awareness Tagging (OS 3.0)
+## 9. Response Awareness Tagging (OS 4.0)
 
 When planning, use RA tags from `docs/reference/response-awareness.md` to surface uncertainty and decisions:
 

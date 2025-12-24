@@ -1,4 +1,4 @@
-# OS 3.0 Research Lane Quick Reference
+# OS 4.0 Research Lane Quick Reference
 
 **Lane:** Research
 **Domain:** `research`
@@ -114,59 +114,49 @@ Research artifacts are saved to:
 
 ## 6. MCP Dependencies
 
-- **Crawl4AI MCP** (GLOBAL) - `mcp__crawl4ai__md`, `mcp__crawl4ai__crawl` for web content extraction
+- **Crawl4AI MCP** - `mcp__crawl4ai__scrape`, `mcp__crawl4ai__crawl`, `mcp__crawl4ai__crawl_site` for web content extraction
 - **WebSearch** - Built-in tool for web discovery (used by subagents)
-
-**Important:** Crawl4AI must be configured GLOBALLY in `~/.claude.json`, not per-project.
 
 ---
 
-## 7. Crawl4AI Server Setup (REQUIRED)
+## 7. Crawl4AI Setup
 
-**Crawl4AI requires a manual server start before running /research.**
+**Crawl4AI runs via Docker (stdio transport) - no manual server start needed.**
 
-### Start the Server
-
-```bash
-# Start Crawl4AI server (in a separate terminal)
-cd ~/.crawl4ai-server/repo/deploy/docker
-~/.crawl4ai-server/bin/python server.py
-
-# Or via Docker:
-docker run -p 11235:11235 unclecode/crawl4ai:latest
-```
-
-The server runs on `http://localhost:11235` by default.
-
-### Verify Server Running
-
-```bash
-# Quick health check
-curl http://localhost:11235/health
-```
-
-### Claude Config
-
-Your `~/.claude.json` should have (SSE mode):
+The MCP is configured in your project's `.mcp.json`:
 
 ```json
 {
   "mcpServers": {
-    "crawl4ai": {
-      "type": "sse",
-      "url": "http://localhost:11235/mcp/sse"
+    "crawl4ai-mcp": {
+      "command": "docker",
+      "args": [
+        "run", "--rm", "-i",
+        "--volume", "./crawls:/app/crawls",
+        "uysalsadi/crawl4ai-mcp-server:latest"
+      ],
+      "env": {
+        "CRAWL4AI_MCP_LOG": "INFO"
+      }
     }
   }
 }
 ```
 
+### Available Tools
+
+| Tool | Purpose |
+|------|---------|
+| `mcp__crawl4ai__scrape` | Single page extraction to markdown |
+| `mcp__crawl4ai__crawl` | Multi-page crawling |
+| `mcp__crawl4ai__crawl_site` | Full site crawl with manifest |
+| `mcp__crawl4ai__crawl_sitemap` | Sitemap-based crawling |
+
 ### If /research Fails
 
-1. Check server is running: `curl http://localhost:11235/health`
-2. Restart server: `cd ~/.crawl4ai-server/repo/deploy/docker && ~/.crawl4ai-server/bin/python server.py`
-3. Check port isn't blocked: `lsof -i :11235`
-
-**Common Error:** "Connection refused" = server not running. Start it first.
+1. Check Docker is running: `docker ps`
+2. Test the MCP manually: `docker run --rm -i uysalsadi/crawl4ai-mcp-server:latest`
+3. Ensure the Docker image is pulled: `docker pull uysalsadi/crawl4ai-mcp-server:latest`
 
 ---
 
@@ -197,4 +187,4 @@ export NODE_OPTIONS="--max-old-space-size=8192"
 
 ---
 
-_Version: OS 3.0.0_
+_Version: OS 4.0.0_

@@ -1,9 +1,9 @@
 # Cognition MCP Reference
 
 **MCP Server:** `cognition-mcp`
-**Command:** `/think [--flag] <prompt>`
+**Command:** `/think [--flag] <prompt>`, `/audit`
 **Pattern:** Accept-Store-Echo
-**Total Operations:** 39 (38 reasoning + 1 utility)
+**Total Operations:** 40 (38 reasoning + 1 audit + 1 utility)
 **Location:** `mcp/cognition-mcp/`
 
 ---
@@ -87,6 +87,12 @@ Criteria: **F**unctionality (1-5), **D**epth (1-5), **U**tility (1-5)
 |-----------|------|---|---|---|-------|
 | `ooda_loop` | `--ooda` | 5 | 5 | 5 | Observe-Orient-Decide-Act. Perfect for incidents. |
 | `ulysses_protocol` | `--ulysses` | 5 | 5 | 4 | Pre-commitment mechanisms. |
+
+### Audit Operations
+
+| Operation | Flag | F | D | U | Notes |
+|-----------|------|---|---|---|-------|
+| `audit` | (via /audit) | 5 | 5 | 5 | Codebase quality auditing with structured findings. Used by /audit command. |
 
 ### Session Operations
 

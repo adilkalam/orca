@@ -2,7 +2,7 @@
 
 **Total: 90 agents** across 6 domains + cross-cutting specialists.
 
-## Agent Enrichment (v3.0)
+## Agent Enrichment (v4.0)
 
 All agents have been enriched with patterns extracted from competitor system prompts:
 

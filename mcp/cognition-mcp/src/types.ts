@@ -52,6 +52,8 @@ export type OperationType =
   | 'notebook_add_cell'
   | 'notebook_run_cell'
   | 'notebook_export'
+  // Codebase audit operation
+  | 'audit'
   // Session management
   | 'session_info'
   | 'session_export'
@@ -633,6 +635,54 @@ export interface CodeExecutionContent {
 }
 
 // ============================================================================
+// CODEBASE AUDIT CONTENT STRUCTURE
+// ============================================================================
+
+export interface AuditFinding {
+  id: string;
+  type: 'bug' | 'risk' | 'improvement' | 'optimization';
+  severity: 'critical' | 'high' | 'medium' | 'low';
+  dimension: string;
+  title: string;
+  description: string;
+  location: string;
+  recommendation: string;
+  effort: 'trivial' | 'small' | 'medium' | 'large';
+  evidence?: string;
+  fixCommand?: string;
+}
+
+export interface AuditBaseline {
+  source: string;
+  expectations: string[];
+}
+
+export interface AuditCurrentState {
+  summary: string;
+  observations: string[];
+}
+
+export interface AuditSummary {
+  score: number;
+  grade: 'A' | 'B' | 'C' | 'D' | 'F';
+  criticalCount: number;
+  highCount: number;
+  mediumCount: number;
+  lowCount: number;
+  topPriorities: string[];
+}
+
+export interface AuditContent {
+  scope: 'quick' | 'comprehensive' | 'core' | 'item';
+  target?: string;
+  baseline: AuditBaseline;
+  currentState: AuditCurrentState;
+  findings: AuditFinding[];
+  summary: AuditSummary;
+  nextThoughtNeeded?: boolean;
+}
+
+// ============================================================================
 // PHASE 4: STRATEGIC CONTENT STRUCTURES
 // ============================================================================
 
@@ -823,6 +873,8 @@ export interface SessionStores {
   notebookCell: StoredEntry<any>[];
   notebookRun: StoredEntry<any>[];
   notebookExport: StoredEntry<any>[];
+  // Codebase audit store
+  audit: StoredEntry<any>[];
 }
 
 export interface SessionExport {

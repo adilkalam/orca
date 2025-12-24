@@ -331,9 +331,9 @@ mcps:
     - name: cognition-mcp
       description: "Sequential thinking storage with accept-store-echo pattern"
       tools: [cognition]
-      operations: [thought, mental_model, debug, decide, meta, systems, session_info, session_export, session_import]
+      operations: [thought, mental_model, debug, decide, meta, systems, audit, session_info, session_export, session_import]
       pattern: "accept-store-echo (MCP stores and echoes, never generates)"
-      used_by: [/think, /challenge]
+      used_by: [/think, /challenge, /audit]
     - name: sequential-thinking
       description: "Extended reasoning"
       tools: [sequentialthinking]
@@ -453,7 +453,11 @@ commands:
 
   - name: audit
     type: utility
+    mcps: [cognition-mcp]
     agents_called: []
+    outputs:
+      - .claude/audit/YYYY-MM-DD-<scope>.md
+      - .claude/audit/audit-index.json
 
   - name: contemplate
     type: utility
@@ -524,7 +528,7 @@ commands:
 # =============================================================================
 counts:
   total_agents: 89
-  total_commands: 25
+  total_commands: 26
   agents_by_domain:
     ios: 19
     nextjs: 17             # +tailwind-specialist, +shadcn-specialist

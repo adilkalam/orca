@@ -1,18 +1,18 @@
-# Scripts Directory - OS 3.0 Structure
+# Scripts Directory - OS 4.0 Structure
 
 **Last Organized:** 2025-11-19
 
 ##  Current Organization
 
-### `/os2-cleanup/` - OS 3.0 Cleanup Scripts
-Essential cleanup scripts for migrating to OS 3.0:
+### `/os2-cleanup/` - OS 4.0 Cleanup Scripts
+Essential cleanup scripts for migrating to OS 4.0:
 - `cleanup-for-os2.sh` - Clean individual projects
 - `cleanup-global-claude.sh` - Clean global ~/.claude
 - `cleanup-home-directory.sh` - Clean home directory
 - `project-cleanup-guide.md` - Cleanup documentation
 
 ### `/utilities/` - Active Utility Scripts
-Useful utilities that still work with OS 3.0:
+Useful utilities that still work with OS 4.0:
 - `capture-*.sh` - Screenshot/build capture utilities
 - `evidence-utils.sh` - Evidence collection
 - `perf-*.sh` - Performance logging
@@ -37,7 +37,7 @@ README files moved from scripts root:
 (Preserved - may still be useful)
 
 ### `/.archived-v1/` - Legacy v1 Scripts
-Archived scripts from pre-OS 3.0 systems:
+Archived scripts from pre-OS 4.0 systems:
 
 **Migration/Deployment:**
 - `migrate-to-claude-work.sh`
@@ -91,7 +91,7 @@ Archived scripts from pre-OS 3.0 systems:
 
 ## Usage
 
-### For OS 3.0 Migration:
+### For OS 4.0 Migration:
 ```bash
 # Clean a project
 bash scripts/os2-cleanup/cleanup-for-os2.sh
@@ -120,10 +120,10 @@ bash scripts/utilities/test-enforcement.sh
 ## Maintenance Notes
 
 - **DO NOT** use scripts in `.archived-v1/` - they're for v1 systems
-- **OS 3.0** uses agents and MCP servers, not Python scripts
+- **OS 4.0** uses agents and MCP servers, not Python scripts
 - **Utilities** folder contains scripts that work with any system
 - **Keep this organized** - new scripts should go in appropriate folders
 
 ---
 
-_Scripts directory cleaned and organized for OS 3.0 architecture_
+_Scripts directory cleaned and organized for OS 4.0 architecture_

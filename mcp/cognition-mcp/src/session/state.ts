@@ -72,6 +72,8 @@ export class SessionState implements SessionStateInterface {
       notebookCell: [],
       notebookRun: [],
       notebookExport: [],
+      // Codebase audit store
+      audit: [],
     };
   }
 
@@ -195,6 +197,10 @@ export class SessionState implements SessionStateInterface {
       case 'notebookExport':
         this.stores.notebookExport.push(entry);
         break;
+      // Codebase audit store
+      case 'audit':
+        this.stores.audit.push(entry);
+        break;
     }
   }
 
@@ -282,6 +288,8 @@ export class SessionState implements SessionStateInterface {
         notebookCell: [...this.stores.notebookCell],
         notebookRun: [...this.stores.notebookRun],
         notebookExport: [...this.stores.notebookExport],
+        // Codebase audit store
+        audit: [...this.stores.audit],
       },
       exportedAt: Date.now(),
     };
@@ -340,6 +348,8 @@ export class SessionState implements SessionStateInterface {
       notebookCell: [...(data.stores.notebookCell || [])],
       notebookRun: [...(data.stores.notebookRun || [])],
       notebookExport: [...(data.stores.notebookExport || [])],
+      // Codebase audit store (with fallback for older exports)
+      audit: [...(data.stores.audit || [])],
     };
 
     return session;

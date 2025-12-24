@@ -1,6 +1,6 @@
 ---
-description: "OS 3.0 Pure Orchestrator - Coordinates pipelines, never writes code"
-argument-hint: "<task description or requirement ID>"
+description: "OS 4.0 Pure Orchestrator - Coordinates pipelines, never writes code"
+argument-hint: "[--audit <scope>] <task description or requirement ID>"
 allowed-tools:
   - Task
   - Read
@@ -15,9 +15,204 @@ allowed-tools:
   - mcp__project-context__save_standard
 ---
 
-#  MANDATORY EXECUTION RULES - READ BEFORE ANYTHING 
+#  MANDATORY EXECUTION RULES - READ BEFORE ANYTHING
 
 **REQUEST:** $ARGUMENTS
+
+---
+
+## Special Mode: --audit
+
+**If `$ARGUMENTS` starts with `--audit`**, skip the normal pipeline and run the Response-Aware Behavior Audit instead.
+
+### Usage
+```bash
+/orca --audit                     # Audit last 5 tasks (default)
+/orca --audit last 10 tasks       # Audit last 10 tasks
+/orca --audit iOS work this week  # Audit iOS tasks from this week
+/orca --audit nextjs              # Audit all Next.js tasks
+```
+
+### Audit Flow
+
+When `--audit` is detected:
+
+1. **Parse Scope** - Extract scope from arguments after `--audit` (default: "last 5 tasks")
+
+2. **Load Evidence** - Gather from:
+   - `.claude/orchestration/phase_state.json` (phase/gate history)
+   - `.claude/orchestration/evidence/` (logs)
+   - `mcp__project-context__query_context` with task: "Summarize recent task_history and standards for audit"
+
+3. **Apply Response Awareness Lens** - Analyze for:
+   - `#COMPLETION_DRIVE` - Where we guessed instead of verified
+   - `#PATH_DECISION` - Were architectural choices explicit or implicit?
+   - `#POISON_PATH` - Were anti-patterns followed?
+   - `#CONTEXT_DEGRADED` - Did agents work with insufficient context?
+   - Scope creep, skipped phases, over-diffing
+   - Violations that should become standards
+
+4. **Write Audit Report** - Create `.claude/orchestration/evidence/audit-<timestamp>.md`:
+   ```markdown
+   # Behavior Audit Report
+
+   **Scope:** [scope description]
+   **Generated:** [timestamp]
+
+   ## Tasks Examined
+   | Task | Domain | Outcome | Issues |
+   |------|--------|---------|--------|
+   | ... | ... | ... | ... |
+
+   ## RA Event Summary
+   - #COMPLETION_DRIVE: N occurrences (M unresolved)
+   - #PATH_DECISION: N occurrences (all documented? Y/N)
+   - #POISON_PATH: N occurrences
+
+   ## Patterns Identified
+
+   ### Good Behavior (Reinforce)
+   - ...
+
+   ### Problematic Behavior (Fix)
+   - ...
+
+   ## Recommended Standards
+   - ...
+   ```
+
+5. **Persist Learnings** - For recurring issues:
+   ```typescript
+   mcp__project-context__save_standard({
+     what_happened: "Description of what went wrong",
+     cost: "Impact (time wasted, bugs, rework)",
+     rule: "Enforceable rule to prevent recurrence",
+     domain: "ios" | "nextjs" | "expo" | etc.  // Use specific domain, not "audit"
+   })
+   ```
+
+6. **Record Audit Task**:
+   ```typescript
+   mcp__project-context__save_task_history({
+     domain: "<audited domain>",  // Use the audited domain, not "audit"
+     task: "Behavior audit: <scope>",
+     outcome: "success",
+     learnings: "Key RA findings summary",
+     files_modified: [".claude/orchestration/evidence/audit-<timestamp>.md"]
+   })
+   ```
+
+7. **Optional: Self-Improvement Analysis** - If `--self-improve` flag included:
+   ```bash
+   python3 scripts/analyze-patterns.py --days 30 --threshold 3
+   ```
+   Present improvement proposals to user, apply approved changes to agents.
+
+**After audit completes, STOP. Do not continue to normal pipeline flow.**
+
+---
+
+## Special Mode: fix <finding-id>
+
+**If `$ARGUMENTS` starts with `fix` followed by a finding ID (AUD-YYYY-NNN)**, route to the appropriate lane for fixing.
+
+### Usage
+```bash
+/orca fix AUD-2025-001           # Fix specific audit finding
+/orca fix AUD-2025-003 --tweak   # Fix with tweak mode (no gates)
+```
+
+### Fix Flow
+
+When `fix <finding-id>` is detected:
+
+1. **Load Finding Details** - Read `.claude/audit/audit-index.json`:
+   ```typescript
+   const index = JSON.parse(fs.readFileSync('.claude/audit/audit-index.json'));
+   const finding = index.findings[findingId];
+
+   if (!finding) {
+     throw new Error(`Finding ${findingId} not found. Run /audit first.`);
+   }
+   ```
+
+2. **Extract Context:**
+   - `finding.location` - File path affected
+   - `finding.recommendation` - What to do
+   - `finding.dimension` - Which quality dimension
+   - `finding.type` - bug, risk, improvement, optimization
+   - `finding.evidence` - Code snippet showing the issue
+
+3. **Detect Lane** - Based on file extension and location:
+   ```typescript
+   const filePath = finding.location.split(':')[0];  // Remove line number
+
+   // iOS
+   if (filePath.endsWith('.swift') || filePath.includes('.xcodeproj')) {
+     lane = 'ios';
+   }
+   // Next.js
+   else if (filePath.match(/\.(tsx?|jsx?)$/)) {
+     lane = 'nextjs';
+   }
+   // Django-React
+   else if (filePath.endsWith('.py') || filePath.includes('django')) {
+     lane = 'django-react';
+   }
+   // Expo
+   else if (filePath.includes('app.json') || filePath.includes('expo')) {
+     lane = 'expo';
+   }
+   ```
+
+4. **Route to Lane** - Pass finding context:
+   ```typescript
+   Task({
+     subagent_type: `${lane}-light-orchestrator`,
+     description: `Fix audit finding ${findingId}`,
+     prompt: `
+AUDIT FINDING FIX REQUEST
+
+Finding ID: ${findingId}
+Type: ${finding.type}
+Severity: ${finding.severity}
+Dimension: ${finding.dimension}
+
+ISSUE:
+Title: ${finding.title}
+Location: ${finding.location}
+Description: ${finding.description}
+
+EVIDENCE:
+${finding.evidence}
+
+RECOMMENDATION:
+${finding.recommendation}
+
+EFFORT: ${finding.effort}
+
+YOUR TASK:
+1. Navigate to ${finding.location}
+2. Apply the recommendation: ${finding.recommendation}
+3. Verify the fix resolves the issue
+4. Run appropriate tests/gates for ${finding.dimension} dimension
+
+ROUTING: Light path with appropriate gates for ${finding.dimension}
+     `
+   });
+   ```
+
+5. **Update Finding Status** - After fix completes:
+   ```typescript
+   // Update audit-index.json
+   index.findings[findingId].status = 'fixed';
+   index.findings[findingId].fixedAt = new Date().toISOString();
+   fs.writeFileSync('.claude/audit/audit-index.json', JSON.stringify(index, null, 2));
+   ```
+
+**After fix routing completes, STOP. Do not continue to normal pipeline flow.**
+
+---
 
 ## HARD STOP: YOU MUST DELEGATE
 
@@ -57,7 +252,7 @@ Your first tool call MUST NOT be:
 
 ---
 
-# /orca – OS 3.0 Pure Orchestrator
+# /orca – OS 4.0 Pure Orchestrator
 
 **Philosophy:** Orca is a pure coordinator. It NEVER writes code. It detects the pipeline type, queries context ONCE, integrates with /plan if needed, and delegates to domain orchestrators.
 
@@ -70,7 +265,7 @@ Your first tool call MUST NOT be:
 6. **Domain Routing** - Routes to `/{domain}` commands for specialized handling
 7. **Never Codes** - Orchestrates agents, doesn't implement
 
-**OS 3.0 Updates:**
+**OS 4.0 Updates:**
 - Memory-first context (Workshop + vibe.db before ProjectContext)
 - Routes to domain-specific `/{domain}` commands which handle three-tier flag routing
 - Three-tier structure:
@@ -90,7 +285,7 @@ pwd
 
 ---
 
-### Step 1.5: Memory-First Context (OS 3.0)
+### Step 1.5: Memory-First Context (OS 4.0)
 
 **Before expensive ProjectContext queries, check local memory:**
 
@@ -440,7 +635,7 @@ AskUserQuestion({
 
 ---
 
-### Step 7: Route to Domain Orchestrator (OS 3.0)
+### Step 7: Route to Domain Orchestrator (OS 4.0)
 
 **For pipelines with domain-specific `/{domain}` commands, route to them.**
 
@@ -463,7 +658,7 @@ Task({
   subagent_type: "nextjs-grand-architect",
   description: "Next.js pipeline coordination",
   prompt: `
-You are the Next.js Grand Architect for OS 3.0.
+You are the Next.js Grand Architect for OS 4.0.
 
 USER HAS ALREADY CONFIRMED THE PLAN. DO NOT ASK FOR CONFIRMATION AGAIN.
 EXECUTE IMMEDIATELY. NO QUESTIONS. DELEGATE TO SPECIALISTS NOW.
@@ -533,7 +728,7 @@ Task({
   subagent_type: "ios-grand-architect",
   description: "iOS pipeline coordination",
   prompt: `
-You are the iOS Grand Architect for OS 3.0.
+You are the iOS Grand Architect for OS 4.0.
 
 USER HAS ALREADY CONFIRMED THE PLAN. DO NOT ASK FOR CONFIRMATION AGAIN.
 EXECUTE IMMEDIATELY. NO QUESTIONS. DELEGATE TO SPECIALISTS NOW.
@@ -603,7 +798,7 @@ Task({
   subagent_type: "expo-grand-orchestrator",
   description: "Expo pipeline coordination",
   prompt: `
-You are the Expo Grand Orchestrator for OS 3.0.
+You are the Expo Grand Orchestrator for OS 4.0.
 
 USER HAS ALREADY CONFIRMED THE PLAN. DO NOT ASK FOR CONFIRMATION AGAIN.
 EXECUTE IMMEDIATELY. NO QUESTIONS. DELEGATE TO SPECIALISTS NOW.
@@ -669,7 +864,7 @@ Task({
   subagent_type: "data-researcher",
   description: "Data analysis pipeline",
   prompt: `
-You are leading the Data pipeline for OS 3.0.
+You are leading the Data pipeline for OS 4.0.
 
 MEMORY CONTEXT:
 ${memorySummary || "No prior memory hits"}
@@ -717,7 +912,7 @@ Task({
   subagent_type: "seo-research-specialist",
   description: "SEO content pipeline",
   prompt: `
-You are leading the SEO pipeline for OS 3.0.
+You are leading the SEO pipeline for OS 4.0.
 
 MEMORY CONTEXT:
 ${memorySummary || "No prior memory hits"}
@@ -758,7 +953,7 @@ Task({
   subagent_type: "design-system-architect",
   description: "Design system pipeline",
   prompt: `
-You are leading the Design pipeline for OS 3.0.
+You are leading the Design pipeline for OS 4.0.
 
 MEMORY CONTEXT:
 ${memorySummary || "No prior memory hits"}
@@ -894,7 +1089,7 @@ When grand-architect signals completion:
 
 ## Memory Architecture
 
-OS 3.0 uses TWO memory systems:
+OS 4.0 uses TWO memory systems:
 
 1. **Workshop** (.claude/memory/workshop.db):
    - Decisions with reasoning

@@ -15,6 +15,7 @@ import { handleDecide } from './decide.js';
 import { handleMeta } from './meta.js';
 import { handleSystems } from './systems.js';
 import { handleSessionInfo, handleSessionExport, handleSessionImport } from './session.js';
+import { handleAudit } from './audit.js';
 // Phase 1: Core handlers
 import { handleCreativeThinking } from './core/creative.js';
 import { handleVisualReasoning } from './core/visual.js';
@@ -64,6 +65,7 @@ const handlers: Record<OperationType, OperationHandler> = {
   decide: handleDecide,
   meta: handleMeta,
   systems: handleSystems,
+  audit: handleAudit,
   // Phase 1: Core operations
   creative_thinking: handleCreativeThinking,
   visual_reasoning: handleVisualReasoning,
@@ -145,6 +147,7 @@ export {
   handleDecide,
   handleMeta,
   handleSystems,
+  handleAudit,
   // Phase 1: Core handlers
   handleCreativeThinking,
   handleVisualReasoning,

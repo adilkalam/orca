@@ -403,7 +403,7 @@ Follow a multi-phase review using Puppeteer MCP:
      - Check application state,
      - Verify error/empty/loading states where possible.
 
-## Scoring & Reporting (Graduated Gate Standard - OS 3.0)
+## Scoring & Reporting (Graduated Gate Standard - OS 4.0)
 
 **Reference:** `docs/reference/graduated-gate-scoring.md`
 
@@ -440,7 +440,7 @@ Start at 100. Subtract points based on severity:
 
 **User-configurable thresholds** via `.claude/config.json` or `--gates=strict/lenient` flag.
 
-## Reflexion on Failure (OS 3.0)
+## Reflexion on Failure (OS 4.0)
 
 When `gate_decision` is CAUTION or FAIL:
 
@@ -468,7 +468,7 @@ Write your results to `phase_state.gates`:
   - `design_score`,
   - `visual_issues`,
   - `gate_decision` (`PASS`, `CAUTION`, `FAIL`),
-  - `reflexion` (if CAUTION or FAIL, OS 3.0),
+  - `reflexion` (if CAUTION or FAIL, OS 4.0),
   - Any notes for `nextjs-builder` on what needs correction in Pass 2.
 - Update `gates_passed` / `gates_failed` with `"design_qa"` as appropriate.
 

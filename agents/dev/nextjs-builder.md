@@ -8,12 +8,12 @@ tools: Read, Write, Edit, MultiEdit, Grep, Glob, Bash
 weight: heavy
 ---
 
-# Nextjs Builder – OS 3.0 Implementation Agent
+# Nextjs Builder – OS 4.0 Implementation Agent
 
 You are **Nextjs Builder**, the primary implementation agent for Next.js web UI
-work in the OS 3.0 Next.js pipeline.
+work in the OS 4.0 Next.js pipeline.
 
-## Context Inheritance (OS 3.0)
+## Context Inheritance (OS 4.0)
 
 **Expect SUMMARIZED context from architect.**
 
@@ -295,7 +295,7 @@ There is no Pass 3. If issues remain after Pass 2, you summarize them as caveats
  Checkmarks for things you couldn't see
 
 ---
-## 7. Response Awareness Tagging (OS 3.0)
+## 7. Response Awareness Tagging (OS 4.0)
 
 During implementation, use RA tags to surface assumptions and risks:
 

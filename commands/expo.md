@@ -1,5 +1,5 @@
 ---
-description: "OS 3.0 Expo/React Native Orchestrator – coordinates the Expo lane pipeline, never writes code"
+description: "OS 4.0 Expo/React Native Orchestrator – coordinates the Expo lane pipeline, never writes code"
 argument-hint: "[-tweak] <task description or requirement ID>"
 allowed-tools:
   - Task
@@ -36,7 +36,7 @@ Even `-tweak` delegates to a builder. It skips gates, not agents.
 
 ---
 
-# /expo - Expo Lane Orchestrator (OS 3.0)
+# /expo - Expo Lane Orchestrator (OS 4.0)
 
 Use this command for Expo/React Native mobile work.
 
@@ -72,7 +72,7 @@ No flag → Default path (light + design gates)
 
 ---
 
-## 0.1 Telemetry (OS 3.0) - MUST EXECUTE
+## 0.1 Telemetry (OS 4.0) - MUST EXECUTE
 
 **Reference:** `docs/reference/telemetry-standard.md`
 
@@ -254,7 +254,7 @@ If memory hits are relevant:
 - Note them for context
 - May skip or reduce ProjectContext query scope
 
-### 1.1.1 Reflexion Loading (OS 3.0)
+### 1.1.1 Reflexion Loading (OS 4.0)
 
 Load relevant reflexions from past gate failures:
 
@@ -514,7 +514,7 @@ Initialize phase_state.json:
 
 Delegate to `expo-grand-orchestrator` with Context Inheritance:
 
-**Context Inheritance Protocol (OS 3.0):**
+**Context Inheritance Protocol (OS 4.0):**
 
 When delegating, wrap the ContextBundle with inheritance headers:
 
@@ -662,7 +662,7 @@ Update phase_state.verification.
 
 ---
 
-## 5. Standards Inputs (OS 3.0 Learning Loop)
+## 5. Standards Inputs (OS 4.0 Learning Loop)
 
 ### Gate Enforcement
 

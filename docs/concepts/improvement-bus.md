@@ -6,7 +6,7 @@ The Improvement Bus unifies all self-improvement mechanisms into a single event 
 
 ## The Problem
 
-OS 3.0 introduced multiple improvement loops, but they operate in silos:
+OS 4.0 introduced multiple improvement loops, but they operate in silos:
 
 | Loop | Output | Storage | Consumption |
 |------|--------|---------|-------------|

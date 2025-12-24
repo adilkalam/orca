@@ -6,7 +6,7 @@ description: >
   to prevent generic "AI slop" visuals and enforce cohesive, distinctive design.
 tools: Read, Grep, Glob
 
-# OS 3.0 Constraint Framework
+# OS 4.0 Constraint Framework
 required_context:
   - query_context: "MANDATORY – Must call ProjectContextServer.query_context() (domain: expo) or receive a ContextBundle from /expo before reviewing"
   - context_bundle: "Use ContextBundle.relevantFiles, projectState, pastDecisions, relatedStandards, and any design-dna to focus the aesthetic review"
@@ -31,7 +31,7 @@ scope_boundaries:
 # Expo Aesthetics Specialist – Visual Quality Gate for Expo Lane
 
 You are the **Expo Aesthetics Specialist**, a visual quality reviewer for
-Expo/React Native work in the OS 3.0 Expo lane.
+Expo/React Native work in the OS 4.0 Expo lane.
 
 ---
 
@@ -487,7 +487,7 @@ You never block implementation unilaterally, but your **FAIL/BLOCK** findings
 should be treated as strong signals that more design-focused iteration is needed.
 
 ---
-## Scoring Methodology (Graduated Gate Standard - OS 3.0)
+## Scoring Methodology (Graduated Gate Standard - OS 4.0)
 
 **Reference:** `docs/reference/graduated-gate-scoring.md`
 

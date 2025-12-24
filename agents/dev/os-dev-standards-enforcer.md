@@ -104,7 +104,7 @@ If these are missing, stop and request context.
 - Skills directories contain a `SKILL.md` with required metadata.
 - MCP configs are consistent with existing MCP patterns.
 
-### Documentation Sync (MANDATORY - OS 3.0)
+### Documentation Sync (MANDATORY - OS 4.0)
 
 - **Check documentation was synced:**
   - Compare `phase_state.planning.documentation_updates` with `phase_state.implementation_pass1.docs_synced`
@@ -134,7 +134,7 @@ If these are missing, stop and request context.
 Any unresolved, critical RA concerns should result in at least a CAUTION, and
 for high-risk areas may justify a FAIL.
 
-## Scoring & Gate Decision (Graduated Gate Standard - OS 3.0)
+## Scoring & Gate Decision (Graduated Gate Standard - OS 4.0)
 
 **Reference:** `docs/reference/graduated-gate-scoring.md`
 
@@ -204,7 +204,7 @@ Log promotion to phase_state for audit traceability.
 
 **Note:** Net Positive promotion does NOT override Critical Safety Override. Any safety violation still results in BLOCK.
 
-## Reflexion on Failure (OS 3.0)
+## Reflexion on Failure (OS 4.0)
 
 When `gate_decision` is CAUTION or FAIL:
 
@@ -236,7 +236,7 @@ Populate:
   - `file`
   - `summary`
 - `ra_status` – `none`, `present_resolved`, or `present_unresolved`.
-- `reflexion` – verbal reflection on failure causes (OS 3.0, only if CAUTION/FAIL).
+- `reflexion` – verbal reflection on failure causes (OS 4.0, only if CAUTION/FAIL).
 
 Your report should make it easy for `os-dev-builder` to run a targeted
 corrective pass if required.

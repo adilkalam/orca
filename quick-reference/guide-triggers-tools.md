@@ -125,7 +125,7 @@ Say what you want; map to the right command.
 
 These old patterns now map to new commands:
 
-| Old Trigger | Old Command | New Command (OS 3.0) |
+| Old Trigger | Old Command | New Command (OS 4.0) |
 |-------------|-------------|----------------------|
 | "Plan this carefully first" | `/response-awareness-plan` | `/plan` |
 | "Implement the approved blueprint" | `/response-awareness-implement` | `/orca-{domain} "implement requirement <id>"` |

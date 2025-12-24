@@ -88,6 +88,10 @@ export interface Decision {
     reasoning: string;
     context?: string;
     tags?: string[];
+    /** Calculated decay score (0.01-1.0) when decay is enabled */
+    decayedScore?: number;
+    /** True if entry bypasses decay */
+    pinned?: boolean;
 }
 /**
  * Standard learned from project experience
@@ -100,6 +104,10 @@ export interface Standard {
     domain: string;
     created: Date;
     enforced_count: number;
+    /** Calculated decay score (0.01-1.0) when decay is enabled */
+    decayedScore?: number;
+    /** True if entry bypasses decay */
+    pinned?: boolean;
 }
 /**
  * Historical task record
@@ -112,6 +120,21 @@ export interface TaskHistory {
     outcome: 'success' | 'failure' | 'partial';
     learnings?: string;
     files_modified?: string[];
+    /** Calculated decay score (0.01-1.0) when decay is enabled */
+    decayedScore?: number;
+    /** True if entry bypasses decay */
+    pinned?: boolean;
+}
+/**
+ * Memory decay configuration
+ */
+export interface DecayConfig {
+    /** Whether decay is enabled (default: false) */
+    enabled: boolean;
+    /** Half-life in days (default: 90) */
+    halfLifeDays: number;
+    /** Minimum score floor to prevent all-zero rankings (default: 0.01) */
+    minimumScore: number;
 }
 /**
  * Design system context (summary version for token efficiency)

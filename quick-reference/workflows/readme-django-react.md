@@ -1,10 +1,10 @@
-# OS 3.0 Django + React Lane Readme
+# OS 4.0 Django + React Lane Readme
 
 **Lane:** Django + React TypeScript Full-Stack
 **Domain:** `django-react`
 **Entrypoints:** `/plan`, `/orca`, `/django-react`, `/project-memory`, `/project-code`
 
-This document explains how the Django + React lane works in Vibe OS 3.0:
+This document explains how the Django + React lane works in Vibe OS 4.0:
 
 - How planning and specs work (`/plan`)
 - How orchestration routes (`/orca`, `/django-react`)
@@ -53,7 +53,7 @@ For **complex** Django + React tasks the spec is **required** before the full la
 
 ### 2.2 Global Orchestrator - `/orca`
 
-`/orca` is the pure OS 3.0 orchestrator:
+`/orca` is the pure OS 4.0 orchestrator:
 
 - Checks Workshop + vibe.db first (memory-first).
 - Checks for an active requirements spec.
@@ -80,7 +80,7 @@ File: `commands/django-react.md`
   /django-react "implement requirement <id>"             # With spec
   ```
 
-- **Three-Tier Routing (OS 3.0):**
+- **Three-Tier Routing (OS 4.0):**
 
   | Mode | Flag | Path | Gates |
   |------|------|------|-------|
@@ -269,7 +269,7 @@ Two primary commands:
 
 Unified memory search:
 
-- The OS 3.0 hooks and scripts provide a unified search that:
+- The OS 4.0 hooks and scripts provide a unified search that:
   - Queries Workshop and vibe.db together.
   - Is used by `/orca` and `/django-react` before ProjectContext.
 
@@ -292,7 +292,7 @@ promote new standards or adjust defaults.
 
 ## 9. Quick Mental Model
 
-For Django + React work in OS 3.0 (three-tier routing):
+For Django + React work in OS 4.0 (three-tier routing):
 
 | Mode | Command | Path |
 |------|---------|------|

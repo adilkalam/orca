@@ -1,228 +1,531 @@
 ---
-description: "Audit recent tasks and agent behavior using Response Awareness (no implementation)"
-argument-hint: "<scope description, e.g. 'last 10 tasks'>"
+description: "Proactive codebase auditing across 10 quality dimensions"
+argument-hint: "[--comprehensive | --core | --item <target>] [--verbose]"
 allowed-tools:
-  ["Task", "Read", "Grep", "Glob", "Bash",
-   "AskUserQuestion", "mcp__project-context__query_context", "mcp__project-context__save_standard", "mcp__project-context__save_task_history"]
+  - Read
+  - Grep
+  - Glob
+  - Bash
+  - mcp__cognition__cognition
+  - mcp__project-context__query_context
+  - AskUserQuestion
 ---
 
-# /audit – Response-Aware Behavior Audit
+# /audit - Codebase Quality Auditing
 
-Use this command to run a **meta audit** over recent work in this project using
-Response Awareness principles. It does not change code; it evaluates how the
-pipeline behaved (skipped steps, scope creep, misused context, etc.) and
-records learnings.
+**Philosophy:** Proactive quality surfacing. This command finds both problems (bugs, risks) AND opportunities (improvements, optimizations) across the codebase.
 
----
-## 1. Choose Scope
+**Independent from pipelines:** `/audit` is NOT a gate or verification agent. It's a standalone diagnostic tool that runs independently of `/ios`, `/nextjs`, etc.
 
-Interpret `$ARGUMENTS` as an audit scope hint, for example:
-- `"last 10 tasks"`
-- `"recent Nextjs onboarding work"`
-- `"all iOS tasks this week"`
-
-If the scope is unclear:
-- Ask the user via `AskUserQuestion` whether to:
-  - Audit the **last N tasks** (e.g. last 5–10),
-  - Focus on a particular domain (`nextjs`, `ios`, `expo`, `seo`, etc.),
-  - Focus on a particular requirement ID.
-
----
-## 2. Load History & Evidence
-
-Using a combination of:
-- `.claude/orchestration/phase_state.json` (phase and gate history),
-- Project-specific logs under `.claude/orchestration/evidence/`,
-- ProjectContextServer (`mcp__project-context__query_context`) with a meta task such as:
-  - `"Summarize recent task_history and standards for audit"`,
-
-Gather:
-- A list of recent tasks in the chosen scope,
-- Their domains, outcomes, and gate results,
-- Any notable standards or decisions already saved to `vibe.db`.
-
-If helpful, you MAY use `Bash` to:
-- List evidence files under `.claude/orchestration/evidence/`,
-- Inspect recent logs for gate failures or warnings.
-
----
-## 3. Apply Response Awareness Lens
-
-For the selected tasks, analyze behavior using RA concepts from
-`docs/reference/response-awareness.md`:
-
-- Where did we rely on **COMPLETION** rather than solid context?
-  - Tag as `#COMPLETION_DRIVE` in the audit report.
-- Where were important architectural choices made without being surfaced?
-  - Tag as `#PATH_DECISION` and note whether they were explicit or implicit.
-- Where did the model follow or ignore:
-  - ProjectContextServer (context),
-  - Requirements specs (`06-requirements-spec.md`),
-  - Lane standards and gates?
-- Any signs of **scope creep**, skipped phases, or over-diffing?
-- Any repeated violations that should become standards?
-
-Summarize per-task and then across tasks.
-
----
-## 4. Write Audit Report
-
-Create an audit report under:
-- `.claude/orchestration/evidence/audit-<timestamp>.md`
-
-Include:
-- Scope description and time window,
-- List of tasks examined (with domains and outcomes),
-- RA-tagged findings (`#PATH_DECISION`, `#COMPLETION_DRIVE`, `#POISON_PATH`, etc.),
-- Patterns:
-  - Good behavior (what to reinforce),
-  - Problematic behavior (what to fix),
-- Recommended standards or guardrails.
-
----
-## 5. Persist Learnings
-
-Where appropriate:
-
-1. Use `mcp__project-context__save_standard` to codify recurring issues:
-   - `what_happened`: What went wrong or was repeated
-   - `cost`: Impact (wasted time, bugs, rework, user impact)
-   - `rule`: The enforceable rule to prevent recurrence
-   - `domain`: **Use the specific domain** (`ios`, `nextjs`, `expo`, etc.)
-
-   **Example for iOS:**
-   ```json
-   {
-     "what_happened": "Force unwraps in async closures causing crashes",
-     "cost": "3 production crashes before caught",
-     "rule": "Never force unwrap in async contexts; use guard let or if let",
-     "domain": "ios"
-   }
-   ```
-
-2. Use `mcp__project-context__save_task_history` to record the audit itself:
-   - `domain`: **Use the audited domain** (`ios`, `nextjs`, etc.) NOT `"audit"`
-   - `task`: description of the audit scope
-   - `outcome`: `"success"` (audit completed) or `"partial"`
-   - `learnings`: summary of key RA findings
-   - `files_modified`: include the audit report path
-
-**Critical for Learning Loop (OS 3.0):**
-- Standards saved with `domain: "ios"` will appear in `relatedStandards` for future iOS tasks
-- Gate agents (`ios-standards-enforcer`) will enforce these standards
-- This closes the loop: violation → audit → standard → future enforcement
+**Cognition-powered:** Uses the `audit` operation in cognition-mcp to structure findings with baseline expectations and current state analysis.
 
 ---
 
-## 6. RA Event Mining (OS 3.0)
-
-With v3.0, `phase_state` now contains `ra_events` from each phase. When auditing:
-
-1. **Check phase_state for RA events:**
-   ```bash
-   cat .claude/orchestration/phase_state.json | grep -A5 "ra_events"
-   ```
-
-2. **Aggregate RA tags across tasks:**
-   - Count frequency of each tag type (`#COMPLETION_DRIVE`, `#CARGO_CULT`, etc.)
-   - Identify patterns (same assumption repeated? same path decision across tasks?)
-
-3. **Include in audit report:**
-   ```markdown
-   ## RA Event Summary
-   - #COMPLETION_DRIVE: 7 occurrences (3 unresolved)
-   - #CARGO_CULT: 2 occurrences
-   - #PATH_DECISION: 5 occurrences (all documented)
-
-   ### Frequent Assumptions
-   - "Mobile breakpoint 768px" appeared 4 times → candidate for standard
-   ```
-
----
-
-## 7. Self-Improvement Analysis (Agent Learning Loop)
-
-After completing the standard audit, run the self-improvement analysis:
-
-### Step 1: Pattern Recognition
-
-Run the pattern analysis script:
+## Command Modes
 
 ```bash
-python3 scripts/analyze-patterns.py --days 30 --threshold 3
+# Quick health check (~2 min) - architecture, security, performance red flags
+/audit
+
+# Full production audit with all 10 dimensions (~25 min)
+/audit --comprehensive
+
+# Core 5 dimensions only (~10 min)
+/audit --core
+
+# Focused audit on specific area (~5 min)
+/audit --item design-system
+/audit --item page /checkout
+/audit --item data
+/audit --item module auth
+/audit --item infra
+
+# Verbosity
+/audit --verbose  # Full findings (default: TL;DR only)
 ```
-
-This will:
-- Query Workshop for task_history entries from the last 30 days
-- Identify recurring issues (3+ occurrences of same issue type from same agent)
-- Generate improvement proposals at `.claude/orchestration/temp/improvement-proposals.json`
-
-### Step 2: Review Proposals
-
-If proposals were generated, present them to the user:
-
-For each proposal, use `AskUserQuestion` with:
-- **Question**: "Improvement proposal for {agent_name}: {issue_description}. Recommended change: {recommended_changes}. Approve this improvement?"
-- **Options**:
-  - "Approve" - Apply the improvement to the agent
-  - "Reject" - Skip this improvement
-  - "Modify" - Let me suggest different wording
-
-Update proposal status based on user response:
-- Approved → status: "approved"
-- Rejected → status: "rejected"
-
-### Step 3: Apply Approved Improvements
-
-For approved proposals:
-
-```bash
-python3 scripts/apply-improvement.py --deploy
-```
-
-This will:
-- Add "Learned Rules" section to agent markdown files
-- Deploy updated agents to ~/.claude/agents/
-- Update proposal status to "applied"
-
-### Step 4: Record Learning
-
-After applying improvements, record to Workshop:
-
-```bash
-workshop --workspace .claude/memory decision "Applied {N} agent improvements from self-improvement analysis" \
-  -r "Patterns identified: {pattern_count}. Approved: {approved_count}. Agents updated: {agents_list}" \
-  -t self-improvement -t audit
-```
-
-### Step 5: Generate Metrics Report
-
-Create a brief report summarizing:
-- Total task_history entries analyzed
-- Patterns identified (count and list)
-- Proposals generated vs approved vs rejected
-- Agents updated
-- Estimated improvement impact
-
-Store the report at `.claude/orchestration/temp/self-improvement-report-{date}.md`
-
-### When to Skip
-
-Skip self-improvement analysis if:
-- User explicitly requests `--skip-self-improvement`
-- Less than 10 task_history entries exist
-- No patterns meet the threshold
-
-Always inform the user that self-improvement analysis was skipped and why.
 
 ---
 
-## v3.0 Roadmap: Automatic Escalation
+## Audit Dimensions
 
-**Not yet implemented** - future evolution:
+### Core 5 (for --core)
+1. **Architecture** - Component structure, coupling, patterns, modularity
+2. **Security** - Vulnerabilities, secrets exposure, injection risks, auth flaws
+3. **Performance** - Bundle size, query efficiency, render performance, caching
+4. **Types** - TypeScript strictness, `any` usage, type coverage, safety
+5. **Standards** - Lane standards compliance, CLAUDE.md adherence, conventions
 
-- If a certain RA tag appears frequently (e.g., same `#COMPLETION_DRIVE` assumption 3+ times):
-  - Automatically prompt to promote to standard via `save_standard`
-  - Adjust complexity thresholds if assumptions indicate underestimated complexity
-- Requires: RA event aggregation across sessions, frequency analysis, threshold triggers
-- This is where RA runtime research is headed
+### Extended 5 (added for --comprehensive)
+6. **Accessibility** - WCAG compliance, semantic HTML, ARIA, keyboard nav
+7. **Dependencies** - Outdated packages, vulnerabilities, unused deps, licenses
+8. **Documentation** - API docs, README quality, code comments, onboarding
+9. **Design System** - Token usage consistency, component patterns, branding
+10. **Test Coverage** - Unit, integration, e2e gaps, flaky tests, missing cases
+
+---
+
+## Execution Flow
+
+### Step 1: Parse Arguments
+
+Extract mode and target:
+- Default (no flags): `quick` mode
+- `--comprehensive`: All 10 dimensions
+- `--core`: Core 5 dimensions only
+- `--item <target>`: Focused audit on specific area
+- `--verbose`: Include full findings (not just TL;DR)
+
+### Step 2: Determine Dimensions to Audit
+
+Based on mode:
+- `quick`: Architecture + Security + Performance (fast red flags)
+- `core`: Core 5 dimensions
+- `comprehensive`: All 10 dimensions
+- `item`: Relevant dimensions for the target type
+
+**Item type detection:**
+- `design-system`, `tokens`, `components` → Design System + Architecture
+- `page`, `route`, `/path` → Architecture + Performance + Accessibility + Design System
+- `data`, `database`, `queries` → Architecture + Performance + Security
+- `module`, `service`, `api` → All core 5
+- `infra`, `config`, `ci` → Security + Standards + Dependencies
+
+### Step 3: Load Baseline Expectations
+
+Query project standards and design-dna for baseline:
+
+```typescript
+// Query project standards
+const standards = await mcp__project_context__query_context({
+  domain: "standards",
+  task: "Retrieve all standards, decisions, and quality rules",
+  projectPath: process.cwd(),
+  maxFiles: 5,
+  includeHistory: true
+});
+
+// For design system audits, load design-dna
+if (dimensions.includes('Design System')) {
+  // Check for design-dna files
+  const designDnaFiles = glob('.claude/design-dna/*.json');
+  // Read design-dna.json for token/component expectations
+}
+
+// For Next.js projects, load CLAUDE.md
+const claudeMd = read('CLAUDE.md');
+```
+
+### Step 4: Gather Current State
+
+For each dimension, inspect the codebase:
+
+**Architecture:**
+```typescript
+// Analyze component structure
+const components = glob('**/*.tsx', '**/*.swift', '**/*.py');
+// Check coupling, circular deps, layer violations
+// Use Grep to find problematic patterns
+```
+
+**Security:**
+```typescript
+// Search for common vulnerabilities
+grep('API_KEY|SECRET|PASSWORD', '**/*.{ts,js,py}');
+// Check for SQL injection risks
+grep('execute.*\\+|query.*\\+', '**/*.{ts,py}');
+// Hardcoded credentials
+grep('password.*=.*["\']', '**/*.{ts,js,py}');
+```
+
+**Performance:**
+```typescript
+// Bundle size (for web)
+bash('du -sh dist/ build/ .next/');
+// Large files
+bash('find . -type f -size +500k');
+// Unoptimized queries (n+1)
+grep('forEach.*await|for.*await', '**/*.{ts,js,py}');
+```
+
+**Types (TypeScript):**
+```typescript
+grep(': any\\b|as any', '**/*.{ts,tsx}');
+// Check tsconfig.json strictness
+```
+
+**Standards:**
+```typescript
+// Compare against lane standards
+// Check naming conventions, file organization
+```
+
+**Dependencies:**
+```typescript
+bash('npm outdated || pip list --outdated');
+bash('npm audit || safety check');
+```
+
+**Documentation:**
+```typescript
+// Check for README, API docs
+// Count files with/without header comments
+```
+
+**Test Coverage:**
+```typescript
+bash('npm test -- --coverage || pytest --cov');
+```
+
+### Step 5: Generate Findings with Cognition MCP
+
+For each issue found, create a structured finding:
+
+```typescript
+const findings: AuditFinding[] = [
+  {
+    id: "AUD-2025-001",  // Generated from hash
+    type: "bug",  // bug, risk, improvement, optimization
+    severity: "critical",  // critical, high, medium, low
+    dimension: "Security",
+    title: "Hardcoded API key in config file",
+    description: "Production API key found in src/config/api.ts (line 15)",
+    location: "src/config/api.ts:15",
+    recommendation: "Move to environment variable: process.env.API_KEY",
+    effort: "trivial",  // trivial, small, medium, large
+    evidence: "const API_KEY = 'sk-live-abc123...'",
+    fixCommand: "/orca fix AUD-2025-001"
+  }
+];
+```
+
+**Finding ID generation:**
+```typescript
+function generateFindingId(finding: Partial<AuditFinding>): string {
+  const hash = createHash('sha256')
+    .update(`${finding.type}:${finding.location}:${finding.title}`)
+    .digest('hex')
+    .substring(0, 8);
+  
+  // Get next counter from audit-index.json
+  const index = loadAuditIndex();
+  const counter = String(index.findings.length + 1).padStart(3, '0');
+  const year = new Date().getFullYear();
+  
+  return `AUD-${year}-${counter}`;
+}
+```
+
+### Step 6: Calculate Score
+
+```typescript
+interface AuditSummary {
+  score: number;  // 0-100
+  grade: 'A' | 'B' | 'C' | 'D' | 'F';
+  criticalCount: number;
+  highCount: number;
+  mediumCount: number;
+  lowCount: number;
+  topPriorities: string[];
+}
+
+// Scoring algorithm
+const baseScore = 100;
+const deductions = {
+  critical: 15,  // -15 per critical
+  high: 8,       // -8 per high
+  medium: 3,     // -3 per medium
+  low: 1         // -1 per low
+};
+
+const score = Math.max(0, baseScore - (
+  criticalCount * deductions.critical +
+  highCount * deductions.high +
+  mediumCount * deductions.medium +
+  lowCount * deductions.low
+));
+
+// Grade mapping
+const grade = 
+  score >= 90 ? 'A' :
+  score >= 80 ? 'B' :
+  score >= 70 ? 'C' :
+  score >= 60 ? 'D' : 'F';
+```
+
+### Step 7: Use Cognition MCP to Store Audit
+
+```typescript
+await mcp__cognition__cognition({
+  operation: "audit",
+  content: {
+    scope: "quick" | "comprehensive" | "core" | "item",
+    target: targetPath || undefined,
+    
+    baseline: {
+      source: "CLAUDE.md, design-dna.json, standards",
+      expectations: [
+        "TypeScript strict mode enabled",
+        "No hardcoded secrets",
+        "Bundle size < 500KB",
+        "Test coverage > 80%"
+      ]
+    },
+    
+    currentState: {
+      summary: "Next.js app with 45 components, 12K LOC, TypeScript strict: false",
+      observations: [
+        "15 components use 'any' type",
+        "2 hardcoded API keys found",
+        "Bundle size: 1.2MB (gzipped: 350KB)",
+        "Test coverage: 45%"
+      ]
+    },
+    
+    findings: findings,
+    
+    summary: {
+      score: 72,
+      grade: "C",
+      criticalCount: 2,
+      highCount: 5,
+      mediumCount: 12,
+      lowCount: 8,
+      topPriorities: [
+        "AUD-2025-001: Remove hardcoded API keys",
+        "AUD-2025-003: Enable TypeScript strict mode"
+      ]
+    },
+    
+    nextThoughtNeeded: false
+  }
+});
+```
+
+### Step 8: Generate Markdown Report
+
+Create `.claude/audit/YYYY-MM-DD-<scope>.md`:
+
+```markdown
+# Audit: [Scope]
+
+**Date:** 2025-12-23 | **Score:** 72/100 (C) | **Duration:** 2m 15s
+
+## TL;DR
+- 2 critical, 5 high, 12 medium, 8 low findings
+- Top priority: Remove hardcoded API keys (security)
+- Quick fix: `/orca fix AUD-2025-001`
+
+## New Since Last Audit
+- [AUD-2025-015] Bundle size increased 40% since last week
+- [AUD-2025-018] New dependency with known vulnerability
+
+## Findings by Severity
+
+### Critical (2)
+
+#### AUD-2025-001: Hardcoded API key in config
+- **Type:** bug | **Dimension:** Security
+- **Location:** `src/config/api.ts:15`
+- **Description:** Production API key hardcoded in source
+- **Recommendation:** Move to environment variable
+- **Effort:** trivial
+- **Fix:** `/orca fix AUD-2025-001`
+- **Evidence:**
+  ```typescript
+  const API_KEY = 'sk-live-abc123...';
+  ```
+
+### High (5)
+...
+
+### Medium (12)
+...
+
+### Low (8)
+...
+
+## Improvements & Optimizations
+[Non-bug findings that could enhance quality]
+
+### Performance Optimizations
+- [AUD-2025-020] Image optimization opportunity (30% reduction)
+- [AUD-2025-021] Bundle splitting could improve load time
+
+### Code Quality Improvements
+- [AUD-2025-025] TypeScript strict mode adoption path
+- [AUD-2025-026] Test coverage gaps in auth module
+
+## Action Summary
+| Priority | Finding | Effort | Command |
+|----------|---------|--------|---------|
+| 1 | AUD-2025-001 | trivial | `/orca fix AUD-2025-001` |
+| 2 | AUD-2025-003 | small | `/orca fix AUD-2025-003` |
+| 3 | AUD-2025-007 | medium | `/orca fix AUD-2025-007` |
+
+## Dimensions Audited
+- ✓ Architecture (score: 85/100)
+- ✓ Security (score: 60/100) ← needs attention
+- ✓ Performance (score: 75/100)
+
+## Next Steps
+1. Address 2 critical security findings immediately
+2. Plan TypeScript strict migration
+3. Increase test coverage in auth module
+4. Re-run audit after fixes: `/audit --core`
+```
+
+### Step 9: Update Audit Index
+
+Maintain `.claude/audit/audit-index.json`:
+
+```json
+{
+  "lastUpdated": "2025-12-23T13:30:00Z",
+  "audits": [
+    {
+      "id": "2025-12-23-quick",
+      "date": "2025-12-23T13:30:00Z",
+      "scope": "quick",
+      "score": 72,
+      "findings": ["AUD-2025-001", "AUD-2025-003", "..."]
+    }
+  ],
+  "findings": {
+    "AUD-2025-001": {
+      "hash": "abc12345",
+      "type": "bug",
+      "severity": "critical",
+      "title": "Hardcoded API key in config",
+      "firstSeen": "2025-12-23",
+      "lastSeen": "2025-12-23",
+      "status": "open"
+    }
+  }
+}
+```
+
+**Finding tracking logic:**
+- Hash finding content (type + location + title)
+- Check if hash exists in index
+- If exists: update `lastSeen`, keep ID
+- If new: assign new ID, set `firstSeen`
+- This enables "New since last audit" section
+
+### Step 10: Display Summary
+
+```
+ CODEBASE AUDIT COMPLETE
+
+Scope: Quick (3 dimensions)
+Score: 72/100 (C)
+Duration: 2m 15s
+
+Findings:
+- 2 critical
+- 5 high
+- 12 medium
+- 8 low
+
+Top Priority:
+  AUD-2025-001: Remove hardcoded API keys (security)
+  → /orca fix AUD-2025-001
+
+Report saved: .claude/audit/2025-12-23-quick.md
+Index updated: .claude/audit/audit-index.json
+
+Next: Address critical findings, then re-run /audit --core
+```
+
+---
+
+## /orca fix Integration
+
+The `/audit` command generates `/orca fix <finding-id>` commands.
+
+When user runs `/orca fix AUD-2025-001`:
+
+1. `/orca` reads `.claude/audit/audit-index.json`
+2. Finds the finding details
+3. Routes to appropriate lane based on file location
+4. Passes finding context (location, recommendation) to lane orchestrator
+
+This is handled by updates to `commands/orca.md` (see TR-4 in requirements spec).
+
+---
+
+## --item Fuzzy Matching
+
+When user specifies `--item <target>`:
+
+1. **Exact match:** Check if path exists
+   ```typescript
+   if (fs.existsSync(target)) { /* use target */ }
+   ```
+
+2. **Partial path match:** Search for matching paths
+   ```typescript
+   const matches = glob(`**/*${target}*`);
+   ```
+
+3. **Module name match:** Search imports/exports
+   ```typescript
+   grep(`from.*${target}|import.*${target}`, '**/*.{ts,tsx,js,jsx}');
+   ```
+
+4. **Multiple matches:** Prompt user
+   ```typescript
+   AskUserQuestion({
+     question: "Multiple matches found. Which did you mean?",
+     options: matches.map(m => ({ label: m, description: "Audit this file/module" }))
+   });
+   ```
+
+5. **No matches:** Error with suggestions
+   ```
+   No matches for "aut". Did you mean:
+   - auth (src/auth/)
+   - layout (src/components/layout/)
+   - data (src/data/)
+   ```
+
+---
+
+## Guardrails
+
+- Audit NEVER modifies code (read-only inspection)
+- Audit findings are SUGGESTIONS, not automatic fixes
+- Scores are indicative, not absolute quality measures
+- Finding IDs are stable across audits (via content hash)
+- Audit runs independently of pipeline gates
+
+---
+
+## Memory Integration
+
+After audit completes, optionally record learnings:
+
+```typescript
+// If recurring patterns found
+mcp__project_context__save_standard({
+  what_happened: "Frequent API key hardcoding in config files",
+  cost: "2 security incidents in past month",
+  rule: "NEVER hardcode secrets. Always use environment variables.",
+  domain: "security"
+});
+```
+
+---
+
+## Response Awareness
+
+During audit execution:
+
+- `#COMPLETION_DRIVE`: Note when guessing vs. verifying finding severity
+- `#PATH_DECISION`: Document why certain dimensions were prioritized
+- `#POISON_PATH`: Avoid false positives that waste user time
+
+---
+
+## Begin Execution
+
+Execute for: **$ARGUMENTS**

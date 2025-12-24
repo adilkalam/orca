@@ -1,15 +1,24 @@
-# ORCA-OS v4.0
+```
+  ___  ____   ____    _      ___  ____
+ / _ \|  _ \ / ___|  / \    / _ \/ ___|
+| | | | |_) | |     / _ \  | | | \___ \
+| |_| |  _ <| |___ / ___ \ | |_| |___) |
+ \___/|_| \_\\____/_/   \_\ \___/|____/
+                                    v4.1
+```
 
-**Orchestrated Response Coordination Architecture**
-
-**Version:** 4.0.0
-**Updated:** 2025-12-21
+# An Orchestration Layer for Claude Code
 
 ```
 +------------------------------------------------------------------+
 |                                                                  |
 |   Make Claude Code think before it acts,                         |
 |   remember what it learns, and finish work.                      |
+|                                                                  |
+|   - Structured cognition before execution                        |
+|   - Specialized pipelines with verification gates                |
+|   - Persistent memory across sessions                            |
+|   - Self-improvement from every interaction                      |
 |                                                                  |
 +------------------------------------------------------------------+
 ```
@@ -32,9 +41,9 @@ These aren't bugs. They're the default state of autoregressive generation withou
 
 ---
 
-## What ORCA-OS Does
+## System Overview
 
-ORCA-OS is a loop, not a pipeline.
+ORCA is a loop, not a pipeline.
 
 ```
                                   User Request
@@ -76,7 +85,7 @@ ORCA-OS is a loop, not a pipeline.
                  +------------------+
 ```
 
-**Two feedback loops:**
+Two feedback loops:
 1. **Inner loop**: Gate failure triggers iteration until quality passes
 2. **Outer loop**: Completed work feeds self-improvement, which updates memory for future sessions
 
@@ -172,120 +181,11 @@ Anthropic's own multi-agent research system uses this architecture:
 
 Their results: **90% improvement** over single-agent approaches on complex research tasks.
 
----
-
-## System Components
-
-| Component | Count | Purpose |
-|-----------|-------|---------|
-| **Agents** | 90 | Specialized workers across 6 lanes |
-| **Commands** | 28 | Entry points for orchestration |
-| **MCP Servers** | 10 | Memory, cognition, and tool integration |
-| **Pipeline Docs** | 12 | Lane-specific workflow specs |
+The "keep it simple" guidance is for Claude Desktop consumers doing discrete tasks. Autonomous workflows that run for hours require infrastructure.
 
 ---
 
-## 1. Memory Layer
-
-Memory is the background layer that feeds everything else.
-
-### The Problem
-
-Every session starts fresh. Yesterday's decisions, gotchas, insights - gone unless written down. You re-explain the same context every time.
-
-This is a fundamental gap: LLMs have no continuity of self across conversations. No "me" persists. Each session reconstructs identity from context.
-
-### Three Memory Systems
-
-| System | Purpose | Speed | Storage |
-|--------|---------|-------|---------|
-| **Workshop** | Decisions, gotchas, standards | <10ms | `.claude/memory/workshop.db` |
-| **vibe.db** | Semantic code search, embeddings | 50-100ms | `.claude/memory/vibe.db` |
-| **ProjectContext** | Context bundle assembly | 200-500ms | MCP server |
-
-**Workshop** stores the "why". Ask "why did we choose this approach?" and get the reasoning from when the decision was made - not a reconstruction, but the actual context.
-
-**vibe.db** searches by meaning. "How do we handle errors?" finds relevant code even if "error" isn't in the filename.
-
-**ProjectContext** bundles everything relevant for a task: files, state, decisions, similar past work. Agents start with assembled context, not a blank slate.
-
-### What Persists
-
-```
-SESSION N                           SESSION N+1
-+---------------------------+       +---------------------------+
-| Decision: Use WebSocket   |       | Context loaded:           |
-| Gotcha: Tokens expire 15m | ----> | - WebSocket decision      |
-| Preference: Minimal deps  |       | - Token expiry warning    |
-+---------------------------+       | - Dependency preference   |
-                                    +---------------------------+
-```
-
-Session 1, you explain everything. Session 50, you're just working.
-
-### Workshop Implementation (v4.0)
-
-The Workshop database uses SQLite with this schema:
-
-```sql
-CREATE TABLE entries (
-  id CHAR(36) PRIMARY KEY,
-  project_id CHAR(36),
-  type VARCHAR(50) NOT NULL,  -- decision, gotcha, note, preference
-  content TEXT NOT NULL,
-  reasoning TEXT,
-  timestamp DATETIME NOT NULL,
-  entry_metadata TEXT  -- JSON blob
-);
-```
-
-**Access Pattern (v4.0 hybrid approach):**
-
-| Operation | Method | Why |
-|-----------|--------|-----|
-| Query decisions | SQLite direct | CLI `--json` flag doesn't exist |
-| Query standards | SQLite direct | Reliable structured data |
-| Save decision | Workshop CLI | Schema migrations handled by CLI |
-| Save gotcha | Workshop CLI | Schema migrations handled by CLI |
-
-This hybrid approach was implemented in v4.0 to fix the empty `pastDecisions` bug - the CLI's `why --json` flag doesn't exist, causing silent failures.
-
-### ProjectContext MCP
-
-Every agent's first action must be `query_context`. It returns:
-
-```typescript
-{
-  relevantFiles: FileContext[],     // From vibe.db semantic search
-  projectState: ProjectState,       // Structure, dependencies
-  pastDecisions: Decision[],        // From Workshop SQLite
-  relatedStandards: Standard[],     // From Workshop SQLite
-  similarTasks: TaskHistory[]       // From Workshop SQLite
-}
-```
-
-**Tools:**
-- `query_context` - Get context bundle (MANDATORY first call)
-- `save_decision` - Log architectural decisions
-- `save_standard` - Create standards from failures
-- `save_task_history` - Record task outcomes
-
-### Memory Commands
-
-```bash
-/project-memory status           # Check memory state
-/project-memory search "auth"    # Search past entries
-/project-memory decide "text"    # Record a decision
-/project-memory gotcha "text"    # Record a gotcha
-/project-memory why "topic"      # Explain past choices
-
-/memory-search "query"           # Unified search (Workshop + vibe.db)
-/project-code sync               # Re-index codebase
-```
-
----
-
-## 2. Cognition Layer
+## Cognition First
 
 The foundation for predictable output is structured thinking before execution.
 
@@ -293,7 +193,7 @@ The foundation for predictable output is structured thinking before execution.
 
 Most AI failures aren't bugs - they're confident execution in the wrong direction. The model fills gaps with assumptions, and by the time you see output, you're committed to an approach you didn't choose.
 
-This happens because of how autoregressive generation works: each token constrains what comes next. Early commitment to an approach - even implicit in the first few tokens - narrows the probability space.
+This happens because of how autoregressive generation works: each token constrains what comes next. Early commitment to an approach - even implicit in the first few tokens - narrows the probability space. There's no revision mechanism. No draft behind the curtain.
 
 ```
 "The authentication system will use..."
@@ -317,6 +217,7 @@ User: "Add authentication to my app"
 |     - OAuth vs JWT vs session-based?             |
 |     - Existing user model?                       |
 |     - Social login requirements?                 |
+|     - Failure handling expectations?             |
 |                                                  |
 |  2. Structure the decision:                      |
 |     - Options with tradeoffs                     |
@@ -334,83 +235,48 @@ User: "Add authentication to my app"
           boundaries already set
 ```
 
-### Accept-Store-Echo Pattern
+### Available Operations
 
-The Cognition MCP is a mirror - it stores and echoes, never generates content.
-
-```
-Claude generates:  { thought: "Analysis of X", confidence: 0.8 }
-MCP stores:        { thought: "Analysis of X", confidence: 0.8 }
-MCP returns:       { thought: "Analysis of X", confidence: 0.8 }
-                   ^^ UNCHANGED - MCP only persists
-```
-
-Claude generates ALL reasoning content. The MCP tracks it across the session.
-
-### 39 Operations by Category
+The Cognition MCP provides 38 structured reasoning operations:
 
 | Category | Operations | Purpose |
 |----------|------------|---------|
-| **Core (6)** | thought, debug, decide, mental_model, meta, systems | Foundation reasoning |
-| **Extended (4)** | creative_thinking, visual_reasoning, checkpoint, scientific_method | Specialized approaches |
-| **Collaborative (3)** | collaborative_reasoning, socratic_method, structured_argumentation | Multi-perspective |
-| **Patterns (5)** | tree_of_thought, beam_search, mcts, graph_of_thought, orchestration_suggest | Search strategies |
-| **Analysis (11)** | research, analogical_reasoning, causal_analysis, statistical_reasoning, simulation, optimization, ethical_analysis, visual_dashboard, pdr_reasoning, custom_framework, code_execution | Deep analysis |
-| **Strategic (2)** | ooda_loop, ulysses_protocol | Decision frameworks |
-| **Session (3)** | session_info, session_export, session_import | State management |
+| **Sequential** | thought chains, revision | Step-by-step with backtracking |
+| **Decision** | frameworks, criteria weighting | Structured choice between options |
+| **Systems** | component mapping, relationships | Understanding interconnections |
+| **Causal** | cause-effect chains, interventions | Tracing why things happen |
+| **Creative** | brainstorming, lateral thinking | Structured idea generation |
+| **Adversarial** | pre-mortem, devil's advocate | Finding weaknesses before they matter |
+| **Meta** | process evaluation, strategy selection | Reasoning about reasoning |
 
-### Mental Model Templates (15)
-
-Pre-built reasoning frameworks in `quick-reference/mental-models/`:
-
-| Model | Use Case |
-|-------|----------|
-| `first-principles` | Break down to fundamentals |
-| `inversion` | Work backwards from failure |
-| `pre-mortem` | Imagine failure, trace causes |
-| `second-order` | Consequences of consequences |
-| `five-whys` | Root cause drilling |
-| `steelmanning` | Strongest opposing argument |
-| `abstraction-laddering` | Move up/down abstraction levels |
-| `constraint-relaxation` | Remove constraints to ideate |
-
-### Cognition Commands
+The `/think` command analyzes your problem and recommends which approach to use:
 
 ```bash
-/think "problem"                  # Route to best approach
-/think --systems "architecture"   # Systems mapping
-/think --debug "flaky test"       # Debugging framework
-/think --model pre-mortem "plan"  # Use specific mental model
+/think "Why is this test flaky?"
+# Recommends: causal analysis + debugging framework
 
-/plan "feature"                   # Requirements with cognition
-/plan --deepthink "complex"       # Full 8-step pipeline
+/think "Should we use microservices or monolith?"
+# Recommends: decision framework + pre-mortem
 
-/challenge "proposal"             # Adversarial analysis
-/challenge --deep "risky change"  # Extended critique
-
-/contemplate "problem"            # Strategy recommendation
+/think "How do these components interact?"
+# Recommends: systems mapping
 ```
 
-### /plan --deepthink Pipeline
+### Why This Works
 
-8-step pipeline for complex requirements:
+Chain-of-thought isn't about showing work. The tokens ARE the thought. When an LLM generates reasoning steps, it's literally creating cognition that wouldn't exist if it jumped straight to an answer.
 
-| Phase | Step | Operation | Output |
-|-------|------|-----------|--------|
-| ORIENT | 1 | orchestration_suggest | Recommended approach |
-| ORIENT | 2 | systems | Component map, scope |
-| ANTICIPATE | 3 | mental_model (pre-mortem) | Failure modes → `#POISON_PATH` |
-| GENERATE | 4 | tree_of_thought | Approaches → `#PATH_DECISION` |
-| EVALUATE | 5 | decide | Weighted comparison |
-| EVALUATE | 6 | (inline challenge) | Critique → `#COMPLETION_DRIVE` |
-| COMMIT | 7 | ulysses_protocol | Requirements commitments |
-| COMMIT | 8 | meta | Planning quality reflection |
+Structured thinking:
+- **Delays commitment** - keeps more options open longer
+- **Forces explicit reasoning** - can't skip steps
+- **Creates checkpoints** - assumptions become visible
+- **Enables revision** - can backtrack before code is written
 
-Use for: database migrations, auth changes, multi-service integrations, major refactors.
+By the time execution starts, the plan is explicit, assumptions are surfaced, and the boundaries are set.
 
 ---
 
-## 3. Orchestration Layer
+## Orchestration and Pipelines
 
 Execution happens through specialized agents in constrained pipelines.
 
@@ -418,15 +284,17 @@ Execution happens through specialized agents in constrained pipelines.
 
 A single agent doing everything - planning, implementing, verifying, self-auditing - drifts. Context fills with implementation details. Earlier decisions fade. The agent optimizes locally, losing global coherence.
 
+Anthropic's research demonstrated this empirically. Their multi-agent system outperformed single-agent by 90% on complex tasks. The architecture matters more than the prompts.
+
 ### Agent Roles That Can't Leak
 
-ORCA has 90 agents, but the number doesn't matter. What matters is role separation:
+ORCA has ~100 agents, but the number doesn't matter. What matters is role separation:
 
 **Orchestrators** coordinate. They classify tasks, query memory, delegate work, track progress. They never touch files. The moment an orchestrator starts editing code, it loses the ability to see the whole picture.
 
 **Specialists** implement. A SwiftUI specialist knows SwiftUI patterns. A CSS specialist knows design tokens. They receive scoped tasks, do the work, report back. They don't decide what to build next.
 
-**Gates** validate. They run builds, check tests, measure against standards. Gates score work 0-100 and report PASS, CAUTION, or FAIL. They never fix anything - they report.
+**Gates** validate. They run builds, check tests, measure against standards. Gates score work 0-100 and report PASS, CAUTION, or FAIL. They never fix anything - they report. The orchestrator decides what to do with that information.
 
 ```
 +-------------------+
@@ -448,34 +316,7 @@ ORCA has 90 agents, but the number doesn't matter. What matters is role separati
 +-------------------+
 ```
 
-### Lanes and Agents
-
-| Lane | Command | Agents | Key Specialists |
-|------|---------|--------|-----------------|
-| **iOS** | `/ios` | 19 | SwiftUI, UIKit, persistence, testing |
-| **Next.js** | `/nextjs` | 16 | TypeScript, CSS, layout, a11y, SEO |
-| **Django-React** | `/django-react` | 13 | Django, React, API contracts |
-| **Expo** | `/expo` | 11 | React Native, performance, testing |
-| **Research** | `/research` | 8 | Web search, writing, fact-checking |
-| **SEO** | `/seo` | 4 | Research, briefs, drafts, quality |
-| **OS-Dev** | `/orca-os-dev` | 5 | ORCA-OS configuration |
-| **Cross-cutting** | - | 9 | a11y, security, performance, design |
-
-### Three-Tier Routing
-
-Not every task needs the full pipeline:
-
-| Flag | Behavior | Use When |
-|------|----------|----------|
-| (default) | Light orchestrator + gates | Normal work |
-| `-tweak` | Light orchestrator, skip gates | Quick fixes, you verify |
-| `--complex` | Full pipeline, spec required | Major features |
-
-```bash
-/ios "fix button padding"              # default routing
-/ios -tweak "change color to blue"     # skip gates
-/nextjs --complex "add authentication" # full pipeline
-```
+This separation prevents the failure mode where a single context tries to hold planning, implementation, and verification simultaneously.
 
 ### Verification Gates
 
@@ -507,48 +348,72 @@ Gates create the inner feedback loop. Work isn't done until evidence exists.
                +---> back to builder
 ```
 
-**Gate Thresholds:**
-
-| Gate | Threshold | Skipped in Tweak |
-|------|-----------|------------------|
-| Standards | ≥90 | Yes |
-| Design Review | ≥90 | Yes |
-| Accessibility | ≥90 | Yes |
-| Build/Test | PASS | No |
-
 Gates are grounded in artifacts:
 - Design review gates must save screenshots before reporting PASS
 - Verification gates prove builds actually ran
 - Hooks check Bash logs and block fake success claims
 
-### Pipeline Flow
+This keeps "done" tied to reality, not self-reporting.
 
-```
-User Request
-     │
-     ▼
-[ProjectContext query_context]  ← MANDATORY
-     │
-     ▼
-[Team Confirm] (complex only)
-     │
-     ▼
-[Planning] grand-architect or architect
-     │
-     ▼
-[Implementation] builder + specialists
-     │
-     ▼
-[Quality Gates] standards-enforcer ≥90
-     │
-     ├── PASS → [Verification] → Done
-     │
-     └── FAIL → [Iterate] → back to Implementation
+### Complexity Routing
+
+Not every task needs the full pipeline:
+
+| Flag | Behavior | Use When |
+|------|----------|----------|
+| (default) | Light orchestrator + gates | Normal work |
+| `-tweak` | Light orchestrator, skip gates | Quick fixes |
+| `--complex` | Full pipeline, spec required | Major features |
+
+```bash
+/ios "fix button padding"              # default routing
+/ios -tweak "change color to blue"     # skip gates
+/nextjs --complex "add authentication" # full pipeline
 ```
 
 ---
 
-## 4. Self-Improvement Layer
+## Persistent Memory
+
+Memory is the background layer that feeds everything else.
+
+### The Problem
+
+Every session starts fresh. Yesterday's decisions, gotchas, insights - gone unless written down. You re-explain the same context every time.
+
+This is a fundamental gap: LLMs have no continuity of self across conversations. No "me" persists. Each session reconstructs identity from context.
+
+### Three Memory Systems
+
+| System | Purpose | Speed |
+|--------|---------|-------|
+| **Workshop** | Decisions with reasoning, gotchas, standards | <10ms |
+| **vibe.db** | Semantic search across code and docs | 50-100ms |
+| **ProjectContext** | Assembled context bundles for tasks | 200-500ms |
+
+**Workshop** stores the "why". Ask "why did we choose this approach?" and get the reasoning from when the decision was made - not a reconstruction, but the actual context.
+
+**vibe.db** searches by meaning. "How do we handle errors?" finds relevant code even if "error" isn't in the filename.
+
+**ProjectContext** bundles everything relevant for a task: files, state, decisions, similar past work. Agents start with assembled context, not a blank slate.
+
+### What Persists
+
+```
+SESSION N                           SESSION N+1
++---------------------------+       +---------------------------+
+| Decision: Use WebSocket   |       | Context loaded:           |
+| Gotcha: Tokens expire 15m | ----> | - WebSocket decision      |
+| Preference: Minimal deps  |       | - Token expiry warning    |
++---------------------------+       | - Dependency preference   |
+                                    +---------------------------+
+```
+
+Session 1, you explain everything. Session 50, you're just working.
+
+---
+
+## Self-Improvement
 
 The outer loop: every interaction makes the next one better.
 
@@ -564,6 +429,11 @@ workshop gotcha "Check deployment target before using NavigationStack"
                       v
 Next run checks deployment target first
 ```
+
+Patterns get tracked:
+- Pattern works 12 times, fails once -> promoted
+- Pattern starts failing -> deprecated
+- Project-specific rules accumulate
 
 Rules get learned:
 ```
@@ -613,295 +483,85 @@ Success   Failure
 +------------------+
 ```
 
-### Self-Improvement Commands
-
-```bash
-/reflect analyze             # Analyze current session
-/reflect learn "rule"        # Add a rule manually
-/reflect status              # Show active rules
-/reflect unlearn "rule-id"   # Remove a rule
-
-/audit                       # Post-task review
-/self-improve                # Run improvement bus
-```
-
-### Session Hooks
-
-| Hook | Trigger | Purpose |
-|------|---------|---------|
-| `session-start.sh` | SessionStart | Load context, Workshop summary |
-| `session-end.sh` | SessionEnd | Extract learnings via Ollama |
-| `git-tracking-guard.sh` | PreToolUse | Warn on untracked file edits |
-| `auto-deploy.sh` | PostToolUse | Deploy ORCA-OS changes |
+The system learns from your project's history, not just generic training data.
 
 ---
 
-## MCP Servers
+## Technical Reference
 
-### Core (Global - Always Available)
+### Agents by Domain
 
-| MCP | Purpose | Config |
-|-----|---------|--------|
-| **cognition-mcp** | 39 reasoning operations | `~/.claude/mcp/cognition-mcp/` |
-| **project-context** | Memory + context bundles | `~/.claude/mcp/project-context-server/` |
-| **sequential-thinking** | Multi-step reasoning | `@anthropic/mcp-sequential-thinking` |
-| **context7** | Library documentation | `@upstash/context7-mcp` (disabled by default) |
+~100 agents across 8 domains:
 
-### Optional (Project-Scoped)
+| Domain | Agents | Entry Point |
+|--------|--------|-------------|
+| iOS | 19 | `/ios` |
+| Next.js + Django-React + OS-Dev | 35 | `/nextjs`, `/django-react` |
+| Expo | 11 | `/expo` |
+| Shopify | 8 | `/shopify` |
+| Research | 7 | `/research` |
+| SEO | 4 | `/seo` |
+| Data | 4 | via `/orca` |
+| Knowledge Graph | 4 | `/kg` |
+| Cross-cutting | 9 | (a11y, perf, security, design) |
 
-| MCP | Used By | Config |
-|-----|---------|--------|
-| **XcodeBuildMCP** | iOS lane | `xcodebuildmcp@latest` |
-| **puppeteer** | Design review | `~/.claude/mcp/puppeteer-mcp-server/` |
-| **chrome-devtools** | Live debugging | `chrome-devtools-mcp@latest` |
-| **crawl4ai** | Research lane | `mcp-crawl4ai` |
+### Commands
 
-### MCP Configuration
+**Orchestration:**
+- `/plan` - Requirements gathering
+- `/orca` - Domain-agnostic orchestrator
+- `/audit` - Post-task review
 
-Global MCPs in `~/.claude.json`:
-```json
-{
-  "mcpServers": {
-    "cognition-mcp": {
-      "type": "stdio",
-      "command": "node",
-      "args": ["~/.claude/mcp/cognition-mcp/dist/cli.js"]
-    }
-  }
-}
-```
+**Domain Pipelines:**
+- `/ios`, `/nextjs`, `/django-react`, `/expo`, `/shopify`, `/research`, `/seo`
 
-Project-scoped MCPs in `<project>/.mcp.json`:
-```json
-{
-  "mcpServers": {
-    "puppeteer": { ... }
-  }
-}
-```
+**Thinking:**
+- `/think` - Reasoning strategy selection
+- `/challenge` - Adversarial analysis
+- `/contemplate` - Strategy advisor
 
-Enable in `~/.claude.json`:
-```json
-{
-  "projects": {
-    "/path/to/project": {
-      "enabledMcpjsonServers": ["puppeteer"]
-    }
-  }
-}
-```
+**Memory:**
+- `/project-memory` - Workshop management
+- `/reflect` - Learn rules from interactions
 
----
+### MCP Servers
 
-## File Structure
+**Core (always available):**
+| MCP | Purpose |
+|-----|---------|
+| project-context | Memory, search, context bundles |
+| cognition-mcp | Structured reasoning (38 operations) |
+| sequential-thinking | Multi-step reasoning with revision |
+| context7 | Library documentation |
 
-### Source Repository (ORCA-OS/)
+**Optional (project-scoped):**
+| MCP | Used By |
+|-----|---------|
+| XcodeBuildMCP | iOS (build, test, simulator) |
+| puppeteer | Design review |
+| crawl4ai | Research (web scraping) |
 
-```
-ORCA-OS/
-├── agents/                    # 90 agent definitions
-│   ├── iOS/                   # 19 iOS agents
-│   ├── dev/                   # 35 dev agents (Next.js, Django, OS-Dev)
-│   ├── expo/                  # 11 Expo agents
-│   ├── research/              # 8 Research agents
-│   ├── seo/                   # 4 SEO agents
-│   ├── data/                  # 4 Data agents
-│   └── *.md                   # 9 Cross-cutting agents
-├── commands/                  # 28 command definitions
-├── docs/
-│   ├── pipelines/             # 12 pipeline specs
-│   ├── concepts/              # 10 concept docs
-│   └── reference/             # Reference docs
-├── quick-reference/
-│   ├── ORCA-OS/               # Architecture quick refs
-│   ├── mental-models/         # 15 mental model templates
-│   └── *.md                   # Guides
-├── mcp/                       # MCP server source
-├── hooks/                     # Session hooks
-├── skills/                    # Reusable skill definitions
-├── dist/                      # Public distribution
-├── README.md                  # Public readme
-├── ORCA-OS.md                 # This file
-└── CLAUDE.md                  # Project instructions
-```
-
-### Deployed (~/.claude/)
+### Project Structure
 
 ```
 ~/.claude/
-├── agents/                    # Deployed agents
-├── commands/                  # Deployed commands
-├── docs/                      # Deployed docs
-├── quick-reference/           # Deployed quick refs
-├── mcp/                       # MCP servers
-├── scripts/                   # Helper scripts
-├── hooks/                     # Session hooks
-├── memory/                    # workshop.db, vibe.db
-└── settings.json              # Claude Code settings
++-- agents/           # ~100 agent definitions
+|   +-- iOS/          # 19 iOS specialists
+|   +-- dev/          # 35 Next.js, Django-React, OS-Dev
+|   +-- expo/         # 11 Expo/React Native
+|   +-- shopify/      # 8 Shopify specialists
+|   +-- research/     # 7 Research specialists
+|   +-- seo/          # 4 SEO specialists
+|   +-- data/         # 4 Data specialists
+|   +-- kg/           # 4 Knowledge Graph
+|   +-- *.md          # 9 Cross-cutting
++-- commands/         # Entry points
++-- skills/           # Reusable knowledge
++-- hooks/            # Session automation
++-- mcp/              # Custom MCP servers
++-- memory/           # workshop.db, vibe.db
 ```
-
-### Project Working Directory
-
-```
-<project>/.claude/
-├── memory/
-│   ├── workshop.db            # Workshop database
-│   └── vibe.db                # Code intelligence
-├── orchestration/
-│   ├── phase_state.json       # Pipeline state
-│   ├── evidence/              # Artifacts
-│   └── temp/                  # Working files
-└── requirements/              # Planning outputs
-    └── YYYY-MM-DD-HHMM-slug/
-        ├── 00-initial-request.md
-        ├── 00-cognition-analysis.md (if --deepthink)
-        ├── 01-discovery-questions.md
-        ├── 06-requirements-spec.md
-        └── metadata.json
-```
-
----
-
-## Command Reference
-
-### Lane Orchestrators
-
-| Command | Lane | Description |
-|---------|------|-------------|
-| `/ios` | iOS | Swift, SwiftUI, UIKit development |
-| `/nextjs` | Next.js | React, TypeScript, CSS |
-| `/django-react` | Django+React | Full-stack Python/TypeScript |
-| `/expo` | Expo | React Native mobile |
-| `/seo` | SEO | Content pipeline |
-| `/orca-os-dev` | OS-Dev | ORCA-OS configuration |
-
-### Cognition
-
-| Command | Purpose |
-|---------|---------|
-| `/think` | Route problem to best reasoning approach |
-| `/plan` | Requirements gathering with optional cognition |
-| `/challenge` | Adversarial analysis of proposals |
-| `/contemplate` | Strategy recommendation |
-| `/deepthink` | Full 8-step analysis pipeline |
-
-### Memory
-
-| Command | Purpose |
-|---------|---------|
-| `/project-memory` | Workshop CRUD operations |
-| `/memory-search` | Unified search across systems |
-| `/project-code` | vibe.db management |
-| `/reflect` | Learn rules from sessions |
-
-### Session
-
-| Command | Purpose |
-|---------|---------|
-| `/session-save` | Save context for later |
-| `/session-resume` | Resume saved context |
-| `/audit` | Post-task review |
-
-### Utility
-
-| Command | Purpose |
-|---------|---------|
-| `/orca` | Domain-agnostic orchestrator |
-| `/research` | Research pipeline |
-| `/design-dna` | Initialize design system |
-| `/design-review` | Design QA with screenshots |
-| `/clone-website` | Website cloning |
-| `/root-cause` | Root cause analysis |
-
----
-
-## Quick Reference
-
-### Common Workflows
-
-```bash
-# Think through a problem
-/think "Why is this test flaky?"
-
-# Plan a feature
-/plan "Add user preferences"
-
-# Plan with deep analysis
-/plan --deepthink "Migrate to new auth system"
-
-# Challenge a proposal before implementing
-/challenge "Should we use microservices?"
-
-# iOS development
-/ios "Add pull-to-refresh to feed"
-/ios -tweak "Fix button color"
-/ios --complex "Implement offline mode"
-
-# Search memory
-/memory-search "authentication decisions"
-
-# Record learnings
-/project-memory decide "Use JWT for API auth"
-/project-memory gotcha "Check token expiry on each request"
-
-# Learn from session
-/reflect analyze
-```
-
-### MCP Tools
-
-| Tool | Purpose |
-|------|---------|
-| `mcp__project-context__query_context` | Get context bundle (MANDATORY) |
-| `mcp__project-context__save_decision` | Log decision |
-| `mcp__project-context__save_standard` | Create standard from failure |
-| `mcp__cognition-mcp__cognition` | Structured reasoning |
-| `mcp__sequential-thinking__sequentialthinking` | Multi-step reasoning |
-
-### Response Awareness Tags
-
-| Tag | Meaning |
-|-----|---------|
-| `#PATH_DECISION` | Architectural choice made |
-| `#COMPLETION_DRIVE` | Assumption due to limited context |
-| `#POISON_PATH` | Pattern to avoid |
-| `#CONTEXT_DEGRADED` | Insufficient context |
-
----
-
-## Version History
-
-### v4.0.0 (2025-12-21)
-
-**Memory Architecture Unification:**
-- ProjectContext MCP now uses SQLite direct reads for Workshop
-- Fixed empty `pastDecisions` bug (CLI `--json` flag doesn't exist)
-- Auto-creates `.workshop -> .claude/memory` symlink
-- Hybrid approach: SQLite reads, CLI writes
-
-**Cognition Evolution:**
-- 39 operations (was 38)
-- 15 mental model templates
-- `list_mental_models` operation added
-
-**Enhanced Planning:**
-- `/plan --deepthink` 8-step pipeline
-- `/challenge` adversarial analysis
-- Response Awareness tag integration
-
-### v3.2.0 (2025-12-18)
-
-- cognition-mcp 38 operations
-- Project-scoped MCP configuration
-
-### v3.1.0 (2025-12-16)
-
-- Lane consolidation
-- Three-tier routing
-- Quality gate scoring
 
 ---
 
 **ORCA OS 4.0** | Orchestrated Response Coordination Architecture
-
-_Last updated: 2025-12-21_

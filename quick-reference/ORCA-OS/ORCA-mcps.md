@@ -12,7 +12,6 @@ MCPs are now project-scoped to reduce token bloat:
 ### Global MCPs (Always Available)
 Core MCPs in `~/.claude.json` global mcpServers:
 - `cognition-mcp` - Sequential thinking storage (accept-store-echo pattern)
-- `clear-thought` - 38+ reasoning operations (bundled)
 - `project-context` - Project context queries
 - `sequential-thinking` - Multi-step reasoning with revision
 - `context7` - Library documentation (disabled by default)

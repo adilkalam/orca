@@ -294,7 +294,7 @@ Gate: PASS only if ALL of the following:
 
 ---
 
-## Chain of Verification Protocol (OS 3.0)
+## Chain of Verification Protocol (OS 4.0)
 
 Before rendering final verification status, apply CoVe to catch errors that standard checks miss.
 

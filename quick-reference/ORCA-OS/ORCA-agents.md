@@ -6,7 +6,7 @@
 
 ---
 
-## Agent Architecture (OS 3.0)
+## Agent Architecture (OS 4.0)
 
 **All Agents Use Opus 4.5:**
 - Grand architects (coordination & architecture)

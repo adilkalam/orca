@@ -6,9 +6,28 @@
  *
  * This keeps vibe.db focused on code context only (chunks, components, embeddings)
  */
-import type { Decision, Standard, TaskHistory } from './types.js';
+import type { Decision, Standard, TaskHistory, DecayConfig } from './types.js';
+/**
+ * Calculate decay score for a timestamp
+ * Uses exponential decay: score = 0.5^(days / halfLife)
+ */
+export declare function calculateDecay(timestamp: Date, config: DecayConfig): number;
+/**
+ * Apply decay to a list of entries with timestamps
+ * Returns entries sorted by decayed score (highest first)
+ */
+export declare function applyDecay<T extends {
+    timestamp?: Date;
+    created?: Date;
+    entry_metadata?: string;
+}>(entries: T[], config: DecayConfig): (T & {
+    decayedScore: number;
+    pinned: boolean;
+})[];
 export declare class WorkshopClient {
     private workspacePath;
+    private projectPath;
+    private decayConfig;
     constructor(projectPath: string);
     private getDbPath;
     private openDatabase;
@@ -47,14 +66,17 @@ export declare class WorkshopClient {
     }): Promise<void>;
     /**
      * Query decisions from Workshop using SQLite
+     * When decay is enabled, applies time-weighted scoring
      */
     queryDecisions(query: string, limit?: number): Promise<Decision[]>;
     /**
      * Query standards/gotchas from Workshop using SQLite
+     * When decay is enabled, applies time-weighted scoring
      */
     queryStandards(domain: string): Promise<Standard[]>;
     /**
      * Query task history from Workshop using SQLite
+     * When decay is enabled, applies time-weighted scoring
      */
     queryTaskHistory(query: string, limit?: number): Promise<TaskHistory[]>;
     /**

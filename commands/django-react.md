@@ -1,5 +1,5 @@
 ---
-description: "OS 3.0 orchestrator entrypoint for Django + React TypeScript full-stack tasks"
+description: "OS 4.0 orchestrator entrypoint for Django + React TypeScript full-stack tasks"
 argument-hint: "[-tweak] <task description or requirement ID>"
 allowed-tools:
   - Task
@@ -36,7 +36,7 @@ Even `-tweak` delegates to a builder. It skips gates, not agents.
 
 ---
 
-# /django-react - Django + React TypeScript Lane Orchestrator (OS 3.0)
+# /django-react - Django + React TypeScript Lane Orchestrator (OS 4.0)
 
 Use this command for full-stack Django backend + React TypeScript frontend work.
 
@@ -92,7 +92,7 @@ No flag -> Default path (light + design gates)
 
 ---
 
-## 0.1 Telemetry (OS 3.0) - MUST EXECUTE
+## 0.1 Telemetry (OS 4.0) - MUST EXECUTE
 
 **Reference:** `docs/reference/telemetry-standard.md`
 
@@ -251,7 +251,7 @@ If memory hits are relevant:
 - Note them for context
 - May skip or reduce ProjectContext query scope
 
-### 1.1.1 Reflexion Loading (OS 3.0)
+### 1.1.1 Reflexion Loading (OS 4.0)
 
 Load relevant reflexions from past gate failures:
 
@@ -509,7 +509,7 @@ Initialize phase_state.json:
 
 Delegate to `django-react-grand-architect` with Context Inheritance:
 
-**Context Inheritance Protocol (OS 3.0):**
+**Context Inheritance Protocol (OS 4.0):**
 
 When delegating, wrap the ContextBundle with inheritance headers:
 

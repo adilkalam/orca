@@ -576,6 +576,54 @@ export const CodeExecutionContentSchema = z.object({
 });
 
 // ============================================================================
+// CODEBASE AUDIT SCHEMA
+// ============================================================================
+
+export const AuditFindingSchema = z.object({
+  id: z.string(),
+  type: z.enum(['bug', 'risk', 'improvement', 'optimization']),
+  severity: z.enum(['critical', 'high', 'medium', 'low']),
+  dimension: z.string(),
+  title: z.string(),
+  description: z.string(),
+  location: z.string(),
+  recommendation: z.string(),
+  effort: z.enum(['trivial', 'small', 'medium', 'large']),
+  evidence: z.string().optional(),
+  fixCommand: z.string().optional(),
+});
+
+export const AuditBaselineSchema = z.object({
+  source: z.string(),
+  expectations: z.array(z.string()),
+});
+
+export const AuditCurrentStateSchema = z.object({
+  summary: z.string(),
+  observations: z.array(z.string()),
+});
+
+export const AuditSummarySchema = z.object({
+  score: z.number().min(0).max(100),
+  grade: z.enum(['A', 'B', 'C', 'D', 'F']),
+  criticalCount: z.number(),
+  highCount: z.number(),
+  mediumCount: z.number(),
+  lowCount: z.number(),
+  topPriorities: z.array(z.string()),
+});
+
+export const AuditContentSchema = z.object({
+  scope: z.enum(['quick', 'comprehensive', 'core', 'item']),
+  target: z.string().optional(),
+  baseline: AuditBaselineSchema,
+  currentState: AuditCurrentStateSchema,
+  findings: z.array(AuditFindingSchema),
+  summary: AuditSummarySchema,
+  nextThoughtNeeded: z.boolean().optional(),
+});
+
+// ============================================================================
 // PHASE 4: STRATEGIC OPERATIONS
 // ============================================================================
 
@@ -731,6 +779,8 @@ export const CognitionInputSchema = z.object({
     'notebook_add_cell',
     'notebook_run_cell',
     'notebook_export',
+    // Codebase audit operation
+    'audit',
     // Session management
     'session_info',
     'session_export',
@@ -810,6 +860,8 @@ export function validateOperationContent(
     notebook_add_cell: NotebookAddCellContentSchema,
     notebook_run_cell: NotebookRunCellContentSchema,
     notebook_export: NotebookExportContentSchema,
+    // Codebase audit operation
+    audit: AuditContentSchema,
   };
 
   const schema = schemas[operation];

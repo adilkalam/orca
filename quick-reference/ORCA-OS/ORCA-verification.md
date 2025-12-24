@@ -14,7 +14,7 @@ Verification in OS 4.0 is **automated** within pipelines. This guide covers manu
 2. `/ios` → Implementation → **Standards Gate (≥90)** → **UI Review Gate (≥90)** → **xcodebuild + tests (automatic)** → Done
 3. `/expo` → Implementation → **Design Tokens** → **A11y** → **Performance** → **Security** → **Build/Test (automatic)** → Done
 
-**What Changed from OS 2.4 → OS 3.0:**
+**What Changed from OS 2.4 → OS 4.0:**
 -  No more manual `/finalize` script
 -  Verification agents run automatically in Phase 6
 -  Evidence captured automatically in `.claude/orchestration/evidence/`

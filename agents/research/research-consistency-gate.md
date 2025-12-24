@@ -53,7 +53,7 @@ Perform the following checks:
      ensure the report explicitly calls this out as a limitation.
 
 ---
-## 3. Scoring & Decision (Graduated Gate Standard - OS 3.0)
+## 3. Scoring & Decision (Graduated Gate Standard - OS 4.0)
 
 **Reference:** `docs/reference/graduated-gate-scoring.md`
 

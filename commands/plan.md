@@ -1,5 +1,5 @@
 ---
-description: "Unified OS 3.0 planner – requirements + RA blueprint (no implementation)"
+description: "Unified OS 4.0 planner – requirements + RA blueprint (no implementation)"
 argument-hint: "[-tweak] [-complex] [--visual|--systems|--debug|--model|--creative|--deepthink] <high-level task description>"
 allowed-tools:
   ["Task", "Read", "Write", "Edit", "Glob", "Grep",
@@ -12,7 +12,7 @@ allowed-tools:
 Use this command to produce a **blueprint-quality requirements spec** for a task
 before running any domain lane (`/nextjs`, `/ios`, `/expo`, etc.).
 It combines:
-- The OS 3.0 **requirements pipeline** (requirements folder + docs),
+- The OS 4.0 **requirements pipeline** (requirements folder + docs),
 - **Response Awareness** tagging (RA tags as per `docs/reference/response-awareness.md`),
 - **Cognition analysis** (optional) for deeper problem understanding,
 - ProjectContextServer for context-aware analysis.
@@ -21,7 +21,7 @@ You never implement code from `/plan`; you only plan.
 
 ---
 
-## 0. Cognition Integration (OS 3.0)
+## 0. Cognition Integration (OS 4.0)
 
 `/plan` supports optional cognition-mcp analysis modes that run **before** discovery questions. This produces smarter, context-aware questions instead of generic ones.
 
@@ -30,12 +30,12 @@ You never implement code from `/plan`; you only plan.
 | Flag | Cognition Operation | Best For |
 |------|------------------------|----------|
 | `--visual` | `visual_reasoning` | UI/UX features, user flows, screen layouts |
-| `--systems` | `systems_thinking` | Architecture, integrations, data flow |
-| `--debug` | `debugging_approach` | Bug fixes, performance issues, root causes |
+| `--systems` | `systems` | Architecture, integrations, data flow |
+| `--debug` | `debug` | Bug fixes, performance issues, root causes |
 | `--model` | `mental_model` (first_principles) | Foundational decisions, "why" questions |
 | `--creative` | `creative_thinking` | New features, brainstorming, exploration |
 | `--causal` | `causal_analysis` | Understanding cause-effect, debugging |
-| `--decide` | `decision_framework` | Choosing between options, trade-offs |
+| `--decide` | `decide` | Choosing between options, trade-offs |
 | **`--deepthink`** | **Full 8-step pipeline** | **Complex features, architectural decisions, high-risk implementations** |
 
 ### Usage Examples
@@ -593,12 +593,12 @@ Map the flag to Cognition operation:
 | Flag | Operation | Parameters |
 |------|-----------|------------|
 | `--visual` | `visual_reasoning` | - |
-| `--systems` | `systems_thinking` | - |
-| `--debug` | `debugging_approach` | - |
+| `--systems` | `systems` | - |
+| `--debug` | `debug` | - |
 | `--model` | `mental_model` | `model: "first_principles"` |
 | `--creative` | `creative_thinking` | - |
 | `--causal` | `causal_analysis` | - |
-| `--decide` | `decision_framework` | - |
+| `--decide` | `decide` | - |
 | `--deepthink` | *See Section 0.2* | *Full pipeline* |
 
 ### Step 2: Run Cognition Analysis

@@ -9,20 +9,111 @@
 
 import { execSync, exec } from 'child_process';
 import { promisify } from 'util';
-import type { Decision, Standard, TaskHistory } from './types.js';
+import type { Decision, Standard, TaskHistory, DecayConfig } from './types.js';
 import Database from 'better-sqlite3';
-import { existsSync, lstatSync, readdirSync, symlinkSync, unlinkSync, rmdirSync } from 'fs';
+import { existsSync, lstatSync, readdirSync, readFileSync, symlinkSync, unlinkSync, rmdirSync } from 'fs';
 import { join, dirname } from 'path';
 import { platform } from 'os';
+import { fileURLToPath } from 'url';
 
 const execAsync = promisify(exec);
 
+// Default decay config (OFF by default for backward compatibility)
+const DEFAULT_DECAY_CONFIG: DecayConfig = {
+  enabled: false,
+  halfLifeDays: 90,
+  minimumScore: 0.01,
+};
+
+/**
+ * Calculate decay score for a timestamp
+ * Uses exponential decay: score = 0.5^(days / halfLife)
+ */
+export function calculateDecay(timestamp: Date, config: DecayConfig): number {
+  if (!config.enabled) return 1.0;
+
+  const now = Date.now();
+  const created = timestamp.getTime();
+  const daysSinceCreation = (now - created) / (1000 * 60 * 60 * 24);
+
+  // Clamp negative days (future timestamps) to 0
+  if (daysSinceCreation < 0) return 1.0;
+
+  const score = Math.pow(0.5, daysSinceCreation / config.halfLifeDays);
+  return Math.max(score, config.minimumScore);
+}
+
+/**
+ * Apply decay to a list of entries with timestamps
+ * Returns entries sorted by decayed score (highest first)
+ */
+export function applyDecay<T extends { timestamp?: Date; created?: Date; entry_metadata?: string }>(
+  entries: T[],
+  config: DecayConfig
+): (T & { decayedScore: number; pinned: boolean })[] {
+  return entries
+    .map(entry => {
+      // Parse metadata to check for pinned status
+      let metadata: any = {};
+      if ((entry as any).entry_metadata) {
+        try {
+          metadata = JSON.parse((entry as any).entry_metadata);
+        } catch {}
+      }
+
+      const pinned = metadata.pinned === true;
+      const ts = entry.timestamp || entry.created || new Date();
+      const decayedScore = pinned ? 1.0 : calculateDecay(ts, config);
+
+      return { ...entry, decayedScore, pinned };
+    })
+    .sort((a, b) => b.decayedScore - a.decayedScore);
+}
+
+/**
+ * Load decay configuration from config file
+ */
+function loadDecayConfig(projectPath: string): DecayConfig {
+  // Try project-specific config first
+  const projectConfigPath = join(projectPath, '.claude', 'config', 'memory.json');
+  if (existsSync(projectConfigPath)) {
+    try {
+      const config = JSON.parse(readFileSync(projectConfigPath, 'utf-8'));
+      return { ...DEFAULT_DECAY_CONFIG, ...config.decay };
+    } catch (error) {
+      console.error(`[WorkshopClient] Failed to parse ${projectConfigPath}:`, error);
+    }
+  }
+
+  // Try package config
+  try {
+    const __dirname = dirname(fileURLToPath(import.meta.url));
+    const packageConfigPath = join(__dirname, '..', 'config', 'memory.json');
+    if (existsSync(packageConfigPath)) {
+      const config = JSON.parse(readFileSync(packageConfigPath, 'utf-8'));
+      return { ...DEFAULT_DECAY_CONFIG, ...config.decay };
+    }
+  } catch (error) {
+    console.error(`[WorkshopClient] Failed to load package config:`, error);
+  }
+
+  return DEFAULT_DECAY_CONFIG;
+}
+
 export class WorkshopClient {
   private workspacePath: string;
+  private projectPath: string;
+  private decayConfig: DecayConfig;
 
   constructor(projectPath: string) {
+    this.projectPath = projectPath;
     // Workshop uses .claude/memory as workspace
     this.workspacePath = `${projectPath}/.claude/memory`;
+    // Load decay configuration
+    this.decayConfig = loadDecayConfig(projectPath);
+    if (this.decayConfig.enabled) {
+      console.error(`[WorkshopClient] Memory decay enabled: ${this.decayConfig.halfLifeDays}-day half-life`);
+    }
     // Attempt symlink creation (non-blocking, logs on failure)
     this.ensureWorkshopSymlink().catch(() => {});
   }
@@ -123,12 +214,16 @@ export class WorkshopClient {
 
   /**
    * Query decisions from Workshop using SQLite
+   * When decay is enabled, applies time-weighted scoring
    */
   async queryDecisions(query: string, limit = 10): Promise<Decision[]> {
     const db = this.openDatabase();
     if (!db) return [];
 
     try {
+      // Fetch more entries when decay is enabled to ensure good coverage after re-ranking
+      const fetchLimit = this.decayConfig.enabled ? limit * 3 : limit;
+
       const sql = `
         SELECT id, type, content, reasoning, timestamp, entry_metadata
         FROM entries
@@ -137,9 +232,9 @@ export class WorkshopClient {
         ORDER BY timestamp DESC
         LIMIT ?
       `;
-      const rows = db.prepare(sql).all(query, query, limit) as any[];
+      const rows = db.prepare(sql).all(query, query, fetchLimit) as any[];
 
-      return rows.map(row => {
+      let results: Decision[] = rows.map(row => {
         let metadata: any = {};
         if (row.entry_metadata) {
           try {
@@ -159,8 +254,25 @@ export class WorkshopClient {
           reasoning: row.reasoning || '',
           context: metadata.context,
           tags: metadata.tags || [],
-        };
+          entry_metadata: row.entry_metadata, // Keep for decay processing
+        } as Decision & { entry_metadata?: string };
       });
+
+      // Apply decay if enabled
+      if (this.decayConfig.enabled) {
+        const decayed = applyDecay(results, this.decayConfig);
+        results = decayed.slice(0, limit).map(item => {
+          const { entry_metadata, ...rest } = item as any;
+          return rest as Decision;
+        });
+      } else {
+        results = results.slice(0, limit).map(item => {
+          const { entry_metadata, ...rest } = item as any;
+          return rest as Decision;
+        });
+      }
+
+      return results;
     } catch (error: any) {
       console.error(`[WorkshopClient] SQLite error in queryDecisions:`, error.message);
       console.error(`[WorkshopClient] Database path: ${this.getDbPath()}`);
@@ -172,6 +284,7 @@ export class WorkshopClient {
 
   /**
    * Query standards/gotchas from Workshop using SQLite
+   * When decay is enabled, applies time-weighted scoring
    */
   async queryStandards(domain: string): Promise<Standard[]> {
     const db = this.openDatabase();
@@ -187,7 +300,7 @@ export class WorkshopClient {
       `;
       const rows = db.prepare(sql).all(domain) as any[];
 
-      return rows.map(row => {
+      let results: Standard[] = rows.map(row => {
         let metadata: any = {};
         if (row.entry_metadata) {
           try {
@@ -203,8 +316,25 @@ export class WorkshopClient {
           cost: metadata.cost || '',
           rule: row.reasoning || '',
           enforced_count: 0,
-        };
+          entry_metadata: row.entry_metadata, // Keep for decay processing
+        } as Standard & { entry_metadata?: string };
       });
+
+      // Apply decay if enabled
+      if (this.decayConfig.enabled) {
+        const decayed = applyDecay(results, this.decayConfig);
+        results = decayed.map(item => {
+          const { entry_metadata, ...rest } = item as any;
+          return rest as Standard;
+        });
+      } else {
+        results = results.map(item => {
+          const { entry_metadata, ...rest } = item as any;
+          return rest as Standard;
+        });
+      }
+
+      return results;
     } catch (error: any) {
       console.error(`[WorkshopClient] SQLite error in queryStandards:`, error.message);
       console.error(`[WorkshopClient] Database path: ${this.getDbPath()}`);
@@ -216,12 +346,16 @@ export class WorkshopClient {
 
   /**
    * Query task history from Workshop using SQLite
+   * When decay is enabled, applies time-weighted scoring
    */
   async queryTaskHistory(query: string, limit = 10): Promise<TaskHistory[]> {
     const db = this.openDatabase();
     if (!db) return [];
 
     try {
+      // Fetch more entries when decay is enabled to ensure good coverage after re-ranking
+      const fetchLimit = this.decayConfig.enabled ? limit * 3 : limit;
+
       const sql = `
         SELECT id, type, content, reasoning, timestamp, entry_metadata
         FROM entries
@@ -231,9 +365,9 @@ export class WorkshopClient {
         ORDER BY timestamp DESC
         LIMIT ?
       `;
-      const rows = db.prepare(sql).all(query, limit) as any[];
+      const rows = db.prepare(sql).all(query, fetchLimit) as any[];
 
-      return rows.map(row => {
+      let results: TaskHistory[] = rows.map(row => {
         let metadata: any = {};
         if (row.entry_metadata) {
           try {
@@ -257,8 +391,25 @@ export class WorkshopClient {
           outcome: outcome as 'success' | 'failure' | 'partial',
           files_modified: metadata.files_modified || [],
           learnings: row.reasoning || '',
-        };
+          entry_metadata: row.entry_metadata, // Keep for decay processing
+        } as TaskHistory & { entry_metadata?: string };
       });
+
+      // Apply decay if enabled
+      if (this.decayConfig.enabled) {
+        const decayed = applyDecay(results, this.decayConfig);
+        results = decayed.slice(0, limit).map(item => {
+          const { entry_metadata, ...rest } = item as any;
+          return rest as TaskHistory;
+        });
+      } else {
+        results = results.slice(0, limit).map(item => {
+          const { entry_metadata, ...rest } = item as any;
+          return rest as TaskHistory;
+        });
+      }
+
+      return results;
     } catch (error: any) {
       console.error(`[WorkshopClient] SQLite error in queryTaskHistory:`, error.message);
       console.error(`[WorkshopClient] Database path: ${this.getDbPath()}`);

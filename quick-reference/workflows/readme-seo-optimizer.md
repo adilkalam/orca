@@ -1,4 +1,4 @@
-# OS 3.0 SEO Optimizer Lane Quick Reference
+# OS 4.0 SEO Optimizer Lane Quick Reference
 
 **Lane:** SEO Optimizer (Existing Pages)  
 **Domain:** `seo-optimizer`  
@@ -140,4 +140,4 @@ Recommended patterns:
 
 ---
 
-_Version: OS 3.0.0 (SEO Optimizer Lane)_ 
+_Version: OS 4.0.0 (SEO Optimizer Lane)_ 

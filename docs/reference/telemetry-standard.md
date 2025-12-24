@@ -1,8 +1,8 @@
-# Telemetry Standard (OS 3.0)
+# Telemetry Standard (OS 4.0)
 
 **Version:** 3.0.0
 **Status:** Active
-**Effective:** OS 3.0
+**Effective:** OS 4.0
 
 ---
 
@@ -313,4 +313,4 @@ Phase 2 (Intelligence):
 
 ---
 
-*Part of OS 3.0*
+*Part of OS 4.0*
