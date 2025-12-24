@@ -31,7 +31,7 @@ You ask Claude to build something. It starts coding immediately. Picks a framewo
 
 This happens because the reasoning happens *after* the commitment, not before.
 
-```diff
+```
 + ORCA flips this.
 +
 + Before any code, Claude surfaces questions and assumptions.
@@ -52,7 +52,7 @@ After planning, you have a detailed requirements spec—scope defined, edge case
 
 Specialized agents work through the implementation: architecture, then components, then integration, then verification. Each phase feeds the next. The system coordinates without you babysitting every step.
 
-```diff
+```
 + "Build me an iOS app to track all my subscriptions."
 +
 + After planning together, ORCA works through it—
@@ -70,7 +70,7 @@ Claude says "done!" You check. The code doesn't compile. The UI is broken. Tests
 
 This happens because Claude has no felt experience of failure. "This broke" is just tokens, not pain.
 
-```diff
+```
 + ORCA creates artificial consequences.
 +
 + Verification gates require evidence—build must pass, tests must run,
@@ -86,7 +86,7 @@ This happens because Claude has no felt experience of failure. "This broke" is j
 
 Every Claude Code session starts blank. You explained your architecture yesterday. Today it asks again. You're re-teaching the same context over and over—the same decisions, the same constraints, the same "no, we tried that and it didn't work."
 
-```diff
+```
 + ORCA gives Claude memory:
 +
 + - Decisions and the reasoning behind them
