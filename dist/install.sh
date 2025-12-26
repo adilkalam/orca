@@ -15,7 +15,7 @@ NC='\033[0m' # No Color
 BOLD='\033[1m'
 
 # Configuration
-ORCA_VERSION="4.1.0"
+ORCA_VERSION="4.2.0"
 CLAUDE_DIR="$HOME/.claude"
 BACKUP_DIR="$HOME/.claude-backup-$(date +%Y%m%d-%H%M%S)"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -188,6 +188,7 @@ install_orca_files() {
         "agents/research"
         "agents/seo"
         "agents/data"
+        "agents/orca-dev"
         "commands"
         "skills"
         "hooks"
@@ -216,14 +217,14 @@ install_orca_files() {
 
     # Copy agents
     info "Installing agents..."
-    for domain in dev iOS expo research seo data; do
+    for domain in dev iOS expo research seo data orca-dev; do
         if [ -d "$ORCA_ROOT/agents/$domain" ]; then
             cp -r "$ORCA_ROOT/agents/$domain/"* "$CLAUDE_DIR/agents/$domain/" 2>/dev/null || true
         fi
     done
     # Copy root-level shared agents
     cp "$ORCA_ROOT/agents/"*.md "$CLAUDE_DIR/agents/" 2>/dev/null || true
-    success "Agents installed (89 agents across 6 domains)"
+    success "Agents installed (97 agents across 7 domains)"
 
     # Copy commands (excluding domain-specific)
     info "Installing commands..."

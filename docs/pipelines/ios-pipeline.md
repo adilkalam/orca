@@ -1,13 +1,13 @@
 # iOS Domain Pipeline
 
-**Status:** OS 4.1 Core Pipeline (Native iOS)
+**Status:** OS 4.2 Core Pipeline (Native iOS)
 **Last Updated:** 2025-11-27
 
 ## Overview
 
 The iOS pipeline handles **native iOS app development** using Swift 6.x and modern Apple frameworks (SwiftUI, UIKit, Swift Concurrency). It combines:
 
-- OS 4.1 primitives (ProjectContextServer, phase_state.json, vibe.db, Workshop, constraint framework)
+- OS 4.2 primitives (ProjectContextServer, phase_state.json, vibe.db, Workshop, constraint framework)
 - Memory-first context (Workshop + vibe.db before ProjectContext)
 - Complexity-based routing (simple → light orchestrator, medium/complex → full pipeline)
 - Spec gating (complex tasks require requirements spec)
@@ -20,7 +20,7 @@ Goal: implement and evolve native iOS features with **architecture-aware plans**
 
 ---
 
-## Three-Tier Routing (OS 4.1)
+## Three-Tier Routing (OS 4.2)
 
 The iOS pipeline uses three-tier routing:
 
@@ -66,7 +66,7 @@ Full pipeline with grand-architect planning. Spec required.
 
 ---
 
-## Standards Inputs (OS 4.1 Learning Loop)
+## Standards Inputs (OS 4.2 Learning Loop)
 
 Standards flow into and out of the iOS pipeline:
 

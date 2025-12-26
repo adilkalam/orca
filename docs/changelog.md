@@ -1,5 +1,14 @@
 # Changelog
 
+## v4.2.0 - 2025-12-26
+
+### Changes
+- **Open Source Release**: Cleaned documentation of internal/proprietary references
+- **Version Bump**: Updated all version references from 4.1 to 4.2
+- **Documentation Cleanup**: Removed trading, shopify, mm-, conflict-studies references from public docs
+
+---
+
 ## v4.0.0 - 2025-12-21
 
 ### Major Features
@@ -187,14 +196,14 @@ None. All changes are additive.
 
 ### Documentation Sync
 
-- README.md updated: 85 agents, v2.4.1 references
+- README.md updated: 85 agents, v2.4.2 references
 - docs/readme.md: Added `/think` and `/clear-thought` commands
 - quick-reference/os2-commands.md: New Reasoning Commands section
 - quick-reference/mcps.md: Clear Thought + Stochastic MCPs documented
 
 ---
 
-## v2.4.1 (2025-11-28) – Agent Enrichment
+## v2.4.2 (2025-11-28) – Agent Enrichment
 
 ### Universal Skills
 

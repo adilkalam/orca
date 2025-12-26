@@ -1,8 +1,8 @@
-# Graduated Gate Scoring Standard (OS 4.1)
+# Graduated Gate Scoring Standard (OS 4.2)
 
 **Version:** 3.0.0
 **Status:** Active
-**Effective:** Phase 1 of OS 4.1 migration
+**Effective:** Phase 1 of OS 4.2 migration
 
 ---
 
@@ -297,7 +297,7 @@ New behavior:
 
 ## Implementation Checklist
 
-Gates updated (OS 4.1):
+Gates updated (OS 4.2):
 - [x] nextjs-standards-enforcer
 - [x] nextjs-design-reviewer
 - [x] nextjs-css-architecture-gate
@@ -313,4 +313,4 @@ Gates updated (OS 4.1):
 
 ---
 
-*Part of OS 4.1 Phase 1: Foundation*
+*Part of OS 4.2 Phase 1: Foundation*

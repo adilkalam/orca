@@ -80,7 +80,7 @@ This lane is defined in:
 - `docs/pipelines/nextjs-lane-config.md`
 - `docs/reference/phase-configs/nextjs-phase-config.yaml`
 
-## Context Inheritance Protocol (OS 4.1)
+## Context Inheritance Protocol (OS 4.2)
 
 **BEFORE any context operations, check for inherited context:**
 
@@ -116,7 +116,7 @@ You MUST NOT:
 
 ---
 
-## Context Verification (OS 4.1)
+## Context Verification (OS 4.2)
 
 As a "Seeing Orchestrator" you now have Read, Grep, Glob tools for **verification only**.
 

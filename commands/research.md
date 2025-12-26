@@ -1,5 +1,5 @@
 ---
-description: "OS 4.1 Research lane entrypoint for deep, cited research"
+description: "OS 4.2 Research lane entrypoint for deep, cited research"
 argument-hint: "[--deep] [--time N] <research question>"
 allowed-tools:
   - Task
@@ -25,6 +25,32 @@ Claude Code does not support nested subagent spawning, so YOU must do all delega
 - `research-deep-writer` - Long-form deep research
 - `research-citation-gate` - Citation verification
 - `research-consistency-gate` - Consistency checks
+
+---
+
+## Phase 0: Create Research Folder (MANDATORY FIRST STEP)
+
+**BEFORE doing anything else**, create a dated research folder:
+
+```bash
+# Generate folder name: YYYY-MM-DD-Topic-Slug
+# Example: 2025-12-25-Technical-Trading-Patterns
+RESEARCH_DIR=".claude/research/$(date +%Y-%m-%d)-<Topic-Slug>"
+mkdir -p "$RESEARCH_DIR/evidence"
+```
+
+**Naming rules for Topic-Slug:**
+- Use 2-4 words from the research question
+- Title case with hyphens
+- Examples: `LLM-Reasoning-Techniques`, `Chart-Pattern-Detection`, `React-State-Management`
+
+**All research output goes into this folder:**
+- `$RESEARCH_DIR/evidence/` - Evidence Notes from subagents
+- `$RESEARCH_DIR/synthesis.md` - Evidence synthesis
+- `$RESEARCH_DIR/report.md` - Final research report
+- `$RESEARCH_DIR/temp/` - Temporary crawl data (cleaned up after)
+
+**CRITICAL: Pass the $RESEARCH_DIR path to ALL subagents in their prompts.**
 
 ---
 
@@ -87,14 +113,17 @@ Claude Code runs on Node.js with ~4GB heap. Even 2 parallel subagents can crash.
 
 For EACH subquestion:
 
-1. **Spawn ONE subagent**:
+1. **Spawn ONE subagent** (pass $RESEARCH_DIR in prompt):
 ```
 Task tool call:
   subagent_type: "research-web-search-subagent"
   prompt: |
     Research subquestion: [specific question]
     Timeframe: [recency requirements if any]
-    Write Evidence Note to .claude/research/evidence/
+
+    RESEARCH_DIR: [full path, e.g., .claude/research/2025-12-25-Technical-Trading]
+    Write Evidence Note to: $RESEARCH_DIR/evidence/
+    Use temp folder: $RESEARCH_DIR/temp/
 ```
 
 2. **Wait for it to complete and return**
@@ -120,12 +149,12 @@ Task tool call:
 
 After all subagents return:
 
-1. Read all Evidence Notes from `.claude/research/evidence/`
+1. Read all Evidence Notes from `$RESEARCH_DIR/evidence/`
 2. Check for gaps or conflicts
 3. If critical gaps AND iteration < 3: spawn more subagents for gaps
 4. If iteration >= 3 OR gaps minor: proceed to writing
 
-Document synthesis in `.claude/research/evidence/research-synthesis.md`
+Document synthesis in `$RESEARCH_DIR/synthesis.md`
 
 ---
 
@@ -139,10 +168,10 @@ Task tool call:
   subagent_type: "research-answer-writer"
   prompt: |
     Write research report on: [topic]
-    Evidence files:
-    - .claude/research/evidence/[file1].md
-    - .claude/research/evidence/[file2].md
-    ...
+
+    RESEARCH_DIR: [full path]
+    Evidence files: $RESEARCH_DIR/evidence/*.md
+    Output to: $RESEARCH_DIR/report.md
 ```
 
 **For --deep research:**
@@ -151,7 +180,10 @@ Task tool call:
   subagent_type: "research-deep-writer"
   prompt: |
     Write deep research report on: [topic]
-    Evidence files: [list all evidence files]
+
+    RESEARCH_DIR: [full path]
+    Evidence files: $RESEARCH_DIR/evidence/*.md
+    Output to: $RESEARCH_DIR/report.md
 ```
 
 ---
@@ -185,7 +217,8 @@ Return the final report to user with:
 - The research findings
 - Source citations
 - Any RA tags from evidence (LOW_EVIDENCE, SOURCE_DISAGREEMENT, etc.)
-- Path to the report file if saved
+- **Full path to the research folder**: `$RESEARCH_DIR`
+- Contents: `$RESEARCH_DIR/report.md`, `$RESEARCH_DIR/synthesis.md`, `$RESEARCH_DIR/evidence/`
 
 ---
 

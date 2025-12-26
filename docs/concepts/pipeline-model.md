@@ -1,6 +1,6 @@
 # Pipeline Model
 
-OS 4.1 uses a **multi-lane pipeline architecture** to handle different types of development work. Each "lane" is a domain-specific pipeline with its own agents, phases, and gates.
+OS 4.2 uses a **multi-lane pipeline architecture** to handle different types of development work. Each "lane" is a domain-specific pipeline with its own agents, phases, and gates.
 
 ## Core Concepts
 
@@ -50,7 +50,7 @@ Request
 
 ### Agent Roles
 
-OS 4.1 enforces strict role separation:
+OS 4.2 enforces strict role separation:
 
 #### Orchestrators (Never Write Code)
 - **Commands**: `/orca`, `/ios`, `/nextjs`, etc.

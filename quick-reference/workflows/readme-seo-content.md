@@ -1,4 +1,4 @@
-# OS 4.1 SEO Lane Quick Reference
+# OS 4.2 SEO Lane Quick Reference
 
 **Lane:** SEO Content
 **Domain:** `seo`
@@ -15,11 +15,11 @@ Use for:
 - Content optimization
 - Quality review of existing content
 
-**Not for:** Technical SEO (site speed, schema markup) - use Next.js or Shopify lanes.
+**Not for:** Technical SEO (site speed, schema markup) - use Next.js lane.
 
 ---
 
-## 2. Agents (4 total)
+## 2. Agents (5 total)
 
 | Agent | Role |
 |-------|------|
@@ -27,6 +27,7 @@ Use for:
 | `seo-brief-strategist` | Transform research into production-ready briefs |
 | `seo-draft-writer` | Long-form SEO content with natural clarity |
 | `seo-quality-guardian` | Quality gates, standards enforcement, compliance |
+| `seo-optimizer` | Content optimization against SERP competitors |
 
 ---
 
@@ -64,7 +65,7 @@ Use for:
 ## 4. Example Commands
 
 ```bash
-# Full pipeline
+# Full content pipeline
 /seo Write a comprehensive guide to BPC-157 benefits
 
 # Research only
@@ -73,8 +74,14 @@ Use for:
 # Brief only
 /orca Create SEO brief for homepage optimization
 
-# Quality review
-/orca Review and optimize existing blog post at /blog/peptides
+# Optimize existing draft (pre-publish)
+/seo --optimize draft /docs/glp1-guide.md --keyword "glp1 comparison"
+
+# Optimize live URL (post-publish)
+/seo --optimize url https://example.com/article --keyword "target keyword"
+
+# Create content then optimize
+/seo --with-optimize "BPC-157 benefits guide"
 ```
 
 ---
@@ -105,4 +112,4 @@ Use for:
 
 ---
 
-_Version: OS 4.1_
+_Version: OS 4.2_

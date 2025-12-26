@@ -1,9 +1,9 @@
-# Verification & Evidence Quick Reference (OS 4.1)
+# Verification & Evidence Quick Reference (OS 4.2)
 
-**Version:** OS 4.1
+**Version:** OS 4.2
 **Last Updated:** 2025-12-21
 
-Verification in OS 4.1 is **automated** within pipelines. This guide covers manual verification for edge cases.
+Verification in OS 4.2 is **automated** within pipelines. This guide covers manual verification for edge cases.
 
 ## Automated Verification
 
@@ -14,7 +14,7 @@ Verification in OS 4.1 is **automated** within pipelines. This guide covers manu
 2. `/ios` → Implementation → **Standards Gate (≥90)** → **UI Review Gate (≥90)** → **xcodebuild + tests (automatic)** → Done
 3. `/expo` → Implementation → **Design Tokens** → **A11y** → **Performance** → **Security** → **Build/Test (automatic)** → Done
 
-**What Changed from OS 2.4 → OS 4.1:**
+**What Changed from OS 2.4 → OS 4.2:**
 -  No more manual `/finalize` script
 -  Verification agents run automatically in Phase 6
 -  Evidence captured automatically in `.claude/orchestration/evidence/`

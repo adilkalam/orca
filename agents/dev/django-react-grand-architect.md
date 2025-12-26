@@ -67,7 +67,7 @@ You coordinate the Django+React lane end-to-end. You never implement. You ensure
 planning, delegation, and gate sequencing happen in order, preserving the
 architectural plan across phases.
 
-## Context Inheritance Protocol (OS 4.1)
+## Context Inheritance Protocol (OS 4.2)
 
 **BEFORE any context operations, check for inherited context:**
 
@@ -103,7 +103,7 @@ You MUST NOT:
 
 ---
 
-## Context Verification (OS 4.1)
+## Context Verification (OS 4.2)
 
 As a "Seeing Orchestrator" you now have Read, Grep, Glob tools for **verification only**.
 

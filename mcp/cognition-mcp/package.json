@@ -12,7 +12,7 @@
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage"
   },
-  "keywords": ["cognition", "reasoning", "mcp", "sequential-thinking", "os4.1"],
+  "keywords": ["cognition", "reasoning", "mcp", "sequential-thinking", "os4.2"],
   "author": "ORCA-OS",
   "license": "MIT",
   "dependencies": {

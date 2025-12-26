@@ -215,7 +215,7 @@ ios-simulator-skill/
       },
       "issue": "Interactive button missing accessibility label",
       "recommendation": "Add accessibilityLabel property with descriptive text",
-      "wcag_guideline": "WCAG 2.1 - 4.1.2 Name, Role, Value"
+      "wcag_guideline": "WCAG 2.1 - 4.2.2 Name, Role, Value"
     }
   ],
   "elements_checked": 45

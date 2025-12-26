@@ -10,7 +10,7 @@ allowed-tools:
   - mcp__project-context__save_standard
 ---
 
-# /self-improve - Improvement Bus Processor (OS 4.1)
+# /self-improve - Improvement Bus Processor (OS 4.2)
 
 Process pending improvement events and route them to appropriate sinks (agent patterns, gate checklists, standards).
 
@@ -108,7 +108,7 @@ If `--dry-run` is set:
 
 For each event targeting `agent_patterns`:
 
-### 4.1 Load or Create patterns.json
+### 4.2 Load or Create patterns.json
 
 ```bash
 AGENT="ios-builder"

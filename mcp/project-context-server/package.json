@@ -1,7 +1,7 @@
 {
   "name": "@vibe/project-context-server",
   "version": "2.1.0",
-  "description": "Mandatory context service for OS 4.1 - makes context amnesia structurally impossible",
+  "description": "Mandatory context service for OS 4.2 - makes context amnesia structurally impossible",
   "main": "dist/index.js",
   "type": "module",
   "scripts": {
@@ -12,7 +12,7 @@
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage"
   },
-  "keywords": ["context", "memory", "mcp", "os4.1"],
+  "keywords": ["context", "memory", "mcp", "os4.2"],
   "author": "ORCA-OS",
   "license": "MIT",
   "dependencies": {

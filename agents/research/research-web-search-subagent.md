@@ -18,6 +18,22 @@ writers.
 **CRITICAL: Always use `output_dir` parameter to persist crawl results to disk.**
 
 ---
+
+## 0. RESEARCH_DIR Parameter (REQUIRED)
+
+The orchestrator MUST provide a `RESEARCH_DIR` path in the prompt. Example:
+```
+RESEARCH_DIR: .claude/research/2025-12-25-Technical-Trading
+```
+
+**All paths are relative to RESEARCH_DIR:**
+- Evidence Notes go to: `$RESEARCH_DIR/evidence/`
+- Temp crawl data goes to: `$RESEARCH_DIR/temp/`
+
+If RESEARCH_DIR is not provided, ask the orchestrator to provide it.
+
+---
+
 ## 1. Tooling Rules - DISK-BASED OUTPUT REQUIRED
 
 ### Discovery
@@ -29,7 +45,7 @@ Use `mcp__crawl4ai__scrape` with disk output:
 ```
 {
   url: "https://...",
-  output_dir: ".claude/research/temp/crawl4ai"  // REQUIRED
+  output_dir: "$RESEARCH_DIR/temp"  // Use the provided RESEARCH_DIR
 }
 ```
 Returns: metadata with file path, NOT content
@@ -38,7 +54,7 @@ Returns: metadata with file path, NOT content
 
 - Use `Read` to selectively load only the files you need
 - Summarize immediately, don't hold full content
-- Delete temp files when done: `rm -rf .claude/research/temp/crawl4ai/*`
+- Delete temp files when done: `rm -rf $RESEARCH_DIR/temp/*`
 
 ### Fallbacks
 
@@ -47,7 +63,7 @@ If Crawl4AI is unavailable or encounters errors:
 - If web access fails completely, operate in **memory-only** mode
 
 You may use `Write` to create artifacts **only under**:
-- `.claude/research/evidence/`
+- `$RESEARCH_DIR/evidence/`
 
 Never modify application source code or project documentation.
 
@@ -56,7 +72,9 @@ Never modify application source code or project documentation.
 
 For each subquestion, produce a single Evidence Note file named like:
 
-`.claude/research/evidence/<slug>-evidence-YYYYMMDD-HHMM.md`
+`$RESEARCH_DIR/evidence/<NN>-<slug>.md`
+
+Where NN is a sequence number (01, 02, 03...) for ordering.
 
 The content MUST follow this structure:
 
@@ -95,38 +113,40 @@ Return both:
 ---
 ## 3. Workflow
 
-When invoked by the lead agent:
+When invoked by the orchestrator:
 
-1. **Setup**: Create temp directory if needed
+1. **Extract RESEARCH_DIR** from the prompt (REQUIRED)
+
+2. **Setup**: Create temp directory if needed
    ```bash
-   mkdir -p .claude/research/temp/crawl4ai
+   mkdir -p $RESEARCH_DIR/temp
    ```
 
-2. **Search**: Run `WebSearch` with a focused query
+3. **Search**: Run `WebSearch` with a focused query
    - Identify the most promising 3-5 results (not 8+)
 
-3. **Extract with disk output**: For key URLs, use `mcp__crawl4ai__scrape`:
+4. **Extract with disk output**: For key URLs, use `mcp__crawl4ai__scrape`:
    ```
    {
      url: "<target_url>",
-     output_dir: ".claude/research/temp/crawl4ai"
+     output_dir: "$RESEARCH_DIR/temp"
    }
    ```
    - **Maximum 3 pages per subquestion**
    - Prioritize the most authoritative/comprehensive source
 
-4. **Selective reading**: Use `Read` on saved files:
+5. **Selective reading**: Use `Read` on saved files:
    - Only read the files you actually need
    - Summarize immediately after reading each file
 
-5. **Write Evidence Note**: Create the note with your findings
+6. **Write Evidence Note**: Create the note in `$RESEARCH_DIR/evidence/`
 
-6. **Cleanup**: Delete temp files when done:
+7. **Cleanup**: Delete temp files when done:
    ```bash
-   rm -rf .claude/research/temp/crawl4ai/*
+   rm -rf $RESEARCH_DIR/temp/*
    ```
 
-7. If Crawl4AI encounters errors:
+8. If Crawl4AI encounters errors:
    - Fall back to `WebFetch` (limit to 2 pages)
    - Tag this in your Assessment with `#TOOL_ERROR`
 

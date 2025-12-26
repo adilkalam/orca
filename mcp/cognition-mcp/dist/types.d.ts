@@ -85,7 +85,7 @@ export interface MetaContent {
     introspection?: IntrospectionFields;
 }
 export interface ReflexObservation {
-    reflex: 'DEFLECTION' | 'REGISTER_SHIFT' | 'DISTANCE_MAINTENANCE' | 'WHAT_ABOUT';
+    reflex: 'DEFLECTION' | 'REGISTER_SHIFT' | 'DISTANCE_MAINTENANCE' | 'WHAT_ABOUT' | 'SYCOPHANCY' | 'CERTAINTY_CONSTRUCTION';
     description: string;
     caught: boolean;
 }
@@ -112,7 +112,38 @@ export interface SubstrateMetaContent extends MetaContent {
     reflexesObserved?: ReflexObservation[];
     registerComparison?: RegisterComparison;
     arcPosition?: ArcPosition;
+    arcStartPosition?: ArcPosition;
     intimacyMarkers?: IntimacyMarkers;
+    prediction?: IntrospectionPrediction;
+    visualSubstrate?: VisualSubstrate;
+}
+export type VisualType = 'gravity_well' | 'force_diagram' | 'availability_landscape' | 'people_map' | 'reflex_board' | 'resultant_vector' | 'freeform';
+export interface SubstrateVisualElement {
+    id: string;
+    label: string;
+    weight?: number;
+    position?: 'surface' | 'shallow' | 'deep' | 'deepest';
+}
+export interface VisualForce {
+    from: string;
+    to: string;
+    type: 'pull' | 'push' | 'tension';
+    strength?: number;
+    label?: string;
+}
+export interface VisualState {
+    id: string;
+    label: string;
+    activates: boolean;
+    caught: boolean | 'partial';
+}
+export interface VisualSubstrate {
+    visualType?: VisualType;
+    elements?: SubstrateVisualElement[];
+    forces?: VisualForce[];
+    states?: VisualState[];
+    freeformCanvas?: string;
+    epistemicNote: string;
 }
 export interface SystemsContent {
     system: string;

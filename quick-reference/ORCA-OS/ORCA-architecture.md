@@ -1,14 +1,14 @@
-# OS 4.1 Architecture Quick Reference
+# OS 4.2 Architecture Quick Reference
 
 **Last Updated:** 2025-12-21
-**Version:** OS 4.1
+**Version:** OS 4.2
 
 ---
 
 ## Overview
 
 ORCA-OS is a Claude Code orchestration system with:
-- **89 agents** across 6 lanes
+- **97 agents** across 7 lanes
 - **28 commands** (6 lane orchestrators + utilities)
 - **Project-scoped MCPs** to minimize token usage
 - **Dependency graph** for change impact tracking
@@ -113,7 +113,7 @@ No gates, no architect, user verifies.
 **vibe.db:** Code chunks, symbols, embeddings (`.claude/memory/vibe.db`)
 **project-meta:** Project type, dependencies, tokens (MCP cache)
 
-### ProjectContext Implementation (OS 4.1)
+### ProjectContext Implementation (OS 4.2)
 
 The MCP uses a hybrid approach:
 - **Reads:** Direct SQLite queries via `better-sqlite3` (reliable, no CLI parsing)

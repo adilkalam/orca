@@ -1,5 +1,5 @@
 ---
-description: "OS 4.1 orchestrator entrypoint for Next.js frontend tasks"
+description: "OS 4.2 orchestrator entrypoint for Next.js frontend tasks"
 argument-hint: "[-tweak] <task description or requirement ID>"
 allowed-tools:
   - Task
@@ -36,7 +36,7 @@ Even `-tweak` delegates to a builder. It skips gates, not agents.
 
 ---
 
-# /nextjs - Next.js Lane Orchestrator (OS 4.1)
+# /nextjs - Next.js Lane Orchestrator (OS 4.2)
 
 Use this command for Next.js / frontend UI work.
 
@@ -72,7 +72,7 @@ No flag → Default path (light + design gates)
 
 ---
 
-## 0.1 Telemetry (OS 4.1) - MUST EXECUTE
+## 0.1 Telemetry (OS 4.2) - MUST EXECUTE
 
 **Reference:** `docs/reference/telemetry-standard.md`
 
@@ -250,7 +250,7 @@ If memory hits are relevant:
 - Note them for context
 - May skip or reduce ProjectContext query scope
 
-### 1.1.1 Reflexion Loading & Constraint Injection (OS 4.1)
+### 1.1.1 Reflexion Loading & Constraint Injection (OS 4.2)
 
 Load relevant reflexions from past gate failures:
 
@@ -261,7 +261,7 @@ workshop --workspace .claude/memory search "reflexion" -t nextjs --limit 5 2>/de
 Pass any reflexions found to agents in the ContextBundle under `prior_reflexions`.
 This helps agents avoid repeating past mistakes.
 
-**Constraint Injection (OS 4.1):**
+**Constraint Injection (OS 4.2):**
 
 For agents that generated past reflexions, synthesize constraint bullets and inject into `phase_state.plan.constraints`:
 
@@ -585,7 +585,7 @@ Initialize phase_state.json:
 
 Delegate to `nextjs-grand-architect` with Context Inheritance:
 
-**Context Inheritance Protocol (OS 4.1):**
+**Context Inheritance Protocol (OS 4.2):**
 
 When delegating, wrap the ContextBundle with inheritance headers:
 

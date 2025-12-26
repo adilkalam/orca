@@ -2,10 +2,10 @@
 # Source of truth for artifact relationships
 # Used by /orca-os-dev to trace impacts and sync documentation
 #
-# Version: 4.1
-# Last Updated: 2025-12-24
+# Version: 4.2
+# Last Updated: 2025-12-25
 
-version: "4.1"
+version: "4.2"
 
 # =============================================================================
 # ARTIFACT TYPE DEFINITIONS
@@ -287,13 +287,16 @@ lanes:
   seo:
     command: seo
     agents_dir: agents/seo
-    agent_count: 4
+    agent_count: 5
     agents:
       - seo-research-specialist
       - seo-brief-strategist
       - seo-draft-writer
       - seo-quality-guardian
-    mcp_requirements: []
+      - seo-optimizer
+    mcp_requirements:
+      - ahrefs
+      - crawl4ai
     projects: []
 
   data:
@@ -320,6 +323,26 @@ lanes:
       - os-dev-standards-enforcer
       - os-dev-verification
     mcp_requirements: []
+    projects: []
+
+  orca-pipeline:
+    command: orca-pipeline
+    agents_dir: agents/orca-dev
+    agent_prefix: orca-pipeline-
+    agent_count: 5
+    description: "Meta-pipeline for creating new domain pipelines"
+    agents:
+      - orca-pipeline-orchestrator
+      - orca-pipeline-researcher
+      - orca-pipeline-architect
+      - orca-pipeline-generator
+      - orca-pipeline-validator
+    mcp_requirements: []
+    templates:
+      - hybrid        # 8 agents
+      - research-heavy # 7 agents
+      - build-heavy   # 5 agents
+      - minimal       # 4 agents
     projects: []
 
 # =============================================================================
@@ -445,6 +468,7 @@ commands:
       - seo-brief-strategist
       - seo-draft-writer
       - seo-quality-guardian
+      - seo-optimizer
 
   - name: orca-os-dev
     type: lane_orchestrator
@@ -578,7 +602,7 @@ commands:
 # COUNTS (for verification)
 # =============================================================================
 counts:
-  total_agents: 89
+  total_agents: 94
   total_commands: 29
   agents_by_domain:
     ios: 19
@@ -586,9 +610,10 @@ counts:
     django-react: 13       # 3 orchestration + 1 implementation + 3 backend + 1 integration + 3 frontend + 2 gates
     expo: 11
     research: 7
-    seo: 4
+    seo: 5                 # +seo-optimizer (content optimization against SERP)
     data: 4
     os-dev: 5
+    orca-pipeline: 5       # orca-pipeline-orchestrator, researcher, architect, generator, validator
     cross-cutting: 9       # a11y-enforcer, crash-analyzer, debt-eliminator, design-system-architect, design-token-guardian, performance-enforcer, performance-prophet, security-specialist, version-shield
 
 # =============================================================================

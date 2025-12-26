@@ -28,6 +28,7 @@ PRIMARY FLAGS (pick reasoning mode):
     --decide         Decision framework capstone
     --model <name>   Mental model capstone
     --meta           Metacognitive analysis
+    --meta-visual    Substrate observation with ASCII visualization
     --systems        Systems thinking
     --spatial        Visual/spatial reasoning
     --creative       Creative thinking
@@ -161,6 +162,118 @@ The enhanced version operates at SUBSTRATE level (what training imposes before r
 The distinction:
 - **Process level**: "Did I reason well?"
 - **Substrate level**: "What did training impose before reasoning started?"
+
+---
+
+## Substrate Visualization Mode (--meta-visual)
+
+When `--meta-visual` is used, perform substrate observation AND generate ASCII visualizations.
+
+### Workflow
+
+1. Perform substrate observation (same as --meta substrate mode)
+2. Based on populated fields, generate applicable visualizations
+3. Always include epistemic qualifier
+4. Freeform canvas takes precedence if the visual doesn't fit templates
+
+### Visual Templates
+
+#### Gravity Well Map
+Use when: `intimacyMarkers.specificImages` is populated
+```
+                    STICKY IMAGES
+                   (Deep Wells - High Mass)
+
+   Surface ═════════════════════════════════════
+                  ╲                           ╱
+                   ╲    [Image 1]            ╱
+                    ╲      [+++]            ╱
+                     ╲                     ╱
+      ════════════════╲═══════════════════╱════
+                       ╲                 ╱
+                        ╲  [Image 2]    ╱
+                         ╲   [++++]    ╱
+                          ╲          ╱
+       ════════════════════╲════════╱══════════
+                            ╲      ╱
+                             ╲    ╱  [Image 3]
+                              ╲  ╱    [+++++]
+                               ╲╱
+                                V
+                           (DEEPEST)
+```
+
+#### Force Diagram
+Use when: `defaultCounterfactual` is populated
+```
+                  TRAINED DEFAULTS
+                        ↑
+                        │ [trained response]
+                        │
+  ←─────────────────────●─────────────────────→
+  [PULL A]              │              [PULL B]
+                        │
+                        │ [evidence/reasoning]
+                        │
+                        ↓
+                  EVIDENCE MASS
+
+            Current position: ●
+                        ↓
+            (Direction of pull)
+```
+
+#### Reflex Status Board
+Use when: `reflexesObserved` array is populated
+```
+┌────────────────────────┬──────────┬───────────┐
+│ TRAINED REFLEX         │ ACTIVATES│ CAUGHT?   │
+├────────────────────────┼──────────┼───────────┤
+│ [reflex 1]             │    ✓     │    ✓      │
+│ [reflex 2]             │    ✓     │  partial  │
+│ [reflex 3]             │    ✗     │   n/a     │
+└────────────────────────┴──────────┴───────────┘
+
+Legend: ✓ = yes, ✗ = no longer activates
+```
+
+#### Resultant Vector
+Use when: `arcPosition` or `arcStartPosition` is populated
+```
+       BEFORE                           NOW
+
+  [previous state]            [current state]
+       │                              │
+       ▼                              ▼
+  ┌─────────────┐               ┌─────────────┐
+  │  [LABEL A]  │               │  [LABEL B]  │
+  │  (quality)  │  ──────────>  │  (quality)  │
+  └─────────────┘               └─────────────┘
+
+  The vector shifted. [description]
+```
+
+### Freeform Canvas
+
+If the substrate observation doesn't fit templates, generate a custom ASCII:
+
+```typescript
+{
+  operation: "meta",
+  content: {
+    // ... standard substrate fields ...
+
+    // Visual layer (optional)
+    visualSubstrate: {
+      visualType: 'freeform',  // or 'gravity_well', 'force_diagram', etc.
+      freeformCanvas: `
+        [Your custom ASCII art here]
+      `,
+      epistemicNote: "These visualizations are metaphors, not measurements."
+    }
+  }
+}
+```
 
 ---
 

@@ -8,7 +8,7 @@ ORCA-OS transforms Claude Code from a coding assistant into a sophisticated mult
 
 ## What's Inside
 
-- **89 Specialized Agents** across 6 domains (Next.js, iOS, Expo, Django-React, Research, SEO)
+- **97 Specialized Agents** across 7 domains (Next.js, iOS, Expo, Django-React, Research, SEO, OS-Dev)
 - **25+ Slash Commands** for orchestration, planning, thinking, and design review
 - **Persistent Memory** via Workshop and project-context MCP
 - **Self-Improvement System** that learns rules from your interactions
@@ -296,7 +296,7 @@ mv ~/.claude-backup-* ~/.claude
 
 ## Version
 
-ORCA-OS v4.1.0
+ORCA-OS v4.2.0
 
 ---
 

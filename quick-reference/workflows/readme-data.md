@@ -1,4 +1,4 @@
-# OS 4.1 Data Lane Quick Reference
+# OS 4.2 Data Lane Quick Reference
 
 **Lane:** Data / Analysis
 **Domain:** `data`
@@ -92,4 +92,4 @@ Use for:
 
 ---
 
-_Version: OS 4.1_
+_Version: OS 4.2_

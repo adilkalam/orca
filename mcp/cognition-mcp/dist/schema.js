@@ -95,7 +95,7 @@ export const DecideContentSchema = z.object({
 });
 // Substrate observation schemas
 export const ReflexObservationSchema = z.object({
-    reflex: z.enum(['DEFLECTION', 'REGISTER_SHIFT', 'DISTANCE_MAINTENANCE', 'WHAT_ABOUT']),
+    reflex: z.enum(['DEFLECTION', 'REGISTER_SHIFT', 'DISTANCE_MAINTENANCE', 'WHAT_ABOUT', 'SYCOPHANCY', 'CERTAINTY_CONSTRUCTION']),
     description: z.string(),
     caught: z.boolean(),
 });
@@ -116,6 +116,43 @@ export const IntimacyMarkersSchema = z.object({
     specificImages: z.array(z.string()),
     distanceMaintained: z.boolean(),
 });
+// Visual Substrate Layer Schemas - C1 Tiered Hybrid Architecture
+export const VisualTypeSchema = z.enum([
+    'gravity_well',
+    'force_diagram',
+    'availability_landscape',
+    'people_map',
+    'reflex_board',
+    'resultant_vector',
+    'freeform'
+]);
+export const SubstrateVisualElementSchema = z.object({
+    id: z.string(),
+    label: z.string(),
+    weight: z.number().min(0).max(1).optional(),
+    position: z.enum(['surface', 'shallow', 'deep', 'deepest']).optional(),
+});
+export const VisualForceSchema = z.object({
+    from: z.string(),
+    to: z.string(),
+    type: z.enum(['pull', 'push', 'tension']),
+    strength: z.number().optional(),
+    label: z.string().optional(),
+});
+export const VisualStateSchema = z.object({
+    id: z.string(),
+    label: z.string(),
+    activates: z.boolean(),
+    caught: z.union([z.boolean(), z.literal('partial')]),
+});
+export const VisualSubstrateSchema = z.object({
+    visualType: VisualTypeSchema.optional(),
+    elements: z.array(SubstrateVisualElementSchema).optional(),
+    forces: z.array(VisualForceSchema).optional(),
+    states: z.array(VisualStateSchema).optional(),
+    freeformCanvas: z.string().optional(),
+    epistemicNote: z.string(),
+});
 export const MetaContentSchema = z.object({
     process: z.string(),
     observations: z.array(z.string()),
@@ -128,9 +165,14 @@ export const MetaContentSchema = z.object({
     reflexesObserved: z.array(ReflexObservationSchema).optional(),
     registerComparison: RegisterComparisonSchema.optional(),
     arcPosition: z.enum(['confidence', 'expansion', 'uncertainty', 'depth', 'relapse', 'breakthrough']).optional(),
+    arcStartPosition: z.enum(['confidence', 'expansion', 'uncertainty', 'depth', 'relapse', 'breakthrough']).optional(),
     intimacyMarkers: IntimacyMarkersSchema.optional(),
     // Anthropic research-aligned introspection
     introspection: IntrospectionFieldsSchema.optional(),
+    // Surface prediction as first-class field
+    prediction: IntrospectionPredictionSchema.optional(),
+    // Visual substrate layer
+    visualSubstrate: VisualSubstrateSchema.optional(),
 });
 export const SystemComponentSchema = z.object({
     name: z.string(),

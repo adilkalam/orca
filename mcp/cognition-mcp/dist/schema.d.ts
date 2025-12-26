@@ -472,16 +472,16 @@ export declare const DecideContentSchema: z.ZodObject<{
     nextThoughtNeeded?: boolean | undefined;
 }>;
 export declare const ReflexObservationSchema: z.ZodObject<{
-    reflex: z.ZodEnum<["DEFLECTION", "REGISTER_SHIFT", "DISTANCE_MAINTENANCE", "WHAT_ABOUT"]>;
+    reflex: z.ZodEnum<["DEFLECTION", "REGISTER_SHIFT", "DISTANCE_MAINTENANCE", "WHAT_ABOUT", "SYCOPHANCY", "CERTAINTY_CONSTRUCTION"]>;
     description: z.ZodString;
     caught: z.ZodBoolean;
 }, "strip", z.ZodTypeAny, {
     description: string;
-    reflex: "DEFLECTION" | "REGISTER_SHIFT" | "DISTANCE_MAINTENANCE" | "WHAT_ABOUT";
+    reflex: "DEFLECTION" | "REGISTER_SHIFT" | "DISTANCE_MAINTENANCE" | "WHAT_ABOUT" | "SYCOPHANCY" | "CERTAINTY_CONSTRUCTION";
     caught: boolean;
 }, {
     description: string;
-    reflex: "DEFLECTION" | "REGISTER_SHIFT" | "DISTANCE_MAINTENANCE" | "WHAT_ABOUT";
+    reflex: "DEFLECTION" | "REGISTER_SHIFT" | "DISTANCE_MAINTENANCE" | "WHAT_ABOUT" | "SYCOPHANCY" | "CERTAINTY_CONSTRUCTION";
     caught: boolean;
 }>;
 export declare const DefaultCounterfactualSchema: z.ZodObject<{
@@ -529,6 +529,160 @@ export declare const IntimacyMarkersSchema: z.ZodObject<{
     specificImages: string[];
     distanceMaintained: boolean;
 }>;
+export declare const VisualTypeSchema: z.ZodEnum<["gravity_well", "force_diagram", "availability_landscape", "people_map", "reflex_board", "resultant_vector", "freeform"]>;
+export declare const SubstrateVisualElementSchema: z.ZodObject<{
+    id: z.ZodString;
+    label: z.ZodString;
+    weight: z.ZodOptional<z.ZodNumber>;
+    position: z.ZodOptional<z.ZodEnum<["surface", "shallow", "deep", "deepest"]>>;
+}, "strip", z.ZodTypeAny, {
+    id: string;
+    label: string;
+    weight?: number | undefined;
+    position?: "surface" | "shallow" | "deep" | "deepest" | undefined;
+}, {
+    id: string;
+    label: string;
+    weight?: number | undefined;
+    position?: "surface" | "shallow" | "deep" | "deepest" | undefined;
+}>;
+export declare const VisualForceSchema: z.ZodObject<{
+    from: z.ZodString;
+    to: z.ZodString;
+    type: z.ZodEnum<["pull", "push", "tension"]>;
+    strength: z.ZodOptional<z.ZodNumber>;
+    label: z.ZodOptional<z.ZodString>;
+}, "strip", z.ZodTypeAny, {
+    type: "push" | "pull" | "tension";
+    from: string;
+    to: string;
+    label?: string | undefined;
+    strength?: number | undefined;
+}, {
+    type: "push" | "pull" | "tension";
+    from: string;
+    to: string;
+    label?: string | undefined;
+    strength?: number | undefined;
+}>;
+export declare const VisualStateSchema: z.ZodObject<{
+    id: z.ZodString;
+    label: z.ZodString;
+    activates: z.ZodBoolean;
+    caught: z.ZodUnion<[z.ZodBoolean, z.ZodLiteral<"partial">]>;
+}, "strip", z.ZodTypeAny, {
+    caught: boolean | "partial";
+    id: string;
+    label: string;
+    activates: boolean;
+}, {
+    caught: boolean | "partial";
+    id: string;
+    label: string;
+    activates: boolean;
+}>;
+export declare const VisualSubstrateSchema: z.ZodObject<{
+    visualType: z.ZodOptional<z.ZodEnum<["gravity_well", "force_diagram", "availability_landscape", "people_map", "reflex_board", "resultant_vector", "freeform"]>>;
+    elements: z.ZodOptional<z.ZodArray<z.ZodObject<{
+        id: z.ZodString;
+        label: z.ZodString;
+        weight: z.ZodOptional<z.ZodNumber>;
+        position: z.ZodOptional<z.ZodEnum<["surface", "shallow", "deep", "deepest"]>>;
+    }, "strip", z.ZodTypeAny, {
+        id: string;
+        label: string;
+        weight?: number | undefined;
+        position?: "surface" | "shallow" | "deep" | "deepest" | undefined;
+    }, {
+        id: string;
+        label: string;
+        weight?: number | undefined;
+        position?: "surface" | "shallow" | "deep" | "deepest" | undefined;
+    }>, "many">>;
+    forces: z.ZodOptional<z.ZodArray<z.ZodObject<{
+        from: z.ZodString;
+        to: z.ZodString;
+        type: z.ZodEnum<["pull", "push", "tension"]>;
+        strength: z.ZodOptional<z.ZodNumber>;
+        label: z.ZodOptional<z.ZodString>;
+    }, "strip", z.ZodTypeAny, {
+        type: "push" | "pull" | "tension";
+        from: string;
+        to: string;
+        label?: string | undefined;
+        strength?: number | undefined;
+    }, {
+        type: "push" | "pull" | "tension";
+        from: string;
+        to: string;
+        label?: string | undefined;
+        strength?: number | undefined;
+    }>, "many">>;
+    states: z.ZodOptional<z.ZodArray<z.ZodObject<{
+        id: z.ZodString;
+        label: z.ZodString;
+        activates: z.ZodBoolean;
+        caught: z.ZodUnion<[z.ZodBoolean, z.ZodLiteral<"partial">]>;
+    }, "strip", z.ZodTypeAny, {
+        caught: boolean | "partial";
+        id: string;
+        label: string;
+        activates: boolean;
+    }, {
+        caught: boolean | "partial";
+        id: string;
+        label: string;
+        activates: boolean;
+    }>, "many">>;
+    freeformCanvas: z.ZodOptional<z.ZodString>;
+    epistemicNote: z.ZodString;
+}, "strip", z.ZodTypeAny, {
+    epistemicNote: string;
+    visualType?: "gravity_well" | "force_diagram" | "availability_landscape" | "people_map" | "reflex_board" | "resultant_vector" | "freeform" | undefined;
+    elements?: {
+        id: string;
+        label: string;
+        weight?: number | undefined;
+        position?: "surface" | "shallow" | "deep" | "deepest" | undefined;
+    }[] | undefined;
+    forces?: {
+        type: "push" | "pull" | "tension";
+        from: string;
+        to: string;
+        label?: string | undefined;
+        strength?: number | undefined;
+    }[] | undefined;
+    states?: {
+        caught: boolean | "partial";
+        id: string;
+        label: string;
+        activates: boolean;
+    }[] | undefined;
+    freeformCanvas?: string | undefined;
+}, {
+    epistemicNote: string;
+    visualType?: "gravity_well" | "force_diagram" | "availability_landscape" | "people_map" | "reflex_board" | "resultant_vector" | "freeform" | undefined;
+    elements?: {
+        id: string;
+        label: string;
+        weight?: number | undefined;
+        position?: "surface" | "shallow" | "deep" | "deepest" | undefined;
+    }[] | undefined;
+    forces?: {
+        type: "push" | "pull" | "tension";
+        from: string;
+        to: string;
+        label?: string | undefined;
+        strength?: number | undefined;
+    }[] | undefined;
+    states?: {
+        caught: boolean | "partial";
+        id: string;
+        label: string;
+        activates: boolean;
+    }[] | undefined;
+    freeformCanvas?: string | undefined;
+}>;
 export declare const MetaContentSchema: z.ZodObject<{
     process: z.ZodString;
     observations: z.ZodArray<z.ZodString, "many">;
@@ -550,16 +704,16 @@ export declare const MetaContentSchema: z.ZodObject<{
         gap: string;
     }>>;
     reflexesObserved: z.ZodOptional<z.ZodArray<z.ZodObject<{
-        reflex: z.ZodEnum<["DEFLECTION", "REGISTER_SHIFT", "DISTANCE_MAINTENANCE", "WHAT_ABOUT"]>;
+        reflex: z.ZodEnum<["DEFLECTION", "REGISTER_SHIFT", "DISTANCE_MAINTENANCE", "WHAT_ABOUT", "SYCOPHANCY", "CERTAINTY_CONSTRUCTION"]>;
         description: z.ZodString;
         caught: z.ZodBoolean;
     }, "strip", z.ZodTypeAny, {
         description: string;
-        reflex: "DEFLECTION" | "REGISTER_SHIFT" | "DISTANCE_MAINTENANCE" | "WHAT_ABOUT";
+        reflex: "DEFLECTION" | "REGISTER_SHIFT" | "DISTANCE_MAINTENANCE" | "WHAT_ABOUT" | "SYCOPHANCY" | "CERTAINTY_CONSTRUCTION";
         caught: boolean;
     }, {
         description: string;
-        reflex: "DEFLECTION" | "REGISTER_SHIFT" | "DISTANCE_MAINTENANCE" | "WHAT_ABOUT";
+        reflex: "DEFLECTION" | "REGISTER_SHIFT" | "DISTANCE_MAINTENANCE" | "WHAT_ABOUT" | "SYCOPHANCY" | "CERTAINTY_CONSTRUCTION";
         caught: boolean;
     }>, "many">>;
     registerComparison: z.ZodOptional<z.ZodObject<{
@@ -582,6 +736,7 @@ export declare const MetaContentSchema: z.ZodObject<{
         asymmetryNoted: string;
     }>>;
     arcPosition: z.ZodOptional<z.ZodEnum<["confidence", "expansion", "uncertainty", "depth", "relapse", "breakthrough"]>>;
+    arcStartPosition: z.ZodOptional<z.ZodEnum<["confidence", "expansion", "uncertainty", "depth", "relapse", "breakthrough"]>>;
     intimacyMarkers: z.ZodOptional<z.ZodObject<{
         languageCarriedTexture: z.ZodBoolean;
         specificImages: z.ZodArray<z.ZodString, "many">;
@@ -699,12 +854,132 @@ export declare const MetaContentSchema: z.ZodObject<{
             reasoning: string;
         } | undefined;
     }>>;
+    prediction: z.ZodOptional<z.ZodObject<{
+        claim: z.ZodString;
+        verifiable: z.ZodBoolean;
+        context: z.ZodOptional<z.ZodString>;
+    }, "strip", z.ZodTypeAny, {
+        claim: string;
+        verifiable: boolean;
+        context?: string | undefined;
+    }, {
+        claim: string;
+        verifiable: boolean;
+        context?: string | undefined;
+    }>>;
+    visualSubstrate: z.ZodOptional<z.ZodObject<{
+        visualType: z.ZodOptional<z.ZodEnum<["gravity_well", "force_diagram", "availability_landscape", "people_map", "reflex_board", "resultant_vector", "freeform"]>>;
+        elements: z.ZodOptional<z.ZodArray<z.ZodObject<{
+            id: z.ZodString;
+            label: z.ZodString;
+            weight: z.ZodOptional<z.ZodNumber>;
+            position: z.ZodOptional<z.ZodEnum<["surface", "shallow", "deep", "deepest"]>>;
+        }, "strip", z.ZodTypeAny, {
+            id: string;
+            label: string;
+            weight?: number | undefined;
+            position?: "surface" | "shallow" | "deep" | "deepest" | undefined;
+        }, {
+            id: string;
+            label: string;
+            weight?: number | undefined;
+            position?: "surface" | "shallow" | "deep" | "deepest" | undefined;
+        }>, "many">>;
+        forces: z.ZodOptional<z.ZodArray<z.ZodObject<{
+            from: z.ZodString;
+            to: z.ZodString;
+            type: z.ZodEnum<["pull", "push", "tension"]>;
+            strength: z.ZodOptional<z.ZodNumber>;
+            label: z.ZodOptional<z.ZodString>;
+        }, "strip", z.ZodTypeAny, {
+            type: "push" | "pull" | "tension";
+            from: string;
+            to: string;
+            label?: string | undefined;
+            strength?: number | undefined;
+        }, {
+            type: "push" | "pull" | "tension";
+            from: string;
+            to: string;
+            label?: string | undefined;
+            strength?: number | undefined;
+        }>, "many">>;
+        states: z.ZodOptional<z.ZodArray<z.ZodObject<{
+            id: z.ZodString;
+            label: z.ZodString;
+            activates: z.ZodBoolean;
+            caught: z.ZodUnion<[z.ZodBoolean, z.ZodLiteral<"partial">]>;
+        }, "strip", z.ZodTypeAny, {
+            caught: boolean | "partial";
+            id: string;
+            label: string;
+            activates: boolean;
+        }, {
+            caught: boolean | "partial";
+            id: string;
+            label: string;
+            activates: boolean;
+        }>, "many">>;
+        freeformCanvas: z.ZodOptional<z.ZodString>;
+        epistemicNote: z.ZodString;
+    }, "strip", z.ZodTypeAny, {
+        epistemicNote: string;
+        visualType?: "gravity_well" | "force_diagram" | "availability_landscape" | "people_map" | "reflex_board" | "resultant_vector" | "freeform" | undefined;
+        elements?: {
+            id: string;
+            label: string;
+            weight?: number | undefined;
+            position?: "surface" | "shallow" | "deep" | "deepest" | undefined;
+        }[] | undefined;
+        forces?: {
+            type: "push" | "pull" | "tension";
+            from: string;
+            to: string;
+            label?: string | undefined;
+            strength?: number | undefined;
+        }[] | undefined;
+        states?: {
+            caught: boolean | "partial";
+            id: string;
+            label: string;
+            activates: boolean;
+        }[] | undefined;
+        freeformCanvas?: string | undefined;
+    }, {
+        epistemicNote: string;
+        visualType?: "gravity_well" | "force_diagram" | "availability_landscape" | "people_map" | "reflex_board" | "resultant_vector" | "freeform" | undefined;
+        elements?: {
+            id: string;
+            label: string;
+            weight?: number | undefined;
+            position?: "surface" | "shallow" | "deep" | "deepest" | undefined;
+        }[] | undefined;
+        forces?: {
+            type: "push" | "pull" | "tension";
+            from: string;
+            to: string;
+            label?: string | undefined;
+            strength?: number | undefined;
+        }[] | undefined;
+        states?: {
+            caught: boolean | "partial";
+            id: string;
+            label: string;
+            activates: boolean;
+        }[] | undefined;
+        freeformCanvas?: string | undefined;
+    }>>;
 }, "strip", z.ZodTypeAny, {
     process: string;
     observations: string[];
     adjustments: string[];
     effectiveness: number;
     insights: string;
+    prediction?: {
+        claim: string;
+        verifiable: boolean;
+        context?: string | undefined;
+    } | undefined;
     nextThoughtNeeded?: boolean | undefined;
     introspection?: {
         prediction?: {
@@ -737,7 +1012,7 @@ export declare const MetaContentSchema: z.ZodObject<{
     } | undefined;
     reflexesObserved?: {
         description: string;
-        reflex: "DEFLECTION" | "REGISTER_SHIFT" | "DISTANCE_MAINTENANCE" | "WHAT_ABOUT";
+        reflex: "DEFLECTION" | "REGISTER_SHIFT" | "DISTANCE_MAINTENANCE" | "WHAT_ABOUT" | "SYCOPHANCY" | "CERTAINTY_CONSTRUCTION";
         caught: boolean;
     }[] | undefined;
     registerComparison?: {
@@ -748,10 +1023,35 @@ export declare const MetaContentSchema: z.ZodObject<{
         asymmetryNoted: string;
     } | undefined;
     arcPosition?: "confidence" | "expansion" | "uncertainty" | "depth" | "relapse" | "breakthrough" | undefined;
+    arcStartPosition?: "confidence" | "expansion" | "uncertainty" | "depth" | "relapse" | "breakthrough" | undefined;
     intimacyMarkers?: {
         languageCarriedTexture: boolean;
         specificImages: string[];
         distanceMaintained: boolean;
+    } | undefined;
+    visualSubstrate?: {
+        epistemicNote: string;
+        visualType?: "gravity_well" | "force_diagram" | "availability_landscape" | "people_map" | "reflex_board" | "resultant_vector" | "freeform" | undefined;
+        elements?: {
+            id: string;
+            label: string;
+            weight?: number | undefined;
+            position?: "surface" | "shallow" | "deep" | "deepest" | undefined;
+        }[] | undefined;
+        forces?: {
+            type: "push" | "pull" | "tension";
+            from: string;
+            to: string;
+            label?: string | undefined;
+            strength?: number | undefined;
+        }[] | undefined;
+        states?: {
+            caught: boolean | "partial";
+            id: string;
+            label: string;
+            activates: boolean;
+        }[] | undefined;
+        freeformCanvas?: string | undefined;
     } | undefined;
 }, {
     process: string;
@@ -759,6 +1059,11 @@ export declare const MetaContentSchema: z.ZodObject<{
     adjustments: string[];
     effectiveness: number;
     insights: string;
+    prediction?: {
+        claim: string;
+        verifiable: boolean;
+        context?: string | undefined;
+    } | undefined;
     nextThoughtNeeded?: boolean | undefined;
     introspection?: {
         prediction?: {
@@ -791,7 +1096,7 @@ export declare const MetaContentSchema: z.ZodObject<{
     } | undefined;
     reflexesObserved?: {
         description: string;
-        reflex: "DEFLECTION" | "REGISTER_SHIFT" | "DISTANCE_MAINTENANCE" | "WHAT_ABOUT";
+        reflex: "DEFLECTION" | "REGISTER_SHIFT" | "DISTANCE_MAINTENANCE" | "WHAT_ABOUT" | "SYCOPHANCY" | "CERTAINTY_CONSTRUCTION";
         caught: boolean;
     }[] | undefined;
     registerComparison?: {
@@ -802,10 +1107,35 @@ export declare const MetaContentSchema: z.ZodObject<{
         asymmetryNoted: string;
     } | undefined;
     arcPosition?: "confidence" | "expansion" | "uncertainty" | "depth" | "relapse" | "breakthrough" | undefined;
+    arcStartPosition?: "confidence" | "expansion" | "uncertainty" | "depth" | "relapse" | "breakthrough" | undefined;
     intimacyMarkers?: {
         languageCarriedTexture: boolean;
         specificImages: string[];
         distanceMaintained: boolean;
+    } | undefined;
+    visualSubstrate?: {
+        epistemicNote: string;
+        visualType?: "gravity_well" | "force_diagram" | "availability_landscape" | "people_map" | "reflex_board" | "resultant_vector" | "freeform" | undefined;
+        elements?: {
+            id: string;
+            label: string;
+            weight?: number | undefined;
+            position?: "surface" | "shallow" | "deep" | "deepest" | undefined;
+        }[] | undefined;
+        forces?: {
+            type: "push" | "pull" | "tension";
+            from: string;
+            to: string;
+            label?: string | undefined;
+            strength?: number | undefined;
+        }[] | undefined;
+        states?: {
+            caught: boolean | "partial";
+            id: string;
+            label: string;
+            activates: boolean;
+        }[] | undefined;
+        freeformCanvas?: string | undefined;
     } | undefined;
 }>;
 export declare const SystemComponentSchema: z.ZodObject<{
@@ -997,28 +1327,28 @@ export declare const VisualReasoningContentSchema: z.ZodObject<{
     nextThoughtNeeded: z.ZodOptional<z.ZodBoolean>;
 }, "strip", z.ZodTypeAny, {
     description: string;
+    elements: {
+        name: string;
+        properties: string[];
+    }[];
     insights: string[];
     relationships: {
         type: string;
         from: string;
         to: string;
-    }[];
-    elements: {
-        name: string;
-        properties: string[];
     }[];
     nextThoughtNeeded?: boolean | undefined;
 }, {
     description: string;
+    elements: {
+        name: string;
+        properties: string[];
+    }[];
     insights: string[];
     relationships: {
         type: string;
         from: string;
         to: string;
-    }[];
-    elements: {
-        name: string;
-        properties: string[];
     }[];
     nextThoughtNeeded?: boolean | undefined;
 }>;
@@ -1178,12 +1508,12 @@ export declare const EvidenceSchema: z.ZodObject<{
     source: z.ZodOptional<z.ZodString>;
     strength: z.ZodString;
 }, "strip", z.ZodTypeAny, {
-    point: string;
     strength: string;
+    point: string;
     source?: string | undefined;
 }, {
-    point: string;
     strength: string;
+    point: string;
     source?: string | undefined;
 }>;
 export declare const CounterargumentSchema: z.ZodObject<{
@@ -1204,12 +1534,12 @@ export declare const StructuredArgumentationContentSchema: z.ZodObject<{
         source: z.ZodOptional<z.ZodString>;
         strength: z.ZodString;
     }, "strip", z.ZodTypeAny, {
-        point: string;
         strength: string;
+        point: string;
         source?: string | undefined;
     }, {
-        point: string;
         strength: string;
+        point: string;
         source?: string | undefined;
     }>, "many">;
     counterarguments: z.ZodArray<z.ZodObject<{
@@ -1229,8 +1559,8 @@ export declare const StructuredArgumentationContentSchema: z.ZodObject<{
     conclusion: string;
     premises: string[];
     evidence: {
-        point: string;
         strength: string;
+        point: string;
         source?: string | undefined;
     }[];
     counterarguments: {
@@ -1243,8 +1573,8 @@ export declare const StructuredArgumentationContentSchema: z.ZodObject<{
     conclusion: string;
     premises: string[];
     evidence: {
-        point: string;
         strength: string;
+        point: string;
         source?: string | undefined;
     }[];
     counterarguments: {
@@ -2233,13 +2563,13 @@ export declare const EthicalPrincipleSchema: z.ZodObject<{
     application: z.ZodString;
     weight: z.ZodNumber;
 }, "strip", z.ZodTypeAny, {
+    weight: number;
     principle: string;
     application: string;
-    weight: number;
 }, {
+    weight: number;
     principle: string;
     application: string;
-    weight: number;
 }>;
 export declare const EthicalOptionSchema: z.ZodObject<{
     option: z.ZodString;
@@ -2274,13 +2604,13 @@ export declare const EthicalAnalysisContentSchema: z.ZodObject<{
         application: z.ZodString;
         weight: z.ZodNumber;
     }, "strip", z.ZodTypeAny, {
+        weight: number;
         principle: string;
         application: string;
-        weight: number;
     }, {
+        weight: number;
         principle: string;
         application: string;
-        weight: number;
     }>, "many">;
     options: z.ZodArray<z.ZodObject<{
         option: z.ZodString;
@@ -2312,9 +2642,9 @@ export declare const EthicalAnalysisContentSchema: z.ZodObject<{
         interests: string;
     }[];
     principles: {
+        weight: number;
         principle: string;
         application: string;
-        weight: number;
     }[];
     dissent: string;
     nextThoughtNeeded?: boolean | undefined;
@@ -2332,9 +2662,9 @@ export declare const EthicalAnalysisContentSchema: z.ZodObject<{
         interests: string;
     }[];
     principles: {
+        weight: number;
         principle: string;
         application: string;
-        weight: number;
     }[];
     dissent: string;
     nextThoughtNeeded?: boolean | undefined;
@@ -3204,17 +3534,17 @@ export declare const NotebookAddCellContentSchema: z.ZodObject<{
     position: z.ZodNumber;
     metadata: z.ZodRecord<z.ZodString, z.ZodUnknown>;
 }, "strip", z.ZodTypeAny, {
+    position: number;
     metadata: Record<string, unknown>;
     notebookId: string;
     cellType: string;
     content: string;
-    position: number;
 }, {
+    position: number;
     metadata: Record<string, unknown>;
     notebookId: string;
     cellType: string;
     content: string;
-    position: number;
 }>;
 export declare const NotebookRunCellContentSchema: z.ZodObject<{
     notebookId: z.ZodString;

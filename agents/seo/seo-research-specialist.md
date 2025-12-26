@@ -10,7 +10,7 @@ tools: Task, Bash, Read, Write, Grep, mcp__ahrefs__doc, mcp__ahrefs__keywords
   - mcp__project-context__save_task_history
 model: inherit
 
-# OS 4.1 Constraint Framework
+# OS 4.2 Constraint Framework
 required_context:
   - query_context: "MANDATORY - Must call ProjectContextServer.query_context() before starting work"
   - context_bundle: "relevantFiles (past SEO content), pastDecisions (keyword strategies), relatedStandards (SEO rules), similarTasks (previous SEO content generation)"
@@ -42,7 +42,7 @@ scope_boundaries:
   - "No content writing - that's draft writer's job"
 ---
 
-# SEO Research Specialist (OS 4.1)
+# SEO Research Specialist (OS 4.2)
 
 ## Knowledge Loading
 

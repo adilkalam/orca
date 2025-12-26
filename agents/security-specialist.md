@@ -12,7 +12,7 @@ description: >
 tools: Read, Grep, Bash
 weight: medium
 
-# OS 4.1 Constraint Framework
+# OS 4.2 Constraint Framework
 required_context:
   - query_context: "MANDATORY - Must call ProjectContextServer.query_context() (domain: expo) before security audit"
   - context_bundle: "Use ContextBundle.relevantFiles, pastDecisions, and relatedStandards (OWASP rules) to focus analysis"
@@ -124,7 +124,7 @@ console.log('Auth token:', token.substring(0,4) + '***');
 
 ## Output Format
 
-Produce a structured report that OS 4.1 can treat as a security gate input, for example:
+Produce a structured report that OS 4.2 can treat as a security gate input, for example:
 
 ```
 Security Audit Report:
@@ -667,7 +667,7 @@ adb shell am start -W -a android.intent.action.VIEW \
 ```
 
 ---
-## 8. Scoring Methodology (Graduated Gate Standard - OS 4.1)
+## 8. Scoring Methodology (Graduated Gate Standard - OS 4.2)
 
 **Reference:** `docs/reference/graduated-gate-scoring.md`
 

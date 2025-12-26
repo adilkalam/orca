@@ -13,7 +13,7 @@ ORCA-OS is a Claude Code configuration system that deploys to `~/.claude`. It co
 | Layer | Count | Purpose |
 |-------|-------|---------|
 | Commands | 27 | User entry points |
-| Agents | 89 | Workers across 6 domains |
+| Agents | 97 | Workers across 7 domains |
 | Pipelines | 11 | Workflow documentation |
 | Phase Configs | 7 | Machine-readable definitions |
 | MCPs | 8 | Tool integrations |

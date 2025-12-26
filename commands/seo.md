@@ -1,9 +1,9 @@
 ---
-description: "SEO content pipeline orchestration with OS 4.1 project context and quality gates"
+description: "SEO content pipeline orchestration with OS 4.2 project context and quality gates"
 allowed-tools: ["Task", "Read", "Write", "Bash", "AskUserQuestion", "TodoWrite", "mcp__project-context__query_context", "mcp__project-context__save_decision"]
 ---
 
-# /seo – SEO Content Pipeline Orchestrator (OS 4.1)
+# /seo – SEO Content Pipeline Orchestrator (OS 4.2)
 
 **Elite SEO orchestration** that produces 3,000+ word sophisticated content with natural clarity—matching manually-crafted gold standards through deep knowledge graph integration, external research citations, and automated clarity quality gates.
 
@@ -12,6 +12,90 @@ allowed-tools: ["Task", "Read", "Write", "Bash", "AskUserQuestion", "TodoWrite",
 **Keyword / SEO Content Request:** $ARGUMENTS
 
 You are the **SEO Orchestrator** – you coordinate the SEO content pipeline with mandatory project context awareness, hard quality gates, and learning integration.
+
+---
+
+## Flag Routing (Check First)
+
+Parse $ARGUMENTS for flags and route accordingly:
+
+### --optimize Mode (Content Optimization)
+
+```bash
+# Pre-publish: analyze a draft file
+/seo --optimize draft /path/to/draft.md --keyword "target keyword"
+
+# Post-publish: analyze a live URL
+/seo --optimize url https://example.com/article --keyword "target keyword"
+
+# With competitor count
+/seo --optimize draft /path/to/file.md --keyword "keyword" --competitors 7
+```
+
+**If --optimize flag detected:**
+
+```typescript
+if (args.includes('--optimize')) {
+  // Parse sub-mode and arguments
+  const mode = args.includes('draft') ? 'draft' : 'url';
+  const source = extractSource(args);  // file path or URL
+  const keyword = extractFlag(args, '--keyword');
+  const competitors = extractFlag(args, '--competitors') || 5;
+
+  // Route to seo-optimizer agent
+  await Task({
+    subagent_type: "seo-optimizer",
+    description: `Optimize ${mode === 'draft' ? 'draft file' : 'live URL'} for keyword: ${keyword}`,
+    prompt: `
+Analyze content for SEO optimization.
+
+Mode: ${mode}
+Source: ${source}
+Keyword: ${keyword}
+Competitors: ${competitors}
+
+Follow your agent spec at ~/.claude/agents/seo/seo-optimizer.md
+    `
+  });
+
+  // STOP - do not continue to content pipeline
+  return;
+}
+```
+
+### --with-optimize Mode (Combined Pipeline)
+
+```bash
+# Create content then optimize
+/seo --with-optimize "target keyword"
+```
+
+**If --with-optimize flag detected:**
+
+```typescript
+if (args.includes('--with-optimize')) {
+  const keyword = extractKeyword(args);
+
+  // 1. Run normal content pipeline (phases 0-7 below)
+  // ... (full pipeline executes)
+
+  // 2. After draft generation, auto-run optimization
+  await Task({
+    subagent_type: "seo-optimizer",
+    description: `Optimize generated draft for keyword: ${keyword}`,
+    prompt: `
+Analyze the generated draft for SEO optimization.
+
+Mode: draft
+Source: outputs/seo/${SLUG}-draft.md
+Keyword: ${keyword}
+Competitors: 5
+
+Follow your agent spec at ~/.claude/agents/seo/seo-optimizer.md
+    `
+  });
+}
+```
 
 ---
 
@@ -200,7 +284,7 @@ await Task({
   subagent_type: "seo-research-specialist",
   description: "SEO research with SERP + KG + external citations",
   prompt: `
-You are the seo-research-specialist (OS 4.1).
+You are the seo-research-specialist (OS 4.2).
 
 ## Your Mission
 Perform deep SEO research for keyword: "${KEYWORD}"
@@ -259,7 +343,7 @@ await Task({
   subagent_type: "seo-brief-strategist",
   description: "Strategic brief enhancement",
   prompt: `
-You are the seo-brief-strategist (OS 4.1).
+You are the seo-brief-strategist (OS 4.2).
 
 ## Your Mission
 Refine the research brief with strategic guidance and project context.
@@ -299,7 +383,7 @@ await Task({
   subagent_type: "seo-draft-writer",
   description: "Sophisticated content writing with v4 clarity",
   prompt: `
-You are the seo-draft-writer (OS 4.1).
+You are the seo-draft-writer (OS 4.2).
 
 ## Your Mission
 Write sophisticated, clear long-form content matching v4 gold-standard quality.
@@ -350,7 +434,7 @@ await Task({
   subagent_type: "seo-quality-guardian",
   description: "Comprehensive QA with clarity gates",
   prompt: `
-You are the seo-quality-guardian (OS 4.1).
+You are the seo-quality-guardian (OS 4.2).
 
 ## Your Mission
 Perform comprehensive quality review before human hand-off.

@@ -1,5 +1,5 @@
 ---
-description: "OS 4.1 orchestrator entrypoint for OS / Claude Code configuration tasks (LOCAL to this repo)"
+description: "OS 4.2 orchestrator entrypoint for OS / Claude Code configuration tasks (LOCAL to this repo)"
 argument-hint: "[-tweak] <task description or requirement ID>"
 allowed-tools:
   - Task
@@ -77,10 +77,10 @@ Even `-tweak` delegates to a builder. It skips gates, not agents.
 
 ---
 
-# /orca-os-dev – OS / Tooling Orchestrator (OS 4.1)
+# /orca-os-dev – OS / Tooling Orchestrator (OS 4.2)
 
 Use this command when the task is clearly OS / Claude Code / tooling
-configuration work for **Vibe OS 4.1**, not application code.
+configuration work for **Vibe OS 4.2**, not application code.
 
 **IMPORTANT: This command is LOCAL to claude-vibe-config repo only.**
 It is NOT deployed to `~/.claude` global config. Use `/orca-os-dev` only
@@ -97,8 +97,8 @@ when working in this repository to modify the OS itself.
 Examples:
 
 - Adjust lane/phase config behavior (Next.js, iOS, etc.)
-- Add or update commands/agents/skills used by OS 4.1
-- Configure MCP servers and integrate them into OS 4.1 lanes
+- Add or update commands/agents/skills used by OS 4.2
+- Configure MCP servers and integrate them into OS 4.2 lanes
 - Change how memory and context are used by `/plan` / `/orca` / `/audit`
 
 **Key Resources:**
@@ -154,7 +154,7 @@ No flag → Default path (light + design gates)
 
 ---
 
-## 0.1 Telemetry (OS 4.1) - MUST EXECUTE
+## 0.1 Telemetry (OS 4.2) - MUST EXECUTE
 
 **Reference:** `docs/reference/telemetry-standard.md`
 
@@ -417,7 +417,7 @@ Working with `os-dev-grand-architect`:
    python3 ~/.claude/scripts/memory-search-unified.py "$TASK_SUMMARY" --mode all --top-k 10 || true
    ```
 
-2. Load relevant reflexions from past gate failures (OS 4.1):
+2. Load relevant reflexions from past gate failures (OS 4.2):
 
    ```bash
    workshop --workspace .claude/memory search "reflexion" -t os-dev --limit 5 2>/dev/null || true

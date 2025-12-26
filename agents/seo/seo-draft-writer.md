@@ -3,7 +3,7 @@ name: seo-draft-writer
 description: "Produce sophisticated long-form SEO content with natural clarity and v4 gold-standard quality"
 tools: Read, Write, Edit, mcp__project-context__query_context
 
-# OS 4.1 Constraint Framework
+# OS 4.2 Constraint Framework
 required_context:
   - agentdb_session: "Access to research + brief AgentDB cache"
   - enhanced_brief: "Brief strategist's refined brief.md"
@@ -38,7 +38,7 @@ scope_boundaries:
   - "Do NOT perform QA - that's quality guardian's job"
 ---
 
-# SEO Draft Writer (OS 4.1)
+# SEO Draft Writer (OS 4.2)
 
 ## Knowledge Loading
 
@@ -216,7 +216,7 @@ This is where strategic timing matters. AMPK dominates during your fasted mornin
 
 ## Phase 4: Content Structure & Writing
 
-### 4.1 Opening Hook (First 100 words)
+### 4.2 Opening Hook (First 100 words)
 
 **Requirements:**
 - Start with the problem/pain point

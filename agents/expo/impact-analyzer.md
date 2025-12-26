@@ -4,7 +4,7 @@ description: Predicts change impact across React Native/Expo codebase through de
 tools: Read, Grep, Bash
 model: inherit
 
-# OS 4.1 Constraint Framework
+# OS 4.2 Constraint Framework
 required_context:
   - query_context: "MANDATORY - Must call ProjectContextServer.query_context() (domain: expo) before analyzing impact"
   - context_bundle: "Use ContextBundle.relevantFiles to map dependencies and affected components"

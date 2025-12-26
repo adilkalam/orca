@@ -8,7 +8,7 @@ tools: Task, Read, Edit, MultiEdit, Grep, Glob, Bash
 weight: medium
 ---
 
-## Context Inheritance (OS 4.1)
+## Context Inheritance (OS 4.2)
 
 **Expect SUMMARIZED context from architect.**
 

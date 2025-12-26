@@ -1,0 +1,270 @@
+# Orca-Pipeline Phase Configuration
+# Meta-pipeline for creating new domain pipelines in ORCA-OS
+
+pipeline:
+  name: orca-pipeline
+  description: "5-phase wizard for creating new domain pipelines"
+  version: "4.2"
+  type: meta-pipeline
+
+# Phase State Schema
+phase_state:
+  domain: orca-pipeline
+  target_domain: string  # The domain being created
+  target_description: string | null
+  current_phase: interview | research | blueprint | generate | validate | complete
+  mode: full | quick
+
+  # Mode Tracking
+  current_mode: full | quick
+  mode_history:
+    - mode: string
+      timestamp: string
+      reason: string
+
+  # Phase entries
+  phases:
+    interview:
+      description: "Gather domain requirements"
+      fields:
+        - domain_name
+        - domain_description
+        - workflow_type
+        - specialists_needed
+        - gates_needed
+        - mcp_requirements
+      checkpoint: true
+
+    research:
+      description: "Find quality templates in _explore/"
+      fields:
+        - _explore_matches
+        - tier_classification
+        - agent_taxonomy
+        - mcp_recommendations
+        - gaps_identified
+      checkpoint: true
+      bounds:
+        max_files: 20
+        max_time_minutes: 5
+
+    blueprint:
+      description: "Design pipeline architecture"
+      fields:
+        - agents
+        - phases
+        - complexity_tiers
+        - mcp_requirements
+        - files_to_generate
+        - documentation_updates
+      checkpoint: true
+
+    generate:
+      description: "Create all required files"
+      fields:
+        - files_created
+        - total_files
+        - total_agents
+      checkpoint: false  # Proceeds directly to validate
+
+    validate:
+      description: "Verify completeness"
+      fields:
+        - file_existence
+        - syntax_validation
+        - frontmatter_completeness
+        - cross_reference
+        - required_sections
+        - documentation_sync
+        - overall_status
+      checkpoint: false  # Returns result or loops back
+
+# Two-Mode Routing (not three-tier like other pipelines)
+modes:
+  full:
+    description: "Full 5-phase wizard with research"
+    flag: "(none)"
+    phases:
+      - interview
+      - research
+      - blueprint
+      - generate
+      - validate
+    checkpoints:
+      - after_interview
+      - after_research
+      - after_blueprint
+
+  quick:
+    description: "Template Gallery - skip research"
+    flag: "--quick"
+    phases:
+      - template_select
+      - customize
+      - generate
+      - validate
+    checkpoints:
+      - after_template_select
+
+# Template Gallery (Quick Mode)
+templates:
+  hybrid:
+    description: "Balanced planning + building"
+    agent_count: 8
+    agents:
+      - grand-architect
+      - light-orchestrator
+      - architect
+      - builder
+      - specialist
+      - standards-enforcer
+      - verification
+      - reviewer
+
+  research-heavy:
+    description: "Emphasizes planning, multiple research agents"
+    agent_count: 7
+    agents:
+      - grand-architect
+      - light-orchestrator
+      - researcher
+      - analyst
+      - builder
+      - standards-enforcer
+      - verification
+
+  build-heavy:
+    description: "Minimal planning, strong builders"
+    agent_count: 5
+    agents:
+      - light-orchestrator
+      - architect
+      - builder
+      - standards-enforcer
+      - verification
+
+  minimal:
+    description: "Just orchestrator + builder + validation"
+    agent_count: 4
+    agents:
+      - light-orchestrator
+      - builder
+      - standards-enforcer
+      - verification
+
+# Agent Roster
+agents:
+  orchestration:
+    - name: orca-pipeline-orchestrator
+      purpose: "Wizard flow coordination"
+      weight: heavy
+
+  implementation:
+    - name: orca-pipeline-researcher
+      purpose: "Bounded _explore/ search"
+      weight: medium
+
+    - name: orca-pipeline-architect
+      purpose: "Blueprint design"
+      weight: medium
+
+    - name: orca-pipeline-generator
+      purpose: "Artifact creation"
+      weight: heavy
+
+  validation:
+    - name: orca-pipeline-validator
+      purpose: "Completeness verification"
+      weight: medium
+
+# Research Bounds (enforced by researcher)
+research_bounds:
+  max_files_from_explore: 20
+  max_time_minutes: 5
+  prefer_tier: [1, 2]  # Score >= 7
+  fallback_to_web: true
+  web_search_time_limit_minutes: 2
+
+# Validation Criteria
+validation:
+  file_existence:
+    source: "os-dependency-graph.yaml impact_rules.lane_add.create"
+    required: true
+
+  syntax_validation:
+    yaml_frontmatter: true
+    phase_config_yaml: true
+
+  frontmatter_completeness:
+    required_fields:
+      - name
+      - description
+      - model
+      - tools
+      - weight
+
+  cross_reference:
+    agents_in_command_exist: true
+    agents_in_phases_exist: true
+    mcps_in_tools_valid: true
+
+  required_sections:
+    - "Context Inheritance"
+    - "Knowledge Loading"
+    - "Required Skills"
+    - "Attempt Tracking"
+
+  documentation_sync:
+    files_to_check:
+      - quick-reference/ORCA-OS/ORCA-commands.md
+      - quick-reference/ORCA-OS/ORCA-agents.md
+      - docs/reference/os-dependency-graph.yaml
+
+# Success Criteria
+success:
+  all_files_exist: true
+  all_syntax_valid: true
+  all_cross_references_resolve: true
+  all_required_sections_present: true
+  documentation_updates_identified: true  # Not necessarily done
+
+# Safeguards (from DeepThink analysis)
+safeguards:
+  - name: research_checkpoint
+    trigger: "After research phase completes"
+    addresses: "Research Black Hole"
+
+  - name: blueprint_review
+    trigger: "Before artifact generation"
+    addresses: "Generic Agent Soup"
+
+  - name: dependency_graph_validation
+    trigger: "During validation phase"
+    addresses: "Orphaned Artifacts"
+
+  - name: phase_limit
+    trigger: "Always"
+    constraint: "Maximum 5 phases"
+    addresses: "Over-engineering"
+
+  - name: research_bounds
+    trigger: "During research phase"
+    constraint: "20 files max, 5 minutes max"
+    addresses: "Research Runaway"
+
+# Output Artifacts
+artifacts:
+  required:
+    - commands/<domain>.md
+    - docs/pipelines/<domain>-pipeline.md
+    - docs/reference/phase-configs/<domain>-phase-config.yaml
+    - agents/<domain>/*-grand-architect.md
+    - agents/<domain>/*-light-orchestrator.md
+    - agents/<domain>/*-builder.md
+    - agents/<domain>/*-standards-enforcer.md
+    - agents/<domain>/*-verification.md
+
+  documentation_updates:
+    - quick-reference/ORCA-OS/ORCA-commands.md
+    - quick-reference/ORCA-OS/ORCA-agents.md
+    - docs/reference/os-dependency-graph.yaml

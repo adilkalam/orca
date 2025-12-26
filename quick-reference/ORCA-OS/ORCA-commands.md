@@ -1,8 +1,8 @@
-# OS 4.1 Commands Quick Reference
+# OS 4.2 Commands Quick Reference
 
-**Last Updated:** 2025-12-24
-**Version:** OS 4.1
-**Total Commands:** 31
+**Last Updated:** 2025-12-25
+**Version:** OS 4.2
+**Total Commands:** 32
 
 ---
 
@@ -57,8 +57,16 @@ All `/orca-*` lane commands support three execution modes:
 ### `/seo` - SEO Content Lane
 ```bash
 /seo "keyword research for peptides"
+
+# Optimize existing content
+/seo --optimize draft /path/to/draft.md --keyword "target keyword"
+/seo --optimize url https://example.com/article --keyword "target keyword"
+
+# Combined: create content then optimize
+/seo --with-optimize "target keyword"
 ```
-**Agents:** seo-research-specialist, seo-brief-strategist, seo-draft-writer, seo-quality-guardian
+**Agents:** seo-research-specialist, seo-brief-strategist, seo-draft-writer, seo-quality-guardian, seo-optimizer
+**MCP:** ahrefs, crawl4ai
 
 ### `/research` - Deep Research Lane
 ```bash
@@ -84,6 +92,15 @@ All `/orca-*` lane commands support three execution modes:
 ```
 Detects domain and routes to appropriate lane command.
 **Special Mode:** `--audit` runs Response-Aware behavior analysis instead of pipeline execution.
+
+### `/orca-pipeline` - Pipeline Creation Wizard
+```bash
+/orca-pipeline ml-ops "ML model deployment"           # Full 5-phase wizard
+/orca-pipeline --quick data-analysis                   # Template Gallery mode
+```
+Meta-pipeline for creating new domain pipelines. 5 phases: Interview → Research → Blueprint → Generate → Validate.
+**Agents:** orca-pipeline-orchestrator, orca-pipeline-researcher, orca-pipeline-architect, orca-pipeline-generator, orca-pipeline-validator
+**Quick Mode Templates:** hybrid (8 agents), research-heavy (7), build-heavy (5), minimal (4)
 
 ---
 
@@ -298,10 +315,11 @@ $ORCA_OS_PATH/commands/
 | `/django-react` | django-react-grand-architect, django-react-builder, django-react-verification |
 | `/expo` | expo-grand-orchestrator, expo-builder-agent, expo-verification-agent |
 | `/research` | research-web-search-subagent, research-site-crawler-subagent, research-answer-writer |
-| `/seo` | seo-research-specialist, seo-brief-strategist, seo-draft-writer |
+| `/seo` | seo-research-specialist, seo-brief-strategist, seo-draft-writer, seo-optimizer |
 | `/orca-os-dev` | os-dev-architect, os-dev-builder, os-dev-standards-enforcer |
+| `/orca-pipeline` | orca-pipeline-orchestrator, orca-pipeline-researcher, orca-pipeline-generator |
 
 ---
 
 _Source of truth: `docs/reference/os-dependency-graph.yaml`_
-_Last sync: 2025-12-18_
+_Last sync: 2025-12-25_

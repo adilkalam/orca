@@ -80,7 +80,7 @@ Session End Hook
 | Model | Size | Use |
 |-------|------|-----|
 | `nomic-embed-text` | 274 MB | vibe.db embeddings (already installed) |
-| `mistral` | 4.1 GB | Workshop extraction (INSTALL THIS) |
+| `mistral` | 4.2 GB | Workshop extraction (INSTALL THIS) |
 | `llama3` | 4.7 GB | Alternative chat model |
 | `phi3` | 2.2 GB | Smaller/faster option |
 

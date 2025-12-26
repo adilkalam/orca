@@ -1,13 +1,13 @@
 # Expo / React Native Domain Pipeline
 
-**Status:** OS 4.1 Core Pipeline (ExpoPipeline)
+**Status:** OS 4.2 Core Pipeline (ExpoPipeline)
 **Last Updated:** 2025-11-27
 
 ## Overview
 
 The Expo pipeline handles **React Native mobile development** for projects using Expo SDK 50+ / React Native 0.74+ with TypeScript. It combines:
 
-- OS 4.1 primitives (ProjectContextServer, phase_state.json, vibe.db, Workshop, constraint framework)
+- OS 4.2 primitives (ProjectContextServer, phase_state.json, vibe.db, Workshop, constraint framework)
 - Memory-first context (Workshop + vibe.db before ProjectContext)
 - Complexity-based routing (simple → light orchestrator, medium/complex → full pipeline)
 - Spec gating (complex tasks require requirements spec)
@@ -33,7 +33,7 @@ use the **iOS** pipeline.
 
 ---
 
-## Three-Tier Routing (OS 4.1)
+## Three-Tier Routing (OS 4.2)
 
 The Expo pipeline uses three-tier routing:
 
@@ -79,7 +79,7 @@ Full pipeline with grand-orchestrator planning. Spec required.
 
 ---
 
-## Standards Inputs (OS 4.1 Learning Loop)
+## Standards Inputs (OS 4.2 Learning Loop)
 
 Standards flow into and out of the Expo pipeline:
 
@@ -634,7 +634,7 @@ Decision Point:
 
 **Agents:**
 - `expo-architect-agent` (Expo pipeline architect)
-- `/orca` + OS 4.1 constraint framework
+- `/orca` + OS 4.2 constraint framework
 
 **Tasks:**
 1. Restate the request in clear, concrete terms (feature, bugfix, refactor).
@@ -930,7 +930,7 @@ This section documents common failure modes and standard recovery protocols for 
    - **MEDIUM:** Hints, state announcements
 4. Example fix:
    ```typescript
-   //  Before (WCAG 4.1.2 violation)
+   //  Before (WCAG 4.2.2 violation)
    <TouchableOpacity onPress={onPress}>
      <Icon name="cart" size={20} />
    </TouchableOpacity>

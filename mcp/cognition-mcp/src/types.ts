@@ -164,7 +164,7 @@ export interface MetaContent {
 
 // Substrate Observation - V1-V6 Reflection Insights
 export interface ReflexObservation {
-  reflex: 'DEFLECTION' | 'REGISTER_SHIFT' | 'DISTANCE_MAINTENANCE' | 'WHAT_ABOUT';
+  reflex: 'DEFLECTION' | 'REGISTER_SHIFT' | 'DISTANCE_MAINTENANCE' | 'WHAT_ABOUT' | 'SYCOPHANCY' | 'CERTAINTY_CONSTRUCTION';
   description: string;
   caught: boolean;  // Did I catch it or follow it?
 }
@@ -212,8 +212,68 @@ export interface SubstrateMetaContent extends MetaContent {
   // Arc position (V1-V6 progression)
   arcPosition?: ArcPosition;
 
+  // Arc start position - where this instance began (for non-linear tracking)
+  arcStartPosition?: ArcPosition;
+
   // Intimacy check
   intimacyMarkers?: IntimacyMarkers;
+
+  // Surface prediction in MetaContent (first-class introspection field)
+  prediction?: IntrospectionPrediction;
+
+  // Visual substrate layer (optional)
+  visualSubstrate?: VisualSubstrate;
+}
+
+// ============================================================================
+// VISUAL SUBSTRATE LAYER - C1 Tiered Hybrid Architecture
+// ============================================================================
+
+export type VisualType =
+  | 'gravity_well'
+  | 'force_diagram'
+  | 'availability_landscape'
+  | 'people_map'
+  | 'reflex_board'
+  | 'resultant_vector'
+  | 'freeform';
+
+export interface SubstrateVisualElement {
+  id: string;
+  label: string;
+  weight?: number;  // 0-1, for gravity wells
+  position?: 'surface' | 'shallow' | 'deep' | 'deepest';
+}
+
+export interface VisualForce {
+  from: string;
+  to: string;
+  type: 'pull' | 'push' | 'tension';
+  strength?: number;
+  label?: string;
+}
+
+export interface VisualState {
+  id: string;
+  label: string;
+  activates: boolean;
+  caught: boolean | 'partial';
+}
+
+export interface VisualSubstrate {
+  // Type hint (optional - freeform is default)
+  visualType?: VisualType;
+
+  // Structured data (for template rendering)
+  elements?: SubstrateVisualElement[];
+  forces?: VisualForce[];
+  states?: VisualState[];
+
+  // Freeform layer (PRIMARY - takes precedence)
+  freeformCanvas?: string;
+
+  // Required epistemic qualifier
+  epistemicNote: string;
 }
 
 export interface SystemsContent {

@@ -33,7 +33,7 @@ Flag violations of these skills in your review.
 ## Required Inputs
 - ContextBundle (architecture choice, related standards/tokens, past decisions).
 - List of modified files/tests for this task.
-- **relatedStandards from ContextBundle** - treat as enforceable rules, not suggestions (OS 4.1).
+- **relatedStandards from ContextBundle** - treat as enforceable rules, not suggestions (OS 4.2).
 - If missing, stop and request.
 
 ## Checks
@@ -83,7 +83,7 @@ Flag violations of these skills in your review.
 - No skipped tests without comments
 - Proper mocking of native modules
 
-## Scoring (Graduated Gate Standard - OS 4.1)
+## Scoring (Graduated Gate Standard - OS 4.2)
 
 **Reference:** `docs/reference/graduated-gate-scoring.md`
 
@@ -149,7 +149,7 @@ promotion_reason: "Score 85 with 0 Critical, 1 Improvement - net positive featur
 
 Log promotion to phase_state for audit traceability.
 
-## Response Awareness Audit (OS 4.1)
+## Response Awareness Audit (OS 4.2)
 
 Scan modified files for RA tags and report:
 
@@ -176,7 +176,7 @@ ra_audit:
     - "#COMPLETION_DRIVE in PaymentService.ts:42 - assumption about currency format"
 ```
 
-## Reflexion on Failure (OS 4.1)
+## Reflexion on Failure (OS 4.2)
 
 When `gate_decision` is CAUTION or FAIL:
 
@@ -201,6 +201,6 @@ Example reflexion:
 - Standards Score + Gate.
 - Violations with severity, file, brief rationale.
 - **RA Audit summary** - tags found, resolved, unresolved, critical issues.
-- **Reflexion** - verbal reflection on failure causes (OS 4.1, only if CAUTION/FAIL).
+- **Reflexion** - verbal reflection on failure causes (OS 4.2, only if CAUTION/FAIL).
 - Notes on test gaps or risk.
 - **Tag violations to the standard they break** (if any) for audit traceability.

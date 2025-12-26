@@ -1,12 +1,12 @@
-# OS 4.1 Agents Quick Reference
+# OS 4.2 Agents Quick Reference
 
-**Last Updated:** 2025-12-24
-**Version:** OS 4.1
-**Total Agents:** 90 (89 active + 1 deprecated)
+**Last Updated:** 2025-12-26
+**Version:** OS 4.2
+**Total Agents:** 94
 
 ---
 
-## Agent Architecture (OS 4.1)
+## Agent Architecture (OS 4.2)
 
 **All Agents Use Opus 4.5:**
 - Grand architects (coordination & architecture)
@@ -29,12 +29,13 @@
 | Next.js | 17 | `agents/dev/nextjs-*` + tailwind/shadcn-specialist |
 | Django-React | 13 | `agents/dev/django-*`, `react-*`, `api-contract-*` |
 | Expo | 11 | `agents/expo/` |
-| Research | 8 | `agents/research/` |
-| SEO | 4 | `agents/seo/` |
+| Research | 7 | `agents/research/` |
+| SEO | 5 | `agents/seo/` |
 | Data | 4 | `agents/data/` |
 | OS-Dev | 5 | `agents/dev/os-dev-*` |
+| Orca-Pipeline | 5 | `agents/orca-dev/` |
 | Cross-Cutting | 9 | `agents/` (root) |
-| **TOTAL** | **89** | |
+| **TOTAL** | **94** | |
 
 ---
 
@@ -211,7 +212,7 @@ Orchestrated directly by `/research` command (no lead agent).
 
 ---
 
-## SEO Pipeline (4 Agents)
+## SEO Pipeline (5 Agents)
 
 | Agent | Purpose |
 |-------|---------|
@@ -219,6 +220,9 @@ Orchestrated directly by `/research` command (no lead agent).
 | `seo-brief-strategist` | Content strategy and brief generation |
 | `seo-draft-writer` | Long-form SEO content creation |
 | `seo-quality-guardian` | SEO content quality assurance |
+| `seo-optimizer` | Content optimization against SERP competitors |
+
+**MCP Requirements:** ahrefs, crawl4ai
 
 ---
 
@@ -243,6 +247,31 @@ Orchestrated directly by `/research` command (no lead agent).
 | `os-dev-builder` | Agent/command development |
 | `os-dev-standards-enforcer` | OS standards validation |
 | `os-dev-verification` | Deployment verification |
+
+---
+
+## Orca-Pipeline (5 Agents)
+
+Meta-pipeline for creating new domain pipelines. 5-phase wizard: Interview → Research → Blueprint → Generate → Validate.
+
+### Orchestration
+| Agent | Purpose |
+|-------|---------|
+| `orca-pipeline-orchestrator` | Wizard flow coordination, phase routing, checkpoints |
+
+### Implementation
+| Agent | Purpose |
+|-------|---------|
+| `orca-pipeline-researcher` | Bounded _explore/ search, web fallback (20 files max, 5 min) |
+| `orca-pipeline-architect` | Blueprint design from interview + research findings |
+| `orca-pipeline-generator` | Artifact file creation (command, docs, agents) |
+
+### Validation
+| Agent | Purpose |
+|-------|---------|
+| `orca-pipeline-validator` | Completeness verification via os-dependency-graph |
+
+**Quick Mode Templates:** hybrid (8 agents), research-heavy (7), build-heavy (5), minimal (4)
 
 ---
 
@@ -290,7 +319,7 @@ These agents work across multiple pipelines:
   django-react/     # 13 agents
   expo/             # 11 agents
   research/         # 8 agents
-  seo/              # 4 agents
+  seo/              # 5 agents
   data/             # 4 agents
   (root level)      # 9 cross-cutting agents
 ```

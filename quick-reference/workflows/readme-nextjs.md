@@ -1,10 +1,10 @@
-# OS 4.1 Next.js Lane Readme
+# OS 4.2 Next.js Lane Readme
 
 **Lane:** Next.js / Frontend  
 **Domain:** `nextjs`  
 **Entrypoints:** `/plan`, `/orca`, `/nextjs`, `/project-memory`, `/project-code`
 
-This document explains how the Next.js lane works in Vibe OS 4.1:
+This document explains how the Next.js lane works in Vibe OS 4.2:
 
 - How planning and specs work (`/plan`)
 - How orchestration routes (`/orca`, `/nextjs`)
@@ -52,7 +52,7 @@ For **complex** Next.js tasks the spec is **required** before the full lane runs
 
 ### 2.2 Global Orchestrator – `/orca`
 
-`/orca` is the pure OS 4.1 orchestrator:
+`/orca` is the pure OS 4.2 orchestrator:
 
 - Checks Workshop + vibe.db first (memory‑first).
 - Checks for an active requirements spec.
@@ -79,7 +79,7 @@ File: `commands/nextjs.md`
   /nextjs "implement requirement <id>"           # With spec
   ```
 
-- **Three-Tier Routing (OS 4.1):**
+- **Three-Tier Routing (OS 4.2):**
 
   | Mode | Flag | Path | Gates |
   |------|------|------|-------|
@@ -136,7 +136,7 @@ Response Awareness:
 
 ## 4. Agents
 
-### 4.1 Heavy Lane Agents (Full Pipeline)
+### 4.2 Heavy Lane Agents (Full Pipeline)
 
 Core agents (all Opus 4.5):
 
@@ -244,7 +244,7 @@ Two primary commands:
 
 Unified memory search:
 
-- The OS 4.1 hooks and scripts provide a unified search that:
+- The OS 4.2 hooks and scripts provide a unified search that:
   - Queries Workshop and vibe.db together.
   - Is used by `/orca` and `/nextjs` before ProjectContext.
 
@@ -267,7 +267,7 @@ promote new standards or adjust defaults.
 
 ## 8. Quick Mental Model
 
-For Next.js work in OS 4.1 (three-tier routing):
+For Next.js work in OS 4.2 (three-tier routing):
 
 | Mode | Command | Path |
 |------|---------|------|
