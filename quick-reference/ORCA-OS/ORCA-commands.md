@@ -95,7 +95,7 @@ Detects domain and routes to appropriate lane command.
 
 ### `/orca-pipeline` - Pipeline Creation Wizard
 ```bash
-/orca-pipeline ml-ops "ML model deployment"           # Full 5-phase wizard
+/orca-pipeline trading "Fundamentals-based trading"   # Full 5-phase wizard
 /orca-pipeline --quick data-analysis                   # Template Gallery mode
 ```
 Meta-pipeline for creating new domain pipelines. 5 phases: Interview → Research → Blueprint → Generate → Validate.

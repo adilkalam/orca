@@ -1,7 +1,7 @@
 # SEO Domain Pipeline
 
 **Status:** OS 4.2 Pipeline (SEOPipeline)
-**Last Updated:** 2025-11-27
+**Last Updated:** 2026-01-04
 
 ## Overview
 
@@ -85,17 +85,33 @@ Artifacts:
 
 **Agent:** `seo-research-specialist`
 
+Research Sources (in priority order):
+1. **SERP Intelligence** (Ahrefs MCP) - Keyword data, search intent, SERP features
+2. **Direct File Research** (PRIMARY) - Before checking KG:
+   - `/obsidian-peptides/docs/research/` - Curated research documents
+   - `/obsidian-peptides/data/peptides/` - Peptide-specific data files
+3. **Knowledge Graph** (SUPPLEMENTARY) - Can miss things, supplements direct files
+4. **Web Research** (crawl4ai MCP):
+   - Top 3-5 SERP competitor pages scraped and analyzed
+   - Gap research from authoritative external sources
+5. **External Research Papers** - E-E-A-T citations from research index
+
 Tasks:
-- Perform SERP analysis (using MCP tools when configured).
-- Analyze internal research/knowledge graph files if available.
+- Perform SERP analysis via Ahrefs MCP
+- Search direct research files in obsidian-peptides (PRIMARY source)
+- Supplement with knowledge graph analysis (KG can miss things)
+- Scrape and analyze top SERP competitors via crawl4ai
+- Fill research gaps with authoritative external sources
 - Identify:
-  - Primary/secondary keywords.
-  - Search intent and SERP features.
-  - Competitor coverage and content gaps.
+  - Primary/secondary keywords
+  - Search intent and SERP features
+  - Competitor content structure and gaps
+  - Unique angles vs competition
 
 Outputs (see `seo-phases.yaml` for exact files):
-- SERP summary.
-- Research report / JSON for downstream phases.
+- SERP summary (`serp.json`, `serp-summary.md`)
+- Competitor analysis (`competitor-analysis.json`)
+- Research report / JSON for downstream phases
 
 ---
 

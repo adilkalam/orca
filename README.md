@@ -4,7 +4,7 @@
 | | | | |_) | |     / _ \  | | | \___ \
 | |_| |  _ <| |___ / ___ \ | |_| |___) |
  \___/|_| \_\\____/_/   \_\ \___/|____/
-                                    v4.2
+                                    v4.1
 ```
 
 **Orchestrated Response Coordination Architecture for Claude Code**
@@ -341,4 +341,4 @@ MCP (Model Context Protocol) servers extend Claude with external capabilities:
 
 ---
 
-**ORCA OS 4.2** — [Full Documentation](docs/) — [Quick Start](docs/QUICK-START.md)
+**ORCA OS 4.1** — [Full Documentation](docs/) — [Quick Start](docs/QUICK-START.md)

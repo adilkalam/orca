@@ -1,14 +1,13 @@
 ---
-title: React Patterns
-category: react
-tags: [hooks, components, state, effects]
-version: 1.0.0
+name: react-patterns
+description: >
+  Essential React patterns for hooks, components, and state management.
+  Use when building React components, implementing custom hooks, or debugging
+  state management issues. Covers useState, useEffect, useCallback, useMemo,
+  and context patterns.
 ---
 
-Essential React patterns for hooks, components, and state management.
-Use when building React components, implementing custom hooks, or debugging
-state management issues. Covers useState, useEffect, useCallback, useMemo,
-and context patterns.
+# React Patterns
 
 ## Custom Hook Patterns
 

@@ -1,14 +1,13 @@
 ---
-title: Git Workflow
-category: git
-tags: [branching, commits, collaboration, rebase]
-version: 1.0.0
+name: git-workflow
+description: >
+  Git branching strategies, commit conventions, and collaboration patterns.
+  Use when setting up repository workflows, writing commit messages, or
+  resolving merge conflicts. Covers conventional commits, branch naming,
+  and common Git operations.
 ---
 
-Git branching strategies, commit conventions, and collaboration patterns.
-Use when setting up repository workflows, writing commit messages, or
-resolving merge conflicts. Covers conventional commits, branch naming,
-and common Git operations.
+# Git Workflow
 
 ## Branch Naming Convention
 

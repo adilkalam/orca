@@ -257,7 +257,7 @@ Recommended path: B → B1
 
 ## Phase 4: EVALUATE - Rigorous Comparison
 
-### Step 4.2: Decision Framework
+### Step 4.1: Decision Framework
 
 Call `mcp__cognition-mcp__cognition`:
 
@@ -501,7 +501,7 @@ After completing all phases, present a unified summary:
 
 Execute only:
 1. Step 1.2 (systems)
-2. Step 4.2 (decide)
+2. Step 4.1 (decide)
 3. Step 4.2 (challenge - inline)
 
 ### --risk (4 steps)
@@ -518,7 +518,7 @@ Execute only:
 1. Step 1.2 (systems)
 2. Step 2 (pre-mortem)
 3. Step 3 (tree)
-4. Steps 4.2 + 4.2 (decide + challenge)
+4. Steps 4.1 + 4.2 (decide + challenge)
 5. Step 5.1 (ulysses)
 
 ### --incident (3 steps)

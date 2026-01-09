@@ -8,7 +8,7 @@
 
 ```bash
 # Full wizard (recommended for new domains)
-/orca-pipeline ml-ops "ML model deployment and monitoring"
+/orca-pipeline trading "Fundamentals-based trading analysis"
 
 # Quick mode with Template Gallery
 /orca-pipeline --quick data-analysis
@@ -153,11 +153,11 @@ No checkpoint between Generate and Validate.
 ## Example Session
 
 ```
-User: /orca-pipeline ml-ops "ML model deployment and monitoring"
+User: /orca-pipeline trading "Fundamentals-based trading analysis"
 
 ## Phase 1: Interview
 
-[Workflow type?] → hybrid
+[Workflow type?] → research-heavy
 [Specialists?] → performance
 [Gates?] → standards, verification
 [MCPs?] → None additional
@@ -166,7 +166,7 @@ User: /orca-pipeline ml-ops "ML model deployment and monitoring"
 
 ## Phase 2: Research
 
-Found 12 relevant files in _explore/
+Found 15 relevant files in _explore/
 - workflow-synthesis-report.md (score: 9)
 - 7-role agent taxonomy documented
 
@@ -175,19 +175,19 @@ Found 12 relevant files in _explore/
 ## Phase 3: Blueprint
 
 Designed 7-agent pipeline:
-- ml-ops-grand-architect
-- ml-ops-light-orchestrator
-- ml-ops-researcher
-- ml-ops-analyst
-- ml-ops-builder
-- ml-ops-standards-enforcer
-- ml-ops-verification
+- trading-grand-architect
+- trading-light-orchestrator
+- trading-researcher
+- trading-analyst
+- trading-builder
+- trading-standards-enforcer
+- trading-verification
 
 ✓ Blueprint complete. Proceed to generate? [Yes]
 
 ## Phase 4: Generate
 
-Created 9 files in agents/ml-ops/
+Created 9 files in agents/trading/
 
 ## Phase 5: Validate
 
@@ -197,7 +197,7 @@ Created 9 files in agents/ml-ops/
 
 ## Success!
 
-Command: /ml-ops
+Command: /trading
 Agents: 7
 Files: 9
 
@@ -205,7 +205,7 @@ Next steps:
 1. Review generated files
 2. Update documentation (ORCA-commands.md, ORCA-agents.md)
 3. Deploy to ~/.claude/
-4. Test with: /ml-ops "deploy model to staging"
+4. Test with: /trading "analyze AAPL fundamentals"
 ```
 
 ---

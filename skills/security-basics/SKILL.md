@@ -1,14 +1,13 @@
 ---
-title: Security Basics
-category: security
-tags: [authentication, authorization, xss, csrf, injection]
-version: 1.0.0
+name: security-basics
+description: >
+  Essential security checklist and patterns for web applications.
+  Use when reviewing code for security issues, implementing authentication,
+  or hardening an application. Covers OWASP top 10, input validation,
+  and secure coding practices.
 ---
 
-Essential security checklist and patterns for web applications.
-Use when reviewing code for security issues, implementing authentication,
-or hardening an application. Covers OWASP top 10, input validation,
-and secure coding practices.
+# Security Basics
 
 ## OWASP Top 10 Quick Reference
 

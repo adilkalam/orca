@@ -221,7 +221,7 @@ const wordCountGate = {
 
 ## Phase 4: Content Quality Audit
 
-### 4.2 Repetition Detection
+### 4.1 Repetition Detection
 
 ```typescript
 const repetitionCheck = {

@@ -216,7 +216,7 @@ This is where strategic timing matters. AMPK dominates during your fasted mornin
 
 ## Phase 4: Content Structure & Writing
 
-### 4.2 Opening Hook (First 100 words)
+### 4.1 Opening Hook (First 100 words)
 
 **Requirements:**
 - Start with the problem/pain point

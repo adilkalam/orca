@@ -61,7 +61,7 @@ When loaded, skill content appears in agent context alongside:
 
 ## Available Skills
 
-### Universal Skills (Introduced in v4.2)
+### Universal Skills (Introduced in v4.1)
 
 These skills are referenced by ALL 85 agents via "Required Skills" sections:
 
@@ -140,7 +140,7 @@ Why it's bad and what to do instead...
 
 Skills inform agents; agents do work.
 
-## Skill Wiring to Agents (v4.2)
+## Skill Wiring to Agents (v4.1)
 
 All 85 agents now have explicit skill references in their definitions:
 

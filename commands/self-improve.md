@@ -108,7 +108,7 @@ If `--dry-run` is set:
 
 For each event targeting `agent_patterns`:
 
-### 4.2 Load or Create patterns.json
+### 4.1 Load or Create patterns.json
 
 ```bash
 AGENT="ios-builder"

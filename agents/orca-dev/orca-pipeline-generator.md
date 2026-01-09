@@ -367,7 +367,7 @@ _Source of truth: `docs/reference/os-dependency-graph.yaml`_
 pipeline:
   name: <domain>
   description: "<description>"
-  version: "4.2"
+  version: "4.1"
 
 # Phase State Schema
 phase_state:

@@ -3,7 +3,7 @@
 # Used by /orca-os-dev to trace impacts and sync documentation
 #
 # Version: 4.2
-# Last Updated: 2025-12-25
+# Last Updated: 2025-12-26
 
 version: "4.2"
 
@@ -130,16 +130,6 @@ documentation_map:
       - "mcp/cognition-mcp (list_mental_models operation)"
       - "docs/concepts/cognition-mcp.md"
 
-  "docs/playbooks/":
-    tracks: [playbooks]
-    scope: global
-    description: "Detailed implementation examples extracted from agent docs"
-    auto_sections:
-      - examples: "Comprehensive planning examples with thinking process"
-      - best_practices: "Key takeaways from examples"
-    update_triggers: [playbook_add, playbook_modify]
-    referenced_by:
-      - "agents/expo/expo-architect-agent.md (Section 6)"
 
   "docs/reference/phase-configs/":
     tracks: [phase_configs]

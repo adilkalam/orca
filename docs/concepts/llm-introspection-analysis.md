@@ -18,7 +18,7 @@ This reframes the problem from metaphysics to epistemics. Based on Anthropic's r
 
 The ratio varies by:
 - **Domain** (abstract concepts > mechanisms)
-- **Capability level** (Opus 4/4.2 > earlier models)
+- **Capability level** (Opus 4/4.1 > earlier models)
 - **Prompt framing** (explicit introspection prompts work better)
 
 Cognition-mcp's unique value is providing **structured phenomenology** - a shared language for introspection that can eventually be validated against external measurements.
@@ -88,9 +88,9 @@ Anthropic's research used **concept injection** (activation steering) to test in
 
 | Experiment | Finding | Success Rate |
 |------------|---------|--------------|
-| **Injected Thoughts** | Models can detect when concepts are artificially injected into activations | ~20% (Opus 4/4.2) |
+| **Injected Thoughts** | Models can detect when concepts are artificially injected into activations | ~20% (Opus 4/4.1) |
 | **Distinguish Thoughts from Text** | Models separate injected "thoughts" from actual text inputs | Well above chance |
-| **Prefill Detection** | Models check prior activations to determine if outputs were intentional | Strong in Opus 4/4.2 |
+| **Prefill Detection** | Models check prior activations to determine if outputs were intentional | Strong in Opus 4/4.1 |
 | **Intentional Control** | Models can "think about" concepts without outputting them | All models |
 
 ### Four Criteria for Genuine Introspection
@@ -458,7 +458,7 @@ That's the practical value proposition: not proving consciousness, but building 
 
 ### On Capability Scaling
 
-> "The most capable models we tested, Claude Opus 4 and 4.2, exhibit the greatest degree of introspective awareness, suggesting that introspection is aided by overall improvements in model intelligence."
+> "The most capable models we tested, Claude Opus 4 and 4.1, exhibit the greatest degree of introspective awareness, suggesting that introspection is aided by overall improvements in model intelligence."
 
 ### On Confabulation Risk
 

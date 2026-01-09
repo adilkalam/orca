@@ -1,3 +1,11 @@
+---
+name: elements-of-style
+description: >
+  Classic writing guide by William Strunk Jr. (1918, public domain).
+  Use when editing prose for clarity, conciseness, and proper grammar.
+  Covers elementary rules of usage, composition principles, and style guidelines.
+---
+
 # The Elements of Style (1918)
 
 _Public domain text by William Strunk Jr._

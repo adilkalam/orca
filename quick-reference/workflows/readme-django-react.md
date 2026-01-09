@@ -135,7 +135,7 @@ Response Awareness:
 
 ## 4. Agents (13 Total)
 
-### 4.2 Heavy Lane Agents (Full Pipeline)
+### 4.1 Heavy Lane Agents (Full Pipeline)
 
 Core agents (all Opus 4.5):
 

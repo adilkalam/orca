@@ -1,13 +1,12 @@
 ---
-title: Testing Strategy
-category: testing
-tags: [unit, integration, e2e, mocking, coverage]
-version: 1.0.0
+name: testing-strategy
+description: >
+  Testing strategies and best practices for unit, integration, and end-to-end tests.
+  Use when setting up test infrastructure, writing test cases, or deciding what
+  to test. Covers test pyramid, mocking strategies, and coverage guidelines.
 ---
 
-Testing strategies and best practices for unit, integration, and end-to-end tests.
-Use when setting up test infrastructure, writing test cases, or deciding what
-to test. Covers test pyramid, mocking strategies, and coverage guidelines.
+# Testing Strategy
 
 ## Test Pyramid
 

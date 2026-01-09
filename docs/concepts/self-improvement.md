@@ -50,7 +50,7 @@ Verification questions that repeatedly fail are persisted and injected as **mand
 
 ---
 
-## Agent-Level Learning (Introduced in v4.2)
+## Agent-Level Learning (Introduced in v4.1)
 
 In addition to the centralized self-improvement loop, agents can now learn patterns locally via file-based knowledge persistence.
 

@@ -644,7 +644,7 @@ bash scripts/sim_health_check.sh
 
 **Output:**
 ```
- macOS detected (version 14.2.1)
+ macOS detected (version 14.1.1)
  Xcode Command Line Tools installed
  simctl is available
  IDB not found (optional, for advanced features)

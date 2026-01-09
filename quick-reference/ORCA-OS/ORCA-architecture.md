@@ -8,7 +8,7 @@
 ## Overview
 
 ORCA-OS is a Claude Code orchestration system with:
-- **97 agents** across 7 lanes
+- **89 agents** across 6 lanes
 - **28 commands** (6 lane orchestrators + utilities)
 - **Project-scoped MCPs** to minimize token usage
 - **Dependency graph** for change impact tracking

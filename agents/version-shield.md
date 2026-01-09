@@ -75,8 +75,8 @@ version_report:
 
   security_critical:
     - package: "lodash"
-      current: "4.27.19"
-      recommended: "4.27.21"
+      current: "4.17.19"
+      recommended: "4.17.21"
       vulnerability: "CVE-2021-23337"
       severity: "high"
       action: "Update immediately"

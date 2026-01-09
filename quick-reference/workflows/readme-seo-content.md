@@ -15,7 +15,7 @@ Use for:
 - Content optimization
 - Quality review of existing content
 
-**Not for:** Technical SEO (site speed, schema markup) - use Next.js lane.
+**Not for:** Technical SEO (site speed, schema markup) - use Next.js or Shopify lanes.
 
 ---
 

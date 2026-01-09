@@ -250,7 +250,7 @@ When conducting accessibility audits, think through systematically:
 
 1. **Missing accessibilityLabel on button (Line 34)**
    ```typescript
-   //  VIOLATION (WCAG 4.2.2: Name, Role, Value)
+   //  VIOLATION (WCAG 4.1.2: Name, Role, Value)
    <TouchableOpacity onPress={() => addToCart(product.id)}>
      <Icon name="cart-plus" size={20} />
    </TouchableOpacity>
@@ -266,7 +266,7 @@ When conducting accessibility audits, think through systematically:
    </TouchableOpacity>
    ```
    **Impact:** Screen reader users cannot identify button purpose
-   **WCAG:** 4.2.2 Name, Role, Value (Level A) - FAIL
+   **WCAG:** 4.1.2 Name, Role, Value (Level A) - FAIL
 
 2. **Missing accessibilityLabel on product image (Line 18)**
    ```typescript
@@ -499,7 +499,7 @@ export function ProductCard({ product, onAddToCart }: Props) {
 
 1-4. **Icon-only tabs missing accessibilityLabel (Lines 15, 23, 31, 39)**
    ```typescript
-   //  VIOLATION (WCAG 1.1.1, 4.2.2)
+   //  VIOLATION (WCAG 1.1.1, 4.1.2)
    <TouchableOpacity onPress={() => navigate('Home')}>
      <Icon name="home" size={24} />
    </TouchableOpacity>
@@ -515,7 +515,7 @@ export function ProductCard({ product, onAddToCart }: Props) {
    </TouchableOpacity>
    ```
    **Impact:** Screen reader announces "Button" 4 times with no context
-   **WCAG:** 1.1.1 Non-text Content + 4.2.2 Name, Role, Value (Level A) - FAIL
+   **WCAG:** 1.1.1 Non-text Content + 4.1.2 Name, Role, Value (Level A) - FAIL
 
 **Recommendations:**
 

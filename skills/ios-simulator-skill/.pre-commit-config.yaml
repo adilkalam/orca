@@ -5,7 +5,7 @@
 repos:
   # Black - Code formatter
   - repo: https://github.com/psf/black
-    rev: 24.20.0
+    rev: 24.10.0
     hooks:
       - id: black
         name: Format Python code with Black

@@ -1,14 +1,13 @@
 ---
-title: API Design
-category: api
-tags: [rest, graphql, endpoints, versioning]
-version: 1.0.0
+name: api-design
+description: >
+  REST and GraphQL API design principles and best practices.
+  Use when designing new APIs, reviewing endpoint structures, or
+  implementing API versioning. Covers HTTP methods, status codes,
+  pagination, and error handling.
 ---
 
-REST and GraphQL API design principles and best practices.
-Use when designing new APIs, reviewing endpoint structures, or
-implementing API versioning. Covers HTTP methods, status codes,
-pagination, and error handling.
+# API Design
 
 ## REST Principles
 

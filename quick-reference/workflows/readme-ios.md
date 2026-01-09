@@ -129,7 +129,7 @@ Response Awareness:
 
 ## 4. Agents
 
-### 4.2 Heavy Lane Agents
+### 4.1 Heavy Lane Agents
 
 Core agents:
 

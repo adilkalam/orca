@@ -199,7 +199,7 @@ Return a complete YAML blueprint:
 blueprint:
   domain: <domain>
   description: <description>
-  version: "4.2"
+  version: "4.1"
   workflow_type: <research-heavy|build-heavy|hybrid>
   
   agents:

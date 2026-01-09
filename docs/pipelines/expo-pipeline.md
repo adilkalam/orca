@@ -930,7 +930,7 @@ This section documents common failure modes and standard recovery protocols for 
    - **MEDIUM:** Hints, state announcements
 4. Example fix:
    ```typescript
-   //  Before (WCAG 4.2.2 violation)
+   //  Before (WCAG 4.1.2 violation)
    <TouchableOpacity onPress={onPress}>
      <Icon name="cart" size={20} />
    </TouchableOpacity>

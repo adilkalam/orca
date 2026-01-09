@@ -1,7 +1,7 @@
 # ORCA-OS Documentation
 
 **Version:** OS 4.2
-**Last Updated:** 2025-12-24
+**Last Updated:** 2025-12-26
 
 Welcome to the ORCA-OS documentation. This document serves as the entry point and navigation hub for all ORCA-OS documentation.
 
@@ -81,7 +81,7 @@ Technical specifications and standards:
 For day-to-day usage, see the quick-reference guides:
 
 - **[ORCA Commands](../quick-reference/ORCA-OS/ORCA-commands.md)** - All 31 commands
-- **[ORCA Agents](../quick-reference/ORCA-OS/ORCA-agents.md)** - All 97 agents
+- **[ORCA Agents](../quick-reference/ORCA-OS/ORCA-agents.md)** - All 89 agents
 - **[ORCA Architecture](../quick-reference/ORCA-OS/ORCA-architecture.md)** - System architecture overview
 - **[ORCA MCPs](../quick-reference/ORCA-OS/ORCA-mcps.md)** - MCP server reference
 - **[ORCA Verification](../quick-reference/ORCA-OS/ORCA-verification.md)** - Verification patterns

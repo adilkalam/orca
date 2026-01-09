@@ -171,7 +171,11 @@ await AskUserQuestion({
 
 **Phase 1: Research (seo-research-specialist)**
 - SERP analysis via Ahrefs MCP
-- Deep KG file reading
+- Direct file research in /obsidian-peptides/docs/research (PRIMARY)
+- Direct file research in /obsidian-peptides/data/peptides (PRIMARY)
+- KG deep reading (SUPPLEMENTARY - can miss things)
+- crawl4ai competitor scraping (top 3-5 SERP results)
+- crawl4ai gap research (external authoritative sources)
 - External research paper loading
 - Brief generation
 
@@ -282,7 +286,7 @@ agentdb.set('session', session);
 ```typescript
 await Task({
   subagent_type: "seo-research-specialist",
-  description: "SEO research with SERP + KG + external citations",
+  description: "SEO research with SERP + direct files + KG + crawl4ai",
   prompt: `
 You are the seo-research-specialist (OS 4.2).
 
@@ -294,27 +298,55 @@ AgentDB session: ${SESSION_ID}
 - context_bundle: ${agentdb.get('context_bundle')}
 - past_seo_success_patterns: ${agentdb.get('past_seo_success_patterns')}
 
-## Your Tasks
-1. **SERP Analysis** (Ahrefs MCP)
+## Your Tasks (Research Hierarchy)
+
+### 1. SERP Analysis (Ahrefs MCP)
    - keywords-explorer-overview
    - keywords-explorer-related-terms
    - serp-overview-serp-overview
    - Create: outputs/seo/${SLUG}-serp.json
 
-2. **Deep KG Reading**
+### 2. Direct File Research (PRIMARY - Before KG)
+   **The KG can miss things. Always search direct files first.**
+
+   a) Search /obsidian-peptides/docs/research/
+      - Glob: /obsidian-peptides/docs/research/**/*.md
+      - Grep for keyword and focus terms
+      - Read relevant files directly
+
+   b) Search /obsidian-peptides/data/peptides/
+      - Glob: /obsidian-peptides/data/peptides/**/*.{md,json,yaml}
+      - Grep for keyword and focus terms
+      - Read peptide data files
+
+   c) Cache direct research findings in AgentDB
+
+### 3. Knowledge Graph (SUPPLEMENTARY)
    - Run: scripts/seo_auto_pipeline.py
-   - Research docs: ${RESEARCH_DOC_PATHS}
    - KG path: ${KG_PATH}
    - Focus terms: ${FOCUS_TERMS}
-   - Create: report.json, brief.json, brief.md, draft.md
+   - Merge with direct file research (KG supplements, doesn't replace)
+   - Create: report.json, brief.json, brief.md
 
-3. **External Research Loading**
+### 4. Web Research via crawl4ai (GAPS + COMPETITORS)
+   a) Scrape Top SERP Competitors
+      - Use mcp__crawl4ai__scrape on top 3-5 SERP URLs
+      - Analyze competitor content structure
+      - Create: outputs/seo/${SLUG}-competitor-analysis.json
+
+   b) Fill Research Gaps
+      - Identify gaps from merged research
+      - Use mcp__crawl4ai__crawl on authoritative sources
+      - Cache citations for draft writer
+
+### 5. External Research Loading
    - Load from: ${RESEARCH_INDEX_PATH}
-   - Cache for draft writer
+   - Merge with crawl4ai findings
 
-4. **Context Integration**
+### 6. Context Integration
+   - Merge all research sources
    - Use past successful angles from contextBundle
-   - Identify content gaps
+   - Identify content gaps vs competitors
    - Apply SEO standards
 
 ## AgentDB Cache
@@ -322,14 +354,19 @@ Save these keys for downstream agents:
 - serp_overview
 - related_keywords
 - serp_features
-- kg_extracts
+- direct_research_files (from /obsidian-peptides/)
+- merged_research (direct + KG)
+- competitor_content (crawl4ai scraped)
+- competitor_analysis
+- gap_research (crawl4ai external)
+- complete_research (all sources merged)
 - research_papers
 - keyword_strategy
 
 ## Decision Logging
 Save targeting decision to vibe.db via save_decision()
 
-Follow: agents/seo-research-specialist.md
+Follow: ~/.claude/agents/seo/seo-research-specialist.md
   `
 });
 ```
@@ -624,15 +661,18 @@ ${NEW_STANDARDS_CREATED}
 ## Chaos Prevention Rules
 
 **File Creation Limits:**
-- Research phase: 4 files (serp.json, report.json, brief.json, brief.md)
+- Research phase: 5 files (serp.json, competitor-analysis.json, report.json, brief.json, brief.md)
 - Brief refinement: 0 files (edit only)
 - Content writing: 1 file (draft.md)
 - Quality assurance: 2 files (qa.md, clarity-report.json)
-- **Total: 7 files max per pipeline run**
+- **Total: 8 files max per pipeline run**
 
 **Forbidden Operations:**
 - Skip context query (MANDATORY first step)
 - Skip SERP analysis (required for targeting)
+- Skip direct file research (PRIMARY source - check before KG)
+- Rely solely on KG (KG can miss things - use direct files first)
+- Skip crawl4ai competitor analysis (required for competitive insights)
 - Skip clarity gates (required for quality)
 - Auto-publish content (human review required)
 - Rewrite content in QA phase (flag only)

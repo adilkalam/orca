@@ -10,7 +10,7 @@ OS 4.2 uses **three-tier routing** to optimize for speed while maintaining quali
 | **Tweak** | `-tweak` | Light (pure) | NO | Speed iteration, user verifies |
 | **Complex** | `--complex` | Full pipeline | YES | Architecture, multi-file, specs |
 
-**Key Inversion (v4.2):** Default now runs gates. Previous versions skipped them.
+**Key Inversion (v4.1):** Default now runs gates. Previous versions skipped them.
 
 ## Default Mode (Light + Gates)
 
