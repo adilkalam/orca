@@ -8,10 +8,12 @@
 ## Overview
 
 ORCA-OS is a Claude Code orchestration system with:
-- **105 agents** across 10 lanes + cross-cutting
+- **105 agents** across 10 public lanes + cross-cutting (117 total including internal lanes)
 - **30 commands** (9 lane orchestrators + utilities)
 - **Project-scoped MCPs** to minimize token usage
 - **Dependency graph** for change impact tracking
+
+> **Scope Note:** This quick-reference covers public lanes. Internal lanes (kg, shopify) are documented in `docs/reference/os-dependency-graph.yaml`.
 
 ---
 

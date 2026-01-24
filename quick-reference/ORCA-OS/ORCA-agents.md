@@ -1,8 +1,10 @@
 # OS 4.3 Agents Quick Reference
 
-**Last Updated:** 2026-01-23
+**Last Updated:** 2026-01-24
 **Version:** OS 4.3
-**Total Agents:** 105
+**Total Agents:** 105 (public lanes)
+
+> **Scope Note:** This quick-reference covers public lanes only. Internal lanes (kg, shopify) add 12 agents for a system total of 117. See `docs/reference/os-dependency-graph.yaml` for complete registry.
 
 ---
 

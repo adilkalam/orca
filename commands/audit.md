@@ -7,7 +7,7 @@ allowed-tools:
   - Glob
   - Bash
   - Task
-  - mcp__cognition__cognition
+  - mcp__cognition-mcp__cognition
   - mcp__project-context__query_context
   - AskUserQuestion
 ---
@@ -335,7 +335,7 @@ Each agent produces JSON to `.claude/audit/temp/<agent>.json`:
 3. **Store in Cognition MCP**
 
    ```typescript
-   await mcp__cognition__cognition({
+   await mcp__cognition-mcp__cognition({
      operation: "audit",
      content: {
        scope: mode,

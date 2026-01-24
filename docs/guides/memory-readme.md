@@ -1,0 +1,291 @@
+# Memory: Continuity Across Sessions
+
+---
+
+## The Problem
+
+Every session starts fresh. The model has no memory of yesterday.
+
+**You explain the architecture Monday. Tuesday it asks again.** The same context, re-explained, every time. Decisions get re-made. Gotchas get re-discovered. Mistakes repeat.
+
+This isn't a bug - it's how LLMs work. No "self" persists across conversations. Each session reconstructs identity from whatever context is provided.
+
+```
+SESSION 1                    SESSION 2                    SESSION 3
++-----------+                +-----------+                +-----------+
+| Explain   |                | Explain   |                | Explain   |
+| context   |                | context   |                | context   |
+| again     |                | AGAIN     |                | AGAIN     |
++-----------+                +-----------+                +-----------+
+     |                            |                            |
+     v                            v                            v
+  (work)                       (work)                       (work)
+     |                            |                            |
+     v                            v                            v
+ [forgotten]                 [forgotten]                 [forgotten]
+```
+
+Without external memory, you're trapped in this loop forever.
+
+---
+
+## What Memory Provides
+
+Memory systems are **prosthetic continuity** - external storage that replaces what the model lacks.
+
+| Missing | Prosthetic |
+|---------|------------|
+| Memory across sessions | Workshop database (decisions, gotchas, preferences) |
+| "Why did we choose X?" | `workshop why "X"` returns original reasoning |
+| Code understanding by meaning | vibe.db semantic search (embeddings) |
+| Context assembly for agents | ProjectContext MCP bundles everything relevant |
+
+After setup, Session 1 you explain everything. Session 50, you're just working.
+
+```
+SESSION 1                    SESSION 50
++-----------+                +-----------+
+| Explain   |                | Context   |
+| context   |                | auto-     |
+| manually  |                | loaded    |
++-----------+                +-----------+
+     |                            |
+     v                            v
+  (work)                       (work)
+     |                            |
+     v                            v
+ [recorded]  ──────────────> [remembered]
+```
+
+---
+
+## Getting Started: /project-setup
+
+Run once per project to initialize conventions.
+
+```bash
+/project-setup
+```
+
+This wizard:
+1. **Detects project type** (iOS, Next.js, Python, etc.)
+2. **Asks 4 questions** about your preferences
+3. **Generates CLAUDE.md** with project-specific rules
+4. **Initializes memory** in `.claude/memory/`
+
+### What It Creates
+
+```
+<project>/
+├── CLAUDE.md                 # Project conventions (sacred paths, archive rules)
+└── .claude/
+    └── memory/
+        └── workshop.db       # Decision/gotcha storage
+```
+
+### Updating Later
+
+```bash
+/project-setup update    # Add new conventions
+/project-setup audit     # Check for staleness
+```
+
+---
+
+## The Three Memory Systems
+
+### 1. Workshop (Decisions & Gotchas)
+
+**What it stores**: Decisions, gotchas, notes, preferences, antipatterns
+
+**When to use**: Recording architectural choices, documenting pitfalls, capturing preferences
+
+```bash
+# Record a decision
+/project-memory decide "Use JWT for API auth" -r "Stateless, scales horizontally"
+
+# Record a gotcha
+/project-memory gotcha "Token refresh fails silently if network is slow"
+
+# Query past decisions
+/project-memory why "authentication"
+```
+
+**The killer feature**: `workshop why` returns the original reasoning, not a reconstruction. You get what you actually thought, not what the model guesses you might have thought.
+
+### 2. vibe.db (Semantic Code Search)
+
+**What it stores**: Code embeddings for semantic search
+
+**When to use**: Finding code by meaning, not filename
+
+```bash
+# Sync codebase to embeddings
+/project-memory sync
+
+# Search by meaning
+/memory-search "error handling for API calls"
+```
+
+Returns relevant code even if "error" isn't in the filename. Searches by what the code *does*, not what it's called.
+
+### 3. ProjectContext MCP (Context Assembly)
+
+**What it does**: Bundles everything relevant for a task
+
+**When it runs**: Automatically, as the first action of every agent
+
+```typescript
+// Every agent calls this first
+mcp__project-context__query_context({
+  domain: "nextjs",
+  task: "Add user authentication"
+})
+
+// Returns:
+{
+  relevantFiles: [...],      // From vibe.db semantic search
+  pastDecisions: [...],      // From Workshop
+  relatedStandards: [...],   // From Workshop
+  projectState: {...}        // Structure, dependencies
+}
+```
+
+You don't call this directly. Agents do. It's why they start with context instead of a blank slate.
+
+---
+
+## Daily Usage: /project-memory
+
+### Recording
+
+```bash
+# Decision with reasoning
+/project-memory decide "Use Zustand over Redux" -r "Simpler API, less boilerplate"
+
+# Quick gotcha
+/project-memory gotcha "iOS 15 doesn't support NavigationStack"
+
+# General note
+/project-memory note "Auth refactor planned for Q2"
+```
+
+### Querying
+
+```bash
+# Why did we choose something?
+/project-memory why "state management"
+
+# Search everything
+/project-memory search "authentication"
+
+# Recent activity
+/project-memory recent
+```
+
+### Reviewing & Cleaning
+
+```bash
+# See all gotchas with IDs
+/project-memory review gotchas
+
+# Delete an entry by ID
+/project-memory delete 47
+
+# Interactive cleanup
+/project-memory clean
+```
+
+---
+
+## How It Works Behind the Scenes
+
+### Session Start Hook
+
+When you start Claude Code, `session-start.sh` runs automatically:
+
+1. Loads Workshop summary (recent decisions, gotchas)
+2. Writes session context to `.claude/orchestration/temp/session-context.md`
+3. Makes context available to all subsequent work
+
+You see this in the session startup:
+```
+PROJECT CONTEXT AUTO-LOAD
+Memory systems available:
+  - Workshop: workshop --workspace .claude/memory <command>
+  - ProjectContext MCP: mcp__project-context__query_context
+```
+
+### Agent Context Loading
+
+Every orchestrated agent calls `query_context` before doing anything:
+
+```
+User Request
+     |
+     v
+[query_context]  <-- Assembles: files + decisions + standards + history
+     |
+     v
+[Agent works with full context]
+     |
+     v
+[Records learnings back to Workshop]
+```
+
+The loop closes: work produces learnings, learnings feed future work.
+
+---
+
+## What Gets Persisted
+
+| Type | Example | Stored In |
+|------|---------|-----------|
+| Decisions | "Use WebSocket for real-time" | Workshop |
+| Gotchas | "Token expires after 15min, not 1hr" | Workshop |
+| Preferences | "Prefer functional components" | Workshop |
+| Standards | "All API responses must include timestamp" | Workshop |
+| Code context | Semantic embeddings of codebase | vibe.db |
+
+---
+
+## Quick Reference
+
+### Setup (Once)
+```bash
+/project-setup              # Initialize project with CLAUDE.md + memory
+```
+
+### Record (As You Work)
+```bash
+/project-memory decide "X"  # Record decision
+/project-memory gotcha "X"  # Record pitfall
+/project-memory note "X"    # General note
+```
+
+### Query (When Needed)
+```bash
+/project-memory why "X"     # Why did we choose X?
+/project-memory search "X"  # Search all memory
+/memory-search "X"          # Unified search (Workshop + vibe.db)
+```
+
+### Maintenance (Occasionally)
+```bash
+/project-memory status      # Check memory health
+/project-memory sync        # Re-index code to vibe.db
+/project-setup audit        # Check CLAUDE.md freshness
+```
+
+---
+
+## See Also
+
+- `docs/concepts/memory-systems.md` - Full technical reference
+- `commands/project-setup.md` - Complete setup specification
+- `commands/project-memory.md` - All subcommands
+- `mcp/project-context-server/` - MCP implementation
+
+---
+
+_Version: OS 4.3 | Memory is continuity, made persistent._
