@@ -1,5 +1,8 @@
 # Quick Reference: Telemetry (OS 4.2)
 
+**Last Updated:** 2026-01-23
+**Version:** OS 4.3
+
 Telemetry tracks pipeline execution for debugging, performance tuning, and future smart routing.
 
 ---

@@ -217,6 +217,137 @@ If not, create it:
 ln -s .claude/memory .workshop
 ```
 
+## Memory Layer 4: ORCA-Mem
+
+**What:** Context management system that prevents conversation bloat through intelligent truncation and archival.
+
+**Overview:**
+ORCA-Mem manages context window efficiently by:
+1. Detecting when tool outputs exceed threshold
+2. Truncating middle content while preserving head/tail
+3. Archiving full content for later recall
+4. Cleaning up old archives automatically
+
+**Components:**
+
+| Component | Location | Purpose |
+|-----------|----------|---------|
+| PostToolUse Hook | `hooks/post-tool-use.sh` | Truncates large outputs, archives originals |
+| Session End Hook | `hooks/session-end.sh` | Captures session summary on exit |
+| Recall Tool | ProjectContextServer MCP | Retrieves archived content by session/timestamp |
+| Archive Cleanup | `scripts/archive-cleanup.sh` | Removes archives older than 7 days |
+
+**Configuration:**
+
+```yaml
+# Truncation thresholds (in characters)
+threshold: 4000      # Trigger truncation above this
+head_preserve: 1500  # Keep first N chars
+tail_preserve: 500   # Keep last N chars
+archive_location: ~/.claude/archives/
+retention_days: 7
+```
+
+**How it works:**
+
+```
+Tool Output (>4000 chars)
+         |
+         v
+  PostToolUse Hook
+         |
+    +----+----+
+    |         |
+    v         v
+ Truncate   Archive
+  output    original
+    |         |
+    v         v
+ HEAD +    ~/.claude/archives/
+ TAIL +    {session}/{timestamp}.txt
+ [archived]
+```
+
+**Recall via ProjectContextServer:**
+
+```typescript
+// Retrieve archived content
+mcp__project-context__recall({
+  session_id: "abc123",        // Optional: specific session
+  timestamp: "2025-01-15T...", // Optional: specific archive
+  query: "database migration"  // Optional: search archives
+})
+```
+
+**Integration:**
+- PostToolUse hook runs after every tool call
+- Archives are keyed by session ID and timestamp
+- ProjectContextServer provides `recall` tool for retrieval
+- Session end hook ensures summaries are captured
+
+## Cognition Persistence (.claude/cognition/)
+
+**What:** File-based persistence for cognitive command outputs.
+
+**Purpose:** Heavyweight cognitive commands (`/problem-solve`, `/deepthink`, `/challenge`, `/ultra-think`, `/root-cause`) and lightweight commands (`/think`, `/contemplate`) produce extensive analysis that can be lost when context window compacts. This directory preserves key insights.
+
+**File Patterns:**
+
+| Command Type | File Pattern | Format |
+|-------------|--------------|--------|
+| Heavyweight | `YYYYMMDD-HHMM-<slug>.md` | Individual summary file |
+| Lightweight | `YYYYMMDD-daily.md` | Daily log with appended entries |
+
+**Heavyweight File Template:**
+```markdown
+# [Command]: [Topic]
+
+**Date**: YYYY-MM-DD HH:MM
+**Session ID**: <cognition-mcp sessionId>
+**Command**: /[command-name]
+
+## Executive Summary
+[2-3 sentence summary]
+
+## Key Findings
+- [Finding 1]
+- [Finding 2]
+
+## Decision/Recommendation
+[Main takeaway]
+
+## Recovery
+To resume: `/think --import <sessionId>`
+```
+
+**Lightweight Daily Log Entry:**
+```markdown
+---
+### [HH:MM] /[command] - [Topic slug]
+Session: <sessionId>
+
+[1-2 sentence summary]
+---
+```
+
+**Discovery:**
+All entries also write to Workshop for searchability:
+```bash
+workshop --workspace .claude/memory search cognition
+workshop why "topic from analysis"
+```
+
+**Commands with Persistence:**
+- `/problem-solve` - Heavyweight (individual files)
+- `/deepthink` - Heavyweight (individual files)
+- `/challenge` - Heavyweight (individual files)
+- `/ultra-think` - Heavyweight (individual files)
+- `/root-cause` - Heavyweight (individual files)
+- `/think` - Lightweight (daily log)
+- `/contemplate` - Lightweight (daily log)
+
+**Location:** `.claude/cognition/`
+
 ## See Also
 
 - [Pipeline Model](pipeline-model.md) - How memory fits into pipelines

@@ -1,8 +1,8 @@
-# OS 4.2 Commands Quick Reference
+# OS 4.3 Commands Quick Reference
 
-**Last Updated:** 2025-12-25
-**Version:** OS 4.2
-**Total Commands:** 32
+**Last Updated:** 2026-01-23
+**Version:** OS 4.3
+**Total Commands:** 33
 
 ---
 
@@ -18,7 +18,7 @@ All `/orca-*` lane commands support three execution modes:
 
 ---
 
-## Lane Orchestrator Commands (6)
+## Lane Orchestrator Commands (9)
 
 ### `/ios` - iOS Lane
 ```bash
@@ -95,7 +95,7 @@ Detects domain and routes to appropriate lane command.
 
 ### `/orca-pipeline` - Pipeline Creation Wizard
 ```bash
-/orca-pipeline trading "Fundamentals-based trading"   # Full 5-phase wizard
+/orca-pipeline analytics "Data analytics pipeline"    # Full 5-phase wizard
 /orca-pipeline --quick data-analysis                   # Template Gallery mode
 ```
 Meta-pipeline for creating new domain pipelines. 5 phases: Interview → Research → Blueprint → Generate → Validate.
@@ -112,16 +112,16 @@ Meta-pipeline for creating new domain pipelines. 5 phases: Interview → Researc
 /plan --visual "UI redesign"
 /plan --systems "Database migration"
 /plan --debug "Fix checkout bug"
-/plan --deepthink "Complex architectural decision"   # Full 8-step pipeline
-/plan -complex --deepthink "Migrate to GraphQL"      # Max rigor
+/plan --problem-solve "Complex architectural decision"   # Full 8-step pipeline
+/plan -complex --problem-solve "Migrate to GraphQL"      # Max rigor
 ```
-**Cognition Flags:** `--visual`, `--systems`, `--debug`, `--model`, `--creative`, `--causal`, `--decide`, `--deepthink`
+**Cognition Flags:** `--visual`, `--systems`, `--debug`, `--model`, `--creative`, `--causal`, `--decide`, `--problem-solve`
 **Tier Flags:** `-tweak` (quick), (none) (standard), `-complex` (deep)
 Creates: `.claude/requirements/<id>/06-requirements-spec.md`
 
 ---
 
-## Reasoning Commands (5)
+## Reasoning Commands (6)
 
 ### `/think` - Enhanced Cognitive Scaffolding
 ```bash
@@ -133,15 +133,20 @@ Creates: `.claude/requirements/<id>/06-requirements-spec.md`
 /think --decide "Microservices vs monolith"
 /think --checkpoint extended --seq "Plan refactoring"
 /think --meta "What is my training doing here?"  # Substrate observation mode
+/think --deep "Complex problem needing extended analysis"  # Extended thinking
+/think --deep --decide "Major architecture decision"  # Combined deep + decide
 ```
 **Operations:** --seq, --model, --debug, --creative, --visual, --meta, --science, --collab, --decide, --socratic, --argue, --systems, --research, --analogy, --causal, --stats, --sim, --optimize, --tree, --beam, --mcts, --graph, --ooda, --ulysses
 
 **Mental Models (--model):** five-whys, fermi-estimation, abstraction-laddering, steelmanning, rubber-duck, opportunity-cost, constraint-relaxation, time-horizon-shifting, impact-effort-grid, assumption-surfacing, trade-off-matrix, decomposition, inversion, pre-mortem, first-principles
 
 **Enhancements:** --checkpoint, --model <name>, --diagram <type>, --session <id>
+**NEW: --deep flag:** Extended thinking mode (8-12+ thoughts with review/synthesis checkpoints, branching enabled)
 **MCP:** cognition-mcp
 **Meta Modes:** Standard (process-level) + Substrate Observation (V1-V6 reflection insights)
 **Templates:** `quick-reference/mental-models/*.md`
+**Persistence:** Appends to daily log `.claude/cognition/YYYYMMDD-daily.md` + Workshop entry
+**Handoff Guidance:** Includes "Next Steps" section with contextual command recommendations
 
 ### `/contemplate` - Reasoning Strategy Advisor
 ```bash
@@ -149,20 +154,45 @@ Creates: `.claude/requirements/<id>/06-requirements-spec.md`
 /contemplate "How to debug this failure?"
 ```
 Recommends which /think operations to use.
+**NEW: Problem-Type Detection:** Classifies problems (EXPLORATION, COMPOSITIONAL, AGGREGATION, ARITHMETIC, CODE, DECISION, RISK, STRATEGIC) with evidence-backed routing table
+**Routing:** Maps problem types to optimal techniques (e.g., Tree-of-Thought for exploration: 74% vs 4%)
+**Persistence:** Appends to daily log `.claude/cognition/YYYYMMDD-daily.md` + Workshop entry
+**Handoff Guidance:** Includes "Next Steps" section with contextual command recommendations
 
 
 ### `/ultra-think` - Deep Multi-Dimensional Analysis
 ```bash
 /ultra-think "complex architectural problem"
 ```
+**Persistence:** Creates `.claude/cognition/YYYYMMDD-HHMM-<slug>.md` + Workshop entry
 
-### `/deepthink` - Automated 8-Step Complex Problem Pipeline
+### `/deepthink` - Depth-First Exploration
 ```bash
-/deepthink "How should we architect the notification system?"
-/deepthink "What's causing our performance regression?"
+/deepthink "Why does user retention drop after day 3?"
+/deepthink --light "Quick question about caching"
+/deepthink --full "Major architectural exploration"
 ```
-Runs full ORIENT→ANTICIPATE→GENERATE→EVALUATE→COMMIT cycle.
-**MCP:** cognition-mcp
+Depth-first exploration with route-based modes (MAP, INVERT, PERSPECTIVES, EDGES, META, DEEP).
+**Modes:** --light (quick), (default), --full (thorough)
+**Enhanced Modes:** MAP (systems + causal), INVERT (pre-mortem + reflexion), PERSPECTIVES (collaborative + steelmanning), EDGES (creative + analogical), DEEP (self-consistency via 3 parallel chains)
+**External Verification:** 6-question self-check including external-facing critique (64.5% blind spot reversal)
+**MCP:** cognition-mcp, sequential-thinking
+**Persistence:** Creates `.claude/cognition/YYYYMMDD-HHMM-<slug>.md` + Workshop entry
+**Handoff Guidance:** Includes "Next Steps" section with contextual command recommendations
+
+### `/problem-solve` - Convergent 8-Step Decision Pipeline
+```bash
+/problem-solve "How should we architect the notification system?"
+/problem-solve --quick "Which database: PostgreSQL vs MongoDB?"
+/problem-solve --strategic "3-year platform modernization"
+```
+Runs full ORIENT→ANTICIPATE→GENERATE→EVALUATE→COMMIT cycle for convergent decisions.
+**Variants:** --quick (3 steps), --risk (4 steps), --strategic (5 steps), --incident (3 steps)
+**NEW: Phase Gates:** 4 verification checkpoints (after ORIENT, ANTICIPATE, GENERATE, EVALUATE) with PASS/SOFT FAIL/HARD FAIL status to catch errors early
+**Gate Protocol:** 3 questions per gate, soft fails warn but continue, hard fails stop for correction
+**MCP:** cognition-mcp, sequential-thinking
+**Persistence:** Creates `.claude/cognition/YYYYMMDD-HHMM-<slug>.md` + Workshop entry
+**Handoff Guidance:** Includes "Next Steps" section with contextual command recommendations
 
 ### `/challenge` - Adversarial Proposal Analysis
 ```bash
@@ -173,31 +203,34 @@ Runs full ORIENT→ANTICIPATE→GENERATE→EVALUATE→COMMIT cycle.
 Systematically attacks proposals using cognition-mcp.
 **Modes:** --quick (causal_analysis), default (+ argumentation + decide), --deep (+ simulation + ethical)
 **MCP:** cognition-mcp (sessions persisted to ~/.orca-cognition/)
+**Persistence:** Creates `.claude/cognition/YYYYMMDD-HHMM-<slug>.md` + Workshop entry
 
 ---
 
 ## Audit Commands (1)
 
-### `/audit` - Codebase Quality Auditing
+### `/audit` - Due Diligence Multi-Agent Auditing
 ```bash
-/audit                           # Quick health check (~2 min)
-/audit --comprehensive           # All 10 dimensions (~25 min)
-/audit --core                    # Core 5 dimensions (~10 min)
+/audit                           # Quick health check (~5 min, 3 agents)
+/audit --comprehensive           # Full due diligence (~45-60 min, 8 agents)
+/audit --core                    # Core dimensions (~15 min, 5 agents)
 /audit --item design-system      # Focused audit on specific area
 /audit --item page /checkout
+/audit --since abc1234           # Incremental since commit
 /audit --verbose                 # Full findings (default: TL;DR)
 ```
-**Operations:** Proactive quality surfacing across 10 dimensions
-**Dimensions (Core 5):** Architecture, Security, Performance, Types, Standards
-**Dimensions (Extended 5):** Accessibility, Dependencies, Documentation, Design System, Test Coverage
+**Architecture:** Multi-agent parallel execution for thorough analysis
+**Agents:** audit-structure-specialist, audit-dependency-specialist, audit-security-specialist (Phase 1)
+**Dimensions:** Structure (0.10), Dependencies (0.15), Security (0.20), Patterns (0.10), Documentation (0.10), Tests (0.15), Architecture (0.15), Design (0.05)
 **Output:** `.claude/audit/YYYY-MM-DD-<scope>.md` + `audit-index.json`
-**Finding Format:** AUD-YYYY-NNN with type, severity, location, recommendation, effort, fixCommand
+**Scoring:** Weighted average of dimension scores (0-100), grade A-F, risk level
+**Finding Format:** AUD-YYYY-NNN with type, severity, location, recommendation, effort
 **Integration:** `/orca fix AUD-YYYY-NNN` to route fixes to appropriate lane
 **MCP:** cognition-mcp (audit operation)
 
 ---
 
-## Utility Commands (12)
+## Utility Commands (13)
 
 ### `/enhance` - Prompt Enhancement
 ```bash
@@ -210,6 +243,7 @@ Systematically attacks proposals using cognition-mcp.
 /root-cause "Tests failing intermittently"
 /root-cause "Build errors on CI"
 ```
+**Persistence:** Creates `.claude/cognition/YYYYMMDD-HHMM-<slug>.md` + Workshop entry
 
 ### `/design-dna` - Design System Management
 ```bash
@@ -273,6 +307,16 @@ Searches all memory systems for relevant context and decisions.
 /self-improve --dry-run             # Preview only
 ```
 
+### `/project-setup` - Project Conventions Wizard
+```bash
+/project-setup                      # Initialize CLAUDE.md (same as init)
+/project-setup init                 # Full initialization flow
+/project-setup update               # Update existing CLAUDE.md
+/project-setup audit                # Check CLAUDE.md health
+```
+Guided wizard for project structure decisions. Detects project type (ios, nextjs, react, python, flutter, react-native, generic), observes existing patterns, asks 4 focused questions (2 shared + 2 type-specific), and generates CLAUDE.md with actionable rules.
+**Features:** Auto-detects sacred paths per framework, handles existing CLAUDE.md (merge/replace/cancel), saves decisions to ProjectContext.
+
 ---
 
 ## Command Architecture
@@ -322,4 +366,4 @@ $ORCA_OS_PATH/commands/
 ---
 
 _Source of truth: `docs/reference/os-dependency-graph.yaml`_
-_Last sync: 2025-12-25_
+_Last sync: 2026-01-23_

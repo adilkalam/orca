@@ -116,6 +116,9 @@ export class ProjectContextServer {
         case 'reanalyze_project':
           return await this.handleReanalyzeProject(args as any);
 
+        case 'recall':
+          return await this.handleRecall(args as { id: string });
+
         default:
           throw new Error(`Unknown tool: ${name}`);
       }
@@ -138,7 +141,7 @@ export class ProjectContextServer {
           properties: {
             domain: {
               type: 'string',
-              enum: ['webdev', 'nextjs', 'ios', 'expo', 'data', 'seo', 'brand'],
+              enum: ['webdev', 'nextjs', 'ios', 'expo', 'data', 'seo', 'brand', 'django-react', 'research', 'kg', 'shopify', 'audit', 'os-dev', 'orca-pipeline'],
               description: 'The domain/lane for this operation',
             },
             task: {
@@ -241,6 +244,22 @@ export class ProjectContextServer {
             },
           },
           required: [],
+        },
+      },
+      {
+        name: 'recall',
+        description:
+          'Retrieve full archived tool output by ID. Use when you need complete data ' +
+          'that was truncated by ORCA-Mem. The truncation message includes the ID.',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            id: {
+              type: 'string',
+              description: 'Archive ID from truncation message (e.g., "1705123456-abc123")',
+            },
+          },
+          required: ['id'],
         },
       },
     ];
@@ -346,6 +365,66 @@ Cache updated at .claude/memory/state.json`;
       (sum: number, child: any) => sum + this.countFilesInTree(child),
       0
     );
+  }
+
+  /**
+   * ORCA-Mem: Recall archived tool output
+   * Retrieves full content that was truncated by post-tool-use hook
+   */
+  private async handleRecall(args: { id: string }): Promise<any> {
+    const baseDir = `${process.env.HOME}/.claude/archives`;
+    const fs = await import('fs');
+    const path = await import('path');
+
+    try {
+      // Check if archive directory exists
+      if (!fs.existsSync(baseDir)) {
+        return {
+          content: [{
+            type: 'text',
+            text: `Archive directory not found at ${baseDir}. No truncated outputs have been archived yet.`
+          }]
+        };
+      }
+
+      // Get all date directories, sorted in reverse (most recent first)
+      const dirs = fs.readdirSync(baseDir)
+        .filter((d: string) => /^\d{4}-\d{2}-\d{2}$/.test(d))
+        .sort()
+        .reverse();
+
+      // Search for the archive file
+      for (const dir of dirs) {
+        const filePath = path.join(baseDir, dir, `${args.id}.txt`);
+        if (fs.existsSync(filePath)) {
+          const content = fs.readFileSync(filePath, 'utf-8');
+          const stats = fs.statSync(filePath);
+          const sizeKB = Math.round(stats.size / 1024);
+
+          return {
+            content: [{
+              type: 'text',
+              text: `[Recalled archive ${args.id} - ${sizeKB}KB]\n\n${content}`
+            }]
+          };
+        }
+      }
+
+      // Not found in any directory
+      return {
+        content: [{
+          type: 'text',
+          text: `Archive '${args.id}' not found. It may have expired (7-day retention) or the ID is incorrect.\n\nAvailable date directories: ${dirs.slice(0, 5).join(', ')}${dirs.length > 5 ? '...' : ''}\n\nTip: Check ~/.claude/archives/ for available archives.`
+        }]
+      };
+    } catch (error) {
+      return {
+        content: [{
+          type: 'text',
+          text: `Error reading archive: ${error}. The archive directory may not exist yet.`
+        }]
+      };
+    }
   }
 
   /**

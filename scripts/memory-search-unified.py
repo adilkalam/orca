@@ -68,7 +68,7 @@ def search_vibe_db(
   We keep this intentionally simple: use LIKE-based search across key text
   fields and return a small structured summary.
   """
-  db_path = project_root / ".claude" / "project" / "vibe.db"
+  db_path = project_root / ".claude" / "memory" / "code-index.db"
   if not db_path.exists():
     return []
 

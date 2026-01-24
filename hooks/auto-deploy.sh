@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Auto-deploy hook for ORCA-OS
 # Triggers after Edit/Write to deployable directories
 # Syncs changes to ~/.claude automatically
@@ -29,7 +29,7 @@ if [[ "$TOOL_NAME" != "Edit" && "$TOOL_NAME" != "Write" && "$TOOL_NAME" != "Mult
 fi
 
 # Check if the file is in a deployable directory
-DEPLOYABLE_DIRS="agents commands docs quick-reference scripts skills"
+DEPLOYABLE_DIRS="agents commands docs hooks quick-reference scripts skills"
 SHOULD_DEPLOY=false
 
 for dir in $DEPLOYABLE_DIRS; do
@@ -50,16 +50,16 @@ ORCA_OS_PATH="${ORCA_OS_PATH:-$HOME/ORCA-OS}"
 SOURCE="$ORCA_OS_PATH/$DEPLOY_DIR/"
 DEST="$HOME/.claude/$DEPLOY_DIR/"
 
-# SAFEGUARD: Block if deploying archive/deprecated files
+# SAFEGUARD: Skip if deploying archive/deprecated files (warning only, no block)
 if [[ "$FILE_PATH" == *"archive"* ]] || [[ "$FILE_PATH" == *"deprecated"* ]]; then
-    echo "BLOCKED: Cannot deploy archive/deprecated files"
-    exit 1
+    echo "WARNING: Skipping archive/deprecated file - not deployed"
+    exit 0
 fi
 
-# SAFEGUARD: Ensure DEST is a subdirectory, not root
+# SAFEGUARD: Ensure DEST is a subdirectory, not root (warning only, no block)
 if [[ "$DEST" == "$HOME/.claude/" ]] || [[ -z "$DEPLOY_DIR" ]]; then
-    echo "BLOCKED: Cannot deploy to ~/.claude root - must use subdirectory"
-    exit 1
+    echo "WARNING: Cannot deploy to ~/.claude root - skipping"
+    exit 0
 fi
 
 rsync -av --exclude='.archive' --exclude='.archived' --exclude='_archive' --exclude='archive/' --exclude='*deprecated*' "$SOURCE" "$DEST" 2>/dev/null
@@ -67,6 +67,8 @@ rsync -av --exclude='.archive' --exclude='.archived' --exclude='_archive' --excl
 if [[ $? -eq 0 ]]; then
     echo "AUTO-DEPLOYED: $DEPLOY_DIR/ -> ~/.claude/$DEPLOY_DIR/"
 else
-    echo "DEPLOY FAILED: $DEPLOY_DIR/"
-    exit 1
+    echo "WARNING: Deploy failed for $DEPLOY_DIR/ - continuing anyway"
 fi
+
+# Always exit 0 to not block Claude operations
+exit 0

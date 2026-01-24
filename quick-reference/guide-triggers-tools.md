@@ -1,7 +1,7 @@
-# Natural Language Triggers and Tools (OS 4.2)
+# Natural Language Triggers and Tools (OS 4.3)
 
-**Version:** OS 4.2
-**Last Updated:** 2025-12-24
+**Version:** OS 4.3
+**Last Updated:** 2026-01-19
 
 Say what you want; map to the right command.
 

@@ -449,3 +449,78 @@ Same as Default Mode, plus:
 3. **Quality Metrics**: Include confidence and bias_check for transparency.
 4. **Persistence**: Sessions are saved to `~/.orca-cognition/` for later review.
 5. **Be genuinely adversarial**: The goal is finding weaknesses, not confirmation.
+
+---
+
+## Persist Analysis (MANDATORY)
+
+After completing the analysis, persist for future reference.
+
+### Step 1: Create Cognition Directory
+
+```bash
+mkdir -p .claude/cognition
+```
+
+### Step 2: Generate Summary File
+
+Create file at `.claude/cognition/YYYYMMDD-HHMM-<slug>.md` where:
+- YYYYMMDD = current date (no dashes)
+- HHMM = current time
+- slug = first 30 chars of proposal, kebab-cased
+
+**File Template**:
+```markdown
+# Challenge: [Proposal]
+
+**Date**: YYYY-MM-DD HH:MM
+**Session ID**: <sessionId from cognition-mcp>
+**Command**: /challenge
+
+## Executive Summary
+
+[2-3 sentence summary of verdict and key risks identified]
+
+## Key Findings
+
+- [Risk/Finding 1]
+- [Risk/Finding 2]
+- [Risk/Finding 3]
+
+## Decision/Recommendation
+
+[GO / CONDITIONAL GO / NO GO with rationale]
+
+## Recovery
+
+To resume full analysis:
+```
+/think --import <sessionId>
+```
+```
+
+### Step 3: Write Workshop Entry
+
+```bash
+workshop --workspace .claude/memory note \
+  "/challenge: [Proposal] - [Verdict]. Session: <sessionId>. File: .claude/cognition/<filename>" \
+  -t challenge -t cognition
+```
+
+### Step 4: Confirm to User
+
+Output:
+```
+---
+Analysis persisted:
+  File: .claude/cognition/YYYYMMDD-HHMM-slug.md
+  Workshop: Tagged with challenge, cognition
+  Recovery: /think --import <sessionId>
+---
+```
+
+### Error Handling
+
+If file write or Workshop command fails:
+- Display warning: "Warning: Could not persist analysis. Analysis shown above is still valid."
+- Continue normally - do NOT halt the command

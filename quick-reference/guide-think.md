@@ -173,6 +173,7 @@ MCP returns:   { thought: "X", ... }  <- UNCHANGED
 |------|---------|
 | `--visual` | Output ASCII diagram of reasoning structure |
 | `--challenge` | Run adversarial critique after primary analysis |
+| `--deep` | Extended thinking (8-12+ thoughts, review/synthesis checkpoints, branching) |
 
 **--visual output examples:**
 
@@ -380,4 +381,4 @@ For complete schema examples, mental model details, and test results:
 
 ---
 
-_Version: OS 4.2 | Pattern: Accept-Store-Echo | Operations: 38_
+_Version: OS 4.3 | Pattern: Accept-Store-Echo | Operations: 38_

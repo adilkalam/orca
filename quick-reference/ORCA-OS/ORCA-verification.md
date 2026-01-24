@@ -1,7 +1,7 @@
 # Verification & Evidence Quick Reference (OS 4.2)
 
-**Version:** OS 4.2
-**Last Updated:** 2025-12-21
+**Version:** OS 4.3
+**Last Updated:** 2026-01-23
 
 Verification in OS 4.2 is **automated** within pipelines. This guide covers manual verification for edge cases.
 
@@ -281,9 +281,9 @@ Standards Gate Re-run: 92/100 → PASS
 
 ## Related Docs
 
-- **Commands:** `quick-reference/os2-commands.md`
-- **Agents:** `quick-reference/os2-agents.md`
-- **Architecture:** `quick-reference/os2-architecture.md`
+- **Commands:** `quick-reference/ORCA-OS/ORCA-commands.md`
+- **Agents:** `quick-reference/ORCA-OS/ORCA-agents.md`
+- **Architecture:** `quick-reference/ORCA-OS/ORCA-architecture.md`
 - **Quality Gates:** `docs/reference/standards-gate.md`, `docs/reference/design-qa-gate.md`
 
 ---

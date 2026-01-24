@@ -2,10 +2,10 @@
 # Source of truth for artifact relationships
 # Used by /orca-os-dev to trace impacts and sync documentation
 #
-# Version: 4.2
-# Last Updated: 2025-12-26
+# Version: 4.3
+# Last Updated: 2026-01-23
 
-version: "4.2"
+version: "4.3"
 
 # =============================================================================
 # ARTIFACT TYPE DEFINITIONS
@@ -242,13 +242,14 @@ lanes:
   expo:
     command: expo
     agents_dir: agents/expo
-    agent_count: 11
+    agent_count: 12
     agents:
       - expo-grand-orchestrator
       - expo-architect-agent
       - expo-builder-agent
       - expo-light-orchestrator
       - expo-aesthetics-specialist
+      - expo-standards-enforcer
       - expo-verification-agent
       - api-guardian
       - bundle-assassin
@@ -289,6 +290,38 @@ lanes:
       - crawl4ai
     projects: []
 
+  kg:
+    command: kg
+    agents_dir: agents/kg
+    agent_count: 4
+    description: "Knowledge Graph research pipeline for OBDN"
+    agents:
+      - kg-lead-agent
+      - kg-query-subagent
+      - kg-mechanism-subagent
+      - kg-answer-writer
+    mcp_requirements:
+      - cognition-mcp
+    projects: []
+
+  shopify:
+    command: shopify
+    agents_dir: agents/shopify
+    agent_count: 8
+    description: "Shopify theme development pipeline"
+    agents:
+      - shopify-grand-architect
+      - shopify-light-orchestrator
+      - shopify-css-specialist
+      - shopify-js-specialist
+      - shopify-liquid-specialist
+      - shopify-section-builder
+      - shopify-theme-checker
+      - shopify-ui-reviewer
+    mcp_requirements:
+      - puppeteer
+    projects: []
+
   data:
     command: null  # No dedicated orchestrator command
     agents_dir: agents/data
@@ -305,10 +338,11 @@ lanes:
     command: orca-os-dev
     agents_dir: agents/dev
     agent_prefix: os-dev-
-    agent_count: 5
+    agent_count: 6
     agents:
       - os-dev-grand-architect
       - os-dev-architect
+      - os-dev-light-orchestrator
       - os-dev-builder
       - os-dev-standards-enforcer
       - os-dev-verification
@@ -333,6 +367,46 @@ lanes:
       - research-heavy # 7 agents
       - build-heavy   # 5 agents
       - minimal       # 4 agents
+    projects: []
+
+  audit:
+    command: audit
+    agents_dir: agents/audit
+    agent_prefix: audit-
+    agent_count: 8
+    description: "Due diligence audit with parallel specialist agents"
+    agents:
+      # Core specialists (Phase 1)
+      - audit-structure-specialist     # Dead code, naming, giant files, organization
+      - audit-dependency-specialist    # Vulnerabilities, outdated, unused, licenses
+      - audit-security-specialist      # Exposed secrets, insecure storage, HTTP, validation
+      # Extended specialists (Phase 2)
+      - audit-pattern-specialist       # Pattern consistency, anti-patterns, style conformity
+      - audit-documentation-specialist # Doc accuracy, completeness, freshness
+      - audit-test-specialist          # Coverage, test quality, isolation, flakiness
+      - audit-architecture-specialist  # Circular deps, coupling, cohesion, boundaries
+      - audit-design-specialist        # Design tokens, UI consistency (UI projects only, conditional)
+    mcp_requirements:
+      - cognition-mcp
+    scoring:
+      dimensions:
+        structure: 0.10
+        dependencies: 0.15
+        security: 0.20
+        patterns: 0.10
+        documentation: 0.10
+        tests: 0.15
+        architecture: 0.15
+        design: 0.05  # Conditional: UI projects only
+      grade_thresholds:
+        A: 90
+        B: 80
+        C: 70
+        D: 60
+        F: 0
+    outputs:
+      - .claude/audit/YYYY-MM-DD-<scope>.md
+      - .claude/audit/audit-index.json
     projects: []
 
 # =============================================================================
@@ -376,8 +450,11 @@ mcps:
       description: "Extended reasoning"
       tools: [sequentialthinking]
     - name: project-context
-      description: "Project context queries"
-      tools: [query_context, save_decision, save_standard, save_task_history]
+      description: "Project context queries + ORCA-Mem recall"
+      tools: [query_context, save_decision, save_standard, save_task_history, index_project, reanalyze_project, recall]
+      orca_mem_integration:
+        recall_tool: "Retrieves archived tool outputs from ~/.claude/archives/"
+        works_with: [hooks.post-tool-use, scripts.archive-cleanup]
     - name: context7
       description: "Library documentation"
       tools: [resolve-library-id, get-library-docs]
@@ -398,6 +475,60 @@ mcps:
       description: "Web content extraction"
       lanes: [research, nextjs]
       requires_manual_start: true
+
+# =============================================================================
+# COGNITION PERSISTENCE
+# File-based persistence for cognitive command outputs
+# =============================================================================
+cognition_persistence:
+  description: "Persistent storage for cognitive command analysis outputs"
+  location: ".claude/cognition/"
+  file_patterns:
+    heavyweight:
+      pattern: "YYYYMMDD-HHMM-<slug>.md"
+      description: "Individual summary file per analysis"
+      commands: [problem-solve, deepthink, challenge, ultra-think, root-cause]
+    lightweight:
+      pattern: "YYYYMMDD-daily.md"
+      description: "Daily log with appended entries"
+      commands: [think, contemplate]
+  integration:
+    workshop: "All entries also written to Workshop with -t [command] -t cognition"
+    discovery: "workshop search cognition OR workshop why '<topic>'"
+  recovery:
+    method: "/think --import <sessionId>"
+    requires: "cognition-mcp session still exists"
+
+# =============================================================================
+# ORCA-MEM COMPONENTS
+# Context management via truncation and archival
+# =============================================================================
+orca_mem:
+  description: "Context management system preventing conversation bloat"
+  hooks:
+    post-tool-use:
+      location: hooks/post-tool-use.sh
+      purpose: "Truncates large tool outputs, archives originals"
+      triggers_on: "Every tool call completion"
+      config:
+        threshold: 4000
+        head_preserve: 1500
+        tail_preserve: 500
+    session-end:
+      location: hooks/session-end.sh
+      purpose: "Captures session summary on exit"
+      triggers_on: "Session termination"
+  scripts:
+    archive-cleanup:
+      location: scripts/archive-cleanup.sh
+      purpose: "Removes archives older than retention period"
+      config:
+        retention_days: 7
+        archive_location: ~/.claude/archives/
+  mcp_tool:
+    name: recall
+    server: project-context
+    purpose: "Retrieves archived content by session/timestamp/query"
 
 # =============================================================================
 # COMMAND REGISTRY
@@ -460,6 +591,28 @@ commands:
       - seo-quality-guardian
       - seo-optimizer
 
+  - name: kg
+    type: lane_orchestrator
+    lane: kg
+    agents_called:
+      - kg-lead-agent
+      - kg-query-subagent
+      - kg-mechanism-subagent
+      - kg-answer-writer
+
+  - name: shopify
+    type: lane_orchestrator
+    lane: shopify
+    agents_called:
+      - shopify-grand-architect
+      - shopify-light-orchestrator
+      - shopify-css-specialist
+      - shopify-js-specialist
+      - shopify-liquid-specialist
+      - shopify-section-builder
+      - shopify-theme-checker
+      - shopify-ui-reviewer
+
   - name: orca-os-dev
     type: lane_orchestrator
     lane: os-dev
@@ -493,10 +646,15 @@ commands:
   - name: audit
     type: utility
     mcps: [cognition-mcp]
-    agents_called: []
+    lane: audit
+    agents_called:
+      - audit-structure-specialist
+      - audit-dependency-specialist
+      - audit-security-specialist
     outputs:
       - .claude/audit/YYYY-MM-DD-<scope>.md
       - .claude/audit/audit-index.json
+      - .claude/audit/temp/<agent>.json (intermediate)
 
   - name: contemplate
     type: utility
@@ -577,6 +735,13 @@ commands:
   - name: deepthink
     type: utility
     mcps: [cognition-mcp, sequential-thinking]
+    description: "Depth-first exploration with route-based modes"
+    agents_called: []
+
+  - name: problem-solve
+    type: utility
+    mcps: [cognition-mcp, sequential-thinking]
+    description: "Convergent 8-step decision pipeline"
     agents_called: []
 
   - name: design-review-from-screenshot
@@ -588,22 +753,35 @@ commands:
     type: utility
     agents_called: []
 
+  - name: project-setup
+    type: utility
+    description: "Project conventions wizard - generates CLAUDE.md"
+    agents_called: []
+    subcommands: [init, update, audit]
+    detects: [ios, nextjs, react, python, flutter, react-native, generic]
+    outputs:
+      - "CLAUDE.md (project root)"
+      - ".claude/backups/CLAUDE.md.*.bak (if replacing)"
+
 # =============================================================================
 # COUNTS (for verification)
 # =============================================================================
 counts:
-  total_agents: 94
-  total_commands: 29
+  total_agents: 117
+  total_commands: 33
   agents_by_domain:
     ios: 19
     nextjs: 17             # +tailwind-specialist, +shadcn-specialist
     django-react: 13       # 3 orchestration + 1 implementation + 3 backend + 1 integration + 3 frontend + 2 gates
-    expo: 11
+    expo: 12               # +api-guardian, bundle-assassin, impact-analyzer, refactor-surgeon, test-generator, standards-enforcer
     research: 7
     seo: 5                 # +seo-optimizer (content optimization against SERP)
     data: 4
-    os-dev: 5
+    os-dev: 6              # os-dev-* agents in agents/dev/
     orca-pipeline: 5       # orca-pipeline-orchestrator, researcher, architect, generator, validator
+    audit: 8               # Phase 1 (3): structure, dependency, security. Phase 2 (5): pattern, documentation, test, architecture, design
+    kg: 4                  # Knowledge Graph research pipeline
+    shopify: 8             # Shopify theme development pipeline
     cross-cutting: 9       # a11y-enforcer, crash-analyzer, debt-eliminator, design-system-architect, design-token-guardian, performance-enforcer, performance-prophet, security-specialist, version-shield
 
 # =============================================================================

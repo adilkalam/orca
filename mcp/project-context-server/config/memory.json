@@ -1,7 +1,0 @@
-{
-  "decay": {
-    "enabled": true,
-    "halfLifeDays": 90,
-    "minimumScore": 0.01
-  }
-}

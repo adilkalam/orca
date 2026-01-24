@@ -15,7 +15,7 @@ NC='\033[0m' # No Color
 BOLD='\033[1m'
 
 # Configuration
-ORCA_VERSION="4.1.0"
+ORCA_VERSION="4.2.0"
 CLAUDE_DIR="$HOME/.claude"
 BACKUP_DIR="$HOME/.claude-backup-$(date +%Y%m%d-%H%M%S)"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -197,7 +197,6 @@ install_orca_files() {
         "scripts/os2-cleanup"
         "mcp/project-context-server"
         "mcp/cognition-mcp"
-        "mcp/crawl4ai-mcp-server"
         "docs/pipelines"
         "docs/concepts"
         "docs/reference/phase-configs"
@@ -223,7 +222,7 @@ install_orca_files() {
     done
     # Copy root-level shared agents
     cp "$ORCA_ROOT/agents/"*.md "$CLAUDE_DIR/agents/" 2>/dev/null || true
-    success "Agents installed (89 agents across 6 domains)"
+    success "Agents installed (97 agents across 7 domains)"
 
     # Copy commands (excluding domain-specific)
     info "Installing commands..."
@@ -326,12 +325,10 @@ install_orca_files() {
     cp "$ORCA_ROOT/mcp/cognition-mcp/tsconfig.json" "$CLAUDE_DIR/mcp/cognition-mcp/" 2>/dev/null || true
     success "Cognition MCP installed"
 
-    # Copy Crawl4AI MCP Server
-    info "Installing Crawl4AI MCP Server..."
-    cp -r "$ORCA_ROOT/mcp/crawl4ai-mcp-server/crawler_agent" "$CLAUDE_DIR/mcp/crawl4ai-mcp-server/" 2>/dev/null || true
-    cp "$ORCA_ROOT/mcp/crawl4ai-mcp-server/requirements.txt" "$CLAUDE_DIR/mcp/crawl4ai-mcp-server/" 2>/dev/null || true
-    mkdir -p "$CLAUDE_DIR/mcp/crawl4ai-mcp-server/crawls"
-    success "Crawl4AI MCP Server files installed"
+    # Crawl4AI uses Docker - no local files needed
+    info "Crawl4AI MCP will use Docker (no local install needed)"
+    mkdir -p "$CLAUDE_DIR/mcp/crawl4ai-crawls"
+    success "Crawl4AI output directory created"
 
     # Copy root files
     info "Installing configuration files..."
@@ -346,57 +343,68 @@ install_orca_files() {
 install_mcp_dependencies() {
     section "Installing MCP dependencies"
 
+    local mcp_errors=0
+
+    # Check for build tools (needed for native modules like better-sqlite3)
+    if ! command_exists python3; then
+        warn "Python3 not found - some native modules may fail to compile"
+    fi
+
     # Install ProjectContext MCP dependencies
     if [ -f "$CLAUDE_DIR/mcp/project-context-server/package.json" ]; then
         info "Installing ProjectContext MCP dependencies..."
         cd "$CLAUDE_DIR/mcp/project-context-server"
-        npm install --silent 2>/dev/null || npm install
 
-        # Build if needed
-        if [ -f "tsconfig.json" ] && [ ! -d "dist" ]; then
-            info "Building ProjectContext MCP..."
-            npm run build --silent 2>/dev/null || npx tsc
+        if npm install 2>&1 | tee /tmp/npm-install.log | grep -q "error"; then
+            error "Failed to install ProjectContext MCP dependencies"
+            warn "Check /tmp/npm-install.log for details"
+            warn "Common fix: Install Xcode Command Line Tools: xcode-select --install"
+            ((mcp_errors++))
+        else
+            # Build if needed
+            if [ -f "tsconfig.json" ] && [ ! -d "dist" ]; then
+                info "Building ProjectContext MCP..."
+                npm run build 2>&1 || npx tsc 2>&1
+            fi
+            success "ProjectContext MCP ready"
         fi
         cd - > /dev/null
-        success "ProjectContext MCP ready"
+    else
+        warn "ProjectContext MCP package.json not found - skipping"
     fi
 
     # Install Cognition MCP dependencies
     if [ -f "$CLAUDE_DIR/mcp/cognition-mcp/package.json" ]; then
         info "Installing Cognition MCP dependencies..."
         cd "$CLAUDE_DIR/mcp/cognition-mcp"
-        npm install --silent 2>/dev/null || npm install
 
-        # Build if needed
-        if [ -f "tsconfig.json" ] && [ ! -d "dist" ]; then
-            info "Building Cognition MCP..."
-            npm run build --silent 2>/dev/null || npx tsc
+        if npm install 2>&1 | tee /tmp/npm-install.log | grep -q "error"; then
+            error "Failed to install Cognition MCP dependencies"
+            warn "Check /tmp/npm-install.log for details"
+            ((mcp_errors++))
+        else
+            # Build if needed
+            if [ -f "tsconfig.json" ] && [ ! -d "dist" ]; then
+                info "Building Cognition MCP..."
+                npm run build 2>&1 || npx tsc 2>&1
+            fi
+            success "Cognition MCP ready"
         fi
         cd - > /dev/null
-        success "Cognition MCP ready"
+    else
+        warn "Cognition MCP package.json not found - skipping"
     fi
 
-    # Install Crawl4AI MCP Server dependencies (Python-based)
-    if [ -f "$CLAUDE_DIR/mcp/crawl4ai-mcp-server/requirements.txt" ]; then
-        info "Setting up Crawl4AI MCP Server..."
-        cd "$CLAUDE_DIR/mcp/crawl4ai-mcp-server"
+    # Crawl4AI required for /research, /seo, /orca-pipeline
+    echo ""
+    warn "Crawl4AI required for: /research, /seo, /orca-pipeline"
+    info "Install separately: https://docs.crawl4ai.com/core/installation/"
+    info "Then add to ~/.claude.json mcpServers (see docs/mcp-setup.md)"
 
-        # Create Python virtual environment
-        if [ ! -d ".venv" ]; then
-            info "Creating Python virtual environment..."
-            python3 -m venv .venv
-        fi
-
-        # Install Python dependencies
-        info "Installing Python dependencies..."
-        .venv/bin/pip install --quiet -r requirements.txt 2>/dev/null || .venv/bin/pip install -r requirements.txt
-
-        # Install Playwright browsers
-        info "Installing Playwright browsers (this may take a moment)..."
-        .venv/bin/python -m playwright install chromium 2>/dev/null || true
-
-        cd - > /dev/null
-        success "Crawl4AI MCP Server ready"
+    if [ $mcp_errors -gt 0 ]; then
+        echo ""
+        warn "Some MCP servers failed to install ($mcp_errors errors)"
+        warn "Run: ~/orca/dist/validate.sh to diagnose issues"
     fi
 }
 
@@ -479,16 +487,11 @@ core_servers = {
         "command": "node",
         "args": [f"{claude_dir}/mcp/cognition-mcp/dist/index.js"],
         "env": {}
-    },
-    "crawl4ai": {
-        "type": "stdio",
-        "command": f"{claude_dir}/mcp/crawl4ai-mcp-server/.venv/bin/python",
-        "args": ["-m", "crawler_agent.mcp_server"],
-        "env": {
-            "PYTHONPATH": f"{claude_dir}/mcp/crawl4ai-mcp-server"
-        }
     }
 }
+
+# Note: Crawl4AI is optional - users install separately
+# See: https://docs.crawl4ai.com/core/installation/
 
 # Add core servers
 for name, config_val in core_servers.items():
@@ -602,8 +605,11 @@ print_completion() {
     echo "     - context7 (library documentation)"
     echo "     - project-context (memory & semantic search)"
     echo "     - cognition-mcp (38 reasoning operations)"
-    echo "     - crawl4ai (web scraping & research)"
     echo "     - sequential-thinking (multi-step reasoning)"
+    echo ""
+    echo -e "  ${BOLD}Required for /research, /seo, /orca-pipeline:${NC}"
+    echo "     - Crawl4AI (install separately)"
+    echo "     - Guide: https://docs.crawl4ai.com/core/installation/"
     echo ""
     echo -e "  ${BOLD}Memory systems:${NC}"
     echo "     - Workshop: ~/.claude/memory/workshop.db"
@@ -620,6 +626,9 @@ print_completion() {
     echo "     /nextjs     - Next.js development pipeline"
     echo "     /expo       - Expo/React Native pipeline"
     echo "     /research   - Deep research pipeline"
+    echo ""
+    echo -e "  ${BOLD}Validate installation:${NC}"
+    echo "     ~/orca/dist/validate.sh"
     echo ""
     echo -e "  ${BOLD}Documentation:${NC}"
     echo "     - See ~/.claude/docs/mcp-setup.md for MCP details"

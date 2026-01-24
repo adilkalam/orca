@@ -38,6 +38,47 @@ EXAMPLES:
 
 ---
 
+## Phase 0.5: Problem-Type Detection
+
+Analyze $ARGUMENTS to classify problem type before selecting operations.
+
+### Problem-Type Routing Table
+
+| Problem Type | Characteristics | Primary Technique | Evidence |
+|--------------|-----------------|-------------------|----------|
+| **EXPLORATION** | Confused, need options, "what could we do?" | Tree-of-Thought | 74% vs 4% (18x) |
+| **COMPOSITIONAL** | Multi-step, build on sub-solutions | Least-to-Most decomposition | 99.7% vs 16% |
+| **AGGREGATION** | Combine multiple outputs, merge perspectives | Graph-of-Thought | 62% over ToT |
+| **ARITHMETIC/MATH** | Calculations, quantitative reasoning | Self-Consistency | Consistent gains |
+| **CODE/TECHNICAL** | Implementation, debugging, refactoring | Reflexion loop | 91% vs 80% |
+| **DECISION** | Choose between options, trade-offs | Decide + Challenge | Standard |
+| **RISK** | What could go wrong, failure modes | Pre-mortem inversion | Standard |
+| **STRATEGIC** | Long-term planning, multi-phase | Full /problem-solve | Standard |
+
+### Detection Heuristics
+
+- Contains "what could", "options for", "explore" → EXPLORATION
+- Contains "step by step", "then", "first...then" → COMPOSITIONAL
+- Contains "combine", "synthesize", "multiple" → AGGREGATION
+- Contains numbers, "calculate", "estimate" → ARITHMETIC
+- Contains "debug", "implement", "refactor", "code" → CODE
+- Contains "choose", "vs", "trade-off", "decide" → DECISION
+- Contains "risk", "fail", "wrong", "danger" → RISK
+- Contains "plan", "strategy", "long-term" → STRATEGIC
+
+### Detection Output
+
+Before proceeding to Phase 1, output:
+
+```
+**Problem Type Detected:** [TYPE]
+**Rationale:** [Why this classification based on detected keywords/patterns]
+**Primary Technique:** [From routing table]
+**Maps to:** /think --[flag] or /problem-solve --[variant]
+```
+
+---
+
 ## Phase 1: Problem Classification
 
 Analyze $ARGUMENTS and determine:
@@ -107,8 +148,19 @@ Transform the orchestration_suggest response into human-readable format:
 ```markdown
 ## Reasoning Strategy for: [Problem Summary]
 
+**Problem Type**: [From Phase 0.5 detection]
 **Complexity**: [simple/medium/complex]
 **Key Challenge**: [What makes this hard - from your analysis]
+
+### Routing Recommendation
+
+Based on problem type **[TYPE]**, the primary technique is **[TECHNIQUE]**.
+
+This maps to:
+- /think --[flag]: [specific prompt based on problem type]
+
+OR for complex problems:
+- /problem-solve --[variant]: [specific prompt]
 
 ---
 
@@ -266,6 +318,61 @@ Copy this to begin:
 
 ---
 
+### Next Steps
+
+Based on the recommended strategy:
+
+**If the problem is clear and you're ready to execute:**
+→ Execute the first recommended phase above
+
+**If the problem feels too complex/uncertain:**
+→ /deepthink "[the problem]" before committing to a strategy
+
+**If you need a quick decision now:**
+→ /problem-solve --quick "[decision statement]"
+
+**If this is high-stakes and needs full rigor:**
+→ /problem-solve "[the problem]"
+
+---
+
 Ready to begin? I can run the first phase now, or you can copy the
 commands above to work through them step by step.
 ```
+
+---
+
+## Persist Analysis (Lightweight)
+
+After completing the analysis, append to daily log.
+
+### Step 1: Create Cognition Directory
+
+```bash
+mkdir -p .claude/cognition
+```
+
+### Step 2: Append to Daily Log
+
+Append entry to `.claude/cognition/YYYYMMDD-daily.md`:
+
+```markdown
+---
+### [HH:MM] /contemplate - [Topic slug]
+Session: <sessionId>
+
+[1-2 sentence summary of the recommended strategy]
+---
+```
+
+### Step 3: Write Workshop Entry
+
+```bash
+workshop --workspace .claude/memory note \
+  "/contemplate: [Topic] - [Recommended approach]. Session: <sessionId>" \
+  -t contemplate -t cognition
+```
+
+### Error Handling
+
+If persistence fails, display warning and continue - do NOT halt.

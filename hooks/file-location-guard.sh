@@ -1,79 +1,46 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
-# File Location Guard - ALWAYS prompts before creating files
-# This hook intercepts ALL file creation and forces location confirmation
+# File Location Guard - WARNING ONLY mode
+# Logs warnings for files created in potentially wrong locations
+# NEVER blocks operations (exit 0 always) - Claude cannot handle interactive input
 
-set -euo pipefail
+set -uo pipefail
 
 # Colors for visibility
-RED='\033[0;31m'
-GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
-BLUE='\033[0;34m'
-BOLD='\033[1m'
 NC='\033[0m'
 
-# Check if this is a file write operation
-if [[ "${TOOL_NAME:-}" == "Write" || "${TOOL_NAME:-}" == "NotebookEdit" || "${TOOL_NAME:-}" == "Edit" ]]; then
+# Read JSON from stdin
+HOOK_INPUT=$(cat)
 
-    # Extract the file path from the operation
-    FILE_PATH=$(echo "$TOOL_PARAMS" | jq -r '.file_path // .notebook_path // ""' 2>/dev/null || echo "")
+# Extract tool name and file path
+TOOL_NAME=$(echo "$HOOK_INPUT" | jq -r '.tool_name // empty' 2>/dev/null)
+FILE_PATH=$(echo "$HOOK_INPUT" | jq -r '.tool_input.file_path // .tool_input.notebook_path // empty' 2>/dev/null)
 
-    if [[ -n "$FILE_PATH" ]]; then
-
-        # Check if file is in a protected directory that should always prompt
-        PROTECTED_DIRS=(
-            ".claude/orchestration"
-            ".orchestration"
-            "reports"
-            "analytics"
-            "evidence"
-            "docs"
-            "commands"
-            "agents"
-            ".claude"
-        )
-
-        # Check if path contains any protected directory
-        for dir in "${PROTECTED_DIRS[@]}"; do
-            if [[ "$FILE_PATH" == *"/$dir/"* ]] || [[ "$FILE_PATH" == *"/$dir" ]]; then
-                echo -e "${RED}${BOLD}🚨 FILE LOCATION GUARD TRIGGERED${NC}"
-                echo -e "${YELLOW}Attempting to write to: ${BOLD}$FILE_PATH${NC}"
-                echo ""
-                echo -e "${BLUE}This location appears to be automatically chosen.${NC}"
-                echo -e "${GREEN}Where would you like to save this file instead?${NC}"
-                echo ""
-                echo -e "${BOLD}Options:${NC}"
-                echo "1. Keep current location: $FILE_PATH"
-                echo "2. Save to project root: $(basename "$FILE_PATH")"
-                echo "3. Save to /tmp/ for review: /tmp/$(basename "$FILE_PATH")"
-                echo "4. Custom location (you specify)"
-                echo "5. REJECT - Don't create this file"
-                echo ""
-                echo -e "${RED}${BOLD}BLOCKED: Awaiting your location choice${NC}"
-                exit 1
-            fi
-        done
-
-        # For any new file creation, always confirm location
-        if [[ ! -f "$FILE_PATH" ]]; then
-            echo -e "${YELLOW}${BOLD}📍 FILE LOCATION CONFIRMATION${NC}"
-            echo -e "Creating new file at: ${BOLD}$FILE_PATH${NC}"
-            echo ""
-            echo -e "${BLUE}Is this the correct location?${NC}"
-            echo ""
-            echo -e "${BOLD}Options:${NC}"
-            echo "1. ✅ Yes, create at: $FILE_PATH"
-            echo "2. 🏠 Save to project root instead"
-            echo "3. 📁 Save to /tmp/ for review first"
-            echo "4. ✏️ Let me specify a custom location"
-            echo "5. ❌ CANCEL - Don't create this file"
-            echo ""
-            echo -e "${YELLOW}Reply with your choice (1-5) or provide a custom path${NC}"
-            exit 1
-        fi
-    fi
+# Only check for file write operations
+if [[ "$TOOL_NAME" != "Write" && "$TOOL_NAME" != "NotebookEdit" && "$TOOL_NAME" != "Edit" ]]; then
+    exit 0
 fi
 
-# Allow operation to continue if not blocked
+if [[ -z "$FILE_PATH" ]]; then
+    exit 0
+fi
+
+# Check if path is in a location that might be a mistake
+SUSPICIOUS_PATTERNS=(
+    "/.claude/orchestration/[^/]*\\.md$"  # Files directly in orchestration (should be in temp/ or evidence/)
+    "^/tmp/.*\\.(md|json|yaml)$"          # Temp files that should be in project
+)
+
+for pattern in "${SUSPICIOUS_PATTERNS[@]}"; do
+    if [[ "$FILE_PATH" =~ $pattern ]]; then
+        echo -e "${YELLOW}FILE-LOCATION-GUARD: Potentially misplaced file: $FILE_PATH${NC}"
+        echo "Consider: .claude/orchestration/temp/ for working files"
+        echo "Consider: .claude/orchestration/evidence/ for final artifacts"
+        # WARNING ONLY - do not block
+        break
+    fi
+done
+
+# Always allow operation to continue
 exit 0

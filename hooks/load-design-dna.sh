@@ -1,8 +1,8 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Design DNA Auto-Loader for SessionStart Hook
 # Loads project-specific design taste and universal design principles
 
-set -e
+set -uo pipefail
 
 DNA_DIR=".claude/design-dna"
 OUTPUT_FILE=".claude-design-dna-context.md"
@@ -292,3 +292,5 @@ FOOTER
 # Main execution
 PROJECT_DNA=$(detect_design_dna)
 load_design_dna "$PROJECT_DNA"
+
+exit 0

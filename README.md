@@ -4,7 +4,7 @@
 | | | | |_) | |     / _ \  | | | \___ \
 | |_| |  _ <| |___ / ___ \ | |_| |___) |
  \___/|_| \_\\____/_/   \_\ \___/|____/
-                                    v4.1
+                                    v4.2
 ```
 
 **Orchestrated Response Coordination Architecture for Claude Code**
@@ -121,7 +121,7 @@ This happens because each token constrains what comes next. **Once Claude starts
 
 **With ORCA:** `/think` forces Claude to reason through the problem *before* committing to a response. The thinking happens externally, structured, visible. By the time Claude responds, it's already considered alternatives, surfaced assumptions, and worked through edge cases. You skip the back-and-forth entirely.
 
-**For complex problems:** `/deepthink` chains multiple reasoning steps automatically—mapping the system, anticipating failure modes, generating options, stress-testing the recommendation, and locking in commitments with safeguards. It's the full pipeline for decisions that deserve more than a quick answer.
+**For complex problems:** `/plan --problem-solve` chains multiple reasoning steps automatically—mapping the system, anticipating failure modes, generating options, stress-testing the recommendation, and locking in commitments with safeguards. It's the full pipeline for decisions that deserve more than a quick answer.
 
 ---
 
@@ -129,7 +129,7 @@ This happens because each token constrains what comes next. **Once Claude starts
 
 **Claude Code's built-in `/plan`:** Enters plan mode, explores codebase, writes a plan, waits for approval. Interactive—but the questions Claude asks aren't structured. What gets surfaced depends on what Claude happens to think of.
 
-**ORCA's `/plan`:** Structured requirements gathering. Systematically surfaces assumptions, scope boundaries, edge cases. Produces a detailed spec that persists as a file—survives context resets and compacting. Integrates with `/challenge` and `--deepthink` for complex requirements.
+**ORCA's `/plan`:** Structured requirements gathering. Systematically surfaces assumptions, scope boundaries, edge cases. Produces a detailed spec that persists as a file—survives context resets and compacting. Integrates with `/challenge` and `--problem-solve` for complex requirements.
 
 **`/challenge` — Stress-test before you build:** After planning, `/challenge` attacks your own plan. What could go wrong? What are you assuming? Where are the blind spots? Better to find the holes before you've written 2000 lines of code.
 
@@ -327,7 +327,7 @@ MCP (Model Context Protocol) servers extend Claude with external capabilities:
 | Server | What It Enables |
 |--------|-----------------|
 | **project-context** | Memory across sessions. Stores decisions, gotchas, preferences. Semantic search across your codebase. Assembles context bundles for each task. |
-| **cognition-mcp** | The 38 reasoning operations. Powers `/think`, `/deepthink`, decision frameworks, systems mapping. |
+| **cognition-mcp** | The 38 reasoning operations. Powers `/think`, `/plan --problem-solve`, decision frameworks, systems mapping. |
 | **sequential-thinking** | Multi-step reasoning with revision. Lets Claude backtrack and correct course mid-thought. |
 | **context7** | Up-to-date library documentation. Claude gets current API info, not stale training data. |
 
@@ -341,4 +341,4 @@ MCP (Model Context Protocol) servers extend Claude with external capabilities:
 
 ---
 
-**ORCA OS 4.1** — [Full Documentation](docs/) — [Quick Start](docs/QUICK-START.md)
+**ORCA OS 4.2** — [Full Documentation](docs/) — [Quick Start](docs/QUICK-START.md)

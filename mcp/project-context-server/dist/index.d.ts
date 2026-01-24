@@ -38,6 +38,11 @@ export declare class ProjectContextServer {
     private handleReanalyzeProject;
     private countFilesInTree;
     /**
+     * ORCA-Mem: Recall archived tool output
+     * Retrieves full content that was truncated by post-tool-use hook
+     */
+    private handleRecall;
+    /**
      * Start the MCP server
      */
     run(): Promise<void>;

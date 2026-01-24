@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Git Tracking Guard - Warns when editing untracked files in critical projects
 # Non-blocking: warns but allows operation to continue

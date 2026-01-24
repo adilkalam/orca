@@ -1,0 +1,234 @@
+# Audit Pipeline Phase Configuration - OS 4.2
+# Standalone Due Diligence Codebase Auditing
+#
+# NOTE: This is NOT an /orca pipeline. /audit is a standalone diagnostic
+# command that runs independently of feature development pipelines.
+#
+# Key differences from /orca pipelines:
+# - No intake/planning/verification phases (single-purpose tool)
+# - Parallel agent spawning for efficiency
+# - Read-only operation (never modifies code)
+# - Produces investor-grade reports
+
+pipeline:
+  name: audit
+  description: Multi-agent due diligence auditing with parallel specialist execution
+  version: 1.0
+  type: standalone  # Not an /orca pipeline
+
+command:
+  entry: /audit
+  argument_hint: "[--comprehensive | --core | --item <target>] [--since <commit>] [--verbose]"
+  allowed_tools:
+    - Read
+    - Grep
+    - Glob
+    - Bash
+    - Task
+    - mcp__cognition__cognition
+    - mcp__project-context__query_context
+    - AskUserQuestion
+
+phases:
+  - name: discovery
+    description: Parse arguments, detect project type, determine dimensions
+    duration_target: "2-3 min"
+    actions:
+      - parse_arguments:
+          mode: "quick | core | comprehensive | item"
+          target: "path for --item mode"
+          commit: "sha for --since mode"
+          verbosity: "boolean"
+      - detect_project_type:
+          patterns:
+            nextjs: "next.config.*"
+            expo: "app.json with expo"
+            ios: "*.xcodeproj or Package.swift"
+            django: "manage.py"
+            cli: "default fallback"
+      - determine_dimensions:
+          quick: ["structure", "security", "dependencies"]
+          core: ["structure", "security", "dependencies", "patterns", "documentation"]
+          comprehensive: "all 8 (7 for non-UI)"
+      - init_temp_directory:
+          path: ".claude/audit/temp/"
+    outputs:
+      - mode
+      - project_type
+      - dimensions
+      - temp_path
+
+  - name: parallel_execution
+    description: Spawn specialist agents in parallel via Task tool
+    duration_target:
+      quick: "5 min"
+      core: "15 min"
+      comprehensive: "30-45 min"
+    actions:
+      - spawn_specialists:
+          method: "Task with run_in_background: true"
+          agents_by_mode:
+            quick:
+              - audit-structure-specialist
+              - audit-security-specialist
+              - audit-dependency-specialist
+            core:
+              - audit-structure-specialist
+              - audit-security-specialist
+              - audit-dependency-specialist
+              - audit-pattern-specialist
+              - audit-documentation-specialist
+            comprehensive:
+              - audit-structure-specialist
+              - audit-security-specialist
+              - audit-dependency-specialist
+              - audit-pattern-specialist
+              - audit-documentation-specialist
+              - audit-test-specialist
+              - audit-architecture-specialist
+              - audit-design-specialist  # Conditional: UI projects only
+      - collect_json_outputs:
+          location: ".claude/audit/temp/"
+          schema: "agent output JSON"
+    outputs:
+      - agent_results  # Array of JSON from each specialist
+
+  - name: aggregation
+    description: Calculate scores, rank findings, assign IDs
+    duration_target: "2-3 min"
+    actions:
+      - calculate_scores:
+          weights:
+            structure: 0.10
+            dependencies: 0.15
+            security: 0.20
+            patterns: 0.10
+            documentation: 0.10
+            tests: 0.15
+            architecture: 0.15
+            design: 0.05  # Redistributed if N/A
+          formula: "SUM(dimensionScore * dimensionWeight)"
+      - rank_findings:
+          severity_order: ["critical", "high", "medium", "low"]
+      - assign_ids:
+          method: "sha256(type:location:title).slice(0,8)"
+          format: "AUD-YYYY-NNN"
+          persistence: ".claude/audit/audit-index.json"
+    outputs:
+      - overall_score
+      - grade
+      - ranked_findings
+      - finding_ids
+
+  - name: report_generation
+    description: Generate markdown report and update tracking
+    duration_target: "1-2 min"
+    actions:
+      - generate_markdown:
+          output: ".claude/audit/YYYY-MM-DD-<mode>.md"
+          sections:
+            - header  # Score, risk, duration, files analyzed
+            - tldr  # Summary bullets
+            - recommendation  # PROCEED / ACQUIRE WITH PLAN / DO NOT PROCEED
+            - trend  # Score history
+            - scorecards  # Per-dimension breakdown
+            - findings  # Ranked by severity with evidence
+      - update_index:
+          file: ".claude/audit/audit-index.json"
+          data:
+            - audit_entry
+            - finding_entries
+            - score_history
+            - findings_history
+      - store_cognition:
+          operation: "audit"
+          content: ["scope", "scores", "findings", "recommendation"]
+      - display_summary:
+          format: "terminal-friendly summary"
+      - cleanup_temp:
+          command: "rm -rf .claude/audit/temp/"
+    outputs:
+      - report_path
+      - index_updated
+      - cognition_stored
+
+modes:
+  quick:
+    description: "Fast health check - 3 core dimensions"
+    dimensions: 3
+    agents:
+      - audit-structure-specialist
+      - audit-security-specialist
+      - audit-dependency-specialist
+    duration_target: "~5 min"
+
+  core:
+    description: "Core analysis - 5 dimensions"
+    dimensions: 5
+    agents:
+      - audit-structure-specialist
+      - audit-security-specialist
+      - audit-dependency-specialist
+      - audit-pattern-specialist
+      - audit-documentation-specialist
+    duration_target: "~15 min"
+
+  comprehensive:
+    description: "Full due diligence - all dimensions"
+    dimensions: "7-8 (design conditional on UI project)"
+    agents:
+      - audit-structure-specialist
+      - audit-security-specialist
+      - audit-dependency-specialist
+      - audit-pattern-specialist
+      - audit-documentation-specialist
+      - audit-test-specialist
+      - audit-architecture-specialist
+      - audit-design-specialist  # Conditional
+    duration_target: "45-60 min"
+
+  item:
+    description: "Focused audit on specific area"
+    dimensions: "varies by target"
+    duration_target: "5-10 min"
+    fuzzy_matching:
+      - exact_path
+      - partial_path_glob
+      - module_name_search
+      - prompt_on_multiple
+
+scoring:
+  dimension_weights:
+    structure: 0.10
+    dependencies: 0.15
+    security: 0.20
+    patterns: 0.10
+    documentation: 0.10
+    tests: 0.15
+    architecture: 0.15
+    design: 0.05
+
+  grade_mapping:
+    A: { min: 90, risk: "Low", recommendation: "PROCEED" }
+    B: { min: 80, risk: "Low", recommendation: "PROCEED WITH MINOR FIXES" }
+    C: { min: 70, risk: "Medium", recommendation: "ACQUIRE WITH REMEDIATION PLAN" }
+    D: { min: 60, risk: "High", recommendation: "SIGNIFICANT REMEDIATION REQUIRED" }
+    F: { min: 0, risk: "Critical", recommendation: "DO NOT PROCEED / MAJOR OVERHAUL" }
+
+outputs:
+  report:
+    location: ".claude/audit/YYYY-MM-DD-<mode>.md"
+    format: "markdown"
+  index:
+    location: ".claude/audit/audit-index.json"
+    format: "json"
+  temp:
+    location: ".claude/audit/temp/"
+    cleanup: "after report generation"
+
+guardrails:
+  - "Audit NEVER modifies code (read-only)"
+  - "Findings are suggestions, not automatic fixes"
+  - "Finding IDs are stable via content hash"
+  - "Design dimension only for UI projects"
+  - "Parallel execution for efficiency"

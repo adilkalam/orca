@@ -2,7 +2,7 @@
 # ORCA-OS Installation Validator
 # Verifies the installation is complete and correct
 
-set -e
+# Don't use set -e as arithmetic expressions can return non-zero
 
 GREEN='\033[0;32m'
 RED='\033[0;31m'
@@ -30,10 +30,10 @@ check() {
     else
         if [ "$required" = "true" ]; then
             echo -e "  ${RED}[MISSING]${NC} $desc"
-            ((ERRORS++))
+            ERRORS=$((ERRORS + 1))
         else
             echo -e "  ${YELLOW}[OPTIONAL]${NC} $desc"
-            ((WARNINGS++))
+            WARNINGS=$((WARNINGS + 1))
         fi
         return 1
     fi
@@ -125,33 +125,89 @@ try:
         config = json.load(f)
 
     servers = config.get('mcpServers', {})
-    expected = ['context7', 'sequential-thinking', 'project-context', 'playwright', 'chrome-devtools', 'XcodeBuildMCP']
+    core = ['context7', 'sequential-thinking', 'project-context', 'cognition-mcp']
+    optional = ['crawl4ai', 'playwright', 'puppeteer', 'chrome-devtools', 'XcodeBuildMCP']
 
-    for server in expected:
+    print("  Core MCP servers:")
+    for server in core:
         if server in servers:
-            print(f"  \033[32m[OK]\033[0m MCP: {server}")
+            print(f"    \033[32m[OK]\033[0m {server}")
         else:
-            print(f"  \033[33m[OPTIONAL]\033[0m MCP: {server} (not configured)")
+            print(f"    \033[31m[MISSING]\033[0m {server}")
+
+    print("  Optional MCP servers:")
+    for server in optional:
+        if server in servers:
+            print(f"    \033[32m[OK]\033[0m {server}")
+        else:
+            print(f"    \033[33m[--]\033[0m {server}")
 except Exception as e:
     print(f"  \033[31m[ERROR]\033[0m Could not read ~/.claude.json: {e}")
 PYTHON
 else
     echo -e "  ${YELLOW}[OPTIONAL]${NC} ~/.claude.json not found"
-    ((WARNINGS++))
+    WARNINGS=$((WARNINGS + 1))
 fi
 
 echo ""
-echo "Checking ProjectContext MCP..."
-check "$CLAUDE_DIR/mcp/project-context-server" "ProjectContext MCP directory"
-check "$CLAUDE_DIR/mcp/project-context-server/dist/index.js" "ProjectContext MCP build" false
+echo "Checking MCP server installations..."
+
+# Test ProjectContext MCP
+echo "  Testing ProjectContext MCP..."
+if [ -f "$CLAUDE_DIR/mcp/project-context-server/dist/index.js" ]; then
+    if [ -d "$CLAUDE_DIR/mcp/project-context-server/node_modules" ]; then
+        # Actually test the server
+        cd "$CLAUDE_DIR/mcp/project-context-server"
+        result=$(echo '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2024-11-05","capabilities":{},"clientInfo":{"name":"test","version":"1.0"}}}' | timeout 5 node dist/index.js 2>&1)
+        if echo "$result" | grep -q '"protocolVersion"'; then
+            echo -e "    ${GREEN}[OK]${NC} ProjectContext MCP works"
+        else
+            echo -e "    ${RED}[ERROR]${NC} ProjectContext MCP failed to respond"
+            echo "    Output: $(echo "$result" | head -1)"
+            ERRORS=$((ERRORS + 1))
+        fi
+        cd - > /dev/null 2>&1
+    else
+        echo -e "    ${RED}[ERROR]${NC} node_modules missing - run: cd ~/.claude/mcp/project-context-server && npm install"
+        ERRORS=$((ERRORS + 1))
+    fi
+else
+    echo -e "    ${RED}[ERROR]${NC} dist/index.js missing - MCP not built"
+    ERRORS=$((ERRORS + 1))
+fi
+
+# Test Cognition MCP
+echo "  Testing Cognition MCP..."
+if [ -f "$CLAUDE_DIR/mcp/cognition-mcp/dist/index.js" ]; then
+    if [ -d "$CLAUDE_DIR/mcp/cognition-mcp/node_modules" ]; then
+        cd "$CLAUDE_DIR/mcp/cognition-mcp"
+        result=$(echo '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2024-11-05","capabilities":{},"clientInfo":{"name":"test","version":"1.0"}}}' | timeout 5 node dist/index.js 2>&1)
+        if echo "$result" | grep -q '"protocolVersion"'; then
+            echo -e "    ${GREEN}[OK]${NC} Cognition MCP works"
+        else
+            echo -e "    ${RED}[ERROR]${NC} Cognition MCP failed to respond"
+            echo "    Output: $(echo "$result" | head -1)"
+            ERRORS=$((ERRORS + 1))
+        fi
+        cd - > /dev/null 2>&1
+    else
+        echo -e "    ${RED}[ERROR]${NC} node_modules missing - run: cd ~/.claude/mcp/cognition-mcp && npm install"
+        ERRORS=$((ERRORS + 1))
+    fi
+else
+    echo -e "    ${RED}[ERROR]${NC} dist/index.js missing - MCP not built"
+    ERRORS=$((ERRORS + 1))
+fi
+
+# Crawl4AI - user installs separately
+echo "  Crawl4AI MCP (required for /research, /seo, /orca-pipeline)..."
+echo -e "    ${YELLOW}[INFO]${NC} Install separately: https://docs.crawl4ai.com/core/installation/"
 
 echo ""
 echo "Checking documentation..."
 check "$CLAUDE_DIR/docs/concepts" "Concept docs"
 check "$CLAUDE_DIR/docs/pipelines" "Pipeline docs"
-check "$CLAUDE_DIR/quick-reference/os2-architecture.md" "Architecture reference"
-check "$CLAUDE_DIR/quick-reference/os2-commands.md" "Commands reference"
-check "$CLAUDE_DIR/quick-reference/os2-agents.md" "Agents reference"
+check "$CLAUDE_DIR/quick-reference/ORCA-OS" "ORCA-OS quick reference"
 
 # Verify no excluded content
 echo ""
@@ -160,37 +216,37 @@ exclusion_issues=0
 
 if [ -d "$CLAUDE_DIR/agents/OBDN" ]; then
     echo -e "  ${RED}[ISSUE]${NC} agents/OBDN should not be installed"
-    ((exclusion_issues++))
+    exclusion_issues=$((exclusion_issues + 1))
 fi
 
 if [ -d "$CLAUDE_DIR/agents/shopify" ]; then
     echo -e "  ${RED}[ISSUE]${NC} agents/shopify should not be installed"
-    ((exclusion_issues++))
+    exclusion_issues=$((exclusion_issues + 1))
 fi
 
 if [ -f "$CLAUDE_DIR/commands/kg.md" ]; then
     echo -e "  ${RED}[ISSUE]${NC} commands/kg.md should not be installed"
-    ((exclusion_issues++))
+    exclusion_issues=$((exclusion_issues + 1))
 fi
 
 if [ -f "$CLAUDE_DIR/commands/shopify.md" ]; then
     echo -e "  ${RED}[ISSUE]${NC} commands/shopify.md should not be installed"
-    ((exclusion_issues++))
+    exclusion_issues=$((exclusion_issues + 1))
 fi
 
 if [ -d "$CLAUDE_DIR/skills/mm-comps" ] || [ -d "$CLAUDE_DIR/skills/mm-copy" ]; then
     echo -e "  ${RED}[ISSUE]${NC} mm-* skills should not be installed"
-    ((exclusion_issues++))
+    exclusion_issues=$((exclusion_issues + 1))
 fi
 
 if [ -d "$CLAUDE_DIR/skills/uxscii-component-creator" ]; then
     echo -e "  ${RED}[ISSUE]${NC} uxscii-* skills should not be installed"
-    ((exclusion_issues++))
+    exclusion_issues=$((exclusion_issues + 1))
 fi
 
 if [ -d "$CLAUDE_DIR/commands/_archive" ]; then
     echo -e "  ${RED}[ISSUE]${NC} commands/_archive should not be installed"
-    ((exclusion_issues++))
+    exclusion_issues=$((exclusion_issues + 1))
 fi
 
 if [ $exclusion_issues -eq 0 ]; then

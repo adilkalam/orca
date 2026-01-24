@@ -1,15 +1,15 @@
-# OS 4.2 Architecture Quick Reference
+# OS 4.3 Architecture Quick Reference
 
-**Last Updated:** 2025-12-21
-**Version:** OS 4.2
+**Last Updated:** 2026-01-23
+**Version:** OS 4.3
 
 ---
 
 ## Overview
 
 ORCA-OS is a Claude Code orchestration system with:
-- **89 agents** across 6 lanes
-- **28 commands** (6 lane orchestrators + utilities)
+- **105 agents** across 10 lanes + cross-cutting
+- **33 commands** (11 lane orchestrators + utilities)
 - **Project-scoped MCPs** to minimize token usage
 - **Dependency graph** for change impact tracking
 
@@ -17,18 +17,20 @@ ORCA-OS is a Claude Code orchestration system with:
 
 ## Lane Architecture
 
-### Active Lanes (6)
+### Active Lanes (10)
 
 | Lane | Command | Agents | MCPs |
 |------|---------|--------|------|
 | iOS | `/ios` | 19 | XcodeBuildMCP |
-| Next.js | `/nextjs` | 16 | chrome-devtools, puppeteer |
+| Next.js | `/nextjs` | 17 | chrome-devtools, puppeteer |
 | Django-React | `/django-react` | 13 | (none) |
-| Expo | `/expo` | 11 | (none) |
-| Research | `/research` | 8 | crawl4ai |
-| SEO | `/seo` | 4 | (none) |
+| Expo | `/expo` | 12 | (none) |
+| Research | `/research` | 7 | crawl4ai |
+| SEO | `/seo` | 5 | ahrefs, crawl4ai |
 | Data | (none) | 4 | (none) |
-| OS-Dev | `/orca-os-dev` | 5 | (none) |
+| OS-Dev | `/orca-os-dev` | 6 | (none) |
+| Orca-Pipeline | `/orca-pipeline` | 5 | (none) |
+| Audit | `/audit` | 8 | cognition-mcp |
 | **Cross-cutting** | - | 9 | - |
 
 ---
@@ -138,16 +140,16 @@ See `quick-reference/llm-local.md` for setup.
 ### Source (ORCA-OS Repo)
 ```
 $ORCA_OS_PATH/
-  agents/             # 89 agent definitions
+  agents/             # 105 agent definitions
     iOS/              # 19 agents
-    dev/              # 21 agents (nextjs-* + os-dev-*)
-    django-react/     # 13 agents
-    expo/             # 11 agents
-    research/         # 8 agents
-    seo/              # 4 agents
+    dev/              # 23 agents (nextjs-*, os-dev-*, tailwind-*, shadcn-*)
+    expo/             # 12 agents
+    research/         # 7 agents
+    seo/              # 5 agents
     data/             # 4 agents
+    orca-dev/         # 5 agents (orca-pipeline-*)
     (root)            # 9 cross-cutting agents
-  commands/           # 28 command definitions
+  commands/           # 33 command definitions
   docs/
     pipelines/        # Pipeline specs
     reference/
@@ -291,4 +293,4 @@ Configure your projects in the hook files:
 ---
 
 _Source of truth: `docs/reference/os-dependency-graph.yaml`_
-_Last sync: 2025-12-18_
+_Last sync: 2026-01-23_

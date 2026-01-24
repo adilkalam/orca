@@ -1,8 +1,9 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Gate Enforcement Hook
 # Enforces Blueprint Gate, Pattern Violations, and Context Proof
+# NOTE: This hook intentionally exits 1 on gate failures to block operations
 
-set -e
+set -uo pipefail
 
 # Colors
 RED='\033[0;31m'

@@ -8,7 +8,7 @@
 
 ```bash
 # Full wizard (recommended for new domains)
-/orca-pipeline trading "Fundamentals-based trading analysis"
+/orca-pipeline analytics "Data analytics pipeline"
 
 # Quick mode with Template Gallery
 /orca-pipeline --quick data-analysis

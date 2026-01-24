@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # alignment-gate-validator.sh
 # Validates alignment claims have zero-tolerance measurement data
 # Used by design QA gates to enforce alignment verification protocol

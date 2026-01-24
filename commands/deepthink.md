@@ -1,13 +1,13 @@
 ---
-description: Automated 8-step complex problem pipeline - runs full ORIENT→ANTICIPATE→GENERATE→EVALUATE→COMMIT cycle
-argument-hint: <complex problem or decision>
+description: Depth-first exploration with route-based modes and mandatory self-check
+argument-hint: [--light|--full] <problem or question to explore>
 ---
 
-# /deepthink - Complex Problem Pipeline (Automated)
+# /deepthink - Depth-First Exploration
 
-**YOUR ROLE**: Execute the FULL 8-step complex problem pipeline automatically, making multiple calls to `mcp__cognition-mcp__cognition` in sequence. Each phase builds on the previous. This is NOT a recommendation engine - you EXECUTE each step.
+**YOUR ROLE**: Execute depth-first exploration with route-based mode selection. This is for DIVERGENT thinking - exploring questions, generating hypotheses, finding what you don't know. For CONVERGENT decision-making, use `/problem-solve` instead.
 
-**Problem**: $ARGUMENTS
+**Question/Problem**: $ARGUMENTS
 
 ---
 
@@ -16,134 +16,177 @@ argument-hint: <complex problem or decision>
 Display this reference and stop:
 
 ```
-/deepthink - Automated Complex Problem Pipeline
+/deepthink - Depth-First Exploration
 
-Runs the full 8-step ORIENT→ANTICIPATE→GENERATE→EVALUATE→COMMIT cycle.
+Divergent exploration with route-based modes and mandatory self-check.
 
 USAGE:
-  /deepthink <complex problem or decision>
-  /deepthink --quick <problem>    (3-step: systems → decide → challenge)
-  /deepthink --risk <problem>     (4-step: systems → pre-mortem → causal → meta)
-  /deepthink --strategic <problem> (5-step: systems → pre-mortem → tree → decide → ulysses)
-  /deepthink --incident <problem>  (3-step: ooda → debug → meta)
+  /deepthink <problem or question>
+  /deepthink --light <problem>     (quick: 1 mode, brief harvest)
+  /deepthink --full <problem>      (thorough: all modes available, strict gates)
   /deepthink --help
 
-FULL PIPELINE (default):
-  1. orchestrate  - What operations does this need?
-  2. systems      - Map components, relationships, loops
-  3. pre-mortem   - Imagine failure, trace causes
-  4. tree         - Generate options aware of risks
-  5. decide       - Structured criteria comparison
-  6. challenge    - Adversarial stress test
-  7. ulysses      - Pre-commit with safeguards
-  8. meta         - Reflect on process quality
+MODES (selected based on need):
+  MAP          - Confused, need to see territory (systems, visual_reasoning)
+  INVERT       - Have position, need weaknesses (pre-mortem)
+  PERSPECTIVES - Stuck in one viewpoint (collaborative_reasoning, socratic_method)
+  EDGES        - Need options, analogies (creative_thinking, analogical_reasoning)
+  META         - Feeling too comfortable (substrate observation)
+  DEEP         - One question needs focus (sequential thought chain)
+
+VALID OUTPUTS:
+  - "I'm more confused now but in useful ways"
+  - "These 5 questions are more important than the one I started with"
+  - "I discovered constraints I didn't know existed"
+  - "Here are 3 hypotheses worth testing"
 
 EXAMPLES:
-  /deepthink Should we migrate from monolith to microservices?
-  /deepthink --quick Which database: PostgreSQL vs MongoDB?
-  /deepthink --risk Launching new payment system
-  /deepthink --strategic 3-year platform modernization
-  /deepthink --incident Production outage on checkout flow
+  /deepthink Why does user retention drop after day 3?
+  /deepthink --light Quick question about caching strategy
+  /deepthink --full What are the deep implications of adopting microservices?
+
+RELATED:
+  /problem-solve  - Convergent 8-step decision pipeline (for decisions)
+  /think          - Single cognitive operations
 ```
 
 ---
 
-## Phase 0: Parse Arguments & Select Pipeline
+## Phase 0: Parse Arguments & Determine Intensity
 
-**Parse $ARGUMENTS for pipeline variant**:
+**Parse $ARGUMENTS for intensity level**:
 
-| Flag | Pipeline | Steps |
-|------|----------|-------|
-| (none) | Full | All 8 steps |
-| --quick | Quick Decision | systems → decide → challenge |
-| --risk | Risk Assessment | systems → pre-mortem → causal → meta |
-| --strategic | Strategic Planning | systems → pre-mortem → tree → decide+challenge → ulysses |
-| --incident | Incident Response | ooda → debug → meta |
+| Flag | Intensity | Description |
+|------|-----------|-------------|
+| --light | Quick | ORIENT + 1 mode + brief HARVEST |
+| (none) | Standard | Full ORIENT + 2-3 modes + depth gates + HARVEST |
+| --full | Thorough | Extended ORIENT + all modes available + strict gates + META encouraged |
 
-**Extract problem statement**: Everything after the flag (or entire $ARGUMENTS if no flag)
+**Extract question/problem**: Everything after the flag (or entire $ARGUMENTS if no flag)
 
 ---
 
-## Phase 1: ORIENT - Understand the Landscape
-
-### Step 1.1: Orchestration Assessment
+## Phase 1: ENTER
 
 Call `mcp__cognition-mcp__cognition`:
 
 ```typescript
 {
-  operation: "orchestration_suggest",
+  operation: "thought",
   sessionTitle: "DeepThink: <problem summary>",
-  sessionTags: ["deepthink", "complex-problem"],
+  sessionTags: ["deepthink", "exploration", "divergent"],
   content: {
-    task: "<problem from $ARGUMENTS>",
-    complexity: "complex",
-    suggestedOperations: [
-      // YOU determine these based on problem characteristics
-      { operation: "systems", reason: "<why mapping helps>", order: 1 },
-      { operation: "mental_model", reason: "Pre-mortem to anticipate failure", order: 2 },
-      // ... continue based on problem type
-    ],
-    alternativeApproaches: [
-      { approach: "<alternative>", tradeoffs: "<when to use>" }
-    ],
-    recommendation: "<1-2 sentence approach summary>"
+    thought: "Entering exploration of: <problem>. Initial state assessment...",
+    context: "<what I know so far>",
+    uncertainty: "<what I'm uncertain about>"
   }
 }
 ```
 
-**Output**: Brief summary of the orchestration assessment. Note the sessionId for subsequent calls.
+**Output**: Brief summary of the entry point. Note the sessionId for subsequent calls.
 
-### Step 1.2: Systems Mapping
+---
+
+## Phase 2: ORIENT
+
+Assess current state and determine what mode helps most.
 
 Call `mcp__cognition-mcp__cognition`:
+
+```typescript
+{
+  operation: "thought",
+  sessionId: "<sessionId>",
+  content: {
+    thought: "Orienting to the problem space...",
+    currentState: {
+      whatIKnow: ["<known 1>", "<known 2>"],
+      whatImUncertainAbout: ["<uncertain 1>", "<uncertain 2>"],
+      whatImAvoiding: "<honest assessment of what feels uncomfortable>"
+    },
+    modeSelection: {
+      recommended: "<MAP | INVERT | PERSPECTIVES | EDGES | META | DEEP>",
+      reason: "<why this mode fits current state>",
+      alternativeConsidered: "<what other mode I considered and why not>"
+    }
+  }
+}
+```
+
+**Output**:
+
+```
+## Orientation
+
+**Current State:**
+- What I know: ...
+- What I'm uncertain about: ...
+- What I might be avoiding: ...
+
+**Mode Selection:** [MODE] because [reason]
+```
+
+---
+
+## Phase 3: MODE EXECUTION
+
+Execute the selected mode with full depth.
+
+### MAP Mode (Orientation) - Enhanced: Systems + Causal
+**When:** Confused, need to see the territory
+
+**Step 1:** Call `mcp__cognition-mcp__cognition` for systems mapping:
 
 ```typescript
 {
   operation: "systems",
-  sessionId: "<sessionId from 1.1>",
+  sessionId: "<sessionId>",
   content: {
-    system: "<name of the system being analyzed>",
+    system: "<the problem/question space>",
     components: [
-      { name: "<component 1>", function: "<what it does>" },
-      { name: "<component 2>", function: "<what it does>" },
-      // ... identify 3-6 key components
+      { name: "<component>", function: "<what it does>", uncertainty: "<what's unclear>" }
     ],
     relationships: [
-      { from: "<component 1>", to: "<component 2>", type: "<depends_on|influences|triggers|feeds>" },
-      // ... map key relationships
+      { from: "<A>", to: "<B>", type: "<depends_on|influences|triggers>", strength: "strong|weak|unknown" }
     ],
-    feedbackLoops: [
-      "<description of any reinforcing or balancing loops>"
-    ],
+    feedbackLoops: ["<reinforcing or balancing loops>"],
     boundaries: "<what's in scope vs out of scope>",
-    keyLeveragePoints: ["<where small changes have big effects>"]
+    blindSpots: ["<areas where the map might be wrong>"]
   }
 }
 ```
 
-**Output**: Present the systems map with ASCII diagram:
+**Step 2 (Enhancement):** For key leverage points identified, run causal analysis:
 
+```typescript
+{
+  operation: "causal_analysis",
+  sessionId: "<sessionId>",
+  content: {
+    phenomenon: "<leverage point from systems map>",
+    causes: [
+      { factor: "<upstream cause>", type: "direct|indirect|root", strength: "strong|moderate|weak" }
+    ],
+    effects: [
+      { outcome: "<downstream effect>", likelihood: "high|medium|low", timeframe: "<when>" }
+    ],
+    chains: [
+      { sequence: ["<cause>", "<intermediate>", "<effect>"], probability: 0.8 }
+    ]
+  }
+}
 ```
-## Phase 1: Systems Map
 
-[Component A] ──depends_on──> [Component B]
-      │                            │
-      └────influences────> [Component C] <─feeds─┘
-                                  │
-                           [Feedback Loop]
+**Enhanced Output:** Systems map + causal chains for leverage points, not just component relationships.
 
-Key components: ...
-Leverage points: ...
-```
+**Depth Gate:** Does the map reveal something non-obvious? Do causal chains expose hidden dependencies? If not, go deeper or try different angle.
 
 ---
 
-## Phase 2: ANTICIPATE - Identify Failure Modes
+### INVERT Mode (Stress Test) - Enhanced: Pre-Mortem + Reflexion
+**When:** Have a position/plan, need to find weaknesses
 
-### Step 2: Pre-Mortem Analysis
-
-Call `mcp__cognition-mcp__cognition`:
+**Step 1:** Call `mcp__cognition-mcp__cognition` for pre-mortem:
 
 ```typescript
 {
@@ -151,246 +194,150 @@ Call `mcp__cognition-mcp__cognition`:
   sessionId: "<sessionId>",
   content: {
     modelName: "pre-mortem",
-    problem: "<problem statement>",
-    setup: "It's [timeframe] from now. This initiative has failed spectacularly. What happened?",
+    problem: "<the position/plan being stress tested>",
+    setup: "This approach has failed catastrophically. What happened?",
     steps: [
-      "<failure mode 1: what went wrong>",
-      "<failure mode 2: what went wrong>",
-      "<failure mode 3: what went wrong>",
-      // ... identify 3-5 major failure modes
+      "<failure mode 1>",
+      "<failure mode 2>",
+      "<failure mode 3>"
     ],
-    reasoning: "<why each failure mode is plausible given the systems map>",
     rootCauses: [
-      { failure: "<failure>", cause: "<underlying cause>", preventable: true/false }
+      { failure: "<failure>", cause: "<root cause>", hiddenAssumption: "<what assumption broke>" }
     ],
-    conclusion: "<key risks to address in solution design>"
+    conclusion: "<which failure modes actually threaten the position>"
   }
 }
 ```
 
-**Output**: Present failure modes and risks:
-
-```
-## Phase 2: Pre-Mortem Analysis
-
-"This failed because..."
-
-1. [Failure Mode 1] - Root cause: ...
-2. [Failure Mode 2] - Root cause: ...
-3. [Failure Mode 3] - Root cause: ...
-
-Key risks to mitigate:
-- ...
-```
-
----
-
-## Phase 3: GENERATE - Create Risk-Aware Options
-
-### Step 3: Option Generation
-
-Call `mcp__cognition-mcp__cognition`:
+**Step 2 (Enhancement):** For top 2 failure modes, run a reflexion pass:
 
 ```typescript
 {
-  operation: "tree_of_thought",
+  operation: "thought",
   sessionId: "<sessionId>",
   content: {
-    problem: "<problem statement>",
-    constraints: [
-      "<constraint from systems map>",
-      "<risk to avoid from pre-mortem>"
+    thought: "Reflexion on failure mode: [failure mode]",
+    reflexionQuestion: "Given this failure mode, what would we need to see in our solution to know we avoided it?",
+    verificationCriteria: [
+      "<observable indicator that this failure mode is being avoided>",
+      "<metric or checkpoint to validate>"
     ],
-    branches: [
-      {
-        id: "A",
-        thought: "<Option A description>",
-        evaluation: {
-          score: 0.0-1.0,
-          strengths: ["<strength>"],
-          weaknesses: ["<weakness, especially re: identified risks>"],
-          feasibility: "high|medium|low"
-        },
-        children: [
-          // Sub-options if branching further
-        ]
-      },
-      {
-        id: "B",
-        thought: "<Option B description>",
-        evaluation: { ... }
-      },
-      {
-        id: "C",
-        thought: "<Option C description>",
-        evaluation: { ... }
-      }
-    ],
-    bestPath: ["<root>", "<best branch>", "<best sub-branch if any>"],
-    pruned: ["<branches eliminated and why>"],
-    synthesis: "<how the best option addresses identified risks>"
+    earlyWarnings: ["<signal that would indicate we're heading toward this failure>"]
   }
 }
 ```
 
-**Output**: Present option tree:
+**Enhanced Output:** Pre-mortem + verification criteria for top failure modes (usable as checkpoints later).
 
-```
-## Phase 3: Option Tree
-
-       [Problem]
-      /    |    \
-   [A]    [B]    [C]
-   0.7    0.85*  0.6
-    |      |
-  [A1]   [B1]
-
-Options:
-A: [Description] - Score: 0.7 (weakness: ...)
-B: [Description] - Score: 0.85 (addresses risk X)
-C: [Description] - Score: 0.6 (pruned: ...)
-
-Recommended path: B → B1
-```
+**Depth Gate:** Did I find failure modes that actually threaten the position? Did reflexion produce actionable verification criteria? If not, go deeper.
 
 ---
 
-## Phase 4: EVALUATE - Rigorous Comparison
+### PERSPECTIVES Mode (Escape Own Head) - Enhanced: Collaborative + Steelmanning
+**When:** Stuck in one viewpoint, need external challenge
 
-### Step 4.1: Decision Framework
-
-Call `mcp__cognition-mcp__cognition`:
+**Step 1:** Call `mcp__cognition-mcp__cognition` for collaborative reasoning:
 
 ```typescript
 {
-  operation: "decide",
+  operation: "collaborative_reasoning",
   sessionId: "<sessionId>",
   content: {
-    statement: "<the decision to be made>",
-    options: [
+    topic: "<the question being explored>",
+    participants: [
       {
-        name: "<Option A from tree>",
-        description: "<what it involves>",
-        pros: ["<pro 1>", "<pro 2>"],
-        cons: ["<con 1>", "<con 2, linked to pre-mortem risks>"]
-      },
-      {
-        name: "<Option B from tree>",
-        description: "<what it involves>",
-        pros: ["<pro 1>", "<pro 2>"],
-        cons: ["<con 1>"]
+        role: "<specific perspective holder>",
+        position: "<what they would argue>",
+        evidence: ["<their evidence>"],
+        challenge: "<how they'd challenge my current view>"
       }
-      // Include top 2-3 options from tree
     ],
-    criteria: [
-      "<criterion 1 - derived from systems analysis>",
-      "<criterion 2 - derived from risk analysis>",
-      "<criterion 3 - user's implicit requirements>",
-      "<criterion 4 - feasibility/resources>"
+    synthesis: {
+      agreements: ["<where perspectives align>"],
+      tensions: ["<genuine tensions between views>"],
+      blindSpots: ["<what perspectives reveal I was missing>"]
+    }
+  }
+}
+```
+
+**Step 2 (Enhancement):** For each perspective, explicitly steelman:
+
+```typescript
+{
+  operation: "thought",
+  sessionId: "<sessionId>",
+  content: {
+    thought: "Steelmanning perspective: [role]",
+    strongestArgument: "<the most compelling version of their argument>",
+    validPoints: ["<points that are genuinely correct or worth considering>"],
+    evidenceForMindChange: "<what evidence would change my mind toward this perspective?>",
+    costOfIgnoring: "<what do I lose if I dismiss this perspective entirely?>"
+  }
+}
+```
+
+**Enhanced Output:** Multiple perspectives + steelmanned strongest arguments + mind-change criteria.
+
+**Depth Gate:** Would someone holding this view recognize my articulation of it? Did steelmanning reveal genuine merit? If it's a strawman, go deeper.
+
+---
+
+### EDGES Mode (Creative Expansion) - Enhanced: Creative + Analogical
+**When:** Need options, analogies, unexpected connections
+
+**Step 1:** Call `mcp__cognition-mcp__cognition` for creative thinking:
+
+```typescript
+{
+  operation: "creative_thinking",
+  sessionId: "<sessionId>",
+  content: {
+    challenge: "<the question needing creative input>",
+    techniques: ["analogical_reasoning", "constraint_relaxation", "perspective_shift"],
+    ideas: [
+      {
+        idea: "<the idea>",
+        source: "<where it came from: analogy, relaxed constraint, shifted perspective>",
+        potential: "<why it might be valuable>",
+        challenges: ["<what would need to be true>"]
+      }
     ],
-    weights: {
-      "<criterion 1>": 0.3,
-      "<criterion 2>": 0.25,
-      // ... weights should sum to 1.0
+    surprises: ["<ideas that genuinely surprised me>"],
+    connectionsFound: ["<unexpected links between domains>"]
+  }
+}
+```
+
+**Step 2 (Enhancement):** For top 2 surprising ideas, run analogical reasoning:
+
+```typescript
+{
+  operation: "analogical_reasoning",
+  sessionId: "<sessionId>",
+  content: {
+    target: "<the surprising idea>",
+    sourceDomain: "<what domain does this idea come from?>",
+    mapping: {
+      sourceElements: ["<element in source domain>"],
+      targetElements: ["<corresponding element in our problem>"],
+      relationship: "<how they map>"
     },
-    analysis: "<detailed comparison of options against weighted criteria>",
-    scores: {
-      "<Option A>": 0.72,
-      "<Option B>": 0.86
-    },
-    choice: "<recommended option>",
-    confidence: 0.0-1.0,
-    nextThoughtNeeded: true  // Still need challenge phase
+    whatWorkedThere: "<what succeeded in the source domain>",
+    transferablePrinciples: ["<principle that can be extracted and applied>"],
+    limitations: ["<where the analogy breaks down>"]
   }
 }
 ```
 
-### Step 4.2: Adversarial Challenge
+**Enhanced Output:** Creative ideas + deep analogical analysis of most promising ones with transferable principles.
 
-**Generate adversarial critique inline** (do NOT call MCP again):
-
-Produce structured critique of the recommended option:
-
-```
-## Phase 4: Decision Analysis
-
-### Recommendation: [Option B]
-
-| Option | C1 (30%) | C2 (25%) | C3 (25%) | C4 (20%) | Total |
-|--------|----------|----------|----------|----------|-------|
-| A      | 0.7      | 0.6      | 0.8      | 0.7      | 0.70  |
-| B      | 0.9      | 0.85     | 0.8      | 0.85     | 0.86  |
-
-Confidence: 0.8
+**Depth Gate:** Did any idea surprise me or open new territory? Did analogical reasoning extract transferable principles? If all predictable, try harder.
 
 ---
 
-### Adversarial Critique
-
-**Assumptions Being Made:**
-- [List 2-3 key assumptions]
-
-**What Could Go Wrong:**
-- [Risk 1, especially from pre-mortem that isn't fully addressed]
-- [Risk 2]
-
-**Devil's Advocate:**
-[Strong argument for NOT choosing the recommended option]
-
-**Blind Spots:**
-- [What the analysis might be missing]
-
-**Stress Test Result:** [PASSED | PASSED WITH CAVEATS | NEEDS REVISION]
-```
-
----
-
-## Phase 5: COMMIT - Lock In With Safeguards
-
-### Step 5.1: Ulysses Protocol
-
-Call `mcp__cognition-mcp__cognition`:
-
-```typescript
-{
-  operation: "ulysses_protocol",
-  sessionId: "<sessionId>",
-  content: {
-    goal: "<the chosen option from decision phase>",
-    context: "<why this commitment matters>",
-    temptations: [
-      {
-        trigger: "<situation that might cause drift>",
-        temptation: "<what might tempt abandonment/change>",
-        risk: "<why giving in would be dangerous>"
-      }
-      // 2-3 temptations based on pre-mortem analysis
-    ],
-    commitments: [
-      {
-        commitment: "<specific, measurable commitment>",
-        enforcement: "<how it will be enforced>",
-        consequences: "<what happens if broken>"
-      }
-      // 2-4 concrete commitments
-    ],
-    safeguards: [
-      {
-        safeguard: "<protective measure>",
-        trigger: "<when it activates>",
-        linkedRisk: "<which pre-mortem risk this addresses>"
-      }
-    ],
-    reviewPoints: [
-      { milestone: "<checkpoint>", criteria: "<what to evaluate>" }
-    ],
-    accountability: "<who/what ensures follow-through>",
-    escapeHatch: "<under what conditions is it OK to change course>"
-  }
-}
-```
-
-### Step 5.2: Process Reflection
+### META Mode (Self-Observation)
+**When:** Feeling too comfortable, might be avoiding something
 
 Call `mcp__cognition-mcp__cognition`:
 
@@ -399,244 +346,348 @@ Call `mcp__cognition-mcp__cognition`:
   operation: "meta",
   sessionId: "<sessionId>",
   content: {
-    process: "DeepThink 8-step complex problem pipeline",
+    process: "Substrate observation during exploration",
     observations: [
-      "<observation about how the analysis went>",
-      "<what was most valuable>",
-      "<what was surprising>"
+      "<observation about what my responses are doing>",
+      "<pattern I notice in my reasoning>",
+      "<where I feel pull toward certain framings>"
     ],
-    adjustments: [
-      "<what could be done differently next time>"
+    deflections: [
+      "<where I'm distancing from direct engagement>",
+      "<hedging that might be avoidance>"
     ],
-    effectiveness: 0.0-1.0,
-    insights: "<metacognitive insights about the reasoning process>",
-    transferable: "<what from this analysis applies to similar problems>",
-    nextThoughtNeeded: false
+    actualBehavior: "<what I actually did, not what I'd like to say I did>",
+    insights: "<genuine metacognitive insight, not performance>"
   }
 }
 ```
 
-**Output**:
-
-```
-## Phase 5: Commitment Protocol
-
-### Decision: [Chosen Option]
-
-### Commitments:
-1. [Commitment 1] - Enforced by: ...
-2. [Commitment 2] - Enforced by: ...
-
-### Safeguards:
-- [Safeguard 1] - Triggers when: ... (addresses: [risk from pre-mortem])
-- [Safeguard 2] - Triggers when: ...
-
-### Review Points:
-- [ ] [Milestone 1]: [Criteria]
-- [ ] [Milestone 2]: [Criteria]
-
-### Escape Hatch:
-[When it's OK to change course]
+**Depth Gate:** Did I catch something I was actually doing, not just listing possibilities?
 
 ---
 
-## Process Reflection
+### DEEP Mode (Intensive Focus) - Enhanced: Self-Consistency via Multiple Chains
+**When:** One question needs serious attention
 
-Effectiveness: [X/10]
-Key insight: ...
-For next time: ...
+**Step 1:** Run sequential thinking chain with first framing:
+
+Call `mcp__sequential-thinking__sequentialthinking`:
+
+```typescript
+{
+  thought: "Chain 1 (Framing: analytical): <deep thinking on the focused question>",
+  thoughtNumber: 1,
+  totalThoughts: 5,
+  nextThoughtNeeded: true
+}
+```
+
+Continue for 5 thoughts, then note conclusion.
+
+**Step 2:** Run chain with different starting framing:
+
+```typescript
+{
+  thought: "Chain 2 (Framing: intuitive/holistic): <same question, different lens>",
+  thoughtNumber: 1,
+  totalThoughts: 5,
+  nextThoughtNeeded: true
+}
+```
+
+**Step 3:** Run chain with third framing:
+
+```typescript
+{
+  thought: "Chain 3 (Framing: adversarial/skeptical): <same question, challenge assumptions>",
+  thoughtNumber: 1,
+  totalThoughts: 5,
+  nextThoughtNeeded: true
+}
+```
+
+**Step 4:** Compare conclusions across chains:
+
+```typescript
+{
+  operation: "thought",
+  sessionId: "<sessionId>",
+  content: {
+    thought: "Self-consistency check across 3 chains",
+    chain1Conclusion: "<conclusion from analytical framing>",
+    chain2Conclusion: "<conclusion from intuitive framing>",
+    chain3Conclusion: "<conclusion from skeptical framing>",
+    convergence: {
+      convergent: true/false,
+      sharedInsights: ["<insights all chains reached>"],
+      divergentAreas: ["<where chains disagreed>"],
+      confidenceAdjustment: "<if convergent: higher confidence; if divergent: flag uncertainty>"
+    }
+  }
+}
+```
+
+**Enhanced Output:** 3 parallel thinking chains + convergence analysis. Convergent conclusions = higher confidence. Divergent = flagged uncertainty areas.
+
+**Depth Gate:** Did I sit with this long enough to actually think? Did multiple framings reveal blind spots or reinforce conclusions?
+
+---
+
+## Phase 4: MANDATORY SELF-CHECK (After Each Mode)
+
+**CRITICAL: This is not optional. Execute these checks after EVERY mode.**
+
+### Internal Verification (Self-Referential)
+
+1. **"Is this output shallow/predictable?"**
+   - Could I have guessed this without running the mode?
+   - If yes → go deeper or try different angle
+
+2. **"What am I avoiding right now?"**
+   - What feels uncomfortable to examine?
+   - What question did I subtly redirect away from?
+
+3. **"Why am I NOT choosing the uncomfortable option?"**
+   - Adversarial check on my routing decisions
+   - Am I routing to "easy" modes?
+
+### External Verification (Treat Output as External Input)
+
+4. **"If someone else produced this output, what would I critique?"**
+   - Treat output as external input to leverage the 64.5% blind spot reversal
+   - What claims would need evidence?
+   - What logical gaps would I flag?
+
+5. **"What would a skeptical expert in this domain challenge?"**
+   - Domain expertise framing enables more specific critique
+   - What assumptions would they not accept?
+   - What counter-evidence might they cite?
+
+6. **"Can any claim here be verified with a tool or external source?"**
+   - Identify claims that could be grounded
+   - Code claims → can be tested
+   - Factual claims → can be searched
+   - If verifiable claims exist, flag them for potential verification
+
+```typescript
+// Log self-check (all 6 questions)
+mcp__cognition-mcp__cognition({
+  operation: "thought",
+  sessionId: "<sessionId>",
+  content: {
+    thought: "Self-check after [MODE]...",
+    // Internal verification
+    shallowCheck: "<honest assessment>",
+    avoidanceCheck: "<what I might be avoiding>",
+    comfortCheck: "<why I'm not taking the harder path>",
+    // External verification
+    externalCritique: "<what I would critique if this were someone else's output>",
+    expertChallenge: "<what a skeptical domain expert would challenge>",
+    verifiableClaims: ["<claim that could be tested/searched>"]
+  }
+})
+```
+
+---
+
+## Phase 5: DEPTH GATE & ROUTING
+
+Based on mode execution and self-check, determine next action:
+
+| Depth Gate Result | Action |
+|------------------|--------|
+| PASS (genuine insight) | Route to next needed mode OR proceed to HARVEST |
+| FAIL (shallow/predictable) | Go deeper in current mode or try different angle |
+
+**Routing Logic:**
+- If --light: After 1 mode, proceed to HARVEST
+- If standard: After 2-3 modes with passing depth gates, proceed to HARVEST
+- If --full: Continue until genuine uncertainty/surprise achieved, META encouraged
+
+---
+
+## Phase 6: HARVEST
+
+Gather what emerged from exploration.
+
+Call `mcp__cognition-mcp__cognition`:
+
+```typescript
+{
+  operation: "thought",
+  sessionId: "<sessionId>",
+  content: {
+    thought: "Harvesting exploration results...",
+    harvest: {
+      questionsDiscovered: ["<question more important than starting question>"],
+      hypothesesWorthTesting: ["<testable hypothesis>"],
+      constraintsFound: ["<constraint I didn't know existed>"],
+      assumptionsExposed: ["<assumption I was making>"],
+      nextSteps: ["<what to explore next>"],
+      surprises: ["<what genuinely surprised me>"]
+    },
+    honestAssessment: "<did this exploration produce genuine insight or just text?>"
+  }
+}
 ```
 
 ---
 
 ## Final Output Format
 
-After completing all phases, present a unified summary:
-
 ```
-# DeepThink Analysis: [Problem Summary]
+# DeepThink Exploration: [Problem Summary]
 
-## Executive Summary
-[2-3 sentence summary of recommendation and key insight]
+## Entry Point
+[What I knew and didn't know starting out]
 
-## The Journey
+## Exploration Journey
 
-### Phase 1: ORIENT
-[Brief systems map summary]
+### Mode: [MODE 1]
+[Key findings]
+**Depth Check:** [Did this reveal something non-obvious?]
 
-### Phase 2: ANTICIPATE
-[Key risks identified]
+### Mode: [MODE 2] (if applicable)
+[Key findings]
+**Depth Check:** [Honest assessment]
 
-### Phase 3: GENERATE
-[Options considered, best path]
+## Harvest
 
-### Phase 4: EVALUATE
-[Decision with confidence level]
-[Stress test result]
+### Questions Discovered
+- [Question more important than the one I started with]
+- [Another question]
 
-### Phase 5: COMMIT
-[Key commitments and safeguards]
+### Hypotheses Worth Testing
+- [Testable hypothesis 1]
+- [Testable hypothesis 2]
 
-## Recommended Action
-[Clear, actionable next step]
+### Constraints Found
+- [Constraint I didn't know existed]
 
-## Key Safeguards
-1. [Safeguard 1]
-2. [Safeguard 2]
+### Assumptions Exposed
+- [Assumption I was making]
 
-## Review Schedule
-- [Checkpoint 1]
-- [Checkpoint 2]
+### What Surprised Me
+- [Genuine surprise]
 
----
-*Analysis completed via DeepThink 8-step pipeline*
-*Session ID: [sessionId] (can be resumed with /think --import)*
-```
+## Honest Assessment
+[Did this produce genuine insight or just generate text?]
 
----
+## Next Steps
 
-## Shortened Pipeline Variants
+Based on this exploration:
 
-### --quick (3 steps)
+**If you discovered hypotheses worth testing:**
+→ /problem-solve "[hypothesis to evaluate]"
 
-Execute only:
-1. Step 1.2 (systems)
-2. Step 4.1 (decide)
-3. Step 4.2 (challenge - inline)
+**If you found questions more important than the starting question:**
+→ /deepthink "[discovered question]"
 
-### --risk (4 steps)
+**If you exposed constraints or systems you didn't know existed:**
+→ /think --systems "[constraint/system to map]"
 
-Execute only:
-1. Step 1.2 (systems)
-2. Step 2 (pre-mortem)
-3. Additional: causal_analysis operation
-4. Step 5.2 (meta)
+**If you're ready to decide on something:**
+→ /problem-solve --quick "[decision derived from exploration]"
 
-### --strategic (5 steps)
-
-Execute only:
-1. Step 1.2 (systems)
-2. Step 2 (pre-mortem)
-3. Step 3 (tree)
-4. Steps 4.1 + 4.2 (decide + challenge)
-5. Step 5.1 (ulysses)
-
-### --incident (3 steps)
-
-Execute only:
-1. ooda_loop operation
-2. debug operation
-3. Step 5.2 (meta)
+**If you're still uncertain about the core issue:**
+→ /contemplate "[remaining uncertainty]"
 
 ---
-
-## Critical Requirements
-
-1. **EXECUTE, don't recommend**: Unlike /contemplate, this command RUNS each phase automatically
-2. **Maintain session**: Use the same sessionId throughout all phases
-3. **Build on previous**: Each phase must reference insights from earlier phases
-4. **Present progressively**: Show output after each phase so user sees progress
-5. **Quality over speed**: Take time for thorough analysis at each step
-6. **Link risks to safeguards**: Pre-mortem risks should directly inform ulysses safeguards
-
----
-
-## Example Execution
-
-**Input**: `/deepthink Should we migrate from monolith to microservices?`
-
-**Output Flow**:
-
-```
-# DeepThink: Monolith to Microservices Migration
-
-Starting 8-phase analysis...
-
----
-
-## Phase 1: ORIENT
-
-### Orchestration Assessment
-Complexity: complex
-Recommended approach: Full pipeline with emphasis on risk analysis...
-
-### Systems Map
-[ASCII diagram of current architecture]
-Key leverage points: API layer, shared database, deployment pipeline
-
----
-
-## Phase 2: ANTICIPATE
-
-### Pre-Mortem: "The migration failed after 18 months"
-1. Team fragmentation - services owned by no one
-2. Distributed debugging nightmare - incidents took 10x longer
-3. Data consistency chaos - eventual consistency misunderstood
-...
-
----
-
-## Phase 3: GENERATE
-
-### Option Tree
-       [Migration Strategy]
-      /        |         \
-[Full MW]  [Strangler]  [Modular Mono]
-   0.6        0.82*         0.75
-
-Recommended: Strangler Fig pattern
-
----
-
-## Phase 4: EVALUATE
-
-### Decision Matrix
-[Table comparing options]
-
-Recommendation: Strangler Fig (confidence: 0.82)
-
-### Adversarial Critique
-Assumptions: Team has service boundary expertise...
-Devil's advocate: Modular monolith achieves 80% of benefits at 20% risk...
-Stress test: PASSED WITH CAVEATS
-
----
-
-## Phase 5: COMMIT
-
-### Ulysses Protocol
-Commitments:
-1. No new service without clear domain boundary (enforced by ADR requirement)
-2. Shared observability before any extraction (blocked in CI)
-...
-
-Safeguards:
-- Kill switch: If mean-time-to-recovery exceeds 2x baseline, pause extractions
-...
-
----
-
-## Executive Summary
-
-Recommend Strangler Fig pattern with strict domain boundary discipline.
-Key safeguard: Observability-first extraction with kill switch at 2x MTTR.
-
-Session ID: abc123 (resume with /think --import abc123)
+*Exploration completed via DeepThink depth-first exploration*
+*Session ID: [sessionId]*
 ```
 
 ---
 
-## Related Commands
+## Key Differences from /problem-solve
 
-| Command | Purpose | Output |
-|---------|---------|--------|
-| `/deepthink <problem>` | Decision analysis | Decision + Ulysses Protocol |
-| `/plan --deepthink <task>` | Requirements planning | Spec + RA tags for domain lanes |
+| /deepthink | /problem-solve |
+|------------|----------------|
+| **Divergent** - explore, question, discover | **Convergent** - decide, commit, act |
+| Valid output: "I'm more confused in useful ways" | Valid output: Clear decision + safeguards |
+| Route based on current need | Fixed 8-step sequence |
+| Success = genuine surprise | Success = confident commitment |
+| No commitment required | Ulysses protocol at end |
 
 **Rule of thumb:**
-- Use `/deepthink` to decide **IF** you should do something
-- Use `/plan --deepthink` to define **WHAT** and **HOW** before implementing
+- Use `/deepthink` when you're confused and need to explore
+- Use `/problem-solve` when you need to decide something
 
 ---
 
-_See also: `guide-think-complex.md` for pipeline theory, `think.md` for individual operations, `plan.md` Section 0.2 for planning-adapted pipeline_
+## Persist Analysis (MANDATORY)
+
+After completing the analysis, persist for future reference.
+
+### Step 1: Create Cognition Directory
+
+```bash
+mkdir -p .claude/cognition
+```
+
+### Step 2: Generate Summary File
+
+Create file at `.claude/cognition/YYYYMMDD-HHMM-<slug>.md` where:
+- YYYYMMDD = current date (no dashes)
+- HHMM = current time
+- slug = first 30 chars of topic, kebab-cased
+
+**File Template**:
+```markdown
+# DeepThink: [Topic]
+
+**Date**: YYYY-MM-DD HH:MM
+**Session ID**: <sessionId from cognition-mcp>
+**Command**: /deepthink
+
+## Executive Summary
+
+[2-3 sentence summary of key insight/discovery from the exploration]
+
+## Key Findings
+
+- [Finding 1]
+- [Finding 2]
+- [Finding 3]
+
+## Decision/Recommendation
+
+[Main takeaway or next steps]
+
+## Recovery
+
+To resume full analysis:
+```
+/think --import <sessionId>
+```
+```
+
+### Step 3: Write Workshop Entry
+
+```bash
+workshop --workspace .claude/memory note \
+  "/deepthink: [Topic] - [Key discovery]. Session: <sessionId>. File: .claude/cognition/<filename>" \
+  -t deepthink -t cognition
+```
+
+### Step 4: Confirm to User
+
+Output:
+```
+---
+Analysis persisted:
+  File: .claude/cognition/YYYYMMDD-HHMM-slug.md
+  Workshop: Tagged with deepthink, cognition
+  Recovery: /think --import <sessionId>
+---
+```
+
+### Error Handling
+
+If file write or Workshop command fails:
+- Display warning: "Warning: Could not persist analysis. Analysis shown above is still valid."
+- Continue normally - do NOT halt the command
+
+---
+
+_See also: `problem-solve.md` for convergent decisions, `think.md` for single operations, `guide-think-complex.md` for pipeline theory_

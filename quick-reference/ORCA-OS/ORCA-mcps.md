@@ -1,7 +1,7 @@
-# OS 4.2 MCP Reference
+# OS 4.3 MCP Reference
 
-**Last Updated:** 2025-12-21
-**Version:** OS 4.2
+**Last Updated:** 2026-01-23
+**Version:** OS 4.3
 
 ---
 
@@ -94,6 +94,7 @@ Mandatory context provider for all agents.
 - `save_decision` - Log decisions
 - `save_standard` - Create standards
 - `save_task_history` - Record task completion
+- `recall` - Retrieve full archived tool output by ID (ORCA-Mem)
 
 **Implementation (OS 4.2):**
 - **Reads:** SQLite direct access to `workshop.db` via `better-sqlite3`
@@ -101,6 +102,15 @@ Mandatory context provider for all agents.
 - **Symlink:** Auto-creates `.workshop -> .claude/memory` on macOS/Linux
 
 See `docs/concepts/memory-systems.md` for full architecture.
+
+**ORCA-Mem Integration:**
+The `recall` tool works with the ORCA-Mem PostToolUse hook. When tool outputs exceed 4000 chars:
+1. Hook truncates to HEAD (1500) + TAIL (500) chars
+2. Full output archived at `~/.claude/archives/{date}/{id}.txt`
+3. Truncation message includes: `[Full output: recall('id')]`
+4. Use `recall` tool to retrieve full content when needed
+
+Archives have 7-day retention (cleaned by `scripts/archive-cleanup.sh`).
 
 ### context7
 
@@ -189,23 +199,24 @@ Browser automation and visual testing. Simpler and more lightweight than Playwri
 
 ### crawl4ai (Research)
 
-Web content extraction for research. Uses npx wrapper (requires Python 3.10+ and Chrome).
+Web content extraction for research. Connects to local Crawl4AI server via SSE.
 
 ```json
 {
   "crawl4ai": {
-    "type": "stdio",
-    "command": "npx",
-    "args": ["-y", "mcp-crawl4ai"],
-    "env": {}
+    "type": "sse",
+    "url": "http://localhost:11235/mcp/sse"
   }
 }
 ```
 
-**No manual server start required.** First run auto-installs Python dependencies.
+**Requires manual server start:**
+```bash
+crawl-server  # alias for ~/.crawl4ai-server/bin/python server.py
+```
 
-**Used by:** research-* agents
-**Projects:** /obsidian-peptides, /peptidefox
+**Used by:** research-* agents, seo-* agents
+**Projects:** Global (configured in ~/.claude.json)
 
 ---
 
@@ -218,8 +229,9 @@ Web content extraction for research. Uses npx wrapper (requires Python 3.10+ and
 | Django-React | (none) |
 | Expo | (none) |
 | Research | crawl4ai |
-| SEO | (none) |
+| SEO | ahrefs, crawl4ai |
 | Data | (none) |
+| Audit | cognition-mcp |
 | OS-Dev | (none) |
 
 ---
@@ -278,4 +290,4 @@ Check `enabledMcpjsonServers` in `~/.claude.json` for your project path.
 
 _Source of truth: `docs/reference/os-dependency-graph.yaml`_
 _MCP scoping: `docs/reference/mcp-scoping-strategy.md`_
-_Last sync: 2025-12-18_
+_Last sync: 2026-01-23_

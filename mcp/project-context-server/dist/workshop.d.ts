@@ -67,6 +67,7 @@ export declare class WorkshopClient {
     /**
      * Query decisions from Workshop using SQLite
      * When decay is enabled, applies time-weighted scoring
+     * Uses tokenized word matching for broader recall (matches ANY word)
      */
     queryDecisions(query: string, limit?: number): Promise<Decision[]>;
     /**
@@ -77,6 +78,7 @@ export declare class WorkshopClient {
     /**
      * Query task history from Workshop using SQLite
      * When decay is enabled, applies time-weighted scoring
+     * Uses tokenized word matching for broader recall (matches ANY word)
      */
     queryTaskHistory(query: string, limit?: number): Promise<TaskHistory[]>;
     /**

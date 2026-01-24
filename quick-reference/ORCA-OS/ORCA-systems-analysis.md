@@ -1,7 +1,6 @@
-# ORCA-OS v3.1.0 Systems Analysis
+# ORCA-OS v4.2 Systems Analysis
 
-**Generated:** 2025-12-18
-**Session:** 19d48465-987b-45b7-94dd-6bc0d5728fbf
+**Generated:** 2026-01-11
 **Source of Truth:** `docs/reference/os-dependency-graph.yaml`
 
 ---
@@ -12,18 +11,18 @@ ORCA-OS is a Claude Code configuration system that deploys to `~/.claude`. It co
 
 | Layer | Count | Purpose |
 |-------|-------|---------|
-| Commands | 27 | User entry points |
-| Agents | 89 | Workers across 6 domains |
-| Pipelines | 11 | Workflow documentation |
-| Phase Configs | 7 | Machine-readable definitions |
-| MCPs | 8 | Tool integrations |
-| Skills | 28 | Knowledge packages |
-| Hooks | 10 | Lifecycle scripts |
+| Commands | 29 | User entry points |
+| Agents | 97 | Workers across 7 domains |
+| Pipelines | 12 | Workflow documentation |
+| Phase Configs | 10 | Machine-readable definitions |
+| MCPs | 2 bundled | Tool integrations |
+| Skills | 31 | Knowledge packages |
+| Hooks | 11 | Lifecycle scripts |
 | Memory | 3-layer | Persistent context |
 
 ---
 
-## Layer 1: Commands (28)
+## Layer 1: Commands (29)
 
 User entry points invoked via `/command`.
 

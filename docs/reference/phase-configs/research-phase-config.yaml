@@ -1,4 +1,4 @@
-# Research Pipeline Phase Configuration - OS 3.0
+# Research Pipeline Phase Configuration - OS 4.2
 # Multi-agent deep research workflow (Crawl4AI + memory + writers)
 
 pipeline:
@@ -6,7 +6,7 @@ pipeline:
   description: >
     Multi-agent research pipeline using Crawl4AI MCP, memory systems, and
     writer/citation agents to produce cited, structured research reports.
-  version: 3.0
+  version: 4.2
 
 # Context Integration
 context:

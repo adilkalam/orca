@@ -39,6 +39,7 @@ PRIMARY FLAGS (pick reasoning mode):
 MODIFIER FLAGS (combine with primary):
     --visual         Output ASCII diagram
     --challenge      Run adversarial critique after
+    --deep           Extended thinking (8-12+ thoughts with review/synthesis)
 
 SESSION FLAGS:
     --info           Session info
@@ -110,6 +111,7 @@ Extract from $ARGUMENTS:
 2. **Modifier flags** (optional, combine with primary):
    - `--visual` - Generate ASCII diagram after primary operation
    - `--challenge` - Run adversarial critique after primary operation
+   - `--deep` - Extended thinking mode (8-12+ thoughts with checkpoints)
 
 3. **Session flags** (optional):
    - `--info` - Get session state
@@ -274,6 +276,66 @@ If the substrate observation doesn't fit templates, generate a custom ASCII:
   }
 }
 ```
+
+---
+
+## --deep Flag: Extended Thinking Mode
+
+When `--deep` is provided, enable extended thinking with review and synthesis checkpoints.
+
+### Behavior with --deep
+
+1. **Increase thought chain length**:
+   - Default: 3-5 thoughts
+   - With --deep: 8-12 thoughts minimum
+
+2. **Add verification checkpoints**:
+   - After thought 5, run a "review thought":
+     - "Reviewing progress so far. What's the strongest point? What's the weakest?"
+   - After thought 8, run a "synthesis thought":
+     - "Synthesizing insights. What's the core insight that wasn't obvious at the start?"
+
+3. **Enable branching**:
+   - If a thought reveals two distinct paths, explore both briefly before committing
+   - Use `isRevision` and `branchFromThought` fields in thought content
+
+4. **Calibrate to complexity**:
+   - Simple problem + --deep: Run 8 thoughts, then conclude
+   - Complex problem + --deep: May extend to 15+ thoughts with multiple branches
+
+### Output format with --deep
+
+```
+## Deep Thinking: [Topic]
+
+### Chain 1-5: Initial Exploration
+[Summary of early thoughts]
+
+### Review Point (Thought 6)
+**Strongest:** [...]
+**Weakest:** [...]
+
+### Chain 7-10: Deepening
+[Summary of deeper thoughts]
+
+### Synthesis Point (Thought 11)
+**Core insight:** [...]
+
+### Conclusion (Thought 12+)
+[Final conclusion with higher confidence]
+
+**Depth metrics**:
+- Total thoughts: [N]
+- Branches explored: [N]
+- Revisions made: [N]
+```
+
+### Combining --deep with other flags
+
+- `/think --deep --decide`: Extended decision analysis
+- `/think --deep --debug`: Deep debugging session
+- `/think --deep --systems`: Comprehensive systems mapping
+- `/think --deep --creative`: Extended ideation with more exploration
 
 ---
 
@@ -712,6 +774,25 @@ After completing the reasoning chain, present clearly:
 
 ### [Conclusion / Debug Analysis / Decision / etc.]
 [Final output based on capstone or final thought]
+
+### Next Steps
+
+Based on this analysis:
+
+**If unexpected complexity emerged:**
+→ /problem-solve "[complex aspect requiring full pipeline]"
+
+**If you need broader exploration:**
+→ /deepthink "[expanded scope question]"
+
+**If you want to verify the conclusion:**
+→ /think --challenge "[conclusion to stress-test]"
+
+**If you're unsure which direction to go:**
+→ /contemplate "[remaining decision point]"
+
+**If ready to implement:**
+→ /plan "[implementation task]"
 ```
 
 ---
@@ -774,3 +855,48 @@ If no flags provided:
 2. Make 3-5 calls to build reasoning chain
 3. Complete with nextThoughtNeeded: false on final thought
 4. Present the reasoning chain and conclusion
+
+If `--deep` flag provided:
+1. Begin sequential thinking with operation: "thought"
+2. Make 8-12+ calls to build extended reasoning chain
+3. Insert review checkpoint after thought 5
+4. Insert synthesis checkpoint after thought 8
+5. Enable branching if distinct paths emerge
+6. Present with depth metrics
+
+---
+
+## Persist Analysis (Lightweight)
+
+After completing the analysis, append to daily log.
+
+### Step 1: Create Cognition Directory
+
+```bash
+mkdir -p .claude/cognition
+```
+
+### Step 2: Append to Daily Log
+
+Append entry to `.claude/cognition/YYYYMMDD-daily.md`:
+
+```markdown
+---
+### [HH:MM] /think - [Topic slug]
+Session: <sessionId>
+
+[1-2 sentence summary of the insight/conclusion]
+---
+```
+
+### Step 3: Write Workshop Entry
+
+```bash
+workshop --workspace .claude/memory note \
+  "/think: [Topic] - [Summary]. Session: <sessionId>" \
+  -t think -t cognition
+```
+
+### Error Handling
+
+If persistence fails, display warning and continue - do NOT halt.

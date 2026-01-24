@@ -1,6 +1,6 @@
 ---
 description: "Unified OS 4.2 planner – requirements + RA blueprint (no implementation)"
-argument-hint: "[-tweak] [-complex] [--visual|--systems|--debug|--model|--creative|--deepthink] <high-level task description>"
+argument-hint: "[-tweak] [-complex] [--visual|--systems|--debug|--model|--creative|--problem-solve] <high-level task description>"
 allowed-tools:
   ["Task", "Read", "Write", "Edit", "Glob", "Grep",
    "AskUserQuestion", "mcp__project-context__query_context", "mcp__project-context__save_decision",
@@ -36,7 +36,7 @@ You never implement code from `/plan`; you only plan.
 | `--creative` | `creative_thinking` | New features, brainstorming, exploration |
 | `--causal` | `causal_analysis` | Understanding cause-effect, debugging |
 | `--decide` | `decide` | Choosing between options, trade-offs |
-| **`--deepthink`** | **Full 8-step pipeline** | **Complex features, architectural decisions, high-risk implementations** |
+| **`--problem-solve`** | **Full 8-step pipeline** | **Complex features, architectural decisions, high-risk implementations** |
 
 ### Usage Examples
 
@@ -56,11 +56,11 @@ You never implement code from `/plan`; you only plan.
 # New feature exploration - creative thinking
 /plan --creative Add gamification to user onboarding
 
-# Complex architectural decision - full deepthink pipeline
-/plan --deepthink Implement real-time collaboration features
+# Complex architectural decision - full problem-solve pipeline
+/plan --problem-solve Implement real-time collaboration features
 
-# High-risk implementation - deepthink with complex tier
-/plan --deepthink -complex Migrate from REST to GraphQL
+# High-risk implementation - problem-solve with complex tier
+/plan --problem-solve -complex Migrate from REST to GraphQL
 ```
 
 ### How It Works
@@ -97,15 +97,15 @@ Cognition flags combine with tier flags:
 # Complex task with systems analysis
 /plan -complex --systems Migrate database to PostgreSQL
 
-# Complex task with full deepthink analysis
-/plan -complex --deepthink Implement multi-tenant architecture
+# Complex task with full problem-solve analysis
+/plan -complex --problem-solve Implement multi-tenant architecture
 ```
 
 ---
 
-## 0.2 DeepThink Planning Pipeline (`--deepthink`)
+## 0.2 Problem-Solve Planning Pipeline (`--problem-solve`)
 
-When `--deepthink` is provided, `/plan` runs the **full 8-step ORIENT→ANTICIPATE→GENERATE→EVALUATE→COMMIT pipeline** adapted for requirements planning. This is the most rigorous analysis mode, best for:
+When `--problem-solve` is provided, `/plan` runs the **full 8-step ORIENT→ANTICIPATE→GENERATE→EVALUATE→COMMIT pipeline** adapted for requirements planning. This is the most rigorous analysis mode, best for:
 
 - Complex architectural decisions
 - High-risk implementations
@@ -113,7 +113,7 @@ When `--deepthink` is provided, `/plan` runs the **full 8-step ORIENT→ANTICIPA
 - Migrations and refactors
 - Features with significant unknowns
 
-Unlike single-operation cognition modes, `--deepthink` executes **multiple sequential cognition operations** that build on each other, producing a comprehensive planning analysis before discovery questions.
+Unlike single-operation cognition modes, `--problem-solve` executes **multiple sequential cognition operations** that build on each other, producing a comprehensive planning analysis before discovery questions.
 
 ### The Planning-Adapted Pipeline
 
@@ -125,17 +125,17 @@ Unlike single-operation cognition modes, `--deepthink` executes **multiple seque
 | **EVALUATE** | 5. Decide, 6. Challenge | Evaluate approaches; stress-test the recommended design |
 | **COMMIT** | 7. Ulysses, 8. Meta | Lock in requirements commitments with safeguards; reflect on planning quality |
 
-### DeepThink Execution Flow
+### Problem-Solve Execution Flow
 
-When `--deepthink` is detected, execute the following pipeline (all with same sessionId):
+When `--problem-solve` is detected, execute the following pipeline (all with same sessionId):
 
 #### Step 1: Orchestration Assessment
 
 ```typescript
 mcp__cognition-mcp__cognition({
   operation: "orchestration_suggest",
-  sessionTitle: "Plan DeepThink: <task summary>",
-  sessionTags: ["plan", "deepthink", "requirements"],
+  sessionTitle: "Plan Problem-Solve: <task summary>",
+  sessionTags: ["plan", "problem-solve", "requirements"],
   content: {
     task: "<task from $ARGUMENTS>",
     complexity: "complex",
@@ -330,7 +330,7 @@ mcp__cognition-mcp__cognition({
   operation: "meta",
   sessionId: "<sessionId>",
   content: {
-    process: "DeepThink planning pipeline",
+    process: "Problem-Solve planning pipeline",
     observations: [
       "<what was most valuable in this analysis>",
       "<what surprised us about the requirements>"
@@ -343,12 +343,12 @@ mcp__cognition-mcp__cognition({
 })
 ```
 
-### DeepThink Output Artifacts
+### Problem-Solve Output Artifacts
 
-After running the pipeline, create `00-deepthink-analysis.md`:
+After running the pipeline, create `00-problem-solve-analysis.md`:
 
 ```markdown
-# DeepThink Planning Analysis
+# Problem-Solve Planning Analysis
 
 **Task**: <$ARGUMENTS>
 **Session ID**: <sessionId>
@@ -447,9 +447,9 @@ After running the pipeline, create `00-deepthink-analysis.md`:
 - `#POISON_PATH`: [list]
 ```
 
-### How DeepThink Feeds Discovery
+### How Problem-Solve Feeds Discovery
 
-After the DeepThink pipeline completes:
+After the Problem-Solve pipeline completes:
 
 1. **Discovery questions are NOT generic** - they directly probe:
    - Assumptions identified in Phase 4 (`#COMPLETION_DRIVE`)
@@ -468,9 +468,9 @@ After the DeepThink pipeline completes:
    - Commitments become hard requirements
    - Pre-mortem risks become "out of scope" or explicit warnings
 
-### When to Use --deepthink
+### When to Use --problem-solve
 
-| Scenario | Use --deepthink? |
+| Scenario | Use --problem-solve? |
 |----------|------------------|
 | Simple UI change | No - use `--visual` |
 | New API endpoint | Maybe - depends on complexity |
@@ -481,7 +481,7 @@ After the DeepThink pipeline completes:
 | Feature with many unknowns | **Yes** |
 | High-risk production change | **Yes** |
 
-**Rule of thumb**: If you'd use `/deepthink` before making a decision, use `/plan --deepthink` before writing requirements.
+**Rule of thumb**: If you'd use extended thinking before making a decision, use `/plan --problem-solve` before writing requirements.
 
 ---
 
@@ -578,11 +578,11 @@ The user can override the recommendation.
 
 ## 1.5 Cognition Analysis Phase (If Flag Provided)
 
-If the user provided a Cognition flag (`--visual`, `--systems`, `--debug`, `--model`, `--creative`, `--causal`, `--decide`, `--deepthink`):
+If the user provided a Cognition flag (`--visual`, `--systems`, `--debug`, `--model`, `--creative`, `--causal`, `--decide`, `--problem-solve`):
 
-### Step 0: Check for DeepThink
+### Step 0: Check for Problem-Solve
 
-**If `--deepthink` is provided**: Skip this section entirely. Instead, execute the full **DeepThink Planning Pipeline** from Section 0.2. The pipeline will produce `00-deepthink-analysis.md` and feed directly into discovery questions.
+**If `--problem-solve` is provided**: Skip this section entirely. Instead, execute the full **Problem-Solve Planning Pipeline** from Section 0.2. The pipeline will produce `00-problem-solve-analysis.md` and feed directly into discovery questions.
 
 For all other cognition flags, continue with the single-operation flow below.
 
@@ -599,7 +599,7 @@ Map the flag to Cognition operation:
 | `--creative` | `creative_thinking` | - |
 | `--causal` | `causal_analysis` | - |
 | `--decide` | `decide` | - |
-| `--deepthink` | *See Section 0.2* | *Full pipeline* |
+| `--problem-solve` | *See Section 0.2* | *Full pipeline* |
 
 ### Step 2: Run Cognition Analysis
 
@@ -668,14 +668,14 @@ Add to `metadata.json`:
 }
 ```
 
-For `--deepthink`, the metadata structure is different:
+For `--problem-solve`, the metadata structure is different:
 ```json
 {
   "cognition": {
-    "mode": "deepthink",
+    "mode": "problem-solve",
     "pipeline": "full",
     "sessionId": "<cognition session ID>",
-    "analysisFile": "00-deepthink-analysis.md",
+    "analysisFile": "00-problem-solve-analysis.md",
     "phases": {
       "orient": "completed",
       "anticipate": "completed",

@@ -59,6 +59,41 @@ export function applyDecay(entries, config) {
         .sort((a, b) => b.decayedScore - a.decayedScore);
 }
 /**
+ * Tokenize a query into individual words for broader matching.
+ * Filters out common stop words and short tokens.
+ */
+function tokenizeQuery(query) {
+    const stopWords = new Set(['the', 'a', 'an', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for', 'of', 'with', 'by', 'is', 'are', 'was', 'were', 'be', 'been', 'being', 'have', 'has', 'had', 'do', 'does', 'did', 'will', 'would', 'could', 'should', 'may', 'might', 'must', 'shall', 'can', 'need', 'this', 'that', 'these', 'those', 'i', 'you', 'he', 'she', 'it', 'we', 'they', 'what', 'which', 'who', 'whom', 'how', 'when', 'where', 'why']);
+    return query
+        .toLowerCase()
+        .replace(/[^a-z0-9\s-]/g, ' ') // Remove special chars
+        .split(/\s+/)
+        .filter(word => word.length >= 3 && !stopWords.has(word));
+}
+/**
+ * Build a SQL WHERE clause for tokenized word matching.
+ * Returns [clause, params] where clause matches ANY word in content OR reasoning.
+ */
+function buildTokenizedWhereClause(tokens, fieldName = 'content', includeReasoning = true) {
+    if (tokens.length === 0) {
+        return ['1=1', []]; // Match all if no tokens
+    }
+    const conditions = [];
+    const params = [];
+    for (const token of tokens) {
+        if (includeReasoning) {
+            conditions.push(`(${fieldName} LIKE '%' || ? || '%' OR reasoning LIKE '%' || ? || '%')`);
+            params.push(token, token);
+        }
+        else {
+            conditions.push(`${fieldName} LIKE '%' || ? || '%'`);
+            params.push(token);
+        }
+    }
+    // Match ANY token (OR logic for broader recall)
+    return [`(${conditions.join(' OR ')})`, params];
+}
+/**
  * Load decay configuration from config file
  */
 function loadDecayConfig(projectPath) {
@@ -171,6 +206,7 @@ export class WorkshopClient {
     /**
      * Query decisions from Workshop using SQLite
      * When decay is enabled, applies time-weighted scoring
+     * Uses tokenized word matching for broader recall (matches ANY word)
      */
     async queryDecisions(query, limit = 10) {
         const db = this.openDatabase();
@@ -179,15 +215,18 @@ export class WorkshopClient {
         try {
             // Fetch more entries when decay is enabled to ensure good coverage after re-ranking
             const fetchLimit = this.decayConfig.enabled ? limit * 3 : limit;
+            // Tokenize query for word-based matching
+            const tokens = tokenizeQuery(query);
+            const [whereClause, whereParams] = buildTokenizedWhereClause(tokens, 'content', true);
             const sql = `
         SELECT id, type, content, reasoning, timestamp, entry_metadata
         FROM entries
         WHERE type = 'decision'
-          AND (content LIKE '%' || ? || '%' OR reasoning LIKE '%' || ? || '%')
+          AND ${whereClause}
         ORDER BY timestamp DESC
         LIMIT ?
       `;
-            const rows = db.prepare(sql).all(query, query, fetchLimit);
+            const rows = db.prepare(sql).all(...whereParams, fetchLimit);
             let results = rows.map(row => {
                 let metadata = {};
                 if (row.entry_metadata) {
@@ -299,6 +338,7 @@ export class WorkshopClient {
     /**
      * Query task history from Workshop using SQLite
      * When decay is enabled, applies time-weighted scoring
+     * Uses tokenized word matching for broader recall (matches ANY word)
      */
     async queryTaskHistory(query, limit = 10) {
         const db = this.openDatabase();
@@ -307,16 +347,19 @@ export class WorkshopClient {
         try {
             // Fetch more entries when decay is enabled to ensure good coverage after re-ranking
             const fetchLimit = this.decayConfig.enabled ? limit * 3 : limit;
+            // Tokenize query for word-based matching
+            const tokens = tokenizeQuery(query);
+            const [whereClause, whereParams] = buildTokenizedWhereClause(tokens, 'content', false);
             const sql = `
         SELECT id, type, content, reasoning, timestamp, entry_metadata
         FROM entries
         WHERE type = 'note'
           AND content LIKE '%Task:%'
-          AND content LIKE '%' || ? || '%'
+          AND ${whereClause}
         ORDER BY timestamp DESC
         LIMIT ?
       `;
-            const rows = db.prepare(sql).all(query, fetchLimit);
+            const rows = db.prepare(sql).all(...whereParams, fetchLimit);
             let results = rows.map(row => {
                 let metadata = {};
                 if (row.entry_metadata) {

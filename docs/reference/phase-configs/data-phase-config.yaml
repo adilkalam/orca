@@ -1,0 +1,102 @@
+# Data Pipeline Phase Configuration - OS 4.2
+# Data Analytics and Research Workflow
+
+pipeline:
+  name: data
+  description: Data analytics pipeline for research, analysis, and visualization
+  version: 4.2
+
+# Context Integration
+context:
+  provider: ProjectContextServer
+  required: false
+  query_on_start: true
+  memory_first: true
+
+# Agents (4 total)
+agents:
+  - python-analytics-expert     # NumPy, pandas, PyTorch, DuckDB
+  - competitive-analyst         # Market and competitor research
+  - data-researcher            # Data discovery and collection
+  - research-specialist        # Cross-domain research synthesis
+
+# Three-Tier Routing (OS 4.2)
+complexity_tiers:
+  default:
+    description: Standard data analysis workflow
+    flag: "(none)"
+    routing: direct-delegate
+    mode: default
+    spec_required: false
+    gates_required: false
+    examples:
+      - Analyze dataset
+      - Create visualization
+      - Run competitive analysis
+
+  tweak:
+    description: Quick data queries
+    flag: "-tweak"
+    routing: direct-delegate
+    mode: tweak
+    spec_required: false
+    gates_required: false
+    examples:
+      - Quick data lookup
+      - Simple aggregation
+
+  complex:
+    description: Multi-step data research project
+    flag: "--complex"
+    routing: full-pipeline
+    spec_required: recommended
+    gates_required: false
+    examples:
+      - Full market analysis
+      - Comprehensive data pipeline
+
+# Pipeline Phases
+phases:
+  - name: discovery
+    agent: data-researcher
+    description: Identify data sources and requirements
+    outputs:
+      - data_sources
+      - requirements
+      - approach
+
+  - name: collection
+    agent: data-researcher
+    description: Gather and validate data
+    dependencies:
+      - discovery
+    outputs:
+      - collected_data
+      - data_quality_report
+
+  - name: analysis
+    agent: python-analytics-expert
+    description: Analyze and transform data
+    dependencies:
+      - collection
+    outputs:
+      - analysis_results
+      - insights
+
+  - name: synthesis
+    agent: research-specialist
+    description: Synthesize findings into report
+    dependencies:
+      - analysis
+    outputs:
+      - final_report
+      - recommendations
+
+config:
+  data_path: .claude/data/
+  reports_path: reports/
+  phase_state_path: .claude/orchestration/phase_state.json
+
+phase_state:
+  location: ".claude/orchestration/phase_state.json"
+  domain: "data"

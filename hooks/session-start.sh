@@ -26,8 +26,8 @@ OUT_MD="$TEMP_DIR/session-context.md"
 ERROR_LOG="$TEMP_DIR/session-start-errors.log"
 DB_PATH=".claude/memory/workshop.db"
 WORKSHOP_DIR=".claude/memory"
-VIBE_DB="$WORKSHOP_DIR/vibe.db"
-VIBE_SYNC_SCRIPT="$HOME/.claude/scripts/vibe-sync.py"
+CODE_INDEX_DB="$WORKSHOP_DIR/code-index.db"
+CODE_INDEX_SCRIPT="$HOME/.claude/scripts/code-index.py"
 
 # ============================================================
 # UTILITIES
@@ -136,35 +136,35 @@ else
 fi
 
 # ============================================================
-# VIBE.DB (Local context cache with embeddings)
+# CODE-INDEX.DB (Local code/doc context with embeddings)
 # ============================================================
 
-VIBE_STATUS="not initialized"
+CODE_INDEX_STATUS="not initialized"
 
-if [ -f "$VIBE_DB" ]; then
-  VIBE_SIZE=$(du -h "$VIBE_DB" 2>/dev/null | cut -f1) || VIBE_SIZE="?"
-  VIBE_STATUS="ready ($VIBE_SIZE)"
+if [ -f "$CODE_INDEX_DB" ]; then
+  CODE_INDEX_SIZE=$(du -h "$CODE_INDEX_DB" 2>/dev/null | cut -f1) || CODE_INDEX_SIZE="?"
+  CODE_INDEX_STATUS="ready ($CODE_INDEX_SIZE)"
 
-  # Optionally sync on session start (if vibe-sync.py exists)
-  if [ -f "$VIBE_SYNC_SCRIPT" ] && command -v python3 >/dev/null 2>&1; then
+  # Optionally sync on session start (if code-index.py exists)
+  if [ -f "$CODE_INDEX_SCRIPT" ] && command -v python3 >/dev/null 2>&1; then
     # Run sync in background to not block startup
-    (python3 "$VIBE_SYNC_SCRIPT" sync >/dev/null 2>&1 &) || {
-      log_error "vibe" "Background sync failed"
+    (python3 "$CODE_INDEX_SCRIPT" sync >/dev/null 2>&1 &) || {
+      log_error "code-index" "Background sync failed"
     }
   fi
 else
-  # Try to initialize vibe.db
-  if [ -f "$VIBE_SYNC_SCRIPT" ] && command -v python3 >/dev/null 2>&1; then
-    if python3 "$VIBE_SYNC_SCRIPT" init >/dev/null 2>&1; then
-      VIBE_STATUS="initialized"
-      log_info "vibe" "Database initialized"
+  # Try to initialize code-index.db
+  if [ -f "$CODE_INDEX_SCRIPT" ] && command -v python3 >/dev/null 2>&1; then
+    if python3 "$CODE_INDEX_SCRIPT" init >/dev/null 2>&1; then
+      CODE_INDEX_STATUS="initialized"
+      log_info "code-index" "Database initialized"
     else
-      VIBE_STATUS="init-failed"
-      log_error "vibe" "Failed to initialize database"
+      CODE_INDEX_STATUS="init-failed"
+      log_error "code-index" "Failed to initialize database"
     fi
   else
-    VIBE_STATUS="script-missing"
-    log_info "vibe" "vibe-sync.py not found at $VIBE_SYNC_SCRIPT"
+    CODE_INDEX_STATUS="script-missing"
+    log_info "code-index" "code-index.py not found at $CODE_INDEX_SCRIPT"
   fi
 fi
 
@@ -186,7 +186,7 @@ fi
   echo "- Timestamp: $(ts)"
   echo "- Native Memory: ${NATIVE_PATH:-none} (${NATIVE_NOTE})"
   echo "- Workshop: $WORKSHOP_STATUS"
-  echo "- Vibe DB: $VIBE_STATUS"
+  echo "- Code Index: $CODE_INDEX_STATUS"
   echo "- Telemetry: $TELEMETRY_STATUS"
   if [ "$ERROR_COUNT" -gt 0 ]; then
     echo "- Errors: $ERROR_COUNT (see $ERROR_LOG)"
@@ -216,7 +216,7 @@ echo "════════════════════════�
 echo ""
 echo "Memory systems available:"
 echo "  - Workshop: workshop --workspace .claude/memory <command>"
-echo "  - vibe.db: python3 ~/.claude/scripts/vibe-sync.py <command>"
+echo "  - Code Index: python3 ~/.claude/scripts/code-index.py <command>"
 echo "  - ProjectContext MCP: mcp__project-context__query_context"
 echo ""
 echo "Quick commands:"
@@ -237,10 +237,48 @@ if [ "$WORKSHOP_STATUS" = "loaded" ] && command -v workshop >/dev/null 2>&1; the
   echo ""
 fi
 
+# === ORCA-MEM PHASE 4: EPISODE INJECTION ===
+# Query recent episodes from workshop.db entries table (notes with #episode tag)
+# Inject ~500 tokens of context at session start
+
+if [ -f "$DB_PATH" ]; then
+  # Query notes tagged with 'episode' (auto-captured by session-end.sh)
+  RECENT_EPISODES=$(sqlite3 -separator '|' "$DB_PATH" "
+    SELECT
+      substr(content, 1, 80) as title,
+      CASE
+        WHEN content LIKE '%architecture%' THEN 'architecture'
+        WHEN content LIKE '%debug%' OR content LIKE '%fix%' THEN 'debugging'
+        WHEN content LIKE '%explore%' OR content LIKE '%research%' THEN 'exploration'
+        ELSE 'implementation'
+      END as category,
+      substr(content, 1, 200) as preview
+    FROM entries
+    WHERE type = 'note'
+      AND entry_metadata LIKE '%episode%'
+    ORDER BY timestamp DESC
+    LIMIT 5
+  " 2>/dev/null || echo "")
+
+  if [ -n "$RECENT_EPISODES" ]; then
+    echo ""
+    echo "═══════════════════════════════════════════════════════════"
+    echo "RECENT SESSION EPISODES (ORCA-Mem)"
+    echo "═══════════════════════════════════════════════════════════"
+    echo ""
+    echo "$RECENT_EPISODES" | while IFS='|' read -r title category preview; do
+      if [ -n "$title" ]; then
+        echo "- [$category] $title"
+      fi
+    done
+    echo ""
+  fi
+fi
+
 # Architecture reminder for this repo
 echo ""
 echo "═══════════════════════════════════════════════════════════"
-echo "OS 3.0 ARCHITECTURE - ALWAYS CONSIDER ALL LAYERS"
+echo "OS 4.2 ARCHITECTURE - ALWAYS CONSIDER ALL LAYERS"
 echo "═══════════════════════════════════════════════════════════"
 echo ""
 echo "When modifying orchestration behavior, you MUST update ALL affected layers:"

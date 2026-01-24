@@ -1,8 +1,8 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Fast project type detection for auto-orchestration
 # Optimized for speed - only checks file existence
 
-set -e
+set -uo pipefail
 
 OUTPUT_FILE=".claude/orchestration/temp/orchestration-context.md"
 
@@ -180,4 +180,6 @@ When user requests $PROJECT_TYPE changes:
 EOF
 
 # Output context for session
-cat "$OUTPUT_FILE"
+cat "$OUTPUT_FILE" 2>/dev/null || true
+
+exit 0

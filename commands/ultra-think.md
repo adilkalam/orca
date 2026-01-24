@@ -159,6 +159,81 @@ Deep analysis and problem solving mode
 
 ---
 
+## Persist Analysis (MANDATORY)
+
+After completing the analysis, persist for future reference.
+
+### Step 1: Create Cognition Directory
+
+```bash
+mkdir -p .claude/cognition
+```
+
+### Step 2: Generate Summary File
+
+Create file at `.claude/cognition/YYYYMMDD-HHMM-<slug>.md` where:
+- YYYYMMDD = current date (no dashes)
+- HHMM = current time
+- slug = first 30 chars of problem, kebab-cased
+
+**File Template**:
+```markdown
+# UltraThink: [Problem]
+
+**Date**: YYYY-MM-DD HH:MM
+**Session ID**: <sessionId from cognition-mcp if used>
+**Command**: /ultra-think
+
+## Executive Summary
+
+[2-3 sentence summary of key insight/recommendation from the analysis]
+
+## Key Findings
+
+- [Finding 1]
+- [Finding 2]
+- [Finding 3]
+
+## Decision/Recommendation
+
+[Main recommendation with confidence level]
+
+## Recovery
+
+To resume full analysis:
+```
+/think --import <sessionId>
+```
+```
+
+### Step 3: Write Workshop Entry
+
+```bash
+workshop --workspace .claude/memory note \
+  "/ultra-think: [Problem] - [Key recommendation]. Session: <sessionId>. File: .claude/cognition/<filename>" \
+  -t ultra-think -t cognition
+```
+
+### Step 4: Confirm to User
+
+Output:
+```
+---
+Analysis persisted:
+  File: .claude/cognition/YYYYMMDD-HHMM-slug.md
+  Workshop: Tagged with ultra-think, cognition
+  Recovery: /think --import <sessionId>
+---
+```
+
+### Error Handling
+
+If file write or Workshop command fails:
+- Display warning: "Warning: Could not persist analysis. Analysis shown above is still valid."
+- Continue normally - do NOT halt the command
+
+---
+
 ## Response Awareness Integration
 
 This command uses Sequential Thinking MCP for deep analysis and assumption surfacing. When analysis reveals implementation uncertainties or competing approaches:

@@ -108,6 +108,7 @@ Criteria: **F**unctionality (1-5), **D**epth (1-5), **U**tility (1-5)
 |------|---------|---------------|
 | `--visual` | Generate ASCII diagram after analysis | thought, tree, graph, decide, systems, beam, mcts |
 | `--challenge` | Run adversarial critique after analysis | debug, decide, systems, meta, mental_model, creative, causal |
+| `--deep` | Extended thinking mode (8-12+ thoughts, review/synthesis checkpoints) | All primary flags |
 
 ---
 
@@ -123,16 +124,16 @@ The `/plan` command supports cognition-mcp analysis **before** discovery questio
 /plan --debug Fix checkout failures       # Root cause analysis
 ```
 
-### Full Pipeline: --deepthink
+### Full Pipeline: --problem-solve
 
-The `--deepthink` flag runs the **complete 8-step pipeline** adapted for requirements planning:
+The `--problem-solve` flag runs the **complete 8-step pipeline** adapted for requirements planning:
 
 ```bash
-/plan --deepthink Implement real-time collaboration
-/plan -complex --deepthink Migrate from REST to GraphQL
+/plan --problem-solve Implement real-time collaboration
+/plan -complex --problem-solve Migrate from REST to GraphQL
 ```
 
-**DeepThink Planning Pipeline:**
+**Problem-Solve Planning Pipeline:**
 
 | Phase | Operations | Planning Output |
 |-------|------------|-----------------|
@@ -712,4 +713,4 @@ For full research context, see `/docs/concepts/llm-introspection-analysis.md`.
 
 ---
 
-_Version: OS 4.2 | Last tested: December 2024_
+_Version: OS 4.3 | Last tested: December 2024_

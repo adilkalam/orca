@@ -1,12 +1,12 @@
-# OS 4.2 Agents Quick Reference
+# OS 4.3 Agents Quick Reference
 
-**Last Updated:** 2025-12-26
-**Version:** OS 4.2
-**Total Agents:** 94
+**Last Updated:** 2026-01-23
+**Version:** OS 4.3
+**Total Agents:** 105
 
 ---
 
-## Agent Architecture (OS 4.2)
+## Agent Architecture (OS 4.3)
 
 **All Agents Use Opus 4.5:**
 - Grand architects (coordination & architecture)
@@ -27,15 +27,16 @@
 |--------|-------|----------|
 | iOS | 19 | `agents/iOS/` |
 | Next.js | 17 | `agents/dev/nextjs-*` + tailwind/shadcn-specialist |
-| Django-React | 13 | `agents/dev/django-*`, `react-*`, `api-contract-*` |
-| Expo | 11 | `agents/expo/` |
+| Django-React | 13 | `agents/django-react/` |
+| Expo | 12 | `agents/expo/` |
 | Research | 7 | `agents/research/` |
 | SEO | 5 | `agents/seo/` |
 | Data | 4 | `agents/data/` |
-| OS-Dev | 5 | `agents/dev/os-dev-*` |
+| OS-Dev | 6 | `agents/dev/os-dev-*` |
 | Orca-Pipeline | 5 | `agents/orca-dev/` |
+| Audit | 8 | `agents/audit/` |
 | Cross-Cutting | 9 | `agents/` (root) |
-| **TOTAL** | **94** | |
+| **TOTAL** | **105** | |
 
 ---
 
@@ -154,7 +155,7 @@
 
 ---
 
-## Expo Pipeline (11 Agents)
+## Expo Pipeline (12 Agents)
 
 ### Orchestration
 | Agent | Purpose |
@@ -181,6 +182,7 @@
 ### Gates
 | Agent | Purpose | Threshold |
 |-------|---------|-----------|
+| `expo-standards-enforcer` | Architecture, RN patterns, design tokens | >=90 |
 | `expo-verification-agent` | Build/test/expo doctor | PASS/FAIL |
 
 ---
@@ -237,14 +239,23 @@ Orchestrated directly by `/research` command (no lead agent).
 
 ---
 
-## OS-Dev Pipeline (5 Agents)
+## OS-Dev Pipeline (6 Agents)
 
-### ORCA-OS Development
+### Orchestration
 | Agent | Purpose |
 |-------|---------|
-| `os-dev-grand-architect` | OS architecture planning |
+| `os-dev-grand-architect` | OS architecture planning and coordination |
 | `os-dev-architect` | Implementation planning |
+| `os-dev-light-orchestrator` | Default/tweak mode coordination |
+
+### Implementation
+| Agent | Purpose |
+|-------|---------|
 | `os-dev-builder` | Agent/command development |
+
+### Gates
+| Agent | Purpose |
+|-------|---------|
 | `os-dev-standards-enforcer` | OS standards validation |
 | `os-dev-verification` | Deployment verification |
 
@@ -275,7 +286,33 @@ Meta-pipeline for creating new domain pipelines. 5-phase wizard: Interview → R
 
 ---
 
-## Cross-Cutting Agents (11 Agents)
+## Audit Pipeline (8 Agents)
+
+Specialist agents for due-diligence audits. Run in parallel via `/audit` command.
+
+### Core Specialists (Phase 1)
+| Agent | Purpose | Weight |
+|-------|---------|--------|
+| `audit-structure-specialist` | Dead code, naming, giant files, organization | medium |
+| `audit-dependency-specialist` | Vulnerabilities, outdated, unused, licenses | medium |
+| `audit-security-specialist` | Exposed secrets, insecure storage, HTTP, validation | heavy |
+
+### Extended Specialists (Phase 2)
+| Agent | Purpose | Weight |
+|-------|---------|--------|
+| `audit-pattern-specialist` | Pattern consistency, anti-patterns, style conformity | medium |
+| `audit-documentation-specialist` | Doc accuracy, completeness, freshness | medium |
+| `audit-test-specialist` | Coverage, test quality, isolation, flakiness | medium |
+| `audit-architecture-specialist` | Circular deps, coupling, cohesion, boundaries | medium |
+| `audit-design-specialist` | Design tokens, UI consistency (UI projects only) | medium |
+
+**Output:** JSON to `.claude/audit/temp/<agent>.json`
+**Scoring:** Deduction-based (100 - rule violations)
+**Conditional:** `audit-design-specialist` only runs for UI projects (Next.js, Expo, iOS)
+
+---
+
+## Cross-Cutting Agents (9 Agents)
 
 These agents work across multiple pipelines:
 
@@ -289,9 +326,9 @@ These agents work across multiple pipelines:
 | `performance-enforcer` | Expo, Next.js | Bundle size, performance budgets |
 | `performance-prophet` | Expo | Predictive performance analysis |
 | `security-specialist` | Expo, iOS | OWASP Mobile Top 10, secure storage |
-| `shadcn-specialist` | Next.js, React | shadcn/ui components, CVA, Radix UI (auto-detected) |
-| `tailwind-specialist` | Next.js, Expo | Tailwind CSS v4, utility composition (auto-detected) |
-| `version-shield` | All lanes | Dependency version management and breaking changes (NEW OS 3.1) |
+| `version-shield` | All lanes | Dependency version management and breaking changes |
+
+**Note:** `tailwind-specialist` and `shadcn-specialist` are counted in Next.js pipeline (auto-detected based on project config).
 
 ---
 
@@ -315,12 +352,14 @@ These agents work across multiple pipelines:
 ```
 ~/.claude/agents/
   iOS/              # 19 agents
-  dev/              # 21 agents (16 nextjs-* + 5 os-dev-*)
+  dev/              # 23 agents (nextjs-*, os-dev-*, tailwind-*, shadcn-*)
   django-react/     # 13 agents
-  expo/             # 11 agents
-  research/         # 8 agents
+  expo/             # 12 agents
+  research/         # 7 agents
   seo/              # 5 agents
   data/             # 4 agents
+  audit/            # 8 agents
+  orca-dev/         # 5 agents (orca-pipeline-*)
   (root level)      # 9 cross-cutting agents
 ```
 
@@ -351,4 +390,4 @@ $ORCA_OS_PATH/agents/
 ---
 
 _Source of truth: `docs/reference/os-dependency-graph.yaml`_
-_Last sync: 2025-12-18_
+_Last sync: 2026-01-23_

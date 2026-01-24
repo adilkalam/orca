@@ -1,0 +1,108 @@
+# SEO Pipeline Phase Configuration - OS 4.2
+# SEO Content Creation and Optimization Workflow
+
+pipeline:
+  name: seo
+  description: SEO content pipeline with research, brief creation, drafting, and optimization
+  version: 4.2
+
+# Context Integration
+context:
+  provider: ProjectContextServer
+  required: false
+  query_on_start: true
+  memory_first: true
+
+# Three-Tier Routing (OS 4.2)
+complexity_tiers:
+  default:
+    description: Standard SEO content workflow
+    flag: "(none)"
+    routing: seo-light-orchestrator
+    mode: default
+    spec_required: false
+    gates_required: true
+    gates:
+      - seo-quality-guardian
+    examples:
+      - Create SEO brief for keyword
+      - Optimize existing content
+      - Add schema markup
+
+  tweak:
+    description: Quick SEO fixes without gates
+    flag: "-tweak"
+    routing: seo-light-orchestrator
+    mode: tweak
+    spec_required: false
+    gates_required: false
+    examples:
+      - Quick meta tag updates
+      - Minor content edits
+
+  complex:
+    description: Full SEO content creation with research
+    flag: "--complex"
+    routing: full-pipeline
+    spec_required: recommended
+    gates_required: true
+    examples:
+      - Complete content piece from keyword research
+      - Comprehensive site audit and optimization
+
+# Pipeline Phases
+phases:
+  - name: research
+    agent: seo-research-specialist
+    description: Keyword research and SERP analysis
+    outputs:
+      - keyword_data
+      - serp_analysis
+      - competitor_insights
+
+  - name: brief
+    agent: seo-brief-strategist
+    description: Create content brief from research
+    dependencies:
+      - research
+    outputs:
+      - content_brief
+      - target_structure
+      - optimization_targets
+
+  - name: draft
+    agent: seo-draft-writer
+    description: Write SEO-optimized content
+    dependencies:
+      - brief
+    outputs:
+      - draft_content
+      - seo_elements
+
+  - name: optimize
+    agent: seo-optimizer
+    description: NLP analysis and schema markup
+    dependencies:
+      - draft
+    outputs:
+      - optimization_report
+      - schema_markup
+
+  - name: quality_gate
+    agent: seo-quality-guardian
+    description: Final quality check
+    dependencies:
+      - optimize
+    outputs:
+      - quality_score
+      - gate_decision
+      - issues
+
+config:
+  briefs_path: .claude/seo/briefs/
+  drafts_path: .claude/seo/drafts/
+  phase_state_path: .claude/orchestration/phase_state.json
+
+phase_state:
+  location: ".claude/orchestration/phase_state.json"
+  domain: "seo"

@@ -12,7 +12,12 @@
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage"
   },
-  "keywords": ["context", "memory", "mcp", "os4.1"],
+  "keywords": [
+    "context",
+    "memory",
+    "mcp",
+    "os4.1"
+  ],
   "author": "ORCA-OS",
   "license": "MIT",
   "dependencies": {
@@ -22,7 +27,8 @@
   "devDependencies": {
     "@types/better-sqlite3": "^7.6.0",
     "@types/node": "^20.0.0",
+    "@vitest/coverage-v8": "^4.0.18",
     "typescript": "^5.0.0",
-    "vitest": "^2.1.0"
+    "vitest": "^4.0.17"
   }
 }

@@ -286,7 +286,7 @@ After the root-cause squad agents respond:
 
 - `/root-cause` must **never**:
   - Use `Edit` / `Write` / `MultiEdit`.
-  - Attempt to “quick fix” the issue.
+  - Attempt to "quick fix" the issue.
 - It may:
   - Read files/logs as needed to understand behavior.
   - Run safe commands via delegated verification agents.
@@ -298,3 +298,78 @@ Fixing the issue should be done via the appropriate pipeline:
 - Next.js: `/plan` → `/orca` → `/nextjs`
 - Expo: `/plan` → `/orca` → `/expo`
 - OS-Dev: `/plan` → `/orca-os-dev`
+
+---
+
+## Persist Analysis (MANDATORY)
+
+After completing the analysis, persist for future reference.
+
+### Step 1: Create Cognition Directory
+
+```bash
+mkdir -p .claude/cognition
+```
+
+### Step 2: Generate Summary File
+
+Create file at `.claude/cognition/YYYYMMDD-HHMM-<slug>.md` where:
+- YYYYMMDD = current date (no dashes)
+- HHMM = current time
+- slug = first 30 chars of symptom, kebab-cased
+
+**File Template**:
+```markdown
+# RootCause: [Symptom]
+
+**Date**: YYYY-MM-DD HH:MM
+**Session ID**: <sessionId if cognition-mcp used>
+**Command**: /root-cause
+
+## Executive Summary
+
+[2-3 sentence summary of root cause identified]
+
+## Key Findings
+
+- [Finding 1]
+- [Finding 2]
+- [Finding 3]
+
+## Decision/Recommendation
+
+[Suggested next pipeline to run for fix]
+
+## Recovery
+
+To resume full analysis:
+```
+/think --import <sessionId>
+```
+```
+
+### Step 3: Write Workshop Entry
+
+```bash
+workshop --workspace .claude/memory note \
+  "/root-cause: [Symptom] - [Root cause identified]. Session: <sessionId>. File: .claude/cognition/<filename>" \
+  -t root-cause -t cognition
+```
+
+### Step 4: Confirm to User
+
+Output:
+```
+---
+Analysis persisted:
+  File: .claude/cognition/YYYYMMDD-HHMM-slug.md
+  Workshop: Tagged with root-cause, cognition
+  Recovery: /think --import <sessionId>
+---
+```
+
+### Error Handling
+
+If file write or Workshop command fails:
+- Display warning: "Warning: Could not persist analysis. Analysis shown above is still valid."
+- Continue normally - do NOT halt the command

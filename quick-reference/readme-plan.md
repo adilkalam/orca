@@ -1,4 +1,4 @@
-# Quick Reference: /plan Command (OS 4.2)
+# Quick Reference: /plan Command (OS 4.3)
 
 The `/plan` command creates blueprint-quality requirements specs before implementation.
 
@@ -43,18 +43,18 @@ Add reasoning analysis **before** discovery questions:
 | `--creative` | Brainstorming | New feature exploration |
 | `--causal` | Cause-effect chains | Debugging complex issues |
 | `--decide` | Trade-off analysis | Choosing between options |
-| **`--deepthink`** | **Full 8-step pipeline** | **Architectural decisions, migrations, high-risk features** |
+| **`--problem-solve`** | **Full convergent decision pipeline** | **Architectural decisions, migrations, high-risk features** |
 
 ```bash
 /plan --visual Add onboarding wizard
 /plan --systems Migrate database to PostgreSQL
 /plan -complex --debug Fix intermittent checkout failures
-/plan --deepthink Implement real-time collaboration   # Full pipeline
+/plan --problem-solve Implement real-time collaboration   # Full pipeline
 ```
 
-### When to Use --deepthink
+### When to Use --problem-solve
 
-Use `--deepthink` for the most rigorous planning analysis:
+Use `--problem-solve` for the most rigorous planning analysis:
 
 - Database migrations
 - Authentication system changes
@@ -63,7 +63,7 @@ Use `--deepthink` for the most rigorous planning analysis:
 - Features with many unknowns
 - High-risk production changes
 
-It runs ORIENT→ANTICIPATE→GENERATE→EVALUATE→COMMIT automatically, producing:
+It runs a convergent decision pipeline automatically, producing:
 - Systems map with integration points
 - Pre-mortem failure analysis → `#POISON_PATH` tags
 - Implementation approaches → `#PATH_DECISION` tags
@@ -78,7 +78,7 @@ It runs ORIENT→ANTICIPATE→GENERATE→EVALUATE→COMMIT automatically, produc
 .claude/requirements/2025-12-05-1430-dark-mode/
   00-initial-request.md         # Your original request
   00-cognition-analysis.md      # (if single --flag used)
-  00-deepthink-analysis.md      # (if --deepthink used - full pipeline output)
+  00-problem-solve-analysis.md  # (if --problem-solve used - full pipeline output)
   01-discovery-questions.md     # 5 high-level questions
   02-discovery-answers.md       # Your answers
   03-context-findings.md        # Codebase analysis
@@ -184,13 +184,13 @@ Grand architects respect these tags and don't re-decide settled `#PATH_DECISION`
 # UI with visual reasoning
 /plan --visual Redesign checkout flow
 
-# Full deepthink pipeline for architectural decisions
-/plan --deepthink Implement multi-tenant architecture
+# Full problem-solve pipeline for architectural decisions
+/plan --problem-solve Implement multi-tenant architecture
 
-# Deepthink with complex tier for maximum rigor
-/plan -complex --deepthink Migrate from REST to GraphQL
+# Problem-solve with complex tier for maximum rigor
+/plan -complex --problem-solve Migrate from REST to GraphQL
 ```
 
 ---
 
-*Part of ORCA OS 4.2*
+*Part of ORCA OS 4.3*

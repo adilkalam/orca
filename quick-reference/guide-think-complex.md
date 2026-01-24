@@ -196,33 +196,76 @@ Use when: Live issue requiring rapid iteration.
 
 ## Automated Pipelines
 
-### /deepthink - For Decisions
+### /problem-solve - For Decisions (Convergent)
 
-Runs the full 8-step pipeline automatically:
-
-```bash
-/deepthink Should we migrate from monolith to microservices?
-/deepthink --quick Which database: PostgreSQL vs MongoDB?
-/deepthink --strategic 3-year platform modernization
-```
-
-### /plan --deepthink - For Requirements
-
-Runs the same pipeline adapted for **requirements planning**:
+Runs the full 8-step pipeline automatically for convergent decision-making:
 
 ```bash
-/plan --deepthink Implement real-time collaboration
-/plan -complex --deepthink Migrate from REST to GraphQL
+/problem-solve Should we migrate from monolith to microservices?
+/problem-solve --quick Which database: PostgreSQL vs MongoDB?
+/problem-solve --strategic 3-year platform modernization
 ```
 
-**Key difference:** `/deepthink` produces a decision + commitment protocol. `/plan --deepthink` produces a requirements spec with RA tags that feeds into domain lanes (`/nextjs`, `/ios`, etc.).
+**Phase Gates:** Each phase includes verification checkpoints to ensure genuine progress before advancing. Gates prevent shallow completion-drive behavior.
 
-| Command | Output | Next Step |
-|---------|--------|-----------|
-| `/deepthink <problem>` | Decision + Ulysses Protocol | Implement decision |
-| `/plan --deepthink <task>` | Requirements spec + RA tags | `/nextjs Implement requirement <id>` |
+### /deepthink - For Exploration (Divergent)
 
-**Rule of thumb:** Use `/deepthink` to decide IF you should do something. Use `/plan --deepthink` to define WHAT and HOW before implementing.
+Depth-first exploration with route-based modes:
+
+```bash
+/deepthink "Why does user retention drop after day 3?"
+/deepthink --light "Quick question about caching"
+/deepthink --full "Major architectural exploration"
+```
+
+**Modes:** MAP (orientation), INVERT (stress test), PERSPECTIVES (escape own head), EDGES (creative expansion), META (self-observation), DEEP (intensive focus)
+
+**Enhanced Mode Combinations:** Modes can combine with reasoning patterns for deeper analysis:
+- MAP + causal analysis for dependency mapping
+- INVERT + reflexion for iterative stress testing
+- PERSPECTIVES + collaborative reasoning for multi-stakeholder analysis
+
+**External Verification:** Each mode generates verification questions that can be answered by external sources (documentation, tests, user input) to ground the exploration.
+
+### /plan --problem-solve - For Requirements
+
+Runs the same convergent pipeline adapted for **requirements planning**:
+
+```bash
+/plan --problem-solve Implement real-time collaboration
+/plan -complex --problem-solve Migrate from REST to GraphQL
+```
+
+**Key difference:** `/problem-solve` produces a decision + commitment protocol. `/plan --problem-solve` produces a requirements spec with RA tags that feeds into domain lanes (`/nextjs`, `/ios`, etc.).
+
+| Command | Purpose | Output | Next Step |
+|---------|---------|--------|-----------|
+| `/deepthink <question>` | Divergent exploration | Questions, hypotheses, insights | Refined understanding |
+| `/problem-solve <problem>` | Convergent decision | Decision + Ulysses Protocol | Implement decision |
+| `/plan --problem-solve <task>` | Requirements planning | Spec + RA tags | `/nextjs Implement requirement <id>` |
+
+**Rule of thumb:**
+- Use `/deepthink` when you're **confused** and need to explore
+- Use `/problem-solve` when you need to **decide** something
+- Use `/plan --problem-solve` to define **WHAT and HOW** before implementing
+
+---
+
+## Cross-Command Handoff
+
+Commands provide explicit handoff guidance in their outputs:
+
+| From | Handoff Condition | To |
+|------|-------------------|-----|
+| `/contemplate` | Problem type identified | Recommended reasoning command with flags |
+| `/deepthink` | Exploration complete, decision needed | `/problem-solve` with key insights |
+| `/problem-solve` | Decision made, implementation needed | `/plan` or domain command with decision context |
+| `/think --deep` | Extended analysis complete | Summary with next-step recommendation |
+
+Handoff outputs include:
+- Key insights to carry forward
+- Recommended next command with specific flags
+- Context that should NOT be lost in transition
 
 ---
 
