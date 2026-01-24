@@ -9,7 +9,7 @@ ORCA-OS transforms Claude Code from a coding assistant into a sophisticated mult
 ## What's Inside
 
 - **105 Specialized Agents** across 10 lanes (Next.js, iOS, Expo, Django-React, Research, SEO, Data, Audit, OS-Dev, Orca-Pipeline)
-- **31 Slash Commands** for orchestration, planning, thinking, and design review
+- **30 Slash Commands** for orchestration, planning, thinking, and design review
 - **Persistent Memory** via Workshop and project-context MCP
 - **Self-Improvement System** that learns rules from your interactions
 - **40 Reasoning Operations** via cognition-mcp
@@ -75,24 +75,57 @@ claude
 
 ## Core Commands
 
+### Planning & Requirements
 | Command | Description |
 |---------|-------------|
-| `/plan` | Plan any task with structured requirements |
-| `/think` | Choose optimal reasoning strategy |
+| `/plan` | Structured requirements gathering with cognition flags |
+| `/project-setup` | Initialize CLAUDE.md with project conventions |
+
+### Thinking & Reasoning
+| Command | Description |
+|---------|-------------|
+| `/think` | Sequential thinking with 40 cognition operations |
+| `/contemplate` | Reasoning strategy advisor - recommends which /think ops to use |
+| `/deepthink` | Depth-first exploration with route-based modes |
+| `/problem-solve` | Convergent 8-step decision pipeline with phase gates |
+| `/ultra-think` | Deep multi-dimensional analysis |
 | `/challenge` | Adversarial analysis of proposals |
+
+### Utility
+| Command | Description |
+|---------|-------------|
+| `/audit` | Multi-agent due diligence code auditing |
 | `/reflect` | Learn rules from session interactions |
-| `/audit` | Review completed work for issues |
+| `/self-improve` | Process improvement signals from reflection |
+| `/root-cause` | Structured root cause analysis |
+| `/enhance` | Transform vague prompts into structured requests |
+| `/clone-website` | Analyze and spec website cloning |
 
 ## Domain Orchestrators
 
 | Command | Domain |
 |---------|--------|
+| `/orca` | Universal router - detects domain and routes appropriately |
 | `/nextjs` | Next.js frontend development |
 | `/ios` | Native iOS (Swift/SwiftUI) |
 | `/expo` | React Native / Expo |
 | `/django-react` | Django + React fullstack |
 | `/research` | Deep research with citations |
 | `/seo` | SEO content pipeline |
+| `/orca-os-dev` | ORCA-OS development (for contributors) |
+| `/orca-pipeline` | Create new domain pipelines |
+
+## Design & Memory Commands
+
+| Command | Description |
+|---------|-------------|
+| `/design-dna` | Initialize and manage design system tokens |
+| `/design-review` | Visual quality gate using design reviewer agents |
+| `/project-memory` | Workshop memory management (decisions, gotchas) |
+| `/memory-search` | Unified search across all memory systems |
+| `/project-code` | Code context management (semantic search) |
+| `/session-save` | Save session context for next time |
+| `/session-resume` | Resume saved session context |
 
 ---
 
@@ -147,7 +180,7 @@ claude
 │   ├── data/         # Analytics agents
 │   ├── audit/        # Audit specialists
 │   └── orca-dev/     # Pipeline creation agents
-├── commands/         # 31 slash commands
+├── commands/         # 30 slash commands
 ├── skills/           # Reusable behavior patterns
 ├── hooks/            # Session lifecycle hooks
 ├── scripts/          # Utility scripts

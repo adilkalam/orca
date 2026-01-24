@@ -327,7 +327,7 @@ MCP (Model Context Protocol) servers extend Claude with external capabilities:
 | Server | What It Enables |
 |--------|-----------------|
 | **project-context** | Memory across sessions. Stores decisions, gotchas, preferences. Semantic search across your codebase. Assembles context bundles for each task. |
-| **cognition-mcp** | The 38 reasoning operations. Powers `/think`, `/plan --problem-solve`, decision frameworks, systems mapping. |
+| **cognition-mcp** | The 40 reasoning operations. Powers `/think`, `/plan --problem-solve`, decision frameworks, systems mapping. |
 | **sequential-thinking** | Multi-step reasoning with revision. Lets Claude backtrack and correct course mid-thought. |
 | **context7** | Up-to-date library documentation. Claude gets current API info, not stale training data. |
 
@@ -341,4 +341,4 @@ MCP (Model Context Protocol) servers extend Claude with external capabilities:
 
 ---
 
-**ORCA OS 4.2** — [Full Documentation](docs/) — [Quick Start](docs/QUICK-START.md)
+**ORCA OS 4.3** — [Full Documentation](docs/) — [Quick Start](docs/QUICK-START.md)

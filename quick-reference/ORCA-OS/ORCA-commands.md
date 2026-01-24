@@ -2,7 +2,7 @@
 
 **Last Updated:** 2026-01-23
 **Version:** OS 4.3
-**Total Commands:** 31
+**Total Commands:** 30
 
 ---
 
