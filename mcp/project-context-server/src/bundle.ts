@@ -2,7 +2,7 @@
  * Context Bundler
  *
  * Creates tailored context bundles by combining:
- * - Code search via vibe.db (hybrid: semantic + symbol + fulltext)
+ * - Code search via code-index.db (hybrid: semantic + symbol + fulltext)
  * - Session memory via Workshop (decisions, standards, history)
  * - Project state (components, structure)
  *
@@ -101,25 +101,25 @@ export class ContextBundler {
   /**
    * Get files relevant to the task using hybrid search
    *
-   * Uses vibe.db's hybrid search (semantic + symbol + fulltext) if available,
-   * falls back to basic keyword search if vibe.db doesn't exist.
+   * Uses code-index.db's hybrid search (semantic + symbol + fulltext) if available,
+   * falls back to basic keyword search if code-index.db doesn't exist.
    */
   private async getRelevantFiles(query: ContextQuery): Promise<FileContext[]> {
     const maxFiles = query.maxFiles || 10;
     const codeSearch = this.getCodeSearch(query.projectPath);
 
-    // Try vibe.db hybrid search first
-    if (codeSearch.hasVibeDb()) {
-      console.error('Using vibe.db hybrid search for code context');
+    // Try code-index.db hybrid search first
+    if (codeSearch.hasCodeIndex()) {
+      console.error('Using code-index.db hybrid search for code context');
       const results = await codeSearch.hybridSearch(query.task, maxFiles);
 
       if (results.length > 0) {
         return results;
       }
       // Fall through to basic search if no results
-      console.error('vibe.db returned no results, falling back to keyword search');
+      console.error('code-index.db returned no results, falling back to keyword search');
     } else {
-      console.error('vibe.db not found, using basic keyword search');
+      console.error('code-index.db not found, using basic keyword search');
     }
 
     // Fallback to basic keyword search

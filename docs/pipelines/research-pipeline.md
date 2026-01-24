@@ -17,7 +17,7 @@ artifact**, not a code change:
 
 It combines:
 
-- OS 4.2 primitives (`phase_state.json`, Workshop, vibe.db, ProjectContext).
+- OS 4.2 primitives (`phase_state.json`, Workshop, code-index.db, ProjectContext).
 - A dedicated **Research lane** with `/research` as entrypoint.
 - Crawl4AI MCP for web crawling and content extraction.
 - Direct orchestration from `/research` command (flat agent hierarchy).
@@ -167,7 +167,7 @@ The Research lane uses **WebSearch + Crawl4AI**:
   - `mcp__crawl4ai__crawl_site` for comprehensive site mapping with manifest.
 - Fallbacks when Crawl4AI is unavailable:
   - `WebFetch` for content retrieval.
-  - Memory-only synthesis (Workshop + vibe.db + prior reports).
+  - Memory-only synthesis (Workshop + code-index.db + prior reports).
 
 Tool errors are treated as **first-class signals**, not random failures:
 

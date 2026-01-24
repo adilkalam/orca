@@ -7,8 +7,8 @@
 
 The iOS pipeline handles **native iOS app development** using Swift 6.x and modern Apple frameworks (SwiftUI, UIKit, Swift Concurrency). It combines:
 
-- OS 4.2 primitives (ProjectContextServer, phase_state.json, vibe.db, Workshop, constraint framework)
-- Memory-first context (Workshop + vibe.db before ProjectContext)
+- OS 4.2 primitives (ProjectContextServer, phase_state.json, code-index.db, Workshop, constraint framework)
+- Memory-first context (Workshop + code-index.db before ProjectContext)
 - Complexity-based routing (simple → light orchestrator, medium/complex → full pipeline)
 - Spec gating (complex tasks require requirements spec)
 - Response Awareness tagging (RA tags surface assumptions and decisions)
@@ -72,7 +72,7 @@ Standards flow into and out of the iOS pipeline:
 
 ### Input Sources
 
-1. **ContextBundle.relatedStandards** (from ProjectContext/vibe.db)
+1. **ContextBundle.relatedStandards** (from ProjectContext/code-index.db)
    - iOS-specific standards saved from past tasks
    - Architecture decisions and patterns
    - Gotchas and anti-patterns
@@ -101,7 +101,7 @@ After task completion:
 3. Future tasks see and enforce the new standard
 
 ```
-violation → /audit → save_standard → vibe.db → future relatedStandards → gate enforcement
+violation → /audit → save_standard → code-index.db → future relatedStandards → gate enforcement
 ```
 
 ---
@@ -142,7 +142,7 @@ Decision Point:
     ↓
 [Phase 7: Build & Test Verification (iOS Verification Agent)]
     ↓
-[Phase 8: Completion & Learning (vibe.db)]
+[Phase 8: Completion & Learning (code-index.db)]
 ```
 
 ---
@@ -169,12 +169,12 @@ Decision Point:
 - `relevantFiles` – Swift/SwiftUI/UIKit files for the feature/bug.
 - `projectState` – targets, schemes, modules, architecture hints (SwiftUI vs UIKit, MVVM/TCA/MVC).
 - `pastDecisions` – prior iOS decisions, refactors, gotchas.
-- `relatedStandards` – iOS standards from `vibe.db` (architecture, concurrency, safety, design DNA pointers).
+- `relatedStandards` – iOS standards from `code-index.db` (architecture, concurrency, safety, design DNA pointers).
 - `similarTasks` – previous iOS tasks and outcomes.
 
 **Artifacts:**
 - ContextBundle stored in `phase_state.json`.
-- Context event logged in `vibe.db.events`.
+- Context event logged in `code-index.db.events`.
 
 ---
 
@@ -389,11 +389,11 @@ Same implementation agents as Phase 4, but:
    - Files/modules modified.
    - Gate scores and decisions.
 3. Update memory:
-   - Insert new events/standards into `vibe.db`.
+   - Insert new events/standards into `code-index.db`.
    - Save architecture decisions via ProjectContextServer.
 
 **Artifacts:**
-- Task history record in `vibe.db`.
+- Task history record in `code-index.db`.
 - Updated iOS standards where applicable.
 
 ---
@@ -407,7 +407,7 @@ Same implementation agents as Phase 4, but:
 **Cause:** Code compiles locally but breaks in full build context, or tests fail due to integration issues.
 
 **Recovery:**
-1. Mark task as "partial completion" in `vibe.db`.
+1. Mark task as "partial completion" in `code-index.db`.
 2. Log failure with gate scores + build/test errors.
 3. Present user with:
    - Build/test errors with file/line references.
@@ -464,7 +464,7 @@ Same implementation agents as Phase 4, but:
    - Use `Grep`/`Glob` to manually locate relevant Swift files.
    - Skip `pastDecisions`, `relatedStandards`, and `similarTasks`.
    - Warn: "Context quality reduced – operating with limited history".
-3. Log degraded context event to `vibe.db`.
+3. Log degraded context event to `code-index.db`.
 4. Proceed with available context (architect makes more conservative decisions).
 
 ---
@@ -480,7 +480,7 @@ Same implementation agents as Phase 4, but:
 **Recovery:**
 1. Identify files modified via `phase_state.json` → `implementation.filesModified`.
 2. Git rollback: `git checkout HEAD~1 -- <files_modified>`.
-3. Log failure to `vibe.db`:
+3. Log failure to `code-index.db`:
    - Outcome: `failure`.
    - Learnings: "Implementation caused regression in Feature X".
 4. Save as new standard: "When modifying Y, verify Feature X still works".
@@ -610,4 +610,4 @@ Agents communicate via a shared `phase_state.json` file located at `.claude/orch
 **Phase 9: ios-verification → Completion**
 - **Input:** All phase results + gate outcomes + artifacts.
 - **Output:** Final summary + task history record.
-- **Signal:** `vibe.db` updated; `phase_state.json` → `status: "completed"` or `"partial"`.
+- **Signal:** `code-index.db` updated; `phase_state.json` → `status: "completed"` or `"partial"`.

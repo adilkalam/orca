@@ -18,7 +18,7 @@ It complements the content-focused **SEO Domain Pipeline** by focusing on:
 - E-E-A-T and authority/trust signals.
 
 It combines:
-- OS 4.2 primitives (ProjectContextServer, `phase_state.json`, Workshop/vibe.db).
+- OS 4.2 primitives (ProjectContextServer, `phase_state.json`, Workshop/code-index.db).
 - Marketing-and-SEO agents and skills from `_explore/_AGENTS/marketing-and-seo`:
   - `seo-structure-architect`
   - `seo-meta-optimizer`
@@ -300,7 +300,7 @@ Tasks:
   - Keep humans in the loop as the final gate.
 - Update state:
   - Write/merge `seo-optimizer` state into `phase_state.json`.
-  - Add key learnings and decisions into Workshop/vibe.db.
+  - Add key learnings and decisions into Workshop/code-index.db.
 
 Outputs:
 - Consolidated SEO audit for the target page:
@@ -358,5 +358,5 @@ will materially impact organic growth.
 
 - All phases should respect:
   - ProjectContextServer as the primary context source.
-  - Existing SEO standards stored in memory (vibe.db/workshop).
+  - Existing SEO standards stored in memory (code-index.db/workshop).
   - OS 4.2 agent role boundaries (orchestrators coordinate, specialists implement).

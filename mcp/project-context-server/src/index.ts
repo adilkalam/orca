@@ -7,7 +7,7 @@
  * 1. Context is MANDATORY, not optional
  * 2. Every operation goes through this service
  * 3. Makes v1's context amnesia structurally impossible
- * 4. Integrates: Claude Context MCP + vibe.db + file index
+ * 4. Integrates: Claude Context MCP + code-index.db + file index
  */
 
 import { Server } from '@modelcontextprotocol/sdk/server/index.js';
@@ -39,7 +39,7 @@ export class ProjectContextServer {
     this.server = new Server(
       {
         name: 'project-context-server',
-        version: '2.1.0', // Upgraded: vibe.db code search + Workshop session memory
+        version: '2.1.0', // Upgraded: code-index.db code search + Workshop session memory
       },
       {
         capabilities: {
@@ -50,7 +50,7 @@ export class ProjectContextServer {
 
     // Initialize subsystems
     // Note: Session memory (decisions, standards, history) now uses Workshop
-    // Code search now uses vibe.db's hybrid search with fallback
+    // Code search now uses code-index.db's hybrid search with fallback
     this.semantic = new SemanticSearchImpl();
     this.bundler = new ContextBundler(this.semantic);
 
@@ -434,7 +434,7 @@ Cache updated at .claude/memory/state.json`;
     const transport = new StdioServerTransport();
     await this.server.connect(transport);
     console.error('ProjectContextServer v2.1 started');
-    console.error('Code search: vibe.db hybrid (semantic + symbol + fulltext)');
+    console.error('Code search: code-index.db hybrid (semantic + symbol + fulltext)');
     console.error('Session memory: Workshop (decisions, standards, history)');
   }
 }

@@ -14,7 +14,7 @@ New to ORCA-OS? Start here:
 1. **[Why ORCA Architecture](concepts/why-orca-architecture.md)** - Understand why the system is designed this way
 2. **[Pipeline Model](concepts/pipeline-model.md)** - Learn the multi-lane pipeline architecture
 3. **[Complexity Routing](concepts/complexity-routing.md)** - Three-tier routing (tweak/default/complex)
-4. **[Memory Systems](concepts/memory-systems.md)** - Workshop, vibe.db, and ProjectContext
+4. **[Memory Systems](concepts/memory-systems.md)** - Workshop, code-index.db, and ProjectContext
 
 ---
 
@@ -26,7 +26,7 @@ Foundational concepts that power ORCA-OS:
 |----------|-------------|
 | [Pipeline Model](concepts/pipeline-model.md) | Multi-lane pipeline architecture with phases and gates |
 | [Complexity Routing](concepts/complexity-routing.md) | Three-tier task routing: tweak, default, complex |
-| [Memory Systems](concepts/memory-systems.md) | Workshop + vibe.db + ProjectContext integration |
+| [Memory Systems](concepts/memory-systems.md) | Workshop + code-index.db + ProjectContext integration |
 | [Response Awareness](concepts/response-awareness.md) | RA tagging system for tracking assumptions |
 | [Skills](concepts/skills.md) | Reusable knowledge packages for agents |
 | [Cognition MCP](concepts/cognition-mcp.md) | Structured reasoning via cognition-mcp |

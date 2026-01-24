@@ -7,8 +7,8 @@
 
 The Nextjs pipeline handles **frontend/web development work** for Next.js apps. It is CSS-agnostic and adapts to the project's styling approach (semantic CSS, Tailwind, CSS Modules, etc.). It combines:
 
-- OS 4.2 primitives (ProjectContextServer, phase_state.json, vibe.db, Workshop, constraint framework)
-- Memory-first context (Workshop + vibe.db before ProjectContext)
+- OS 4.2 primitives (ProjectContextServer, phase_state.json, code-index.db, Workshop, constraint framework)
+- Memory-first context (Workshop + code-index.db before ProjectContext)
 - Three-tier routing (Default/Tweak/Complex with default running gates)
 - Spec gating (complex tasks require requirements spec)
 - Response Awareness tagging (RA tags surface assumptions and decisions as instrumentation)
@@ -110,7 +110,7 @@ Standards flow into and out of the Next.js pipeline:
 
 ### Input Sources
 
-1. **ContextBundle.relatedStandards** (from ProjectContext/vibe.db)
+1. **ContextBundle.relatedStandards** (from ProjectContext/code-index.db)
    - Next.js-specific standards saved from past tasks
    - Architecture decisions and patterns
    - Gotchas and anti-patterns
@@ -139,7 +139,7 @@ After task completion:
 3. Future tasks see and enforce the new standard
 
 ```
-violation → /audit → save_standard → vibe.db → future relatedStandards → gate enforcement
+violation → /audit → save_standard → code-index.db → future relatedStandards → gate enforcement
 ```
 
 ---
@@ -211,7 +211,7 @@ Decision Point:
 
 **Artifacts:**
 - Store ContextBundle in phase_state.json
-- Log context query in vibe.db events
+- Log context query in code-index.db events
 
 ---
 
@@ -506,7 +506,7 @@ an additional **CSS Architecture Gate** runs as well.
 **If FAIL:**
 - If this is Pass 1 → Allow ONE corrective implementation pass (Phase 4b)
 - If this is Pass 2 → Block and report "Standards not met after 2 passes"
-- Record violations in vibe.db as standards
+- Record violations in code-index.db as standards
 - Update phase_state.json: gates_failed
 
 ---
@@ -521,7 +521,7 @@ an additional **CSS Architecture Gate** runs as well.
 **If FAIL:**
 - If this is Pass 1 → Allow ONE corrective implementation pass (Phase 4b)
 - If this is Pass 2 → Block and report "Design QA not met after 2 passes"
-- Record issues in vibe.db as standards
+- Record issues in code-index.db as standards
 - Update phase_state.json: gates_failed
 
 ---
@@ -581,7 +581,7 @@ an additional **CSS Architecture Gate** runs as well.
 - Do NOT loop again
 - Report final scores
 - Mark work as "Completed with caveats" or "Standards not met"
-- Save all violations as new standards in vibe.db
+- Save all violations as new standards in code-index.db
 - Allow user to decide next steps
 
 ---
@@ -656,7 +656,7 @@ an additional **CSS Architecture Gate** runs as well.
 **Tasks:**
 1. Verify all gates passed
 2. Collect all artifacts
-3. Save task history to vibe.db
+3. Save task history to code-index.db
 4. Update phase_state.json to "completed"
 5. Generate final summary
 
@@ -723,7 +723,7 @@ Every agent in this pipeline MUST adhere to these constraints:
 required_context:
   - ContextBundle from ProjectContextServer
   - design-dna.json (if exists)
-  - Related standards from vibe.db
+  - Related standards from code-index.db
   - Past decisions for this domain
 ```
 
@@ -825,7 +825,7 @@ const contextBundle = await queryContext({
 });
 ```
 
-### vibe.db (Memory Store)
+### code-index.db (Memory Store)
 
 Pipeline records:
 1. **Decisions:** When novel architectural choices are made
@@ -863,7 +863,7 @@ Pipeline maintains:
 
 ## Success Metrics
 
-Track over time (via vibe.db task_history):
+Track over time (via code-index.db task_history):
 
 1. **Gate Pass Rate:**
    - Standards Gate first-pass: Target ≥70%
@@ -889,7 +889,7 @@ Track over time (via vibe.db task_history):
 
 As the pipeline runs, it learns:
 
-1. **New Standards:** Violations → Standards in vibe.db
+1. **New Standards:** Violations → Standards in code-index.db
 2. **Common Patterns:** Task history reveals recurring work
 3. **Gate Calibration:** Adjust thresholds if too strict/loose
 4. **Agent Performance:** Track which agents need improvement

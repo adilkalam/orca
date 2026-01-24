@@ -100,7 +100,7 @@ No gates, no architect, user verifies.
 
 ```
 +---------------+    +---------------+    +---------------+
-|   Workshop    |    |    vibe.db    |    | project-meta  |
+|   Workshop    |    |    code-index.db    |    | project-meta  |
 | (Session Mem) |    | (Code Intel)  |    | (Stable Cfg)  |
 +-------+-------+    +-------+-------+    +-------+-------+
         |                    |                    |
@@ -114,7 +114,7 @@ No gates, no architect, user verifies.
 ```
 
 **Workshop:** Decisions, gotchas, learnings (`.claude/memory/workshop.db`)
-**vibe.db:** Code chunks, symbols, embeddings (`.claude/memory/vibe.db`)
+**code-index.db:** Code chunks, symbols, embeddings (`.claude/memory/code-index.db`)
 **project-meta:** Project type, dependencies, tokens (MCP cache)
 
 ### ProjectContext Implementation (OS 4.2)
@@ -130,7 +130,7 @@ Both memory systems use Ollama running on port 11434:
 
 | Component | Ollama Model | Purpose |
 |-----------|--------------|---------|
-| vibe.db | `nomic-embed-text` | Code embeddings for semantic search |
+| code-index.db | `nomic-embed-text` | Code embeddings for semantic search |
 | Workshop | `mistral` | Quality extraction from session transcripts |
 
 See `quick-reference/llm-local.md` for setup.
@@ -177,7 +177,7 @@ $ORCA_OS_PATH/
 <project>/.claude/
   memory/
     workshop.db       # Session memory
-    vibe.db           # Code intelligence
+    code-index.db           # Code intelligence
   orchestration/
     phase_state.json  # Pipeline state
     evidence/         # Artifacts

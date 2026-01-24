@@ -258,7 +258,7 @@ Your first tool call MUST NOT be:
 
 **Key Principles:**
 1. **Single Entry Point** - One command for all pipelines
-2. **Memory-First Context** - Check Workshop/vibe.db before expensive ProjectContext queries
+2. **Memory-First Context** - Check Workshop/code-index.db before expensive ProjectContext queries
 3. **Context Query Once** - ProjectContextServer called once, passed to domain orchestrators
 4. **Plan Integration** - Checks for /plan output, offers to plan if needed
 5. **Pipeline Detection** - Auto-detects: nextjs, ios, expo, data, seo, design
@@ -266,7 +266,7 @@ Your first tool call MUST NOT be:
 7. **Never Codes** - Orchestrates agents, doesn't implement
 
 **OS 4.2 Updates:**
-- Memory-first context (Workshop + vibe.db before ProjectContext)
+- Memory-first context (Workshop + code-index.db before ProjectContext)
 - Routes to domain-specific `/{domain}` commands which handle three-tier flag routing
 - Three-tier structure:
   - Default (no flag): Light path WITH design verification gates
@@ -293,7 +293,7 @@ pwd
 # Search Workshop for relevant decisions/gotchas
 workshop --workspace .claude/memory why "$TASK_KEYWORDS"
 
-# Search vibe.db for relevant code/symbols (if available)
+# Search code-index.db for relevant code/symbols (if available)
 python3 ~/.claude/scripts/memory-search-unified.py "$TASK_KEYWORDS" --mode all --top-k 5
 ```
 
@@ -1122,12 +1122,12 @@ workshop --workspace .claude/memory gotcha "ios-builder started without ios-arch
   -r "Cost: Navigation refactor needed after deep linking failed. Rule: Architect reviews all navigation changes first"
 ```
 
-2. **vibe.db** (.claude/memory/vibe.db):
+2. **code-index.db** (.claude/memory/code-index.db):
    - Code chunks with embeddings
    - Symbol index (functions, classes)
    - Semantic search vectors
    - Library documentation (via context7)
-   - Access: `python3 ~/.claude/scripts/vibe-sync.py <command>`
+   - Access: `python3 ~/.claude/scripts/code-index.py <command>`
 
 **ProjectContextServer queries BOTH** and bundles results for agents.
 
@@ -1135,7 +1135,7 @@ When recording outcomes:
 - Decisions → `mcp__project-context__save_decision` (routes to Workshop)
 - Task history → `mcp__project-context__save_task_history` (routes to Workshop)
 - Standards → `mcp__project-context__save_standard` (routes to Workshop)
-- Code indexing → Automatic via vibe.db sync
+- Code indexing → Automatic via code-index.db sync
 
 ---
 

@@ -262,7 +262,7 @@ Three-layer memory system feeding into ProjectContext MCP.
            ┌───────────────┼───────────────┐
            │               │               │
     ┌──────┴──────┐ ┌──────┴──────┐ ┌──────┴──────┐
-    │  Workshop   │ │   vibe.db   │ │project-meta │
+    │  Workshop   │ │   code-index.db   │ │project-meta │
     │  (session)  │ │ (code intel)│ │ (discovery) │
     └─────────────┘ └─────────────┘ └─────────────┘
 ```
@@ -270,7 +270,7 @@ Three-layer memory system feeding into ProjectContext MCP.
 | Layer | Storage | CLI/Access |
 |-------|---------|------------|
 | Workshop | .claude/memory/ | `workshop --workspace .claude/memory <cmd>` |
-| vibe.db | .claude/vibe.db | `python3 ~/.claude/scripts/vibe-sync.py <cmd>` |
+| code-index.db | .claude/code-index.db | `python3 ~/.claude/scripts/code-index.py <cmd>` |
 | project-meta | Auto-detected | ProjectContext MCP |
 
 ### Reflexion Pattern

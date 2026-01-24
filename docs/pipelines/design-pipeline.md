@@ -9,8 +9,8 @@ and optional Figma/HTML exports) that downstream pipelines (webdev, brand)
 can implement.
 
 It combines:
-- OS 4.2 primitives (ProjectContextServer, `phase_state.json`, vibe.db, Workshop)
-- Memory-first context (Workshop + vibe.db before ProjectContext)
+- OS 4.2 primitives (ProjectContextServer, `phase_state.json`, code-index.db, Workshop)
+- Memory-first context (Workshop + code-index.db before ProjectContext)
 - Design agents:
   - `design-system-architect` (lead)
   - `design-token-guardian` (validation)
@@ -64,7 +64,7 @@ Design work is domain‑specific but still follows OS 2.2 principles:
 1. Use ProjectContextServer to load:
    - `designSystem` (existing `design-dna.json`, if present).
    - `relevantFiles` (design system docs, CSS architecture, key components).
-   - `relatedStandards` (design standards in `vibe.db`).
+   - `relatedStandards` (design standards in `code-index.db`).
 2. If no structured brief exists, optionally invoke the requirements pipeline
    to create a short design brief document for this task.
 
@@ -193,7 +193,7 @@ Design work is domain‑specific but still follows OS 2.2 principles:
    - `design-dna.json` is updated and stored.  
    - Implementation spec exists and is accessible to webdev/expo pipelines.  
    - Any design artifacts paths are recorded in `phase_state.json`.
-2. Record decisions in `vibe.db`:
+2. Record decisions in `code-index.db`:
    - `decisions` – key design choices and rationale.  
    - `standards` – new rules that should be enforced by gate agents.  
    - `task_history` – linkage between this design task and future implementation.

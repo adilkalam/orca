@@ -1,13 +1,13 @@
 /**
  * Code Search Implementation
  *
- * Queries vibe.db for code context using hybrid search:
+ * Queries code-index.db for code context using hybrid search:
  * - Semantic search (embeddings) - 40%
  * - Symbol search (function/class names) - 35%
  * - Full-text search - 25%
  *
  * This replaces the old in-memory keyword search with
- * vibe.db's indexed code_chunks and symbols tables.
+ * code-index.db's indexed code_chunks and symbols tables.
  */
 
 import { execSync, spawn } from 'child_process';
@@ -15,18 +15,18 @@ import { join } from 'path';
 import { existsSync } from 'fs';
 import type { FileContext } from './types.js';
 
-// Path to vibe-sync.py
-const VIBE_SYNC_PATH = join(
+// Path to code-index.py
+const CODE_INDEX_PATH = join(
   process.env.HOME || '',
   '.claude',
   'scripts',
-  'vibe-sync.py'
+  'code-index.py'
 );
 
 /**
- * Search result from vibe.db
+ * Search result from code-index.db
  */
-interface VibeSearchResult {
+interface CodeSearchResult {
   file_path: string;
   name?: string;
   parent_name?: string;
@@ -36,48 +36,48 @@ interface VibeSearchResult {
 }
 
 /**
- * Code search that queries vibe.db's code_chunks and symbols
+ * Code search that queries code-index.db's code_chunks and symbols
  */
 export class CodeSearch {
   private projectPath: string;
-  private vibeDbPath: string;
+  private codeIndexDbPath: string;
 
   constructor(projectPath: string) {
     this.projectPath = projectPath;
-    this.vibeDbPath = join(projectPath, '.claude', 'memory', 'vibe.db');
+    this.codeIndexDbPath = join(projectPath, '.claude', 'memory', 'code-index.db');
   }
 
   /**
-   * Check if vibe.db exists for this project
+   * Check if code-index.db exists for this project
    */
-  hasVibeDb(): boolean {
-    return existsSync(this.vibeDbPath);
+  hasCodeIndex(): boolean {
+    return existsSync(this.codeIndexDbPath);
   }
 
   /**
-   * Initialize vibe.db if it doesn't exist
+   * Initialize code-index.db if it doesn't exist
    */
-  async ensureVibeDb(): Promise<boolean> {
-    if (this.hasVibeDb()) {
+  async ensureCodeIndex(): Promise<boolean> {
+    if (this.hasCodeIndex()) {
       return true;
     }
 
-    // Try to initialize vibe.db
+    // Try to initialize code-index.db
     try {
-      execSync(`python3 "${VIBE_SYNC_PATH}" init`, {
+      execSync(`python3 "${CODE_INDEX_PATH}" init`, {
         cwd: this.projectPath,
         encoding: 'utf8',
         stdio: ['pipe', 'pipe', 'pipe'],
       });
-      return this.hasVibeDb();
+      return this.hasCodeIndex();
     } catch (error) {
-      console.error('Failed to initialize vibe.db:', error);
+      console.error('Failed to initialize code-index.db:', error);
       return false;
     }
   }
 
   /**
-   * Hybrid search using vibe.db
+   * Hybrid search using code-index.db
    *
    * Combines semantic, symbol, and full-text search with weighted scoring
    */
@@ -85,15 +85,15 @@ export class CodeSearch {
     query: string,
     maxResults: number = 10
   ): Promise<FileContext[]> {
-    if (!this.hasVibeDb()) {
-      console.error('vibe.db not found, skipping code search');
+    if (!this.hasCodeIndex()) {
+      console.error('code-index.db not found, skipping code search');
       return [];
     }
 
     try {
-      // Use vibe-sync.py hsearch command
+      // Use code-index.py hsearch command
       const output = execSync(
-        `python3 "${VIBE_SYNC_PATH}" hsearch "${query.replace(/"/g, '\\"')}" --limit ${maxResults * 2}`,
+        `python3 "${CODE_INDEX_PATH}" hsearch "${query.replace(/"/g, '\\"')}" --limit ${maxResults * 2}`,
         {
           cwd: this.projectPath,
           encoding: 'utf8',
@@ -115,13 +115,13 @@ export class CodeSearch {
     symbolName: string,
     maxResults: number = 10
   ): Promise<FileContext[]> {
-    if (!this.hasVibeDb()) {
+    if (!this.hasCodeIndex()) {
       return [];
     }
 
     try {
       const output = execSync(
-        `python3 "${VIBE_SYNC_PATH}" symbol "${symbolName.replace(/"/g, '\\"')}" --limit ${maxResults}`,
+        `python3 "${CODE_INDEX_PATH}" symbol "${symbolName.replace(/"/g, '\\"')}" --limit ${maxResults}`,
         {
           cwd: this.projectPath,
           encoding: 'utf8',
@@ -150,10 +150,10 @@ export class CodeSearch {
         return [];
       }
 
-      const results: VibeSearchResult[] = JSON.parse(jsonMatch[0]);
+      const results: CodeSearchResult[] = JSON.parse(jsonMatch[0]);
 
       // Deduplicate by file path (keep highest score)
-      const fileMap = new Map<string, VibeSearchResult>();
+      const fileMap = new Map<string, CodeSearchResult>();
       for (const result of results) {
         const existing = fileMap.get(result.file_path);
         if (!existing || result.score > existing.score) {

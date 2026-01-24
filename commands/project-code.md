@@ -1,16 +1,16 @@
 ---
-description: "Manage code context (vibe.db). Subcommands: status, sync, search, symbol, files, docs"
+description: "Manage code context (code-index.db). Subcommands: status, sync, search, symbol, files, docs"
 ---
 
-# Code Context Management (vibe.db)
+# Code Context Management (code-index.db)
 
 Parse the user's command to determine which action to take:
 
 **Command:** `/project-code $ARGUMENTS`
 
-## What is vibe.db?
+## What is code-index.db?
 
-vibe.db stores **code intelligence** for your project:
+code-index.db stores **code intelligence** for your project:
 - **Code chunks** - Functions, classes, methods with their code
 - **Symbols** - Extracted function/class names for fast lookup
 - **Embeddings** - Semantic vectors for similarity search (when enabled)
@@ -22,14 +22,14 @@ This is separate from Workshop (session memory for decisions/gotchas).
 ### 1. Status (default, no args, or `status`)
 **Trigger:** `/project-code` or `/project-code status`
 
-Show vibe.db status:
+Show code-index.db status:
 
 ```bash
-if [ -f ".claude/memory/vibe.db" ]; then
-    echo "vibe.db: .claude/memory/vibe.db"
-    python3 ~/.claude/scripts/vibe-sync.py status
+if [ -f ".claude/memory/code-index.db" ]; then
+    echo "code-index.db: .claude/memory/code-index.db"
+    python3 ~/.claude/scripts/code-index.py status
 else
-    echo "vibe.db: Not initialized"
+    echo "code-index.db: Not initialized"
     echo ""
     echo "Run: /project-code sync"
 fi
@@ -40,10 +40,10 @@ fi
 ### 2. Sync Code (`sync`)
 **Trigger:** `/project-code sync`
 
-Index/sync code into vibe.db:
+Index/sync code into code-index.db:
 
 ```bash
-python3 ~/.claude/scripts/vibe-sync.py sync
+python3 ~/.claude/scripts/code-index.py sync
 ```
 
 Show the sync results. If it's the first sync, this will create the database.
@@ -53,10 +53,10 @@ Show the sync results. If it's the first sync, this will create the database.
 ### 3. Initialize (`init`)
 **Trigger:** `/project-code init`
 
-Initialize vibe.db (same as sync but explicit):
+Initialize code-index.db (same as sync but explicit):
 
 ```bash
-python3 ~/.claude/scripts/vibe-sync.py init
+python3 ~/.claude/scripts/code-index.py init
 ```
 
 ---
@@ -67,7 +67,7 @@ python3 ~/.claude/scripts/vibe-sync.py init
 Search code using hybrid search (semantic + symbol + fulltext):
 
 ```bash
-python3 ~/.claude/scripts/vibe-sync.py hsearch "<query>" --limit 10
+python3 ~/.claude/scripts/code-index.py hsearch "<query>" --limit 10
 ```
 
 Display results clearly with file paths, symbol names, and relevance scores.
@@ -80,7 +80,7 @@ Display results clearly with file paths, symbol names, and relevance scores.
 Fast lookup by function/class name:
 
 ```bash
-python3 ~/.claude/scripts/vibe-sync.py symbol "<name>" --limit 10
+python3 ~/.claude/scripts/code-index.py symbol "<name>" --limit 10
 ```
 
 ---
@@ -91,7 +91,7 @@ python3 ~/.claude/scripts/vibe-sync.py symbol "<name>" --limit 10
 Search for files matching a pattern in the index:
 
 ```bash
-python3 ~/.claude/scripts/vibe-sync.py search "<pattern>" --limit 20
+python3 ~/.claude/scripts/code-index.py search "<pattern>" --limit 20
 ```
 
 ---
@@ -151,9 +151,9 @@ Show available subcommands:
 Code Context Commands (/project-code)
 
 
-Local Code (vibe.db):
-  /project-code                   Show vibe.db status
-  /project-code sync              Index code into vibe.db
+Local Code (code-index.db):
+  /project-code                   Show code-index.db status
+  /project-code sync              Index code into code-index.db
   /project-code search <query>    Hybrid search (semantic + symbol + fulltext)
   /project-code symbol <name>     Fast symbol lookup (function/class names)
   /project-code files <pattern>   Search indexed files
@@ -163,7 +163,7 @@ External Docs (Context7):
   /project-code docs <library> <topic>   Fetch docs for specific topic
 
 Architecture:
-  vibe.db stores CODE INTELLIGENCE (chunks, symbols, embeddings)
+  code-index.db stores CODE INTELLIGENCE (chunks, symbols, embeddings)
   Workshop stores SESSION MEMORY (decisions, gotchas, learnings)
   Context7 provides LIBRARY DOCUMENTATION (external packages/frameworks)
 
@@ -179,6 +179,6 @@ Examples:
 
 ## Error Handling
 
-- If vibe-sync.py not found: Show path `~/.claude/scripts/vibe-sync.py`
-- If vibe.db doesn't exist: Suggest `/project-code sync`
+- If code-index.py not found: Show path `~/.claude/scripts/code-index.py`
+- If code-index.db doesn't exist: Suggest `/project-code sync`
 - If search returns no results: Suggest different query or sync first

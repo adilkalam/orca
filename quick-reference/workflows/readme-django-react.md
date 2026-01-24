@@ -55,7 +55,7 @@ For **complex** Django + React tasks the spec is **required** before the full la
 
 `/orca` is the pure OS 4.2 orchestrator:
 
-- Checks Workshop + vibe.db first (memory-first).
+- Checks Workshop + code-index.db first (memory-first).
 - Checks for an active requirements spec.
 - Detects that the task is Django + React work.
 - Routes to `/django-react` with:
@@ -263,14 +263,14 @@ Two primary commands:
   - `status`, `why`, `decide`, `gotcha`, `recent`, `search`, `review`.
   - Stores decisions, gotchas, and session summaries that later appear
     as `relatedStandards` / `pastDecisions` in ContextBundle.
-- `/project-code` - vibe.db + Context7:
+- `/project-code` - code-index.db + Context7:
   - `sync`, `search`, `symbol`, `files`, `docs <library> [topic]`.
   - Semantic + symbol search across code plus library docs.
 
 Unified memory search:
 
 - The OS 4.2 hooks and scripts provide a unified search that:
-  - Queries Workshop and vibe.db together.
+  - Queries Workshop and code-index.db together.
   - Is used by `/orca` and `/django-react` before ProjectContext.
 
 ---

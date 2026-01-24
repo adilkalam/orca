@@ -7,8 +7,8 @@
 
 The Expo pipeline handles **React Native mobile development** for projects using Expo SDK 50+ / React Native 0.74+ with TypeScript. It combines:
 
-- OS 4.2 primitives (ProjectContextServer, phase_state.json, vibe.db, Workshop, constraint framework)
-- Memory-first context (Workshop + vibe.db before ProjectContext)
+- OS 4.2 primitives (ProjectContextServer, phase_state.json, code-index.db, Workshop, constraint framework)
+- Memory-first context (Workshop + code-index.db before ProjectContext)
 - Complexity-based routing (simple → light orchestrator, medium/complex → full pipeline)
 - Spec gating (complex tasks require requirements spec)
 - Response Awareness tagging (RA tags surface assumptions and decisions)
@@ -85,7 +85,7 @@ Standards flow into and out of the Expo pipeline:
 
 ### Input Sources
 
-1. **ContextBundle.relatedStandards** (from ProjectContext/vibe.db)
+1. **ContextBundle.relatedStandards** (from ProjectContext/code-index.db)
    - Expo/React Native-specific standards saved from past tasks
    - Architecture decisions and patterns
    - Gotchas and anti-patterns
@@ -114,7 +114,7 @@ After task completion:
 3. Future tasks see and enforce the new standard
 
 ```
-violation → /audit → save_standard → vibe.db → future relatedStandards → gate enforcement
+violation → /audit → save_standard → code-index.db → future relatedStandards → gate enforcement
 ```
 
 ---
@@ -621,12 +621,12 @@ Decision Point:
 - `relevantFiles`: Expo/React Native files related to the task (screens, components, navigation, config).
 - `projectState`: app entry points, navigation structure, state management approach.
 - `pastDecisions`: prior Expo decisions (navigation choices, state patterns, perf fixes).
-- `relatedStandards`: Expo/React Native standards from `vibe.db` and RN best-practices.
+- `relatedStandards`: Expo/React Native standards from `code-index.db` and RN best-practices.
 - `similarTasks`: historical Expo tasks and outcomes.
 
 **Artifacts:**
 - ContextBundle stored in `phase_state.json`.
-- Event logged to `vibe.db.events`.
+- Event logged to `code-index.db.events`.
 
 ---
 
@@ -649,7 +649,7 @@ Decision Point:
    - Risk areas (navigation, auth, payment, sync).
 
 **Artifacts:**
-- Impact summary recorded to `phase_state.json` and optionally to `vibe.db`.
+- Impact summary recorded to `phase_state.json` and optionally to `code-index.db`.
 
 ---
 
@@ -772,7 +772,7 @@ See `commands/orca.md` Section 7.3 and `.claude/orchestration/playbooks/parallel
 
 **Outputs:**
 - Perf/security reports.
-- Recommendations logged as potential standards in `vibe.db`.
+- Recommendations logged as potential standards in `code-index.db`.
 
 ---
 
@@ -842,11 +842,11 @@ Same agents and constraints as Phase 4, but:
    - Files/modules modified.
    - Gate scores and results.
 3. Update memory:
-   - Record new standards in `vibe.db` where recurring issues were found.
+   - Record new standards in `code-index.db` where recurring issues were found.
    - Store any important decisions via ProjectContextServer `save_decision`.
 
 **Artifacts:**
-- Task history record in `vibe.db`.
+- Task history record in `code-index.db`.
 - Final summary for the user and future context.
 
 ---

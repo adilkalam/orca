@@ -180,7 +180,7 @@ When `/orca-os-dev` invokes you:
 
 2. **Memory-First Context**
    - Instruct the orchestrator (`/orca-os-dev`) to:
-     - Search unified memory (Workshop + vibe.db) for OS-Dev context.
+     - Search unified memory (Workshop + code-index.db) for OS-Dev context.
    - Summarize key points into `phase_state.context_query.memory_summary`:
      - Past incidents (e.g. dangerous defaults, broken hooks).
      - Existing OS-Dev standards.

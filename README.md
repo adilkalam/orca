@@ -314,7 +314,7 @@ Claude catches its own sycophantic impulse before it becomes wasted work. Not "t
 ├── skills/           # Reusable capabilities
 ├── hooks/            # Session automation
 ├── mcp/              # MCP server configs
-└── memory/           # workshop.db, vibe.db
+└── memory/           # workshop.db, code-index.db
 ```
 
 ---

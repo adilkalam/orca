@@ -13,7 +13,7 @@ context:
   provider: ProjectContextServer
   required: false            # Many research tasks aren't tied to a repo
   query_on_start: false      # Only call when project-specific
-  memory_first: true         # Always check Workshop/vibe.db first
+  memory_first: true         # Always check Workshop/code-index.db first
 
 # Complexity tiers for /research
 complexity_tiers:
@@ -258,7 +258,7 @@ phase_state:
         - initial_questions
 
     memory_context:
-      description: "Workshop/vibe.db/ProjectContext hits relevant to this research task."
+      description: "Workshop/code-index.db/ProjectContext hits relevant to this research task."
       fields:
         - memory_summary
         - prior_research_refs

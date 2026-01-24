@@ -425,7 +425,7 @@ Working with `os-dev-grand-architect`:
 
 3. Summarize:
    - Relevant Workshop decisions/gotchas for OS-Dev (domain `"os-dev"`).
-   - Relevant vibe.db matches for config/OS-Dev files.
+   - Relevant code-index.db matches for config/OS-Dev files.
    - Any reflexions from past failures (pass as `prior_reflexions` in ContextBundle).
 4. Write `phase_state.context_query.memory_summary`.
 

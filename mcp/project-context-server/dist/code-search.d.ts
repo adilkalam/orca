@@ -1,32 +1,32 @@
 /**
  * Code Search Implementation
  *
- * Queries vibe.db for code context using hybrid search:
+ * Queries code-index.db for code context using hybrid search:
  * - Semantic search (embeddings) - 40%
  * - Symbol search (function/class names) - 35%
  * - Full-text search - 25%
  *
  * This replaces the old in-memory keyword search with
- * vibe.db's indexed code_chunks and symbols tables.
+ * code-index.db's indexed code_chunks and symbols tables.
  */
 import type { FileContext } from './types.js';
 /**
- * Code search that queries vibe.db's code_chunks and symbols
+ * Code search that queries code-index.db's code_chunks and symbols
  */
 export declare class CodeSearch {
     private projectPath;
-    private vibeDbPath;
+    private codeIndexDbPath;
     constructor(projectPath: string);
     /**
-     * Check if vibe.db exists for this project
+     * Check if code-index.db exists for this project
      */
-    hasVibeDb(): boolean;
+    hasCodeIndex(): boolean;
     /**
-     * Initialize vibe.db if it doesn't exist
+     * Initialize code-index.db if it doesn't exist
      */
-    ensureVibeDb(): Promise<boolean>;
+    ensureCodeIndex(): Promise<boolean>;
     /**
-     * Hybrid search using vibe.db
+     * Hybrid search using code-index.db
      *
      * Combines semantic, symbol, and full-text search with weighted scoring
      */

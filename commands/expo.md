@@ -246,7 +246,7 @@ Before expensive ProjectContext queries, check local memory:
 # Search Workshop for relevant Expo decisions/gotchas
 workshop --workspace .claude/memory why "expo $TASK_KEYWORDS"
 
-# Search vibe.db for relevant code/symbols (if available)
+# Search code-index.db for relevant code/symbols (if available)
 python3 ~/.claude/scripts/memory-search-unified.py "$TASK_KEYWORDS" --mode all --top-k 5
 ```
 
@@ -679,7 +679,7 @@ After task completion:
 3. Future tasks see and enforce the new standard
 
 ```
-violation → /audit → save_standard → vibe.db → future relatedStandards → gate enforcement
+violation → /audit → save_standard → code-index.db → future relatedStandards → gate enforcement
 ```
 
 ---

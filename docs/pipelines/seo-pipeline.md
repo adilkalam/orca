@@ -11,8 +11,8 @@ The SEO pipeline turns a target keyword + project context into:
 - A structured QA report with explicit gates.
 
 It combines:
-- OS 4.2 primitives (ProjectContextServer, `phase_state.json`, vibe.db, Workshop)
-- Memory-first context (Workshop + vibe.db before ProjectContext)
+- OS 4.2 primitives (ProjectContextServer, `phase_state.json`, code-index.db, Workshop)
+- Memory-first context (Workshop + code-index.db before ProjectContext)
 - SEO agents:
   - `seo-research-specialist` (lead)
   - `seo-brief-strategist`
@@ -166,7 +166,7 @@ Tasks:
   - Technical SEO (meta, headings, links, alt text opportunities).
   - Content depth and citations.
   - Compliance/safety (FDA/medical disclaimers and claims checks when applicable).
-  - Standards from `contextBundle.relatedStandards` (SEO standards in `vibe.db`).
+  - Standards from `contextBundle.relatedStandards` (SEO standards in `code-index.db`).
 - Add TODO markers into the brief/draft where issues are found, rather than
   silently rewriting content.
 - Generate a comprehensive QA report summarizing:
@@ -195,7 +195,7 @@ Outputs:
 
 Tasks:
 - Ensure all phases are complete and QA artifacts exist.
-- Save task history and standards into `vibe.db`:
+- Save task history and standards into `code-index.db`:
   - Domain: `seo`.
   - Task description.
   - Outcome and key learnings.

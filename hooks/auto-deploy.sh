@@ -70,5 +70,12 @@ else
     echo "WARNING: Deploy failed for $DEPLOY_DIR/ - continuing anyway"
 fi
 
+# Run documentation validation (warn only, never block)
+VALIDATE_SCRIPT="$ORCA_OS_PATH/scripts/validate-docs.py"
+if [[ -f "$VALIDATE_SCRIPT" ]]; then
+    echo ""
+    python3 "$VALIDATE_SCRIPT" --quiet 2>/dev/null || true
+fi
+
 # Always exit 0 to not block Claude operations
 exit 0

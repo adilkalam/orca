@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # SessionStart Hook (Hardened v2)
 # - Loads session context FROM Workshop (source of truth)
-# - Initializes/syncs vibe.db for local context cache
+# - Initializes/syncs code-index.db for local context cache
 # - Displays CLAUDE.md instructions
 # - Output: .claude/orchestration/temp/session-context.md
 #

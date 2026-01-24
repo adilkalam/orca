@@ -33,7 +33,7 @@ The OS-Dev lane is driven by `/orca-os-dev` and recorded in
 
 1. **Config is code** – Treat changes to OS / Claude Code config as seriously as production code.
 2. **Specs for complex changes** – Global or risky changes require requirements specs.
-3. **Memory first** – Search Workshop + vibe.db before expensive context.
+3. **Memory first** – Search Workshop + code-index.db before expensive context.
 4. **Orchestrator only** – `/orca-os-dev` and `os-dev-grand-architect` never edit files.
 5. **Two-pass implementation** – Implementation + corrective pass with strict gates.
 6. **Safety and rollback** – Every risky change needs a rollback story.
@@ -108,7 +108,7 @@ Tasks:
 
 - Call the unified memory search script (see memory docs) to retrieve:
   - Past Workshop decisions/gotchas about OS / Claude config.
-  - Relevant vibe.db matches around OS-Dev files.
+  - Relevant code-index.db matches around OS-Dev files.
 - Summarize important findings:
   - Prior incidents (e.g. “never default to dangerous flags”).
   - Established patterns for lanes/MCP/skills/hooks.

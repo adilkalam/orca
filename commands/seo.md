@@ -203,7 +203,7 @@ await AskUserQuestion({
 -  Word Count (1500+ minimum)
 -  Citations (5+ external)
 -  Compliance (FDA/medical disclaimers)
--  Standards (from vibe.db)
+-  Standards (from code-index.db)
 ```
 
 ### 1.3 User Confirmation (MANDATORY)
@@ -364,7 +364,7 @@ Save these keys for downstream agents:
 - keyword_strategy
 
 ## Decision Logging
-Save targeting decision to vibe.db via save_decision()
+Save targeting decision to code-index.db via save_decision()
 
 Follow: ~/.claude/agents/seo/seo-research-specialist.md
   `
@@ -401,10 +401,10 @@ Brief location: outputs/seo/${SLUG}-brief.md
 ## Constraints
 - Edit brief.md ONLY - no new files
 - Use contextBundle for proven patterns
-- Apply SEO standards from vibe.db
+- Apply SEO standards from code-index.db
 
 ## Decision Logging
-Save content angle decision to vibe.db
+Save content angle decision to code-index.db
 
 Follow: agents/seo-brief-strategist.md
   `
@@ -510,15 +510,15 @@ Files to audit:
 5. **Standards Enforcement**
    - Apply standards from contextBundle
    - Flag violations
-   - Save new standards to vibe.db
+   - Save new standards to code-index.db
 
 ## Your Tasks
 1. Run clarity gates script (MANDATORY)
 2. Perform all audit checks
 3. Add TODO markers to files (do NOT rewrite)
 4. Generate comprehensive QA report
-5. Save task history to vibe.db
-6. Save standards violations to vibe.db
+5. Save task history to code-index.db
+6. Save standards violations to code-index.db
 
 ## Outputs
 - outputs/seo/${SLUG}-qa.md
@@ -627,7 +627,7 @@ ${CONTENT_GAPS}
 
 ---
 
-## Learning Logged to vibe.db
+## Learning Logged to code-index.db
 
 **Decisions:**
 - Keyword targeting strategy
@@ -680,7 +680,7 @@ ${NEW_STANDARDS_CREATED}
 **Evidence Required:**
 - Clarity gates script output
 - QA report with specific line numbers
-- Decision reasoning in vibe.db
+- Decision reasoning in code-index.db
 - Standards violations logged
 
 ---

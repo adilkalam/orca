@@ -355,7 +355,7 @@ agentdb.set('keyword_strategy', strategy);
 - Intent matches our content capability
 - Not already covered (check contextBundle.relevantFiles)
 
-**Save decision to vibe.db:**
+**Save decision to code-index.db:**
 ```typescript
 if (shouldTarget) {
   await save_decision({
@@ -480,7 +480,7 @@ writeFile(`outputs/seo/${SLUG}-brief.md`, enhancedBrief);
 -  Similar task outcomes reviewed
 
 ### Decisions Logged
--  Keyword targeting decision saved to vibe.db
+-  Keyword targeting decision saved to code-index.db
 -  Reasoning and SERP data included
 -  Tags for future retrieval
 
@@ -514,5 +514,5 @@ writeFile(`outputs/seo/${SLUG}-brief.md`, enhancedBrief);
 8. External research loaded
 9. Brief files generated
 10. AgentDB cache populated
-11. Decision logged to vibe.db
+11. Decision logged to code-index.db
 12. Phase state updated 

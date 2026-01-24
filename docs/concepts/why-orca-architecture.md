@@ -83,7 +83,7 @@ Each serves different retrieval patterns:
 |--------|---------|---------------|
 | Workshop | Decisions, reasoning, patterns | "Why did we decide X?" |
 | ProjectContext | Project state, files, standards | "What exists? What rules apply?" |
-| vibe.db | Semantic code search | "Find code related to X" |
+| code-index.db | Semantic code search | "Find code related to X" |
 
 Consolidation would lose specificity. Different questions need different memory structures.
 
@@ -137,7 +137,7 @@ The "simple is better" guidance is for Claude Desktop consumers. Anthropic's own
 
 - [Pipeline Model](pipeline-model.md) - Multi-lane pipeline architecture
 - [Complexity Routing](complexity-routing.md) - Three-tier task routing
-- [Memory Systems](memory-systems.md) - Workshop + vibe.db + ProjectContext
+- [Memory Systems](memory-systems.md) - Workshop + code-index.db + ProjectContext
 - [Self-Improvement](self-improvement.md) - Agent learning systems
 
 ---

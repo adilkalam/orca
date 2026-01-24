@@ -283,7 +283,7 @@ Performs design review from a screenshot image. Useful for reviewing mockups or 
 
 ### `/memory-search` - Unified Memory Search
 ```bash
-/memory-search "auth decisions"     # Search across Workshop + vibe.db
+/memory-search "auth decisions"     # Search across Workshop + code-index.db
 ```
 Searches all memory systems for relevant context and decisions.
 

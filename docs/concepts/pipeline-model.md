@@ -27,7 +27,7 @@ Every lane follows a similar phase structure:
 ```
 Request
     ↓
-[Phase 0: Memory-First Context]     ← Workshop + vibe.db
+[Phase 0: Memory-First Context]     ← Workshop + code-index.db
     ↓
 [Phase 0.5: Complexity Classification]
     ↓

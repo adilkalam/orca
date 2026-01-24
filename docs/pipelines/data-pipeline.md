@@ -13,8 +13,8 @@ The data/analytics pipeline handles work where the primary output is:
 - Decision-support artifacts (briefs, dashboards, metrics, reports).
 
 It combines:
-- OS 4.2 primitives (ProjectContextServer, `phase_state.json`, vibe.db, Workshop)
-- Memory-first context (Workshop + vibe.db before ProjectContext)
+- OS 4.2 primitives (ProjectContextServer, `phase_state.json`, code-index.db, Workshop)
+- Memory-first context (Workshop + code-index.db before ProjectContext)
 - Data/analytics agents:
   - `data-researcher` (lead)
   - `research-specialist`
@@ -152,7 +152,7 @@ Loads a **ContextBundle** with:
 
 Artifacts:
 - ContextBundle snapshot stored in `phase_state.json`.
-- Optional: event logged to `vibe.db.events`.
+- Optional: event logged to `code-index.db.events`.
 
 ---
 
@@ -290,8 +290,8 @@ Tasks:
   - Task description.
   - Outcome and quality score.
   - Key artifacts and code paths.
-- Optionally record standards/learnings into `vibe.db` for future runs.
+- Optionally record standards/learnings into `code-index.db` for future runs.
 
 Artifacts:
-- Task history entry in `vibe.db`.
+- Task history entry in `code-index.db`.
 - Final summary for the user and future context.

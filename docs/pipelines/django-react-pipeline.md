@@ -7,8 +7,8 @@
 
 The Django + React pipeline handles **full-stack development** combining Django backend (with Django REST Framework) and React TypeScript frontend. It features:
 
-- OS 4.2 primitives (ProjectContextServer, phase_state.json, vibe.db, Workshop, constraint framework)
-- Memory-first context (Workshop + vibe.db before ProjectContext)
+- OS 4.2 primitives (ProjectContextServer, phase_state.json, code-index.db, Workshop, constraint framework)
+- Memory-first context (Workshop + code-index.db before ProjectContext)
 - Three-tier routing (Default/Tweak/Complex with default running gates)
 - Spec gating (complex tasks require requirements spec)
 - Response Awareness tagging (RA tags surface assumptions and decisions)
@@ -402,7 +402,7 @@ bun run build                  # Build
 **Tasks:**
 1. Verify all gates passed
 2. Collect all artifacts
-3. Save task history to vibe.db
+3. Save task history to code-index.db
 4. Update phase_state.json to "completed"
 5. Generate final summary
 

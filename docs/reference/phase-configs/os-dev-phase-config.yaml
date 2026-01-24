@@ -30,7 +30,7 @@ context:
   provider: ProjectContextServer
   required: true
   query_on_start: true
-  memory_first: true      # Check Workshop/vibe.db before ProjectContext
+  memory_first: true      # Check Workshop/code-index.db before ProjectContext
 
 phases:
   - name: intake
@@ -160,7 +160,7 @@ phases:
 optional_phases: []
 
 memory:
-  persistent: vibe.db
+  persistent: code-index.db
   learnings:
     - os_dev_standards
     - prior_incidents

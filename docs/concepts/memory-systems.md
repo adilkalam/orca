@@ -11,7 +11,7 @@ OS 4.3 uses multiple memory systems to maintain context across sessions and prov
                                                          
   1. Workshop (fast, local)                              
      ↓                                                   
-  2. vibe.db (semantic search)                           
+  2. code-index.db (semantic search)                           
      ↓                                                   
   3. ProjectContext MCP (expensive, comprehensive)       
                                                          
@@ -47,7 +47,7 @@ workshop goal add "text"
 
 **Location:** `.claude/memory/workshop.db`
 
-## vibe.db
+## code-index.db
 
 **What:** Semantic code search and symbol indexing.
 
@@ -66,7 +66,7 @@ python3 ~/.claude/scripts/memory-search-unified.py "query" --mode all --top-k 10
 /project-code symbol "SymbolName"
 ```
 
-**Location:** `.claude/memory/vibe.db`
+**Location:** `.claude/memory/code-index.db`
 
 ## ProjectContext MCP
 
@@ -113,7 +113,7 @@ OS 4.3 checks fast, local memory before expensive queries:
 # Step 1: Check Workshop for relevant decisions/gotchas
 workshop why "iOS haptic feedback"
 
-# Step 2: Check vibe.db for relevant code/symbols
+# Step 2: Check code-index.db for relevant code/symbols
 python3 ~/.claude/scripts/memory-search-unified.py "haptic" --mode all --top-k 5
 
 # Step 3: Only then call ProjectContext if needed
@@ -141,7 +141,7 @@ User Request
          
 
     Workshop     → Decisions, gotchas, preferences
-    vibe.db      → Relevant code, symbols
+    code-index.db      → Relevant code, symbols
 
          
           2. ProjectContext query

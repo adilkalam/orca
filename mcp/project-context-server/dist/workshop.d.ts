@@ -4,7 +4,7 @@
  * Wraps Workshop CLI for reading/writing session memory.
  * Workshop handles: decisions, gotchas, learnings, task history
  *
- * This keeps vibe.db focused on code context only (chunks, components, embeddings)
+ * This keeps code-index.db focused on code context only (chunks, components, embeddings)
  */
 import type { Decision, Standard, TaskHistory, DecayConfig } from './types.js';
 /**

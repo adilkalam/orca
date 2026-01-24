@@ -24,14 +24,14 @@ ollama serve
 
 Or launch the Ollama app (macOS menu bar) - it starts the server automatically.
 
-**Keep it running** - vibe.db embeddings and Workshop extraction both need it.
+**Keep it running** - code-index.db embeddings and Workshop extraction both need it.
 
 ---
 
 ## Pull Required Models
 
 ```bash
-# Embeddings model (required for vibe.db)
+# Embeddings model (required for code-index.db)
 ollama pull nomic-embed-text
 
 # Chat model (required for Workshop extraction)
@@ -79,7 +79,7 @@ Session End Hook
 
 | Model | Size | Use |
 |-------|------|-----|
-| `nomic-embed-text` | 274 MB | vibe.db embeddings (already installed) |
+| `nomic-embed-text` | 274 MB | code-index.db embeddings (already installed) |
 | `mistral` | 4.1 GB | Workshop extraction (INSTALL THIS) |
 | `llama3` | 4.7 GB | Alternative chat model |
 | `phi3` | 2.2 GB | Smaller/faster option |
@@ -141,7 +141,7 @@ workshop --workspace .claude/memory import --llm-local --llm-endpoint http://loc
 - Start if needed: `ollama serve`
 
 **Only nomic-embed-text showing:**
-- That's for embeddings (vibe.db). You need a chat model too.
+- That's for embeddings (code-index.db). You need a chat model too.
 - Run: `ollama pull mistral`
 
 ---
@@ -152,7 +152,7 @@ workshop --workspace .claude/memory import --llm-local --llm-endpoint http://loc
 |------|---------|
 | `hooks/session-end.sh` | Auto-detects Ollama/LM Studio, runs import |
 | `.claude/memory/workshop.db` | Where extractions are stored |
-| `~/.claude/scripts/vibe-sync.py` | Uses Ollama for embeddings |
+| `~/.claude/scripts/code-index.py` | Uses Ollama for embeddings |
 
 ---
 
@@ -160,7 +160,7 @@ workshop --workspace .claude/memory import --llm-local --llm-endpoint http://loc
 
 | Component | Ollama Model | Port |
 |-----------|--------------|------|
-| **vibe.db** (code search) | `nomic-embed-text` | 11434 |
+| **code-index.db** (code search) | `nomic-embed-text` | 11434 |
 | **Workshop** (session extraction) | `mistral` | 11434 |
 
 Both use Ollama. One install, unified stack.

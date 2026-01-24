@@ -306,7 +306,7 @@ refinements:
 
 ## Phase 7: Decision Logging
 
-**Save strategic decisions to vibe.db:**
+**Save strategic decisions to code-index.db:**
 
 ```typescript
 await save_decision({
@@ -343,7 +343,7 @@ await save_decision({
 -  Refined strategy cached for draft writer
 
 ### Decisions Logged
--  Content angle decision saved to vibe.db
+-  Content angle decision saved to code-index.db
 -  Reasoning includes SERP + KG + context insights
 
 ## Hand-off to Next Phase
@@ -370,4 +370,4 @@ await save_decision({
 6. Gaps flagged with TODOs 
 7. Standards enforced 
 8. Enhancements saved to brief.md 
-9. Decision logged to vibe.db 
+9. Decision logged to code-index.db 

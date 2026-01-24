@@ -27,7 +27,7 @@ Verification in OS 4.2 is **automated** within pipelines. This guide covers manu
 <project>/.claude/
  project/
     phase_state.json          # Gate results, verification status
-    vibe.db                    # Task history
+    code-index.db                    # Task history
  orchestration/
     evidence/                  # Final artifacts
        screenshots/           # UI evidence

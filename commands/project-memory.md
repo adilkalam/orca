@@ -1,5 +1,5 @@
 ---
-description: "Manage project memory (Workshop, vibe.db). Subcommands: status, init, why, decide, gotcha, recent, search, review, delete, clean"
+description: "Manage project memory (Workshop, code-index.db). Subcommands: status, init, why, decide, gotcha, recent, search, review, delete, clean"
 ---
 
 # Project Memory Management
@@ -32,12 +32,12 @@ else
 fi
 echo ""
 
-# vibe.db status
-if [ -f ".claude/memory/vibe.db" ]; then
-    echo "vibe.db:  .claude/memory/vibe.db"
-    python3 ~/.claude/scripts/vibe-sync.py status 2>/dev/null || echo "  (run 'vibe-sync.py status' for details)"
+# code-index.db status
+if [ -f ".claude/memory/code-index.db" ]; then
+    echo "code-index.db:  .claude/memory/code-index.db"
+    python3 ~/.claude/scripts/code-index.py status 2>/dev/null || echo "  (run 'code-index.py status' for details)"
 else
-    echo "vibe.db:  Not initialized"
+    echo "code-index.db:  Not initialized"
 fi
 echo ""
 
@@ -141,10 +141,10 @@ workshop --workspace .claude/memory search "<query>"
 ### 8. Sync Code Context (`sync`)
 **Trigger:** `/project-memory sync`
 
-Sync code context to vibe.db:
+Sync code context to code-index.db:
 
 ```bash
-python3 ~/.claude/scripts/vibe-sync.py sync
+python3 ~/.claude/scripts/code-index.py sync
 ```
 
 Show the sync results.
@@ -247,7 +247,7 @@ Review & Edit:
   /project-memory clean           Interactive cleanup mode
 
 Sync:
-  /project-memory sync            Sync code context to vibe.db
+  /project-memory sync            Sync code context to code-index.db
 
 Examples:
   /project-memory why authentication
@@ -264,4 +264,4 @@ Examples:
 
 - If Workshop is not installed: Show `cargo install workshop`
 - If workshop.db doesn't exist: Suggest `/project-memory init`
-- If vibe-sync.py is missing: Note it's optional for code context
+- If code-index.py is missing: Note it's optional for code context

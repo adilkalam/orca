@@ -1,69 +1,69 @@
 /**
  * Code Search Implementation
  *
- * Queries vibe.db for code context using hybrid search:
+ * Queries code-index.db for code context using hybrid search:
  * - Semantic search (embeddings) - 40%
  * - Symbol search (function/class names) - 35%
  * - Full-text search - 25%
  *
  * This replaces the old in-memory keyword search with
- * vibe.db's indexed code_chunks and symbols tables.
+ * code-index.db's indexed code_chunks and symbols tables.
  */
 import { execSync } from 'child_process';
 import { join } from 'path';
 import { existsSync } from 'fs';
-// Path to vibe-sync.py
-const VIBE_SYNC_PATH = join(process.env.HOME || '', '.claude', 'scripts', 'vibe-sync.py');
+// Path to code-index.py
+const CODE_INDEX_PATH = join(process.env.HOME || '', '.claude', 'scripts', 'code-index.py');
 /**
- * Code search that queries vibe.db's code_chunks and symbols
+ * Code search that queries code-index.db's code_chunks and symbols
  */
 export class CodeSearch {
     projectPath;
-    vibeDbPath;
+    codeIndexDbPath;
     constructor(projectPath) {
         this.projectPath = projectPath;
-        this.vibeDbPath = join(projectPath, '.claude', 'memory', 'vibe.db');
+        this.codeIndexDbPath = join(projectPath, '.claude', 'memory', 'code-index.db');
     }
     /**
-     * Check if vibe.db exists for this project
+     * Check if code-index.db exists for this project
      */
-    hasVibeDb() {
-        return existsSync(this.vibeDbPath);
+    hasCodeIndex() {
+        return existsSync(this.codeIndexDbPath);
     }
     /**
-     * Initialize vibe.db if it doesn't exist
+     * Initialize code-index.db if it doesn't exist
      */
-    async ensureVibeDb() {
-        if (this.hasVibeDb()) {
+    async ensureCodeIndex() {
+        if (this.hasCodeIndex()) {
             return true;
         }
-        // Try to initialize vibe.db
+        // Try to initialize code-index.db
         try {
-            execSync(`python3 "${VIBE_SYNC_PATH}" init`, {
+            execSync(`python3 "${CODE_INDEX_PATH}" init`, {
                 cwd: this.projectPath,
                 encoding: 'utf8',
                 stdio: ['pipe', 'pipe', 'pipe'],
             });
-            return this.hasVibeDb();
+            return this.hasCodeIndex();
         }
         catch (error) {
-            console.error('Failed to initialize vibe.db:', error);
+            console.error('Failed to initialize code-index.db:', error);
             return false;
         }
     }
     /**
-     * Hybrid search using vibe.db
+     * Hybrid search using code-index.db
      *
      * Combines semantic, symbol, and full-text search with weighted scoring
      */
     async hybridSearch(query, maxResults = 10) {
-        if (!this.hasVibeDb()) {
-            console.error('vibe.db not found, skipping code search');
+        if (!this.hasCodeIndex()) {
+            console.error('code-index.db not found, skipping code search');
             return [];
         }
         try {
-            // Use vibe-sync.py hsearch command
-            const output = execSync(`python3 "${VIBE_SYNC_PATH}" hsearch "${query.replace(/"/g, '\\"')}" --limit ${maxResults * 2}`, {
+            // Use code-index.py hsearch command
+            const output = execSync(`python3 "${CODE_INDEX_PATH}" hsearch "${query.replace(/"/g, '\\"')}" --limit ${maxResults * 2}`, {
                 cwd: this.projectPath,
                 encoding: 'utf8',
                 stdio: ['pipe', 'pipe', 'pipe'],
@@ -79,11 +79,11 @@ export class CodeSearch {
      * Symbol search - fast lookup by function/class name
      */
     async symbolSearch(symbolName, maxResults = 10) {
-        if (!this.hasVibeDb()) {
+        if (!this.hasCodeIndex()) {
             return [];
         }
         try {
-            const output = execSync(`python3 "${VIBE_SYNC_PATH}" symbol "${symbolName.replace(/"/g, '\\"')}" --limit ${maxResults}`, {
+            const output = execSync(`python3 "${CODE_INDEX_PATH}" symbol "${symbolName.replace(/"/g, '\\"')}" --limit ${maxResults}`, {
                 cwd: this.projectPath,
                 encoding: 'utf8',
                 stdio: ['pipe', 'pipe', 'pipe'],

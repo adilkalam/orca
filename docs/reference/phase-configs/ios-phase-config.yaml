@@ -88,7 +88,7 @@ context:
   provider: ProjectContextServer
   required: true
   query_on_start: true
-  memory_first: true      # Check Workshop/vibe.db before ProjectContext
+  memory_first: true      # Check Workshop/code-index.db before ProjectContext
 
 # Pipeline Phases
 phases:

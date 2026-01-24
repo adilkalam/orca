@@ -4,7 +4,7 @@ memory-search-unified.py
 ========================
 
 Unified memory search across:
-- ProjectContextServer's per-project vibe.db
+- ProjectContextServer's per-project code-index.db
 - Workshop's per-project workshop.db (via the `workshop` CLI)
 
 Intended install location:
@@ -63,7 +63,7 @@ def search_vibe_db(
   project_root: Path, query: str, mode: str, top_k: int
 ) -> List[Dict[str, Any]]:
   """
-  Search the per-project vibe.db if present.
+  Search the per-project code-index.db if present.
 
   We keep this intentionally simple: use LIKE-based search across key text
   fields and return a small structured summary.
@@ -200,7 +200,7 @@ def shutil_which(cmd: str) -> bool:
 
 def main(argv: list[str] | None = None) -> int:
   parser = argparse.ArgumentParser(
-    description="Unified memory search across vibe.db and Workshop."
+    description="Unified memory search across code-index.db and Workshop."
   )
   parser.add_argument("query", help="Search query string")
   parser.add_argument(
@@ -247,9 +247,9 @@ def main(argv: list[str] | None = None) -> int:
   print(f"Project root: {root}")
   print()
 
-  print("=== vibe.db (decisions/task history/events) ===")
+  print("=== code-index.db (decisions/task history/events) ===")
   if not vibe_results:
-    print("(no matches or vibe.db missing)")
+    print("(no matches or code-index.db missing)")
   else:
     for r in vibe_results:
       print(f"- [{r['source']}] {r.get('timestamp','')} {r.get('domain','')}".strip())

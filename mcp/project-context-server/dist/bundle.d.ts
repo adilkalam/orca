@@ -2,7 +2,7 @@
  * Context Bundler
  *
  * Creates tailored context bundles by combining:
- * - Code search via vibe.db (hybrid: semantic + symbol + fulltext)
+ * - Code search via code-index.db (hybrid: semantic + symbol + fulltext)
  * - Session memory via Workshop (decisions, standards, history)
  * - Project state (components, structure)
  *
@@ -29,8 +29,8 @@ export declare class ContextBundler {
     /**
      * Get files relevant to the task using hybrid search
      *
-     * Uses vibe.db's hybrid search (semantic + symbol + fulltext) if available,
-     * falls back to basic keyword search if vibe.db doesn't exist.
+     * Uses code-index.db's hybrid search (semantic + symbol + fulltext) if available,
+     * falls back to basic keyword search if code-index.db doesn't exist.
      */
     private getRelevantFiles;
     /**

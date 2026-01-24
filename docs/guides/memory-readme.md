@@ -37,7 +37,7 @@ Memory systems are **prosthetic continuity** - external storage that replaces wh
 |---------|------------|
 | Memory across sessions | Workshop database (decisions, gotchas, preferences) |
 | "Why did we choose X?" | `workshop why "X"` returns original reasoning |
-| Code understanding by meaning | vibe.db semantic search (embeddings) |
+| Code understanding by meaning | Code index semantic search (embeddings) |
 | Context assembly for agents | ProjectContext MCP bundles everything relevant |
 
 After setup, Session 1 you explain everything. Session 50, you're just working.
@@ -80,7 +80,8 @@ This wizard:
 ├── CLAUDE.md                 # Project conventions (sacred paths, archive rules)
 └── .claude/
     └── memory/
-        └── workshop.db       # Decision/gotcha storage
+        ├── workshop.db       # Decision/gotcha storage
+        └── code-index.db     # Semantic code search (optional)
 ```
 
 ### Updating Later
@@ -113,18 +114,21 @@ This wizard:
 
 **The killer feature**: `workshop why` returns the original reasoning, not a reconstruction. You get what you actually thought, not what the model guesses you might have thought.
 
-### 2. vibe.db (Semantic Code Search)
+### 2. Code Index (Semantic Code Search)
 
-**What it stores**: Code embeddings for semantic search
+**What it stores**: Code embeddings and symbol index for semantic search
 
 **When to use**: Finding code by meaning, not filename
 
 ```bash
-# Sync codebase to embeddings
-/project-memory sync
+# Sync codebase to index
+/project-code sync
 
 # Search by meaning
 /memory-search "error handling for API calls"
+
+# Search for a symbol
+/project-code symbol "handleError"
 ```
 
 Returns relevant code even if "error" isn't in the filename. Searches by what the code *does*, not what it's called.
@@ -144,7 +148,7 @@ mcp__project-context__query_context({
 
 // Returns:
 {
-  relevantFiles: [...],      // From vibe.db semantic search
+  relevantFiles: [...],      // From code index semantic search
   pastDecisions: [...],      // From Workshop
   relatedStandards: [...],   // From Workshop
   projectState: {...}        // Structure, dependencies
@@ -245,7 +249,7 @@ The loop closes: work produces learnings, learnings feed future work.
 | Gotchas | "Token expires after 15min, not 1hr" | Workshop |
 | Preferences | "Prefer functional components" | Workshop |
 | Standards | "All API responses must include timestamp" | Workshop |
-| Code context | Semantic embeddings of codebase | vibe.db |
+| Code context | Semantic embeddings of codebase | code-index.db |
 
 ---
 
@@ -267,13 +271,13 @@ The loop closes: work produces learnings, learnings feed future work.
 ```bash
 /project-memory why "X"     # Why did we choose X?
 /project-memory search "X"  # Search all memory
-/memory-search "X"          # Unified search (Workshop + vibe.db)
+/memory-search "X"          # Unified search (Workshop + code index)
 ```
 
 ### Maintenance (Occasionally)
 ```bash
 /project-memory status      # Check memory health
-/project-memory sync        # Re-index code to vibe.db
+/project-code sync          # Re-index code to code-index.db
 /project-setup audit        # Check CLAUDE.md freshness
 ```
 

@@ -1,5 +1,5 @@
 ---
-description: "Unified search across all memory systems (Workshop + vibe.db)"
+description: "Unified search across all memory systems (Workshop + code-index.db)"
 ---
 
 # /memory-search - Unified Memory Search
@@ -11,7 +11,7 @@ Search across all memory systems in one command.
 ## What It Searches
 
 1. **Workshop** (decisions, notes, gotchas, learnings)
-2. **vibe.db** (code chunks, symbols, functions, classes)
+2. **code-index.db** (code chunks, symbols, functions, classes)
 3. **Research Index** (if `.claude/scripts/research-sync.py` exists - markdown research docs with semantic search)
 
 ## Execution
@@ -26,10 +26,10 @@ Extract the search query from arguments. If empty, show help.
 workshop --workspace .claude/memory search "$QUERY" 2>/dev/null || echo "Workshop: No results or not initialized"
 ```
 
-### Step 3: Search vibe.db (Code)
+### Step 3: Search code-index.db (Code)
 
 ```bash
-python3 ~/.claude/scripts/vibe-sync.py hsearch "$QUERY" --limit 10 2>/dev/null || echo "vibe.db: No results or not initialized"
+python3 ~/.claude/scripts/code-index.py hsearch "$QUERY" --limit 10 2>/dev/null || echo "code-index.db: No results or not initialized"
 ```
 
 ### Step 4: Search Research Index (if exists)
@@ -51,9 +51,9 @@ Memory Search: "<query>"
 
 [Results from workshop search, or "No matches found"]
 
-=== CODE (vibe.db) ===
+=== CODE (code-index.db) ===
 
-[Results from vibe-sync hsearch, formatted as:]
+[Results from code-index hsearch, formatted as:]
 
 | Type     | Name              | File                          | Score |
 |----------|-------------------|-------------------------------|-------|
@@ -91,7 +91,7 @@ If no query provided:
 
 Searches across all memory systems:
   - Workshop: decisions, notes, gotchas, learnings
-  - vibe.db: code chunks, symbols, functions, classes
+  - code-index.db: code chunks, symbols, functions, classes
 
 Usage:
   /memory-search <query>
@@ -103,11 +103,11 @@ Examples:
 
 Related commands:
   /project-memory   - Manage Workshop entries
-  /project-code     - Manage vibe.db code index
+  /project-code     - Manage code-index.db code index
 ```
 
 ## Error Handling
 
 - If Workshop not initialized: Show "Run: /project-memory init"
-- If vibe.db not found: Show "Run: /project-code sync"
+- If code-index.db not found: Show "Run: /project-code sync"
 - If both fail: Show both suggestions

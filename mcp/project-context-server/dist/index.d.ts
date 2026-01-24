@@ -7,7 +7,7 @@
  * 1. Context is MANDATORY, not optional
  * 2. Every operation goes through this service
  * 3. Makes v1's context amnesia structurally impossible
- * 4. Integrates: Claude Context MCP + vibe.db + file index
+ * 4. Integrates: Claude Context MCP + code-index.db + file index
  */
 /**
  * ProjectContextServer - The mandatory context service for OS 2.0

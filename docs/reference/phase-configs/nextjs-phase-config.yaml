@@ -95,7 +95,7 @@ context:
   provider: ProjectContextServer
   required: true
   query_on_start: true
-  memory_first: true      # Check Workshop/vibe.db before ProjectContext
+  memory_first: true      # Check Workshop/code-index.db before ProjectContext
 
 # Pipeline Phases
 phases:
@@ -207,7 +207,7 @@ optional_phases:
 # Memory Integration
 memory:
   ephemeral: AgentDB
-  persistent: vibe.db
+  persistent: code-index.db
   learnings:
     - design_patterns
     - common_violations
@@ -354,4 +354,4 @@ config:
     cleanup_temp_after: true
 
   phase_state_location: ".claude/orchestration/phase_state.json"
-  vibe_db_location: ".claude/orchestration/vibe.db"
+  vibe_db_location: ".claude/orchestration/code-index.db"

@@ -51,7 +51,7 @@ offline) must have a spec before the iOS lane runs in full.
 
 `/orca`:
 
-- Runs memory‑first search (Workshop + vibe.db).
+- Runs memory‑first search (Workshop + code-index.db).
 - Checks for existing requirements/specs.
 - Detects the iOS domain for the task.
 - Routes to `/ios` with:
@@ -228,7 +228,7 @@ Same pattern as other lanes:
   - Records iOS architecture decisions, gotchas, and standards.
   - Frequently appears in ContextBundle as `relatedStandards` and `pastDecisions`.
 
-- `/project-code` (vibe.db + Context7):
+- `/project-code` (code-index.db + Context7):
   - Indexes Swift/SwiftUI/UIKit code and test targets.
   - Can fetch Apple/Point‑Free/other docs via Context7 libraries for deeper iOS patterns.
 

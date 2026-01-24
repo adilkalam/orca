@@ -7,7 +7,7 @@
 
 The requirements pipeline turns fuzzy feature requests into **structured, code-aware specs** before any heavy implementation. It combines:
 
-- OS 4.2 primitives (ProjectContextServer, phase_state.json, vibe.db, Workshop)
+- OS 4.2 primitives (ProjectContextServer, phase_state.json, code-index.db, Workshop)
 - The Claude Requirements Builder workflow (00–06 docs)
 - Response Awareness tags for metacognitive tracking
 - **Three-tier planning depth** matching `/orca-*` execution tiers
@@ -223,7 +223,7 @@ Tasks:
 - Update `metadata.json.status` to `"complete"` or `"incomplete"` depending on user choice.
 - Clear or update `.current-requirement` (depending on end option).
 - Append/refresh entry in `.claude/requirements/index.md`.
-- Log a `save_decision` to `vibe.db` summarizing the requirement.
+- Log a `save_decision` to `code-index.db` summarizing the requirement.
 - Update `phase_state.json`:
   - Mark `requirements` phase as `"completed"`.
   - Store final `spec_path`.

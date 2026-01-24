@@ -598,7 +598,7 @@ EOF
 
 ## Phase 9: Task History Logging
 
-**Save pipeline outcome to vibe.db:**
+**Save pipeline outcome to code-index.db:**
 
 ```typescript
 await save_task_history({
@@ -640,7 +640,7 @@ if (standardsViolations.length > 0) {
 -  Standards enforcement applied
 
 ### Learning Logged
--  Task history saved to vibe.db
+-  Task history saved to code-index.db
 -  Standards violations logged (if any)
 -  Pipeline outcome recorded
 

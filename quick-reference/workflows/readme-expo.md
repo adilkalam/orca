@@ -47,7 +47,7 @@ For non‑trivial Expo tasks:
 
 `/orca`:
 
-- Runs memory‑first search across Workshop + vibe.db.
+- Runs memory‑first search across Workshop + code-index.db.
 - Detects `expo` domain.
 - Checks for a requirements spec.
 - Routes to `/expo` with relevant context and spec info.
@@ -78,7 +78,7 @@ File: `commands/expo.md`
   | **Complex** | `--complex` | Full pipeline | YES |
 
 - Behavior:
-  1. **Memory‑first** – queries Workshop/vibe.db for relevant Expo incidents and patterns.
+  1. **Memory‑first** – queries Workshop/code-index.db for relevant Expo incidents and patterns.
   2. **Flag detection**:
      - No flag → **Default mode** (light path WITH gates)
      - `-tweak` → **Tweak mode** (light path WITHOUT gates, user verifies)

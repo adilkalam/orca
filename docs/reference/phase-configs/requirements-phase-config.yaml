@@ -70,5 +70,5 @@ phases:
       - updated_metadata
     constraints:
       scope: Documentation only
-      integration: Log decision to vibe.db and update phase_state
+      integration: Log decision to code-index.db and update phase_state
 

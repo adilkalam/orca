@@ -56,7 +56,7 @@ Content that loads into agent context...
 
 When loaded, skill content appears in agent context alongside:
 - ContextBundle from ProjectContext
-- Memory hits from Workshop/vibe.db
+- Memory hits from Workshop/code-index.db
 - Task-specific instructions from orchestrator
 
 ## Available Skills

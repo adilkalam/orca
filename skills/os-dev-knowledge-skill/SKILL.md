@@ -32,7 +32,7 @@ Use this skill when:
   - `skills/*/SKILL.md`
   - `mcp/*` (MCP configs, server docs)
 - Memory and orchestration:
-  - `.claude/memory/` (Workshop + vibe.db)
+  - `.claude/memory/` (Workshop + code-index.db)
   - `.claude/orchestration/` (phase_state, evidence, playbooks)
 
 ## Core Principles
@@ -42,7 +42,7 @@ Use this skill when:
 2. **Specs before complex changes**
    - Requirements specs in `.claude/requirements/<id>` are required for complex, global changes.
 3. **Memory-first**
-   - Workshop and vibe.db should be queried before expensive context.
+   - Workshop and code-index.db should be queried before expensive context.
 4. **Safety over convenience**
    - Never default to dangerous flags or uncontrolled hooks.
 5. **Edit-not-rewrite**

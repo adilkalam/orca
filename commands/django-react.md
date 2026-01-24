@@ -243,7 +243,7 @@ Before expensive ProjectContext queries, check local memory:
 # Search Workshop for relevant Django/React decisions/gotchas
 workshop --workspace .claude/memory why "Django React $TASK_KEYWORDS"
 
-# Search vibe.db for relevant code/symbols (if available)
+# Search code-index.db for relevant code/symbols (if available)
 python3 ~/.claude/scripts/memory-search-unified.py "$TASK_KEYWORDS" --mode all --top-k 5
 ```
 
