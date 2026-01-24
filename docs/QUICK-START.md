@@ -8,11 +8,11 @@ ORCA-OS transforms Claude Code from a coding assistant into a sophisticated mult
 
 ## What's Inside
 
-- **89 Specialized Agents** across 6 domains (Next.js, iOS, Expo, Django-React, Research, SEO)
-- **25+ Slash Commands** for orchestration, planning, thinking, and design review
+- **105 Specialized Agents** across 10 lanes (Next.js, iOS, Expo, Django-React, Research, SEO, Data, Audit, OS-Dev, Orca-Pipeline)
+- **31 Slash Commands** for orchestration, planning, thinking, and design review
 - **Persistent Memory** via Workshop and project-context MCP
 - **Self-Improvement System** that learns rules from your interactions
-- **38+ Reasoning Operations** via Clear Thought MCP
+- **40 Reasoning Operations** via cognition-mcp
 
 ---
 
@@ -102,12 +102,15 @@ claude
 |--------|--------|---------|
 | Next.js/Dev | 17 | Web development with React, TypeScript, CSS, design systems |
 | iOS | 19 | Native iOS/macOS development with SwiftUI, UIKit |
-| Expo | 11 | React Native mobile development |
+| Expo | 12 | React Native mobile development |
 | Django-React | 13 | Full-stack Django + React TypeScript |
-| Research | 8 | Deep research with citations and fact-checking |
-| SEO | 4 | Content optimization and brief creation |
+| Research | 7 | Deep research with citations and fact-checking |
+| SEO | 5 | Content optimization and brief creation |
 | Data | 4 | Analytics, competitive analysis |
-| Shared | 9 | Cross-domain specialists (a11y, performance, security, design) |
+| Audit | 8 | Due diligence code auditing |
+| OS-Dev | 6 | ORCA-OS development and maintenance |
+| Orca-Pipeline | 5 | Meta-pipeline for creating new lanes |
+| Cross-Cutting | 9 | Shared specialists (a11y, performance, security, design) |
 
 ---
 
@@ -134,14 +137,17 @@ claude
 
 ```
 ~/.claude/
-├── agents/           # 89 specialized agents
-│   ├── dev/          # Next.js, Django-React, OS-Dev agents
+├── agents/           # 105 specialized agents
+│   ├── dev/          # Next.js, OS-Dev agents
 │   ├── iOS/          # iOS specialists
 │   ├── expo/         # React Native agents
+│   ├── django-react/ # Django + React specialists
 │   ├── research/     # Research pipeline agents
 │   ├── seo/          # SEO agents
-│   └── data/         # Analytics agents
-├── commands/         # 25+ slash commands
+│   ├── data/         # Analytics agents
+│   ├── audit/        # Audit specialists
+│   └── orca-dev/     # Pipeline creation agents
+├── commands/         # 31 slash commands
 ├── skills/           # Reusable behavior patterns
 ├── hooks/            # Session lifecycle hooks
 ├── scripts/          # Utility scripts
@@ -296,7 +302,7 @@ mv ~/.claude-backup-* ~/.claude
 
 ## Version
 
-ORCA-OS v4.2.0
+ORCA-OS v4.3.0
 
 ---
 

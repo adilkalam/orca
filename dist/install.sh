@@ -15,7 +15,7 @@ NC='\033[0m' # No Color
 BOLD='\033[1m'
 
 # Configuration
-ORCA_VERSION="4.2.0"
+ORCA_VERSION="4.3.0"
 CLAUDE_DIR="$HOME/.claude"
 BACKUP_DIR="$HOME/.claude-backup-$(date +%Y%m%d-%H%M%S)"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -188,13 +188,14 @@ install_orca_files() {
         "agents/research"
         "agents/seo"
         "agents/data"
+        "agents/audit"
+        "agents/django-react"
+        "agents/orca-dev"
         "commands"
         "skills"
         "hooks"
         "scripts/utilities"
-        "scripts/lint"
-        "scripts/analytics"
-        "scripts/os2-cleanup"
+        "scripts/seo"
         "mcp/project-context-server"
         "mcp/cognition-mcp"
         "docs/pipelines"
@@ -215,14 +216,17 @@ install_orca_files() {
 
     # Copy agents
     info "Installing agents..."
-    for domain in dev iOS expo research seo data; do
+    for domain in dev iOS expo research seo data audit django-react orca-dev; do
         if [ -d "$ORCA_ROOT/agents/$domain" ]; then
             cp -r "$ORCA_ROOT/agents/$domain/"* "$CLAUDE_DIR/agents/$domain/" 2>/dev/null || true
         fi
     done
     # Copy root-level shared agents
     cp "$ORCA_ROOT/agents/"*.md "$CLAUDE_DIR/agents/" 2>/dev/null || true
-    success "Agents installed (97 agents across 7 domains)"
+    # Remove private/excluded agent directories if they exist from previous installs
+    rm -rf "$CLAUDE_DIR/agents/kg" 2>/dev/null || true
+    rm -rf "$CLAUDE_DIR/agents/shopify" 2>/dev/null || true
+    success "Agents installed (105 agents across 10 lanes)"
 
     # Copy commands (excluding domain-specific)
     info "Installing commands..."
@@ -237,6 +241,9 @@ install_orca_files() {
                 ;;
         esac
     done
+    # Remove private/excluded commands if they exist from previous installs
+    rm -f "$CLAUDE_DIR/commands/kg.md" 2>/dev/null || true
+    rm -f "$CLAUDE_DIR/commands/shopify.md" 2>/dev/null || true
     success "Commands installed"
 
     # Copy skills (excluding domain-specific)
@@ -270,10 +277,9 @@ install_orca_files() {
     # Copy scripts (excluding archive)
     info "Installing scripts..."
     cp "$ORCA_ROOT/scripts/"*.sh "$CLAUDE_DIR/scripts/" 2>/dev/null || true
+    cp "$ORCA_ROOT/scripts/"*.py "$CLAUDE_DIR/scripts/" 2>/dev/null || true
     cp -r "$ORCA_ROOT/scripts/utilities/"* "$CLAUDE_DIR/scripts/utilities/" 2>/dev/null || true
-    cp -r "$ORCA_ROOT/scripts/lint/"* "$CLAUDE_DIR/scripts/lint/" 2>/dev/null || true
-    cp -r "$ORCA_ROOT/scripts/analytics/"* "$CLAUDE_DIR/scripts/analytics/" 2>/dev/null || true
-    cp -r "$ORCA_ROOT/scripts/os2-cleanup/"* "$CLAUDE_DIR/scripts/os2-cleanup/" 2>/dev/null || true
+    cp -r "$ORCA_ROOT/scripts/seo/"* "$CLAUDE_DIR/scripts/seo/" 2>/dev/null || true
     chmod +x "$CLAUDE_DIR/scripts/"*.sh 2>/dev/null || true
     chmod +x "$CLAUDE_DIR/scripts/utilities/"*.sh 2>/dev/null || true
     success "Scripts installed"
@@ -582,11 +588,11 @@ init_memory_systems() {
         success "Workshop initialized at ~/.claude/memory/workshop.db"
     fi
 
-    # Initialize vibe.db if vibe-sync.py exists
-    if [ -f "$CLAUDE_DIR/scripts/vibe-sync.py" ]; then
-        info "Initializing vibe.db (code search index)..."
-        python3 "$CLAUDE_DIR/scripts/vibe-sync.py" init 2>/dev/null || true
-        success "vibe.db initialized at ~/.claude/memory/vibe.db"
+    # Initialize code-index.db if code-index.py exists
+    if [ -f "$CLAUDE_DIR/scripts/code-index.py" ]; then
+        info "Initializing code-index.db (code search index)..."
+        python3 "$CLAUDE_DIR/scripts/code-index.py" init 2>/dev/null || true
+        success "code-index.db initialized at ~/.claude/memory/code-index.db"
     fi
 
     success "Memory systems ready"
@@ -613,7 +619,7 @@ print_completion() {
     echo ""
     echo -e "  ${BOLD}Memory systems:${NC}"
     echo "     - Workshop: ~/.claude/memory/workshop.db"
-    echo "     - vibe.db: ~/.claude/memory/vibe.db"
+    echo "     - code-index.db: ~/.claude/memory/code-index.db"
     echo ""
     echo -e "  ${BOLD}Next steps:${NC}"
     echo ""
