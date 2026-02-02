@@ -1,6 +1,8 @@
 # Memory Systems
 
-OS 4.3 uses multiple memory systems to maintain context across sessions and provide relevant information to agents.
+**Version:** OS 5.0 | **Last Updated:** 2026-01-24
+
+OS 5.0 uses multiple memory systems to maintain context across sessions and provide relevant information to agents.
 
 ## Memory Architecture
 
@@ -107,7 +109,7 @@ The ProjectContext MCP uses a hybrid approach for Workshop integration:
 
 ## Memory-First Pattern
 
-OS 4.3 checks fast, local memory before expensive queries:
+OS 5.0 checks fast, local memory before expensive queries:
 
 ```bash
 # Step 1: Check Workshop for relevant decisions/gotchas
@@ -194,8 +196,28 @@ mcp__project-context__save_standard({
 
 Memory is automatically managed via hooks:
 
-- **SessionStart**: Loads cached context, runs memory search
+- **SessionStart**: Loads active task context (if exists), then Workshop summary
 - **SessionEnd**: Captures session summary to Workshop
+
+### Active Task Persistence
+
+The SessionStart hook outputs saved task context to STDOUT so Claude sees it immediately. This is the solution to session persistence - context saved via `/session-save` automatically loads on next session.
+
+**File:** `.claude/orchestration/active-task.md`
+
+**5 Safeguards:**
+1. **48h freshness** - Skips if file older than 48 hours (stale context is worse than no context)
+2. **2000 char limit** - Truncates with indicator if exceeded (prevents context bloat)
+3. **Graceful missing file** - Silent continue if not found (won't break session start)
+4. **Absolute paths** - Uses `$ORCH_DIR` prefix (works from any directory)
+5. **Resume mode awareness** - Native `--continue` provides full transcript; this is for fresh sessions
+
+**Why STDOUT, not FILE:**
+Claude only sees STDOUT from hooks. Writing to a file that Claude then reads requires a separate read operation. Outputting directly to STDOUT ensures the context appears in the conversation immediately.
+
+**Commands:**
+- `/session-save` - Save current context before ending session
+- `/session-resume` - Manually reload if needed mid-session
 
 ## Troubleshooting
 

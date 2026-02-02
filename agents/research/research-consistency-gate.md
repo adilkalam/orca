@@ -5,7 +5,6 @@ description: >
   alignment with evidence, RA tags, and tool status, and assigns a quality
   score and gate decision.
 tools: Read, Grep, Glob
-model: inherit
 ---
 
 # Research Consistency Gate – Quality & Limitations Check
@@ -53,7 +52,7 @@ Perform the following checks:
      ensure the report explicitly calls this out as a limitation.
 
 ---
-## 3. Scoring & Decision (Graduated Gate Standard - OS 4.2)
+## 3. Scoring & Decision (Graduated Gate Standard - OS 5.0)
 
 **Reference:** `docs/reference/graduated-gate-scoring.md`
 

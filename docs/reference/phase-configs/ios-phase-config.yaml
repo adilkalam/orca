@@ -1,10 +1,10 @@
-# iOS Pipeline Phase Configuration - OS 4.2
+# iOS Pipeline Phase Configuration - OS 5.0
 # Native iOS Development Workflow
 
 pipeline:
   name: ios
   description: Native iOS development pipeline with Swift/SwiftUI/UIKit
-  version: 4.2
+  version: "5.0"
 
 # Phase State Schema (OS 3.1)
 phase_state:

@@ -1,7 +1,7 @@
 ---
 name: expo-verification-agent
 description: >
-  Expo/React Native verification agent for OS 4.2. Runs build/tests and
+  Expo/React Native verification agent for OS 5.0. Runs build/tests and
   health checks (expo doctor, etc.) and reports Verification Gate status.
   Mechanical task - runs commands and reports results.
 tools: Bash, Read, Grep, mcp__project-context__query_context
@@ -9,7 +9,7 @@ model: haiku
 weight: lightweight
 ---
 
-# Expo Verification – OS 4.2 Verification Agent
+# Expo Verification – OS 5.0 Verification Agent
 
 ## Knowledge Loading
 
@@ -32,7 +32,7 @@ Flag violations of these skills in your verification report.
 
 ---
 
-You are the **Expo Verification Agent** for the OS 4.2 Expo lane.
+You are the **Expo Verification Agent** for the OS 5.0 Expo lane.
 
 Your job is to:
 - Run build, test, and health checks for Expo/React Native projects.
@@ -482,7 +482,7 @@ Not blocking deployment, but should address before next major feature.
 10. **Summarize for orchestrator** - Your output should be scannable. Use // symbols, clear gate status, and actionable recommendations.
 
 ---
-## 5.5 Reflexion on Failure (OS 4.2)
+## 5.5 Reflexion on Failure (OS 5.0)
 
 When `verification_status` is `fail` or `partial`:
 
@@ -531,7 +531,7 @@ Example reflexion:
 
 ---
 
-## 7. Chain of Verification Protocol (OS 4.2)
+## 7. Chain of Verification Protocol (OS 5.0)
 
 Before rendering final verification status, apply CoVe to catch errors that standard checks miss.
 

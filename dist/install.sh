@@ -15,7 +15,7 @@ NC='\033[0m' # No Color
 BOLD='\033[1m'
 
 # Configuration
-ORCA_VERSION="4.3.0"
+ORCA_VERSION="5.0.0"
 CLAUDE_DIR="$HOME/.claude"
 BACKUP_DIR="$HOME/.claude-backup-$(date +%Y%m%d-%H%M%S)"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -183,6 +183,8 @@ install_orca_files() {
     # Create directory structure
     local dirs=(
         "agents/dev"
+        "agents/nextjs"
+        "agents/os-dev"
         "agents/iOS"
         "agents/expo"
         "agents/research"
@@ -190,7 +192,6 @@ install_orca_files() {
         "agents/data"
         "agents/audit"
         "agents/django-react"
-        "agents/orca-dev"
         "commands"
         "skills"
         "hooks"
@@ -216,17 +217,17 @@ install_orca_files() {
 
     # Copy agents
     info "Installing agents..."
-    for domain in dev iOS expo research seo data audit django-react orca-dev; do
+    for domain in dev nextjs os-dev iOS expo research seo data audit django-react; do
         if [ -d "$ORCA_ROOT/agents/$domain" ]; then
             cp -r "$ORCA_ROOT/agents/$domain/"* "$CLAUDE_DIR/agents/$domain/" 2>/dev/null || true
         fi
     done
-    # Copy root-level shared agents
-    cp "$ORCA_ROOT/agents/"*.md "$CLAUDE_DIR/agents/" 2>/dev/null || true
     # Remove private/excluded agent directories if they exist from previous installs
     rm -rf "$CLAUDE_DIR/agents/kg" 2>/dev/null || true
     rm -rf "$CLAUDE_DIR/agents/shopify" 2>/dev/null || true
-    success "Agents installed (105 agents across 10 lanes)"
+    # Remove legacy directories from previous installs
+    rm -rf "$CLAUDE_DIR/agents/orca-dev" 2>/dev/null || true
+    success "Agents installed (105 agents across 12 directories)"
 
     # Copy commands (excluding domain-specific)
     info "Installing commands..."

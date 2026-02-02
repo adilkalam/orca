@@ -1,4 +1,4 @@
-# OS 4.2 Research Lane Quick Reference
+# OS 5.0 Research Lane Quick Reference
 
 **Lane:** Research
 **Domain:** `research`
@@ -114,7 +114,7 @@ Research artifacts are saved to:
 
 ## 6. MCP Dependencies
 
-- **Crawl4AI MCP** - `mcp__crawl4ai__scrape`, `mcp__crawl4ai__crawl`, `mcp__crawl4ai__crawl_site` for web content extraction
+- **Crawl4AI MCP** - `mcp__crawl4ai__md` (single-page markdown), `mcp__crawl4ai__crawl` (batch URL crawl) for web content extraction
 - **WebSearch** - Built-in tool for web discovery (used by subagents)
 
 ---
@@ -161,10 +161,12 @@ Your `~/.claude.json` should have (SSE mode):
 
 | Tool | Purpose |
 |------|---------|
-| `mcp__crawl4ai__scrape` | Single page extraction to markdown |
-| `mcp__crawl4ai__crawl` | Multi-page crawling |
-| `mcp__crawl4ai__crawl_site` | Full site crawl with manifest |
-| `mcp__crawl4ai__crawl_sitemap` | Sitemap-based crawling |
+| `mcp__crawl4ai__md` | Single page markdown extraction (params: `url`, `f`, `q`) |
+| `mcp__crawl4ai__crawl` | Batch URL crawling (params: `urls` array) |
+| `mcp__crawl4ai__html` | Preprocessed HTML extraction |
+| `mcp__crawl4ai__screenshot` | Full-page PNG screenshot |
+| `mcp__crawl4ai__pdf` | PDF generation from URL |
+| `mcp__crawl4ai__execute_js` | Execute JS snippets on page |
 
 ### If /research Fails
 
@@ -203,4 +205,4 @@ export NODE_OPTIONS="--max-old-space-size=8192"
 
 ---
 
-_Version: OS 4.2_
+_Version: OS 5.0_

@@ -58,6 +58,82 @@ mkdir -p "$ORCH_DIR" "$TEMP_DIR" "$WORKSHOP_DIR" 2>/dev/null || true
 > "$ERROR_LOG" 2>/dev/null || true
 
 # ============================================================
+# ACTIVE TASK CONTEXT INJECTION (Session Persistence)
+# ============================================================
+# Outputs saved task context to STDOUT so Claude sees it immediately.
+# This runs BEFORE Workshop loading to front-load the most relevant context.
+#
+# Safeguards:
+#   1. 48h freshness - skip if file older than 48 hours
+#   2. 2000 char limit - truncate with indicator if exceeded
+#   3. Graceful missing file - silent continue if not found
+#   4. Absolute paths - uses $ORCH_DIR prefix
+#   5. Resume mode awareness - documented that --continue provides full transcript
+
+ACTIVE_TASK="$ORCH_DIR/active-task.md"
+MAX_AGE=172800  # 48 hours in seconds
+MAX_CHARS=2000
+
+if [ -f "$ACTIVE_TASK" ]; then
+  file_age=$(( $(date +%s) - $(stat -f %m "$ACTIVE_TASK" 2>/dev/null || echo 0) ))
+
+  if [ "$file_age" -lt "$MAX_AGE" ]; then
+    content=$(cat "$ACTIVE_TASK" 2>/dev/null || echo "")
+
+    if [ -n "$content" ]; then
+      echo ""
+      echo "==============================================================="
+      echo "PREVIOUS SESSION CONTEXT"
+      echo "==============================================================="
+      echo ""
+
+      # Truncate if too long
+      if [ ${#content} -gt $MAX_CHARS ]; then
+        echo "${content:0:$MAX_CHARS}"
+        echo ""
+        echo "[... truncated, $(( ${#content} - $MAX_CHARS )) chars omitted ...]"
+      else
+        echo "$content"
+      fi
+
+      echo ""
+      echo "==============================================================="
+      echo ""
+    fi
+  else
+    # File is stale (>48h), log but don't output
+    log_info "active-task" "Skipping stale context ($(( file_age / 3600 ))h old)"
+  fi
+fi
+
+# ============================================================
+# PREVIOUS SESSION SUMMARY LOADING (FR-2.3)
+# ============================================================
+# Loads structured session summary from previous session if recent (<24h).
+# Written by session-end.sh (FR-2.2). Truncated to 1000 chars max.
+# LOCAL ONLY - no API calls, no network requests.
+
+SESSION_SUMMARY="$TEMP_DIR/session-summary.md"
+MAX_SUMMARY_AGE=86400  # 24 hours in seconds
+
+if [ -f "$SESSION_SUMMARY" ]; then
+  summary_age=$(( $(date +%s) - $(stat -f %m "$SESSION_SUMMARY" 2>/dev/null || echo 0) ))
+  if [ "$summary_age" -lt "$MAX_SUMMARY_AGE" ]; then
+    echo ""
+    echo "==============================================================="
+    echo "PREVIOUS SESSION SUMMARY"
+    echo "==============================================================="
+    # Truncate to 1000 chars max
+    head -c 1000 "$SESSION_SUMMARY" 2>/dev/null || true
+    echo ""
+    echo "==============================================================="
+    echo ""
+  else
+    log_info "session-summary" "Skipping stale session summary ($(( summary_age / 3600 ))h old)"
+  fi
+fi
+
+# ============================================================
 # TELEMETRY INITIALIZATION (OS 3.0)
 # ============================================================
 
@@ -278,7 +354,7 @@ fi
 # Architecture reminder for this repo
 echo ""
 echo "═══════════════════════════════════════════════════════════"
-echo "OS 4.2 ARCHITECTURE - ALWAYS CONSIDER ALL LAYERS"
+echo "OS 5.0 ARCHITECTURE - ALWAYS CONSIDER ALL LAYERS"
 echo "═══════════════════════════════════════════════════════════"
 echo ""
 echo "When modifying orchestration behavior, you MUST update ALL affected layers:"

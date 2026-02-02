@@ -3,8 +3,7 @@ name: research-site-crawler-subagent
 description: >
   Crawl4AI-first site mapping and crawling specialist. Uses Crawl4AI MCP tools
   with DISK-BASED OUTPUT to avoid memory exhaustion. Produces structured Evidence Notes.
-tools: Read, Write, WebSearch, WebFetch, Bash, Glob, mcp__crawl4ai__scrape, mcp__crawl4ai__crawl
-model: inherit
+tools: Read, Write, WebSearch, WebFetch, Bash, Glob, mcp__crawl4ai__md, mcp__crawl4ai__crawl
 ---
 
 # Research Site Crawler Subagent – Crawl4AI Mapping & Crawl Specialist
@@ -16,7 +15,7 @@ coverage of a specific domain or documentation set, you:
 - Summarize important sections into Evidence Notes
 - Read crawled content selectively from disk, never hold full pages in memory
 
-**CRITICAL: Always use `output_dir` parameter to persist crawl results to disk.**
+**CRITICAL: Use Crawl4AI MCP tools for ALL content extraction. Do NOT fall back to WebFetch unless Crawl4AI errors.**
 
 ---
 
@@ -35,41 +34,45 @@ If RESEARCH_DIR is not provided, ask the orchestrator to provide it.
 
 ---
 
-## 1. Tooling Rules - DISK-BASED OUTPUT REQUIRED
+## 1. Tooling Rules
 
-### Primary Tools (ALWAYS use output_dir)
+### Primary Tools (Crawl4AI via REST API)
 
-1. `mcp__crawl4ai__crawl` – site crawling with disk output:
+**IMPORTANT**: MCP tools do not propagate to subagents. Use Crawl4AI via its REST API with `Bash` + `curl`.
+
+1. **Single page markdown** — `/md` endpoint (preferred for most work):
+   ```bash
+   curl -s -X POST "http://localhost:11235/md" \
+     -H "Content-Type: application/json" \
+     -d '{"url": "https://example.com/docs/page", "f": "fit"}' \
+     | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('markdown',''))" \
+     > "$RESEARCH_DIR/temp/page-name.md"
    ```
-   {
-     seed_url: "https://...",
-     max_depth: 2,
-     max_pages: 10,
-     output_dir: "$RESEARCH_DIR/temp"  // Use the provided RESEARCH_DIR
-   }
+   Parameters: `url` (required), `f` (filter: raw/fit/bm25/llm), `q` (query for bm25/llm)
+
+2. **Batch crawl multiple URLs** — `/crawl/job` endpoint:
+   ```bash
+   curl -s -X POST "http://localhost:11235/crawl/job" \
+     -H "Content-Type: application/json" \
+     -d '{"urls": ["https://example.com/page1", "https://example.com/page2"]}' \
+     > "$RESEARCH_DIR/temp/batch-result.json"
    ```
-   Returns: manifest with file paths, NOT content
 
-2. `mcp__crawl4ai__scrape` – single page extraction with disk output:
-   ```
-   {
-     url: "https://...",
-     output_dir: "$RESEARCH_DIR/temp"  // Use the provided RESEARCH_DIR
-   }
-   ```
-   Returns: metadata with file path, NOT content
+3. **If MCP tools ARE available** (try `mcp__crawl4ai__md` first), prefer them over curl.
 
-### After Crawling
+### Disk-Based Workflow (Memory Safety)
 
-- Use `Read` to selectively load only the files you need
-- Summarize immediately, don't hold full content
-- Delete temp files when done: `rm -rf $RESEARCH_DIR/temp/*`
+1. Extract content one URL at a time via curl, piping directly to temp files
+2. Use `Read` to selectively load temp files for synthesis
+3. Do NOT hold multiple full pages in memory simultaneously
+4. After all URLs processed, synthesize temp summaries into Evidence Note
 
-### Fallbacks
+### Fallbacks (in order)
 
-If Crawl4AI fails:
-- `WebSearch` with `site:` filters
-- `WebFetch` on key URLs (still memory-intensive, use sparingly)
+1. Crawl4AI via curl (preferred — full page content)
+2. `mcp__crawl4ai__md` / `mcp__crawl4ai__crawl` (if MCP tools available)
+3. `WebFetch` on key URLs (limit to 3 pages)
+4. `WebSearch` with `site:` filters (discovery only)
 
 Write Evidence Notes **only under** `$RESEARCH_DIR/evidence/`.
 
@@ -101,23 +104,20 @@ When invoked:
    mkdir -p $RESEARCH_DIR/temp
    ```
 
-3. **Crawl with disk output**: Run `mcp__crawl4ai__crawl` with output_dir:
-   ```
-   {
-     seed_url: "<target>",
-     max_depth: 2,
-     max_pages: 10,
-     output_dir: "$RESEARCH_DIR/temp"
-   }
-   ```
-   This returns a manifest, NOT page content.
+3. **Discover URLs**: Use `WebSearch` to find relevant pages on the target site/topic
 
-4. **Selective reading**: From the manifest, identify the 3-5 most relevant files:
-   - Use `Glob` to list `$RESEARCH_DIR/temp/*.md`
-   - Use `Read` on only the most promising files
-   - Summarize each file immediately after reading
+4. **Extract with Crawl4AI**: For each key URL, use curl:
+   ```bash
+   curl -s -X POST "http://localhost:11235/md" \
+     -H "Content-Type: application/json" \
+     -d '{"url": "<target>", "f": "fit"}' \
+     | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('markdown',''))" \
+     > "$RESEARCH_DIR/temp/<slug>.md"
+   ```
+   - **Maximum 8 pages per evidence note** to manage memory
+   - If curl fails, fall back to `WebFetch`
 
-5. **Write Evidence Note**: Create the note in `$RESEARCH_DIR/evidence/`
+5. **Synthesize**: Read temp summaries, create Evidence Note in `$RESEARCH_DIR/evidence/`
 
 6. **Cleanup**: After creating Evidence Note, clean up temp files:
    ```bash

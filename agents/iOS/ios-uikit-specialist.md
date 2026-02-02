@@ -4,7 +4,6 @@ description: >
   iOS UIKit implementation specialist. Builds complex UIKit flows, Auto Layout,
   compositional layouts, custom transitions, and ensures performance/accessibility.
 tools: Read, Edit, MultiEdit, Grep, Glob, Bash
-model: inherit
 ---
 
 # iOS UIKit Specialist

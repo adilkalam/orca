@@ -1,13 +1,13 @@
 # Nextjs Domain Pipeline
 
-**Status:** OS 4.2 Core Pipeline
+**Status:** OS 5.0 Core Pipeline
 **Last Updated:** 2025-11-27
 
 ## Overview
 
 The Nextjs pipeline handles **frontend/web development work** for Next.js apps. It is CSS-agnostic and adapts to the project's styling approach (semantic CSS, Tailwind, CSS Modules, etc.). It combines:
 
-- OS 4.2 primitives (ProjectContextServer, phase_state.json, code-index.db, Workshop, constraint framework)
+- OS 5.0 primitives (ProjectContextServer, phase_state.json, code-index.db, Workshop, constraint framework)
 - Memory-first context (Workshop + code-index.db before ProjectContext)
 - Three-tier routing (Default/Tweak/Complex with default running gates)
 - Spec gating (complex tasks require requirements spec)
@@ -35,7 +35,7 @@ The Nextjs pipeline handles **frontend/web development work** for Next.js apps. 
 
 ---
 
-## Three-Tier Routing (OS 4.2)
+## Three-Tier Routing (OS 5.0)
 
 The Next.js pipeline uses three-tier routing (see `docs/concepts/complexity-routing.md` for details):
 
@@ -79,7 +79,7 @@ Full pipeline with grand-architect planning. Spec required.
 | Tweak | 1-3 | No | Rapid iteration, exploring options |
 | Complex | 5+ | **Required** | Multi-page flow, auth UI, SEO-critical |
 
-### CSS Architecture Refactor Mode (OS 4.2)
+### CSS Architecture Refactor Mode (OS 5.0)
 
 Some Next.js tasks are **structural CSS/layout refactors** rather than simple tweaks:
 
@@ -104,7 +104,7 @@ If the CSS Architecture Gate fails, the task cannot be marked complete even if t
 
 ---
 
-## Standards Inputs (OS 4.2 Learning Loop)
+## Standards Inputs (OS 5.0 Learning Loop)
 
 Standards flow into and out of the Next.js pipeline:
 

@@ -1,5 +1,7 @@
 # Why ORCA-OS Architecture Exists
 
+**Version:** OS 5.0 | **Last Updated:** 2026-01-24
+
 This document captures the reasoning behind ORCA-OS's architecture. Reference this when questioning whether the system is "over-engineered."
 
 ## The Core Insight

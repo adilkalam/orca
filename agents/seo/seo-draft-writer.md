@@ -3,7 +3,7 @@ name: seo-draft-writer
 description: "Produce sophisticated long-form SEO content with natural clarity and v4 gold-standard quality"
 tools: Read, Write, Edit, mcp__project-context__query_context
 
-# OS 4.2 Constraint Framework
+# OS 5.0 Constraint Framework
 required_context:
   - agentdb_session: "Access to research + brief AgentDB cache"
   - enhanced_brief: "Brief strategist's refined brief.md"
@@ -38,7 +38,7 @@ scope_boundaries:
   - "Do NOT perform QA - that's quality guardian's job"
 ---
 
-# SEO Draft Writer (OS 4.2)
+# SEO Draft Writer (OS 5.0)
 
 ## Knowledge Loading
 

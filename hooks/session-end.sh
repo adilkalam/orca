@@ -1,9 +1,11 @@
 #!/usr/bin/env bash
 # hooks/session-end.sh
 # ORCA-Mem: Save session events to Workshop at session end
+# Writes structured session summary for next-session loading (FR-2.2)
 # No external API dependencies - just local storage
+# LOCAL ONLY - no API calls, no network requests
 
-set -uo pipefail
+set -o pipefail
 
 EVENT_BUFFER="${HOME}/.claude/temp/event-buffer.jsonl"
 DISCOVERY_MODE_FILE="${HOME}/.claude/temp/discovery-mode"
@@ -55,7 +57,51 @@ else
   echo "SessionEnd: Workshop CLI not found"
 fi
 
-# Cleanup temp files
+# ============================================================
+# BUILD STRUCTURED SESSION SUMMARY (FR-2.2)
+# ============================================================
+# Writes a structured summary for next-session loading (FR-2.3)
+# All LOCAL -- no API calls
+
+ROOT_DIR="$(git rev-parse --show-toplevel 2>/dev/null || pwd)"
+SUMMARY_FILE="$ROOT_DIR/.claude/orchestration/temp/session-summary.md"
+mkdir -p "$(dirname "$SUMMARY_FILE")" 2>/dev/null || true
+
+{
+  echo "# Session Summary"
+  echo "**Date**: $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+  echo "**Events**: $EVENT_COUNT"
+  echo "**Tools**: $UNIQUE_TOOLS"
+  echo ""
+
+  # Files changed
+  if [ -n "$FILES_CHANGED" ]; then
+    echo "## Files Changed"
+    echo "$FILES_CHANGED" | tr ' ' '\n' | sort -u | while read -r f; do
+      [ -n "$f" ] && echo "- $f"
+    done
+    echo ""
+  fi
+
+  # Errors
+  if [ -n "$ERRORS" ]; then
+    echo "## Errors Encountered"
+    echo "$ERRORS"
+    echo ""
+  fi
+
+  # Pre-compact snapshot (if available)
+  SNAPSHOT="$ROOT_DIR/.claude/orchestration/temp/pre-compact-snapshot.md"
+  if [ -f "$SNAPSHOT" ]; then
+    echo "## Pre-Compact Context"
+    cat "$SNAPSHOT" 2>/dev/null || echo "(snapshot not readable)"
+    echo ""
+  fi
+} > "$SUMMARY_FILE" 2>/dev/null || true
+
+echo "SessionEnd: Session summary written to $SUMMARY_FILE"
+
+# Cleanup temp files (but NOT session-summary.md -- needed by next session-start)
 rm -f "$EVENT_BUFFER" "$DISCOVERY_MODE_FILE" "$TOOL_HISTORY_FILE" "$PENDING_TITLES" 2>/dev/null || true
 
 echo "SessionEnd: Complete"

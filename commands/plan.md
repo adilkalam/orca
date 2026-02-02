@@ -1,5 +1,5 @@
 ---
-description: "Unified OS 4.2 planner – requirements + RA blueprint (no implementation)"
+description: "Unified OS 5.0 planner -- requirements + RA blueprint (no implementation)"
 argument-hint: "[-tweak] [-complex] [--visual|--systems|--debug|--model|--creative|--problem-solve] <high-level task description>"
 allowed-tools:
   ["Task", "Read", "Write", "Edit", "Glob", "Grep",
@@ -7,12 +7,12 @@ allowed-tools:
    "mcp__cognition-mcp__cognition"]
 ---
 
-# /plan – Requirements + Response-Aware Blueprint
+# /plan -- Requirements + Response-Aware Blueprint
 
 Use this command to produce a **blueprint-quality requirements spec** for a task
 before running any domain lane (`/nextjs`, `/ios`, `/expo`, etc.).
 It combines:
-- The OS 4.2 **requirements pipeline** (requirements folder + docs),
+- The OS 5.0 **requirements pipeline** (requirements folder + docs),
 - **Response Awareness** tagging (RA tags as per `docs/reference/response-awareness.md`),
 - **Cognition analysis** (optional) for deeper problem understanding,
 - ProjectContextServer for context-aware analysis.
@@ -21,484 +21,49 @@ You never implement code from `/plan`; you only plan.
 
 ---
 
-## 0. Cognition Integration (OS 4.2)
+## Step 0: Route Check
 
-`/plan` supports optional cognition-mcp analysis modes that run **before** discovery questions. This produces smarter, context-aware questions instead of generic ones.
+This is /plan, not /deepthink or /think.
 
-### Available Modes
+- OUTPUT goes to: `.claude/requirements/` (ALWAYS)
+- NOT to: `.claude/cognition/` (that's for /deepthink and /think)
+- Cognition flags (--problem-solve, --visual, --systems, etc.) are ANALYSIS INPUTS,
+  not output destinations.
 
-| Flag | Cognition Operation | Best For |
-|------|------------------------|----------|
-| `--visual` | `visual_reasoning` | UI/UX features, user flows, screen layouts |
-| `--systems` | `systems` | Architecture, integrations, data flow |
-| `--debug` | `debug` | Bug fixes, performance issues, root causes |
-| `--model` | `mental_model` (first_principles) | Foundational decisions, "why" questions |
-| `--creative` | `creative_thinking` | New features, brainstorming, exploration |
-| `--causal` | `causal_analysis` | Understanding cause-effect, debugging |
-| `--decide` | `decide` | Choosing between options, trade-offs |
-| **`--problem-solve`** | **Full 8-step pipeline** | **Complex features, architectural decisions, high-risk implementations** |
-
-### Usage Examples
-
-```bash
-# UI feature - visual reasoning first
-/plan --visual Add dark mode toggle to settings
-
-# Architecture change - systems thinking first
-/plan --systems Migrate auth to OAuth2
-
-# Bug investigation - debugging approach first
-/plan --debug Fix intermittent checkout failures
-
-# Foundational question - first principles
-/plan --model Why is our API slow and what should we do?
-
-# New feature exploration - creative thinking
-/plan --creative Add gamification to user onboarding
-
-# Complex architectural decision - full problem-solve pipeline
-/plan --problem-solve Implement real-time collaboration features
-
-# High-risk implementation - problem-solve with complex tier
-/plan --problem-solve -complex Migrate from REST to GraphQL
-```
-
-### How It Works
-
-When a Cognition flag is provided:
-
-1. **Run Analysis First**: Before creating requirements folder, run cognition-mcp:
-   ```
-   mcp__cognition-mcp__cognition
-     operation: <mapped operation>
-     prompt: "Analyze for planning: $ARGUMENTS"
-   ```
-
-2. **Store Analysis**: Save output to `00-cognition-analysis.md` in requirements folder
-
-3. **Inform Questions**: Use analysis insights to generate smarter discovery questions:
-   - Questions reference specific components/flows identified
-   - Questions address risks/concerns raised in analysis
-   - Questions validate assumptions from analysis
-
-4. **Tag Analysis Points**: Key findings become RA-tagged items in the spec:
-   - Architectural insights → `#PATH_DECISION`
-   - Uncertainties → `#COMPLETION_DRIVE`
-   - Potential issues → `#POISON_PATH`
-
-### Combining Flags
-
-Cognition flags combine with tier flags:
-
-```bash
-# Quick tweak with visual analysis
-/plan -tweak --visual Update button colors
-
-# Complex task with systems analysis
-/plan -complex --systems Migrate database to PostgreSQL
-
-# Complex task with full problem-solve analysis
-/plan -complex --problem-solve Implement multi-tenant architecture
-```
+If you find yourself saving to .claude/cognition/ -- STOP. You are in the wrong pipeline.
 
 ---
 
-## 0.2 Problem-Solve Planning Pipeline (`--problem-solve`)
+## CRITICAL: Requirements Folder First
 
-When `--problem-solve` is provided, `/plan` runs the **full 8-step ORIENT→ANTICIPATE→GENERATE→EVALUATE→COMMIT pipeline** adapted for requirements planning. This is the most rigorous analysis mode, best for:
+REGARDLESS of any cognition flags (--visual, --systems, --problem-solve, etc.):
 
-- Complex architectural decisions
-- High-risk implementations
-- Multi-phase features
-- Migrations and refactors
-- Features with significant unknowns
+1. FIRST: Create the requirements folder at `.claude/requirements/YYYY-MM-DD-HHMM-slug/`
+2. THEN: Run cognition analysis (if flagged) and save output INTO that folder
+3. THEN: Run discovery questions
+4. THEN: Generate spec
 
-Unlike single-operation cognition modes, `--problem-solve` executes **multiple sequential cognition operations** that build on each other, producing a comprehensive planning analysis before discovery questions.
-
-### The Planning-Adapted Pipeline
-
-| Phase | Steps | Planning Focus |
-|-------|-------|----------------|
-| **ORIENT** | 1. Orchestration, 2. Systems | Map the existing codebase/architecture the feature interacts with |
-| **ANTICIPATE** | 3. Pre-Mortem | What could cause this implementation to fail? What requirements might we miss? |
-| **GENERATE** | 4. Tree of Thought | Generate architectural/implementation approaches |
-| **EVALUATE** | 5. Decide, 6. Challenge | Evaluate approaches; stress-test the recommended design |
-| **COMMIT** | 7. Ulysses, 8. Meta | Lock in requirements commitments with safeguards; reflect on planning quality |
-
-### Problem-Solve Execution Flow
-
-When `--problem-solve` is detected, execute the following pipeline (all with same sessionId):
-
-#### Step 1: Orchestration Assessment
-
-```typescript
-mcp__cognition-mcp__cognition({
-  operation: "orchestration_suggest",
-  sessionTitle: "Plan Problem-Solve: <task summary>",
-  sessionTags: ["plan", "problem-solve", "requirements"],
-  content: {
-    task: "<task from $ARGUMENTS>",
-    complexity: "complex",
-    suggestedOperations: [
-      { operation: "systems", reason: "Map affected components", order: 1 },
-      { operation: "mental_model", reason: "Pre-mortem for requirement gaps", order: 2 },
-      { operation: "tree_of_thought", reason: "Generate implementation approaches", order: 3 },
-      { operation: "decide", reason: "Evaluate approaches", order: 4 },
-      { operation: "ulysses_protocol", reason: "Lock in requirements", order: 5 }
-    ],
-    recommendation: "<1-2 sentence planning approach>"
-  }
-})
-```
-
-**Planning Output**: Note which areas of the codebase need exploration.
-
-#### Step 2: Systems Mapping
-
-```typescript
-mcp__cognition-mcp__cognition({
-  operation: "systems",
-  sessionId: "<from step 1>",
-  content: {
-    system: "<feature/area being planned>",
-    components: [
-      { name: "<existing component 1>", function: "<what it does>" },
-      { name: "<new component>", function: "<what it will do>" }
-    ],
-    relationships: [
-      { from: "<component>", to: "<component>", type: "depends_on|influences|triggers" }
-    ],
-    feedbackLoops: ["<any cascading effects>"],
-    boundaries: "<what's in scope vs out of scope for this feature>",
-    keyLeveragePoints: ["<where the feature hooks into existing code>"]
-  }
-})
-```
-
-**Planning Output**: Identifies files to analyze, integration points, scope boundaries. Feeds `03-context-findings.md`.
-
-#### Step 3: Pre-Mortem Analysis
-
-```typescript
-mcp__cognition-mcp__cognition({
-  operation: "mental_model",
-  sessionId: "<sessionId>",
-  content: {
-    modelName: "pre-mortem",
-    problem: "<planning: what could cause this implementation to fail?>",
-    setup: "It's 3 months post-launch. This feature has failed or caused problems. What went wrong?",
-    steps: [
-      "<failure mode 1: missing requirement led to...>",
-      "<failure mode 2: integration issue with...>",
-      "<failure mode 3: edge case not considered...>"
-    ],
-    rootCauses: [
-      { failure: "<failure>", cause: "<root cause>", preventable: true/false }
-    ],
-    conclusion: "<requirements we must capture to prevent these failures>"
-  }
-})
-```
-
-**Planning Output**: Identifies risks → become `#POISON_PATH` tags and risk sections in spec.
-
-#### Step 4: Implementation Approach Generation
-
-```typescript
-mcp__cognition-mcp__cognition({
-  operation: "tree_of_thought",
-  sessionId: "<sessionId>",
-  content: {
-    problem: "<how should we implement this feature?>",
-    constraints: [
-      "<existing architecture constraint>",
-      "<risk from pre-mortem to avoid>"
-    ],
-    branches: [
-      {
-        id: "A",
-        thought: "<Implementation Approach A>",
-        evaluation: {
-          score: 0.0-1.0,
-          strengths: ["<strength>"],
-          weaknesses: ["<weakness re: identified risks>"],
-          feasibility: "high|medium|low"
-        }
-      },
-      {
-        id: "B",
-        thought: "<Implementation Approach B>",
-        evaluation: { ... }
-      }
-    ],
-    bestPath: ["<recommended approach>"],
-    synthesis: "<how best approach addresses requirements and risks>"
-  }
-})
-```
-
-**Planning Output**: Implementation options → become `#PATH_DECISION` tags in spec.
-
-#### Step 5: Approach Evaluation
-
-```typescript
-mcp__cognition-mcp__cognition({
-  operation: "decide",
-  sessionId: "<sessionId>",
-  content: {
-    statement: "<which implementation approach should we require?>",
-    options: [
-      {
-        name: "<Approach A>",
-        pros: ["<pro>"],
-        cons: ["<con, linked to risks>"]
-      },
-      {
-        name: "<Approach B>",
-        pros: ["<pro>"],
-        cons: ["<con>"]
-      }
-    ],
-    criteria: [
-      "Addresses pre-mortem risks",
-      "Fits existing architecture",
-      "Maintainability",
-      "Implementation complexity"
-    ],
-    weights: { ... },
-    choice: "<recommended approach>",
-    confidence: 0.0-1.0
-  }
-})
-```
-
-#### Step 6: Adversarial Challenge (Inline)
-
-Generate critique of the recommended approach:
-
-- **Assumptions being made** about the codebase or requirements
-- **What could still go wrong** even with this approach
-- **Devil's advocate** argument for alternative approach
-- **Blind spots** in the planning analysis
-
-**Planning Output**: Uncovers hidden assumptions → become `#COMPLETION_DRIVE` tags.
-
-#### Step 7: Requirements Commitments (Ulysses Protocol)
-
-```typescript
-mcp__cognition-mcp__cognition({
-  operation: "ulysses_protocol",
-  sessionId: "<sessionId>",
-  content: {
-    goal: "<implement chosen approach with identified requirements>",
-    context: "<why these requirements commitments matter>",
-    temptations: [
-      {
-        trigger: "<situation during implementation>",
-        temptation: "<what might cause requirement drift>",
-        risk: "<why giving in is dangerous>"
-      }
-    ],
-    commitments: [
-      {
-        commitment: "<specific requirement that MUST be met>",
-        enforcement: "<how spec/tests will enforce it>",
-        consequences: "<what breaks if not met>"
-      }
-    ],
-    safeguards: [
-      {
-        safeguard: "<protective requirement>",
-        trigger: "<when it matters>",
-        linkedRisk: "<which pre-mortem risk it addresses>"
-      }
-    ],
-    reviewPoints: [
-      { milestone: "<implementation checkpoint>", criteria: "<what to verify>" }
-    ],
-    escapeHatch: "<when it's OK to revisit these requirements>"
-  }
-})
-```
-
-**Planning Output**: Hard requirements → core of `06-requirements-spec.md`. Safeguards become acceptance criteria.
-
-#### Step 8: Planning Reflection
-
-```typescript
-mcp__cognition-mcp__cognition({
-  operation: "meta",
-  sessionId: "<sessionId>",
-  content: {
-    process: "Problem-Solve planning pipeline",
-    observations: [
-      "<what was most valuable in this analysis>",
-      "<what surprised us about the requirements>"
-    ],
-    adjustments: ["<what to probe deeper in discovery questions>"],
-    effectiveness: 0.0-1.0,
-    insights: "<metacognitive insight about the planning>",
-    transferable: "<patterns applicable to similar features>"
-  }
-})
-```
-
-### Problem-Solve Output Artifacts
-
-After running the pipeline, create `00-problem-solve-analysis.md`:
-
-```markdown
-# Problem-Solve Planning Analysis
-
-**Task**: <$ARGUMENTS>
-**Session ID**: <sessionId>
-**Generated**: <timestamp>
+Cognition analysis is an INPUT to the requirements process, not a replacement for it.
+Never save /plan output to `.claude/cognition/` -- that directory is for /deepthink and /think only.
 
 ---
 
-## Phase 1: ORIENT
+## 0.1 Parse Arguments
 
-### Systems Map
-[ASCII diagram of components and relationships]
-
-**Key Integration Points:**
-- ...
-
-**Scope Boundaries:**
-- In scope: ...
-- Out of scope: ...
-
----
-
-## Phase 2: ANTICIPATE
-
-### Pre-Mortem: "This feature failed because..."
-
-1. **[Failure Mode 1]** - Root cause: ...
-2. **[Failure Mode 2]** - Root cause: ...
-3. **[Failure Mode 3]** - Root cause: ...
-
-**Risks to Address in Requirements:**
-- ... `#POISON_PATH`
-
----
-
-## Phase 3: GENERATE
-
-### Implementation Approaches
-
-| Approach | Score | Strengths | Weaknesses |
-|----------|-------|-----------|------------|
-| A: ... | 0.7 | ... | ... |
-| B: ... | 0.85 | ... | ... |
-
-**Recommended**: Approach B `#PATH_DECISION`
-
----
-
-## Phase 4: EVALUATE
-
-### Decision Matrix
-[Weighted comparison table]
-
-**Confidence**: 0.82
-
-### Adversarial Critique
-
-**Assumptions Made:** `#COMPLETION_DRIVE`
-- ...
-
-**Remaining Risks:**
-- ...
-
-**Stress Test Result**: PASSED WITH CAVEATS
-
----
-
-## Phase 5: COMMIT
-
-### Requirements Commitments
-
-| Commitment | Enforcement | Linked Risk |
-|------------|-------------|-------------|
-| ... | ... | ... |
-
-### Safeguards (Acceptance Criteria)
-- [ ] ...
-- [ ] ...
-
-### Review Points
-- [ ] ...
-
----
-
-## Planning Insights
-
-**Key Discovery Questions to Ask:**
-1. ...
-2. ...
-
-**Areas Needing User Input:**
-- ...
-
-**RA Tags Identified:**
-- `#PATH_DECISION`: [list]
-- `#COMPLETION_DRIVE`: [list]
-- `#POISON_PATH`: [list]
-```
-
-### How Problem-Solve Feeds Discovery
-
-After the Problem-Solve pipeline completes:
-
-1. **Discovery questions are NOT generic** - they directly probe:
-   - Assumptions identified in Phase 4 (`#COMPLETION_DRIVE`)
-   - Risk areas from Phase 2 pre-mortem
-   - Scope boundaries from Phase 1 systems map
-   - Alternative approaches from Phase 3 that need validation
-
-2. **Context findings are pre-populated** with:
-   - Files identified in systems mapping
-   - Integration points
-   - Risk areas to watch
-
-3. **The spec inherits**:
-   - `#PATH_DECISION` tags from approach selection
-   - Safeguards become acceptance criteria
-   - Commitments become hard requirements
-   - Pre-mortem risks become "out of scope" or explicit warnings
-
-### When to Use --problem-solve
-
-| Scenario | Use --problem-solve? |
-|----------|------------------|
-| Simple UI change | No - use `--visual` |
-| New API endpoint | Maybe - depends on complexity |
-| Database migration | **Yes** |
-| New authentication system | **Yes** |
-| Multi-service integration | **Yes** |
-| Major refactor | **Yes** |
-| Feature with many unknowns | **Yes** |
-| High-risk production change | **Yes** |
-
-**Rule of thumb**: If you'd use extended thinking before making a decision, use `/plan --problem-solve` before writing requirements.
-
----
-
-## 0.1 Three-Tier Planning Depth
+### Tier Flags
 
 `/plan` supports three planning depths that match `/orca-*` execution tiers:
 
 | Flag | Planning Depth | Use Case |
 |------|----------------|----------|
-| (default) | **Standard** – Full discovery + detail questions, complete spec | Most features |
-| `-tweak` | **Quick** – 2-3 scope questions, minimal spec | Small changes, config updates |
-| `-complex` | **Deep** – Extended analysis, risk assessment, multi-phase breakdown | Architecture changes, refactors |
+| (default) | **Standard** -- Full discovery + detail questions, complete spec | Most features |
+| `-tweak` | **Quick** -- 2-3 scope questions, minimal spec | Small changes, config updates |
+| `-complex` | **Deep** -- Extended analysis, risk assessment, multi-phase breakdown | Architecture changes, refactors |
 
 ### Behavior by Tier
 
 **Default (no flag):**
-- 5 discovery questions → context findings → 5 detail questions → spec
+- 5 discovery questions, context findings, 5 detail questions, spec
 - Standard `06-requirements-spec.md` output
 - Recommended for most feature work
 
@@ -523,34 +88,60 @@ If no flag is provided, `/plan` will analyze the task and **recommend** a tier:
 
 ```
 Analyzing: "Add dark mode toggle to settings"
-→ Recommended tier: default (standard feature, clear scope)
-→ Proceeding with standard planning...
+-> Recommended tier: default (standard feature, clear scope)
+-> Proceeding with standard planning...
 ```
 
 ```
 Analyzing: "Refactor CSS architecture to use design tokens"
-→ Recommended tier: -complex (architectural change, multi-file impact)
-→ Suggest running: /plan -complex "Refactor CSS architecture..."
-→ Proceed with standard planning anyway? [y/n]
+-> Recommended tier: -complex (architectural change, multi-file impact)
+-> Suggest running: /plan -complex "Refactor CSS architecture..."
+-> Proceed with standard planning anyway? [y/n]
 ```
 
 The user can override the recommendation.
 
+### Cognition Flags (Optional)
+
+| Flag | Cognition Operation | Best For |
+|------|------------------------|----------|
+| `--visual` | `visual_reasoning` | UI/UX features, user flows, screen layouts |
+| `--systems` | `systems` | Architecture, integrations, data flow |
+| `--debug` | `debug` | Bug fixes, performance issues, root causes |
+| `--model` | `mental_model` (first_principles) | Foundational decisions, "why" questions |
+| `--creative` | `creative_thinking` | New features, brainstorming, exploration |
+| `--causal` | `causal_analysis` | Understanding cause-effect, debugging |
+| `--decide` | `decide` | Choosing between options, trade-offs |
+| **`--problem-solve`** | **Structured multi-step analysis** | **Complex features, architectural decisions, high-risk implementations** |
+
+Cognition flags combine with tier flags:
+
+```bash
+/plan -tweak --visual Update button colors
+/plan -complex --systems Migrate database to PostgreSQL
+/plan -complex --problem-solve Implement multi-tenant architecture
+```
+
+These flags are processed in Section 2 AFTER the requirements folder is created.
+
 ---
+
 ## 1. Initialize or Reuse a Requirement
 
- **CRITICAL PATH RULE**: ALL requirements artifacts go in `.claude/requirements/`, NEVER in `requirements/` at project root.
--  CORRECT: `.claude/requirements/2025-11-29-1430-dark-mode/`
--  WRONG: `requirements/2025-11-29-1430-dark-mode/`
+**THIS SECTION RUNS FIRST -- BEFORE ANY COGNITION ANALYSIS.**
+
+**CRITICAL PATH RULE**: ALL requirements artifacts go in `.claude/requirements/`, NEVER in `requirements/` at project root.
+- CORRECT: `.claude/requirements/2025-11-29-1430-dark-mode/`
+- WRONG: `requirements/2025-11-29-1430-dark-mode/`
 - Before ANY Write/mkdir: verify path starts with `.claude/`
 
 1. If there is NO active requirement:
-   - Slugify the request (e.g. `"New onboarding flow"` → `new-onboarding-flow`).
+   - Slugify the request (e.g. `"New onboarding flow"` -> `new-onboarding-flow`).
    - Create a timestamped folder at `.claude/requirements/YYYY-MM-DD-HHMM-[slug]`:
      - First ensure `.claude/requirements/` exists
      - Path MUST be: `.claude/requirements/YYYY-MM-DD-HHMM-[slug]`
      - Inside that folder create:
-       - `00-initial-request.md` – write the user’s request and any initial notes.
+       - `00-initial-request.md` -- write the user's request and any initial notes.
        - `metadata.json` with:
          - `id`, `started`, `lastUpdated`, `status: "active"`, `phase: "discovery"`.
          - `progress.discovery: { answered: 0, total: 5 }`.
@@ -576,19 +167,43 @@ The user can override the recommendation.
 
 ---
 
-## 1.5 Cognition Analysis Phase (If Flag Provided)
+## 2. Cognition Analysis Phase (If Flag Provided)
 
-If the user provided a Cognition flag (`--visual`, `--systems`, `--debug`, `--model`, `--creative`, `--causal`, `--decide`, `--problem-solve`):
+**Prerequisites**: The requirements folder from Section 1 MUST exist before this section runs.
 
-### Step 0: Check for Problem-Solve
+If the user provided a cognition flag (`--visual`, `--systems`, `--debug`, `--model`, `--creative`, `--causal`, `--decide`, `--problem-solve`), run the appropriate analysis now. All analysis output is saved INTO the requirements folder created in Section 1.
 
-**If `--problem-solve` is provided**: Skip this section entirely. Instead, execute the full **Problem-Solve Planning Pipeline** from Section 0.2. The pipeline will produce `00-problem-solve-analysis.md` and feed directly into discovery questions.
+### --problem-solve Mode
 
-For all other cognition flags, continue with the single-operation flow below.
+When `--problem-solve` is provided, run a structured analysis BEFORE discovery questions:
 
-### Step 1: Parse the Flag
+1. **Requirements folder already exists** (Section 1 -- completed above, non-negotiable)
+2. Run cognition-mcp operations: systems mapping, pre-mortem, approach generation, evaluation
+3. Save the full analysis to `00-problem-solve-analysis.md` in the requirements folder
+4. Use the analysis to inform smarter discovery questions (Section 3)
+5. Continue with the standard requirements pipeline
 
-Map the flag to Cognition operation:
+The analysis should cover:
+- Systems map of affected components
+- Pre-mortem: what could cause this to fail?
+- 2-3 implementation approaches with trade-offs
+- Recommended approach with confidence level
+- Key risks tagged as `#POISON_PATH`
+- Architectural decisions tagged as `#PATH_DECISION`
+- Assumptions tagged as `#COMPLETION_DRIVE`
+
+Do NOT treat `--problem-solve` as a standalone thinking exercise.
+It is an analysis step WITHIN the requirements pipeline.
+
+**When to use --problem-solve**: Database migrations, new auth systems, multi-service integrations, major refactors, features with significant unknowns, high-risk production changes. Rule of thumb: if you would use extended thinking before making a decision, use `/plan --problem-solve`.
+
+### All Other Cognition Flags (--visual, --systems, --debug, etc.)
+
+For single-operation cognition flags:
+
+**Step 1: Parse the Flag**
+
+Map the flag to cognition operation:
 
 | Flag | Operation | Parameters |
 |------|-----------|------------|
@@ -599,9 +214,8 @@ Map the flag to Cognition operation:
 | `--creative` | `creative_thinking` | - |
 | `--causal` | `causal_analysis` | - |
 | `--decide` | `decide` | - |
-| `--problem-solve` | *See Section 0.2* | *Full pipeline* |
 
-### Step 2: Run Cognition Analysis
+**Step 2: Run Cognition Analysis**
 
 ```
 mcp__cognition-mcp__cognition
@@ -622,9 +236,9 @@ Provide analysis that will inform discovery questions:
   parameters: <if applicable>
 ```
 
-### Step 3: Store Analysis
+**Step 3: Store Analysis**
 
-Save the Cognition output to `00-cognition-analysis.md` in the requirements folder:
+Save the cognition output to `00-cognition-analysis.md` in the requirements folder:
 
 ```markdown
 # Cognition Analysis
@@ -654,7 +268,7 @@ Save the Cognition output to `00-cognition-analysis.md` in the requirements fold
 - ...
 ```
 
-### Step 4: Update Metadata
+**Step 4: Update Metadata**
 
 Add to `metadata.json`:
 ```json
@@ -668,7 +282,7 @@ Add to `metadata.json`:
 }
 ```
 
-For `--problem-solve`, the metadata structure is different:
+For `--problem-solve`, the metadata structure is:
 ```json
 {
   "cognition": {
@@ -676,34 +290,22 @@ For `--problem-solve`, the metadata structure is different:
     "pipeline": "full",
     "sessionId": "<cognition session ID>",
     "analysisFile": "00-problem-solve-analysis.md",
-    "phases": {
-      "orient": "completed",
-      "anticipate": "completed",
-      "generate": "completed",
-      "evaluate": "completed",
-      "commit": "completed"
-    },
-    "pathDecisions": ["<list of #PATH_DECISION items>"],
-    "completionDrives": ["<list of #COMPLETION_DRIVE items>"],
-    "poisonPaths": ["<list of #POISON_PATH items>"],
     "timestamp": "<ISO timestamp>"
   }
 }
 ```
 
-### Step 5: Proceed to Discovery
+### How Cognition Analysis Feeds Discovery
 
-Continue to Phase 2, but use the Cognition analysis to:
-- Generate more targeted discovery questions
-- Reference specific components identified in analysis
-- Address risks/concerns raised
-- Validate assumptions
-
-**The discovery questions should NOT be generic** when Cognition analysis is available. They should directly reference insights from the analysis.
+After cognition analysis completes, continue to Section 3 with these enhancements:
+- Generate more targeted discovery questions referencing specific components identified
+- Address risks/concerns raised in the analysis
+- Validate assumptions from the analysis
+- Discovery questions should NOT be generic when cognition analysis is available
 
 ---
 
-## 2. Discovery & Detail with RA Awareness
+## 3. Discovery & Detail with RA Awareness
 
 Operate like the legacy `/requirements-status`, but with **Response Awareness** tags:
 
@@ -720,7 +322,7 @@ Phases:
      - Focus on UX surface, data sensitivity, related features, perf/scale, offline needs.
      - Each question MUST include:
        - A smart default,
-       - A short “Why this default makes sense” note.
+       - A short "Why this default makes sense" note.
    - Ask questions using `AskUserQuestion` (never free-form text questions):
      - Normalize answers to yes/no/default,
      - Record them in `02-discovery-answers.md`,
@@ -747,7 +349,7 @@ At the end of this phase, the requirements folder should contain:
 - Updated `metadata.json` tracking progress.
 
 ---
-## 3. Generate Blueprint `spec.md`
+## 4. Generate Blueprint `spec.md`
 
 When enough questions are answered (or the user explicitly asks for a blueprint):
 
@@ -782,7 +384,7 @@ When enough questions are answered (or the user explicitly asks for a blueprint)
 No production code should be written during `/plan`.
 
 ---
-## 4. Next Steps – Execute with /orca
+## 5. Next Steps -- Execute with /orca
 
 After `/plan` completes, suggest the matching domain command with the **same tier**:
 
@@ -794,9 +396,9 @@ After `/plan` completes, suggest the matching domain command with the **same tie
 
 Example output:
 ```
- Spec complete: .claude/requirements/2025-11-27-1430-dark-mode/06-requirements-spec.md
-  Tier: default
-  Domain detected: nextjs
+Spec complete: .claude/requirements/2025-11-27-1430-dark-mode/06-requirements-spec.md
+Tier: default
+Domain detected: nextjs
 
 Suggested next step:
   /nextjs Implement requirement dark-mode

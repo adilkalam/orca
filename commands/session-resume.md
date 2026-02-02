@@ -18,9 +18,9 @@ allowed-tools: [Read, Bash]
 ## Step 1: Check for Context File
 
 ```bash
-if [ -f .claude/orchestration/temp/session-context.md ]; then
+if [ -f .claude/orchestration/active-task.md ]; then
   echo " Session context file found"
-  cat .claude/orchestration/temp/session-context.md
+  cat .claude/orchestration/active-task.md
 else
   echo " No session context file found"
   echo ""
@@ -36,7 +36,7 @@ fi
 **Read the file:**
 
 ```
-Read(.claude/orchestration/temp/session-context.md)
+Read(.claude/orchestration/active-task.md)
 ```
 
 **Parse and present:**
@@ -55,7 +55,7 @@ Extract from the file:
 **Check file age:**
 
 ```bash
-fileAge=$(( $(date +%s) - $(stat -f %m .claude/orchestration/temp/session-context.md) ))
+fileAge=$(( $(date +%s) - $(stat -f %m .claude/orchestration/active-task.md) ))
 ageMinutes=$(( fileAge / 60 ))
 ageHours=$(( fileAge / 3600 ))
 
@@ -133,7 +133,7 @@ Want to pick up with: [Next steps from context]
 ```
  NO SESSION CONTEXT FOUND
 
-No .claude/orchestration/temp/session-context.md file exists yet.
+No .claude/orchestration/active-task.md file exists yet.
 
 To create one:
 1. Run /session-save to capture current session
@@ -147,12 +147,12 @@ once you've saved at least one session.
 ```
  Context file exists but couldn't be parsed
 
-The .claude/orchestration/temp/session-context.md file may be corrupted.
+The .claude/orchestration/active-task.md file may be corrupted.
 
 Options:
-1. Manually inspect: cat .claude/orchestration/temp/session-context.md
+1. Manually inspect: cat .claude/orchestration/active-task.md
 2. Create fresh context: /session-save
-3. Delete and start over: rm .claude/orchestration/temp/session-context.md
+3. Delete and start over: rm .claude/orchestration/active-task.md
 ```
 
 **Multiple sessions in file:**
@@ -186,7 +186,7 @@ Loading most recent session: [Session 1]
        "hooks": [
          {
            "type": "command",
-           "command": "cat .claude/orchestration/temp/session-context.md 2>/dev/null || echo '# New Session'"
+           "command": "cat .claude/orchestration/active-task.md 2>/dev/null || echo '# New Session'"
          }
        ]
      }
@@ -195,7 +195,7 @@ Loading most recent session: [Session 1]
 
 3. Test hook manually:
    ```bash
-   cat .claude/orchestration/temp/session-context.md 2>/dev/null || echo '# New Session'
+   cat .claude/orchestration/active-task.md 2>/dev/null || echo '# New Session'
    ```
 
 **If hook exists but doesn't fire:**

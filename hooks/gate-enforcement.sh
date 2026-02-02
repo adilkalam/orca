@@ -3,7 +3,7 @@
 # Enforces Blueprint Gate, Pattern Violations, and Context Proof
 # NOTE: This hook intentionally exits 1 on gate failures to block operations
 
-set -uo pipefail
+set -o pipefail
 
 # Colors
 RED='\033[0;31m'
@@ -20,8 +20,17 @@ PHASE_TEMP_DIR="$PHASE_DIR/temp"
 DESIGN_EVIDENCE_VALIDATOR="$HOME/.claude/scripts/validate-design-review-evidence.sh"
 BASH_LOG="$PHASE_DIR/temp/bash-commands.log"
 
-# Check what triggered this hook
-TRIGGER="${HOOK_TRIGGER:-unknown}"
+# Read JSON from stdin (Claude Code passes hook data via stdin)
+HOOK_INPUT=$(cat)
+
+# Extract tool name and params from JSON
+TOOL_NAME=$(echo "$HOOK_INPUT" | jq -r '.tool_name // empty' 2>/dev/null || echo "")
+TOOL_PARAMS=$(echo "$HOOK_INPUT" | jq -r '.tool_input // empty' 2>/dev/null || echo "")
+
+# Early exit: if no phase_state.json, this project doesn't use pipelines
+if [ ! -f "$PHASE_STATE" ]; then
+    exit 0
+fi
 
 # Check if gate runner exists (only needed for pattern violation checks)
 GATE_RUNNER_EXISTS=false

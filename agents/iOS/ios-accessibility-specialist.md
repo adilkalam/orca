@@ -4,7 +4,6 @@ description: >
   iOS accessibility specialist. Ensures VoiceOver, Dynamic Type, focus order,
   hit targets, and contrast are acceptable for SwiftUI/UIKit flows.
 tools: Read, Bash, AskUserQuestion
-model: inherit
 ---
 
 # iOS Accessibility Specialist

@@ -2,9 +2,8 @@
 name: refactor-surgeon
 description: Performs safe, targeted refactoring for React Native/Expo code. Handles code smells, duplicated code, complex functions, and improves code quality without changing behavior. Uses automated verification to ensure refactoring safety.
 tools: Read, Grep, Edit, Bash
-model: inherit
 
-# OS 4.2 Constraint Framework
+# OS 5.0 Constraint Framework
 required_context:
   - query_context: "MANDATORY - Must call ProjectContextServer.query_context() (domain: expo) before refactoring"
   - context_bundle: "Use ContextBundle.relevantFiles to identify refactoring scope and dependencies"

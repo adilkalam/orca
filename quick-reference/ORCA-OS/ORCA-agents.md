@@ -1,14 +1,14 @@
-# OS 4.3 Agents Quick Reference
+# OS 5.0 Agents Quick Reference
 
-**Last Updated:** 2026-01-24
-**Version:** OS 4.3
+**Last Updated:** 2026-01-30
+**Version:** OS 5.0
 **Total Agents:** 105 (public lanes)
 
 > **Scope Note:** This quick-reference covers public lanes only. Internal lanes (kg, shopify) add 12 agents for a system total of 117. See `docs/reference/os-dependency-graph.yaml` for complete registry.
 
 ---
 
-## Agent Architecture (OS 4.3)
+## Agent Architecture (OS 5.0)
 
 **All Agents Use Opus 4.5:**
 - Grand architects (coordination & architecture)
@@ -28,16 +28,16 @@
 | Domain | Count | Location |
 |--------|-------|----------|
 | iOS | 19 | `agents/iOS/` |
-| Next.js | 17 | `agents/dev/nextjs-*` + tailwind/shadcn-specialist |
+| Next.js | 15 | `agents/nextjs/` |
 | Django-React | 13 | `agents/django-react/` |
 | Expo | 12 | `agents/expo/` |
+| OS-Dev | 6 | `agents/os-dev/` (os-dev-*) |
+| Orca-Pipeline | 5 | `agents/os-dev/` (orca-pipeline-*) |
 | Research | 7 | `agents/research/` |
 | SEO | 5 | `agents/seo/` |
 | Data | 4 | `agents/data/` |
-| OS-Dev | 6 | `agents/dev/os-dev-*` |
-| Orca-Pipeline | 5 | `agents/orca-dev/` |
 | Audit | 8 | `agents/audit/` |
-| Cross-Cutting | 9 | `agents/` (root) |
+| Cross-Cutting | 11 | `agents/dev/` |
 | **TOTAL** | **105** | |
 
 ---
@@ -79,7 +79,7 @@
 
 ---
 
-## Next.js Pipeline (17 Agents)
+## Next.js Pipeline (15 Agents)
 
 ### Orchestration
 | Agent | Purpose |
@@ -96,8 +96,8 @@
 | `nextjs-layout-specialist` | Complex layout implementation |
 | `nextjs-css-specialist` | Semantic CSS, @layer, design tokens |
 | `nextjs-css-architecture-gate` | CSS architecture validation |
-| `tailwind-specialist` | Tailwind CSS (auto-detected via tailwind.config.* or @import 'tailwindcss') |
-| `shadcn-specialist` | shadcn/ui components (auto-detected via components.json or components/ui/) |
+| `tailwind-specialist` | Tailwind CSS (auto-detected; in `agents/dev/`) |
+| `shadcn-specialist` | shadcn/ui components (auto-detected; in `agents/dev/`) |
 | `nextjs-typescript-specialist` | TypeScript best practices |
 | `nextjs-performance-specialist` | Bundle optimization, lazy loading |
 | `nextjs-seo-specialist` | SEO optimization |
@@ -314,23 +314,23 @@ Specialist agents for due-diligence audits. Run in parallel via `/audit` command
 
 ---
 
-## Cross-Cutting Agents (9 Agents)
+## Cross-Cutting Agents (11 Agents)
 
-These agents work across multiple pipelines:
+Located in `agents/dev/`. These agents work across multiple pipelines:
 
 | Agent | Used By | Purpose |
 |-------|---------|---------|
 | `a11y-enforcer` | Expo, Next.js | WCAG 2.2 compliance |
-| `crash-analyzer` | All lanes | Cross-domain crash and error analysis (NEW OS 3.1) |
-| `debt-eliminator` | All lanes | Technical debt identification and prioritization (NEW OS 3.1) |
+| `crash-analyzer` | All lanes | Cross-domain crash and error analysis |
+| `debt-eliminator` | All lanes | Technical debt identification and prioritization |
 | `design-system-architect` | All UI lanes | Design token and component system |
 | `design-token-guardian` | Expo, Next.js | Token enforcement, no hardcoded values |
 | `performance-enforcer` | Expo, Next.js | Bundle size, performance budgets |
 | `performance-prophet` | Expo | Predictive performance analysis |
 | `security-specialist` | Expo, iOS | OWASP Mobile Top 10, secure storage |
+| `shadcn-specialist` | Next.js | shadcn/ui components (auto-detected) |
+| `tailwind-specialist` | Next.js | Tailwind CSS (auto-detected) |
 | `version-shield` | All lanes | Dependency version management and breaking changes |
-
-**Note:** `tailwind-specialist` and `shadcn-specialist` are counted in Next.js pipeline (auto-detected based on project config).
 
 ---
 
@@ -354,15 +354,15 @@ These agents work across multiple pipelines:
 ```
 ~/.claude/agents/
   iOS/              # 19 agents
-  dev/              # 23 agents (nextjs-*, os-dev-*, tailwind-*, shadcn-*)
+  nextjs/           # 15 agents (nextjs-*)
   django-react/     # 13 agents
   expo/             # 12 agents
+  os-dev/           # 11 agents (os-dev-* + orca-pipeline-*)
+  dev/              # 11 agents (cross-cutting: a11y, crash, debt, design-*, perf-*, security, shadcn, tailwind, version)
   research/         # 7 agents
   seo/              # 5 agents
   data/             # 4 agents
   audit/            # 8 agents
-  orca-dev/         # 5 agents (orca-pipeline-*)
-  (root level)      # 9 cross-cutting agents
 ```
 
 ### Source (ORCA-OS Repo)
@@ -392,4 +392,4 @@ $ORCA_OS_PATH/agents/
 ---
 
 _Source of truth: `docs/reference/os-dependency-graph.yaml`_
-_Last sync: 2026-01-23_
+_Last sync: 2026-01-30_

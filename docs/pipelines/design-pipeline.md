@@ -1,6 +1,6 @@
 # Design Domain Pipeline
 
-**Status:** OS 4.2 Pipeline (DesignPipeline)
+**Status:** OS 5.0 Pipeline (DesignPipeline)
 **Last Updated:** 2025-11-27
 
 The design pipeline handles design-first work: turning briefs and visual inputs
@@ -9,7 +9,7 @@ and optional Figma/HTML exports) that downstream pipelines (webdev, brand)
 can implement.
 
 It combines:
-- OS 4.2 primitives (ProjectContextServer, `phase_state.json`, code-index.db, Workshop)
+- OS 5.0 primitives (ProjectContextServer, `phase_state.json`, code-index.db, Workshop)
 - Memory-first context (Workshop + code-index.db before ProjectContext)
 - Design agents:
   - `design-system-architect` (lead)

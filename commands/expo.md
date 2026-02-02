@@ -1,5 +1,5 @@
 ---
-description: "OS 4.2 Expo/React Native Orchestrator – coordinates the Expo lane pipeline, never writes code"
+description: "OS 5.0 Expo/React Native Orchestrator – coordinates the Expo lane pipeline, never writes code"
 argument-hint: "[-tweak] <task description or requirement ID>"
 allowed-tools:
   - Task
@@ -36,7 +36,7 @@ Even `-tweak` delegates to a builder. It skips gates, not agents.
 
 ---
 
-# /expo - Expo Lane Orchestrator (OS 4.2)
+# /expo - Expo Lane Orchestrator (OS 5.0)
 
 Use this command for Expo/React Native mobile work.
 
@@ -72,7 +72,7 @@ No flag → Default path (light + design gates)
 
 ---
 
-## 0.1 Telemetry (OS 4.2) - MUST EXECUTE
+## 0.1 Telemetry (OS 5.0) - MUST EXECUTE
 
 **Reference:** `docs/reference/telemetry-standard.md`
 
@@ -118,6 +118,34 @@ TELEMETRY_TRACE_ID: <the trace_id>
 ```
 
 Agents may log delegation events using this ID (Phase 2).
+
+### After Each Gate (EXECUTE THIS)
+
+When a gate agent (e.g., design-token-guardian, a11y-enforcer, performance-enforcer) returns results, extract and emit:
+
+```
+Bash({
+  command: 'echo "{\"type\":\"gate_result\",\"trace_id\":\"$TRACE_ID\",\"ts\":\"$(date -u +%Y-%m-%dT%H:%M:%SZ)\",\"data\":{\"gate\":\"$GATE_NAME\",\"score\":$SCORE,\"decision\":\"$DECISION\",\"issues_count\":$ISSUES}}" >> .claude/telemetry/sessions/trace-$TRACE_ID.jsonl',
+  description: "Log gate result"
+})
+```
+
+Variables:
+- `$TRACE_ID`: From pipeline start
+- `$GATE_NAME`: Agent name (e.g., "expo-aesthetics-specialist")
+- `$SCORE`: Numeric score (0-100) from gate output
+- `$DECISION`: "PASS", "WARN", "ERROR", or "BLOCK"
+- `$ISSUES`: Count of issues found
+
+### On Failure (EXECUTE THIS)
+
+If pipeline status is "failed" or "cancelled", show viewer hint:
+
+```
+echo ""
+echo "Debug with: ~/.claude/scripts/telemetry-viewer.sh $TRACE_ID"
+echo ""
+```
 
 ---
 
@@ -254,7 +282,7 @@ If memory hits are relevant:
 - Note them for context
 - May skip or reduce ProjectContext query scope
 
-### 1.1.1 Reflexion Loading (OS 4.2)
+### 1.1.1 Reflexion Loading (OS 5.0)
 
 Load relevant reflexions from past gate failures:
 
@@ -514,7 +542,7 @@ Initialize phase_state.json:
 
 Delegate to `expo-grand-orchestrator` with Context Inheritance:
 
-**Context Inheritance Protocol (OS 4.2):**
+**Context Inheritance Protocol (OS 5.0):**
 
 When delegating, wrap the ContextBundle with inheritance headers:
 
@@ -662,7 +690,7 @@ Update phase_state.verification.
 
 ---
 
-## 5. Standards Inputs (OS 4.2 Learning Loop)
+## 5. Standards Inputs (OS 5.0 Learning Loop)
 
 ### Gate Enforcement
 

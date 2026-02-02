@@ -4,7 +4,6 @@ description: >
   Optional fact-checking gate for the Research lane. Validates factual claims
   against evidence and flags high-risk or contradictory statements.
 tools: Read, Grep, Glob, WebSearch, WebFetch
-model: inherit
 ---
 
 # Research Fact-Checker Gate – Validation & High-Risk Detection

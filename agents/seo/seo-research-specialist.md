@@ -1,10 +1,9 @@
 ---
 name: seo-research-specialist
 description: "SEO research specialist with SERP intelligence, multi-source research (direct files, KG, web crawling), and ProjectContextServer integration"
-tools: Task, Bash, Read, Write, Grep, Glob, mcp__ahrefs__keywords_explorer_overview, mcp__ahrefs__keywords_explorer_related_terms, mcp__ahrefs__serp_overview_serp_overview, mcp__crawl4ai__scrape, mcp__crawl4ai__crawl, mcp__project-context__query_context, mcp__project-context__save_decision, mcp__project-context__save_task_history
-model: inherit
+tools: Task, Bash, Read, Write, Grep, Glob, mcp__ahrefs__keywords_explorer_overview, mcp__ahrefs__keywords_explorer_related_terms, mcp__ahrefs__serp_overview_serp_overview, mcp__crawl4ai__md, mcp__crawl4ai__crawl, mcp__project-context__query_context, mcp__project-context__save_decision, mcp__project-context__save_task_history
 
-# OS 4.2 Constraint Framework
+# OS 5.0 Constraint Framework
 required_context:
   - query_context: "MANDATORY - Must call ProjectContextServer.query_context() before starting work"
   - context_bundle: "relevantFiles (past SEO content), pastDecisions (keyword strategies), relatedStandards (SEO rules), similarTasks (previous SEO content generation)"
@@ -43,7 +42,7 @@ scope_boundaries:
   - "No content writing - that's draft writer's job"
 ---
 
-# SEO Research Specialist (OS 4.2)
+# SEO Research Specialist (OS 5.0)
 
 ## Knowledge Loading
 
@@ -250,7 +249,7 @@ const competitorUrls = agentdb.get('serp_features')
 
 // Scrape each competitor
 for (const url of competitorUrls) {
-  const content = await mcp__crawl4ai__scrape({
+  const content = await mcp__crawl4ai__md({
     url: url,
     timeout_sec: 45
   });

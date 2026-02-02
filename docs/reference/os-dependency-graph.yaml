@@ -2,10 +2,10 @@
 # Source of truth for artifact relationships
 # Used by /orca-os-dev to trace impacts and sync documentation
 #
-# Version: 4.3
-# Last Updated: 2026-01-23
+# Version: 5.0
+# Last Updated: 2026-01-30
 
-version: "4.3"
+version: "5.0"
 
 # =============================================================================
 # ARTIFACT TYPE DEFINITIONS
@@ -186,9 +186,9 @@ lanes:
 
   nextjs:
     command: nextjs
-    agents_dir: agents/dev
+    agents_dir: agents/nextjs
     agent_prefix: nextjs-
-    agent_count: 17
+    agent_count: 15
     agents:
       - nextjs-grand-architect
       - nextjs-architect
@@ -198,8 +198,6 @@ lanes:
       - nextjs-layout-specialist
       - nextjs-css-specialist
       - nextjs-css-architecture-gate
-      - tailwind-specialist
-      - shadcn-specialist
       - nextjs-typescript-specialist
       - nextjs-performance-specialist
       - nextjs-seo-specialist
@@ -336,7 +334,7 @@ lanes:
 
   os-dev:
     command: orca-os-dev
-    agents_dir: agents/dev
+    agents_dir: agents/os-dev
     agent_prefix: os-dev-
     agent_count: 6
     agents:
@@ -351,7 +349,7 @@ lanes:
 
   orca-pipeline:
     command: orca-pipeline
-    agents_dir: agents/orca-dev
+    agents_dir: agents/os-dev
     agent_prefix: orca-pipeline-
     agent_count: 5
     description: "Meta-pipeline for creating new domain pipelines"
@@ -414,18 +412,20 @@ lanes:
 # Agents at root level used across multiple lanes
 # =============================================================================
 cross_cutting:
-  agents_dir: agents/
-  agent_count: 9
+  agents_dir: agents/dev
+  agent_count: 11
   agents:
     - a11y-enforcer
-    - crash-analyzer        # NEW: Cross-domain crash analysis (OS 3.1)
-    - debt-eliminator       # NEW: Technical debt identification (OS 3.1)
+    - crash-analyzer
+    - debt-eliminator
     - design-system-architect
     - design-token-guardian
     - performance-enforcer
     - performance-prophet
     - security-specialist
-    - version-shield        # NEW: Dependency version management (OS 3.1)
+    - shadcn-specialist
+    - tailwind-specialist
+    - version-shield
   used_by_lanes:
     - expo
     - nextjs
@@ -744,11 +744,6 @@ commands:
     description: "Convergent 8-step decision pipeline"
     agents_called: []
 
-  - name: design-review-from-screenshot
-    type: utility
-    agents_called:
-      - nextjs-design-reviewer
-
   - name: memory-search
     type: utility
     agents_called: []
@@ -768,21 +763,21 @@ commands:
 # =============================================================================
 counts:
   total_agents: 117
-  total_commands: 33
+  total_commands: 32
   agents_by_domain:
     ios: 19
-    nextjs: 17             # +tailwind-specialist, +shadcn-specialist
+    nextjs: 15             # agents/nextjs/ (nextjs-* agents only)
     django-react: 13       # 3 orchestration + 1 implementation + 3 backend + 1 integration + 3 frontend + 2 gates
     expo: 12               # +api-guardian, bundle-assassin, impact-analyzer, refactor-surgeon, test-generator, standards-enforcer
     research: 7
     seo: 5                 # +seo-optimizer (content optimization against SERP)
     data: 4
-    os-dev: 6              # os-dev-* agents in agents/dev/
-    orca-pipeline: 5       # orca-pipeline-orchestrator, researcher, architect, generator, validator
+    os-dev: 6              # os-dev-* agents in agents/os-dev/
+    orca-pipeline: 5       # orca-pipeline-* agents in agents/os-dev/
     audit: 8               # Phase 1 (3): structure, dependency, security. Phase 2 (5): pattern, documentation, test, architecture, design
     kg: 4                  # Knowledge Graph research pipeline
     shopify: 8             # Shopify theme development pipeline
-    cross-cutting: 9       # a11y-enforcer, crash-analyzer, debt-eliminator, design-system-architect, design-token-guardian, performance-enforcer, performance-prophet, security-specialist, version-shield
+    cross-cutting: 11      # agents/dev/: a11y-enforcer, crash-analyzer, debt-eliminator, design-system-architect, design-token-guardian, performance-enforcer, performance-prophet, security-specialist, shadcn-specialist, tailwind-specialist, version-shield
 
 # =============================================================================
 # CHANGE IMPACT RULES

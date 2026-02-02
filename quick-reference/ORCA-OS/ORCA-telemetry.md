@@ -1,20 +1,21 @@
-# Quick Reference: Telemetry (OS 4.2)
+# Quick Reference: Telemetry (OS 5.0)
 
-**Last Updated:** 2026-01-23
-**Version:** OS 4.3
+**Last Updated:** 2026-01-24
+**Version:** OS 5.0
 
-Telemetry tracks pipeline execution for debugging, performance tuning, and future smart routing.
+Telemetry tracks pipeline execution for debugging and performance analysis.
 
 ---
 
-## What Gets Tracked
+## What Exists (v1)
 
 | Event | When | Data Captured |
 |-------|------|---------------|
 | `pipeline_start` | Lane command starts | Domain, task, mode (tweak/default/complex) |
-| `delegation` | Agent hands off to another | From, to, context size |
 | `gate_result` | Gate completes | Score, decision, issue count |
 | `pipeline_end` | Pipeline completes | Status, duration, files modified |
+
+**Note:** Delegation events are planned for Phase 2.
 
 ---
 
@@ -23,35 +24,27 @@ Telemetry tracks pipeline execution for debugging, performance tuning, and futur
 ```
 .claude/telemetry/
   sessions/
-    nextjs-20251205T143022-a7b3/
-      trace.jsonl       # Event stream
-      summary.json      # Session summary
-  metrics/
-    gate-scores.jsonl   # Aggregated scores
-    delegation-times.jsonl
-  index.json            # Session lookup
+    trace-nextjs-20260124T143022-a7b3.jsonl   # Event stream (JSONL format)
+  index.json                                   # Session lookup
 ```
 
-**Not committed to git** - ephemeral debugging data.
+**Not committed to git** - add `.claude/telemetry/` to `.gitignore`.
 
 ---
 
 ## What Triggers It
 
-Telemetry is emitted by orchestrator commands (`/nextjs`, `/ios`, `/expo`, etc.):
+Telemetry is emitted by orchestrator commands (`/nextjs`, `/ios`, `/expo`, `/django-react`, `/orca-os-dev`, `/shopify`):
 
 ```bash
-# At start of /nextjs "add button"
-{"type": "pipeline_start", "trace_id": "nextjs-20251205-a7b3", ...}
+# At pipeline start
+{"type": "pipeline_start", "trace_id": "nextjs-20260124T143022-a7b3", "data": {"domain": "nextjs", "task": "add button", "mode": "default"}}
 
-# When grand-architect delegates to builder
-{"type": "delegation", "from": "nextjs-grand-architect", "to": "nextjs-builder", ...}
+# After each gate runs
+{"type": "gate_result", "trace_id": "...", "data": {"gate": "nextjs-standards-enforcer", "score": 87, "decision": "WARN", "issues_count": 3}}
 
-# When standards-enforcer runs
-{"type": "gate_result", "gate": "nextjs-standards-enforcer", "score": 87, ...}
-
-# When pipeline completes
-{"type": "pipeline_end", "status": "success", "duration_sec": 45, ...}
+# At pipeline end
+{"type": "pipeline_end", "trace_id": "...", "data": {"status": "success", "duration_sec": 45, "files_modified": 3}}
 ```
 
 ---
@@ -60,58 +53,55 @@ Telemetry is emitted by orchestrator commands (`/nextjs`, `/ios`, `/expo`, etc.)
 
 ```
 {domain}-{timestamp}-{random}
-nextjs-20251205T143022-a7b3
+nextjs-20260124T143022-a7b3
 ```
 
-The trace ID flows through the entire delegation chain.
+The trace ID flows through the entire pipeline.
 
 ---
 
-## Viewing Telemetry
+## Viewing Telemetry (Trace Viewer)
+
+Use the trace viewer script for human-readable output:
 
 ```bash
-# List recent sessions
-cat .claude/telemetry/index.json
+# View most recent trace
+~/.claude/scripts/telemetry-viewer.sh --recent
 
-# View a session's event stream
-cat .claude/telemetry/sessions/nextjs-20251205-a7b3/trace.jsonl
+# List all available traces
+~/.claude/scripts/telemetry-viewer.sh --list
 
-# View session summary
-cat .claude/telemetry/sessions/nextjs-20251205-a7b3/summary.json
-
-# Gate score trends
-cat .claude/telemetry/metrics/gate-scores.jsonl | tail -5
+# View specific trace by ID
+~/.claude/scripts/telemetry-viewer.sh nextjs-20260124T143022-a7b3
 ```
+
+**Example output:**
+
+```
+=== Trace: nextjs-20260124T143022-a7b3 ===
+
+PIPELINE START: nextjs | default | add dark mode toggle
+
+GATES:
+  nextjs-standards-enforcer: 87 [WARN] (3 issues)
+  nextjs-design-reviewer: 92 [PASS] (0 issues)
+
+PIPELINE END: success | 45s | 3 files
+```
+
+**Requirements:** The viewer requires `jq` for JSON parsing.
 
 ---
 
-## Session Summary
+## Debugging Failed Pipelines
 
-Generated at pipeline end:
+When a pipeline fails, the orchestrator outputs a viewer hint:
 
-```json
-{
-  "trace_id": "nextjs-20251205-a7b3",
-  "domain": "nextjs",
-  "task_summary": "add dark mode toggle",
-  "duration_sec": 45,
-  "status": "success",
-
-  "delegation_chain": [
-    {"from": "nextjs-grand-architect", "to": "nextjs-builder", "context_kb": 42}
-  ],
-
-  "gate_scores": {
-    "nextjs-standards-enforcer": {"score": 87, "decision": "WARN"},
-    "nextjs-design-reviewer": {"score": 92, "decision": "PASS"}
-  },
-
-  "metrics": {
-    "files_modified": 3,
-    "user_prompts": 1
-  }
-}
 ```
+Debug with: ~/.claude/scripts/telemetry-viewer.sh <trace-id>
+```
+
+Use this to see gate scores and identify what failed.
 
 ---
 
@@ -120,7 +110,6 @@ Generated at pipeline end:
 | Data | Kept For |
 |------|----------|
 | Session traces | 7 days |
-| Aggregated metrics | 30 days |
 
 Cleanup runs via `scripts/telemetry-cleanup.sh`.
 
@@ -131,48 +120,21 @@ Cleanup runs via `scripts/telemetry-cleanup.sh`.
 The `session-start.sh` hook creates the telemetry structure:
 
 ```bash
-# Creates on session start:
 mkdir -p .claude/telemetry/sessions
-mkdir -p .claude/telemetry/metrics
-
-# Creates index if missing:
-echo '{"version":"1.0","sessions":[]}' > .claude/telemetry/index.json
 ```
 
 ---
 
-## Future Use
+## Planned (Phase 2)
 
-The `complexity_signals` in session summaries will train the Smart Router:
+The following features are planned for future implementation:
 
-```json
-"complexity_signals": {
-  "files_touched": 3,
-  "task_keywords": ["add", "toggle"],
-  "estimated_complexity": "medium",
-  "actual_outcome": "success"
-}
-```
-
-This data helps `/plan` make smarter tier recommendations.
+- **Delegation auto-capture:** Hook-based tracking of agent-to-agent delegations
+- **File change tracking:** Track which files are modified during pipelines
+- **Metrics aggregation:** Daily/weekly gate score trends
+- **Session summaries:** JSON summary with complexity signals
+- **Smart Router training:** Use telemetry data to improve `/plan` routing
 
 ---
 
-## Quick Debug
-
-If a pipeline failed:
-
-```bash
-# Find the session
-grep "status.*failed" .claude/telemetry/sessions/*/summary.json
-
-# View the trace
-cat .claude/telemetry/sessions/{session-id}/trace.jsonl
-
-# Check which gate failed
-grep "gate_result" .claude/telemetry/sessions/{session-id}/trace.jsonl
-```
-
----
-
-*Part of ORCA OS 4.2*
+*Part of ORCA OS 5.0*

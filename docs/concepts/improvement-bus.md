@@ -1,4 +1,6 @@
-# Unified Improvement Bus (OS 4.2)
+# Unified Improvement Bus
+
+**Version:** OS 5.0 | **Last Updated:** 2026-01-24
 
 The Improvement Bus unifies all self-improvement mechanisms into a single event stream with explicit routing to appropriate sinks.
 
@@ -6,7 +8,7 @@ The Improvement Bus unifies all self-improvement mechanisms into a single event 
 
 ## The Problem
 
-OS 4.2 introduced multiple improvement loops, but they operate in silos:
+OS 5.0 introduced multiple improvement loops, but they operate in silos:
 
 | Loop | Output | Storage | Consumption |
 |------|--------|---------|-------------|

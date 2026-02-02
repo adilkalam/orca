@@ -1,5 +1,7 @@
 # Skills
 
+**Version:** OS 5.0 | **Last Updated:** 2026-01-24
+
 Skills are reusable knowledge packages that provide domain expertise to agents.
 
 ## What is a Skill?
@@ -87,7 +89,7 @@ These skills are referenced by ALL 85 agents via "Required Skills" sections:
 ### Domain Knowledge Skills
 - `ios-knowledge-skill` - iOS/Swift patterns and conventions
 - `nextjs-knowledge-skill` - Next.js patterns and conventions
-- `os-dev-knowledge-skill` - OS 4.2 configuration knowledge (LOCAL)
+- `os-dev-knowledge-skill` - OS 5.0 configuration knowledge (LOCAL)
 
 ### Testing Skills
 - `ios-testing-skill` - iOS testing patterns

@@ -4,7 +4,6 @@ description: >
   Citation gate for the Research lane. Reads draft reports and Evidence Notes,
   inserts or verifies citations, and flags unsupported claims.
 tools: Read, Write, Grep, Glob
-model: inherit
 ---
 
 # Research Citation Gate – Evidence Alignment and Citations

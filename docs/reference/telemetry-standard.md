@@ -1,8 +1,8 @@
-# Telemetry Standard (OS 4.2)
+# Telemetry Standard (OS 5.0)
 
 **Version:** 3.0.0
 **Status:** Active
-**Effective:** OS 4.2
+**Effective:** OS 5.0
 
 ---
 
@@ -297,20 +297,22 @@ Output labels:
 
 ## Implementation Checklist
 
-Phase 1 (Foundation):
+Phase 1 (Foundation) - Complete:
 - [x] Define telemetry standard (this document)
 - [x] Create telemetry directory structure (via session-start.sh hook)
 - [x] Add .claude/telemetry/ to .gitignore
 - [x] Create index.json template (via session-start.sh hook)
-- [ ] Add trace_id generation to grand-architects
 - [x] Add event logging instructions to orchestrator commands
 - [x] Add cleanup script for 7-day retention (scripts/telemetry-cleanup.sh)
+- [x] Add gate_result emission to lane commands
+- [x] Create trace viewer script (scripts/telemetry-viewer.sh)
 
-Phase 2 (Intelligence):
+Phase 2 (Intelligence) - Planned:
+- [ ] Hook-based delegation auto-capture
+- [ ] Hook-based file change tracking
 - [ ] Build aggregation scripts for metrics
 - [ ] Create complexity classifier training pipeline
-- [ ] Add telemetry viewer command (`/telemetry`)
 
 ---
 
-*Part of OS 4.2*
+*Part of OS 5.0*

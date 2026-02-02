@@ -1,4 +1,4 @@
-# ORCA-OS v4.2 Systems Analysis
+# ORCA-OS v5.0 Systems Analysis
 
 **Generated:** 2026-01-11
 **Source of Truth:** `docs/reference/os-dependency-graph.yaml`

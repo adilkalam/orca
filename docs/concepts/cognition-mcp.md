@@ -713,4 +713,4 @@ For full research context, see `/docs/concepts/llm-introspection-analysis.md`.
 
 ---
 
-_Version: OS 4.3 | Last tested: December 2024_
+_Version: OS 5.0 | Last tested: December 2024_

@@ -1,6 +1,6 @@
 # Data / Analytics Domain Pipeline
 
-**Status:** OS 4.2 Pipeline (DataPipeline)
+**Status:** OS 5.0 Pipeline (DataPipeline)
 **Last Updated:** 2025-11-27
 
 ---
@@ -13,7 +13,7 @@ The data/analytics pipeline handles work where the primary output is:
 - Decision-support artifacts (briefs, dashboards, metrics, reports).
 
 It combines:
-- OS 4.2 primitives (ProjectContextServer, `phase_state.json`, code-index.db, Workshop)
+- OS 5.0 primitives (ProjectContextServer, `phase_state.json`, code-index.db, Workshop)
 - Memory-first context (Workshop + code-index.db before ProjectContext)
 - Data/analytics agents:
   - `data-researcher` (lead)

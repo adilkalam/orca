@@ -1,10 +1,10 @@
-# OS 4.2 Next.js Lane Readme
+# OS 5.0 Next.js Lane Readme
 
 **Lane:** Next.js / Frontend  
 **Domain:** `nextjs`  
 **Entrypoints:** `/plan`, `/orca`, `/nextjs`, `/project-memory`, `/project-code`
 
-This document explains how the Next.js lane works in Vibe OS 4.2:
+This document explains how the Next.js lane works in Vibe OS 5.0:
 
 - How planning and specs work (`/plan`)
 - How orchestration routes (`/orca`, `/nextjs`)
@@ -52,7 +52,7 @@ For **complex** Next.js tasks the spec is **required** before the full lane runs
 
 ### 2.2 Global Orchestrator – `/orca`
 
-`/orca` is the pure OS 4.2 orchestrator:
+`/orca` is the pure OS 5.0 orchestrator:
 
 - Checks Workshop + code-index.db first (memory‑first).
 - Checks for an active requirements spec.
@@ -79,7 +79,7 @@ File: `commands/nextjs.md`
   /nextjs "implement requirement <id>"           # With spec
   ```
 
-- **Three-Tier Routing (OS 4.2):**
+- **Three-Tier Routing (OS 5.0):**
 
   | Mode | Flag | Path | Gates |
   |------|------|------|-------|
@@ -140,48 +140,49 @@ Response Awareness:
 
 Core agents (all Opus 4.5):
 
-- `agents/dev/nextjs-grand-architect.md`
+- `agents/nextjs/nextjs-grand-architect.md`
   - Orchestrates the entire Next.js lane.
   - Chooses architecture path (App Router vs Pages, RSC vs client).
   - Assembles task force and coordinates phases.
 
-- `agents/dev/nextjs-architect.md`
+- `agents/nextjs/nextjs-architect.md`
   - Plans the change:
     - `requirements_impact` → change type, affected routes/components.
     - `planning` → architecture path, plan summary, assigned agents.
   - Uses RA tags (`#PATH_DECISION`, `#PATH_RATIONALE`) for important decisions.
 
-- `agents/dev/nextjs-layout-analyzer.md`
+- `agents/nextjs/nextjs-layout-analyzer.md`
   - Analyzes layout structure, component hierarchy, style sources.
 
-- `agents/dev/nextjs-builder.md`
+- `agents/nextjs/nextjs-builder.md`
   - Implements plan under constraints:
     - Edit‑not‑rewrite.
     - Design tokens; no inline styles. CSS-agnostic.
   - Emits `ra_events` during implementation.
 
-- `agents/dev/nextjs-standards-enforcer.md`
+- `agents/nextjs/nextjs-standards-enforcer.md`
   - Standards gate:
     - Code quality, architecture, design token usage.
     - Reads `ra_events` and produces `ra_audit`.
 
-- `agents/dev/nextjs-design-reviewer.md`
+- `agents/nextjs/nextjs-design-reviewer.md`
   - Design QA gate:
     - Visual quality, design DNA, responsive behavior.
 
-- `agents/dev/nextjs-verification-agent.md`
+- `agents/nextjs/nextjs-verification-agent.md`
   - Runs lint/build/tests; drives the build gate.
 
 Specialists:
 
-- `nextjs-css-specialist` (semantic CSS), `tailwind-specialist` (if Tailwind detected),
-  `shadcn-specialist` (if shadcn detected), `nextjs-layout-specialist`, `nextjs-typescript-specialist`,
+- `nextjs-css-specialist` (semantic CSS), `nextjs-layout-specialist`, `nextjs-typescript-specialist`,
   `nextjs-performance-specialist`, `nextjs-accessibility-specialist`,
-  `nextjs-seo-specialist` – all under `agents/dev/`.
+  `nextjs-seo-specialist` -- all under `agents/nextjs/`.
+- `tailwind-specialist` (if Tailwind detected), `shadcn-specialist` (if shadcn detected)
+  -- cross-cutting agents under `agents/dev/`.
 
 ### 4.2 Light Lane Agent
 
-- `agents/dev/nextjs-light-orchestrator.md`
+- `agents/nextjs/nextjs-light-orchestrator.md`
   - Handles **default** and **tweak** modes.
   - Simplified flow:
     - Minimal context (small ProjectContext or grep).
@@ -244,7 +245,7 @@ Two primary commands:
 
 Unified memory search:
 
-- The OS 4.2 hooks and scripts provide a unified search that:
+- The OS 5.0 hooks and scripts provide a unified search that:
   - Queries Workshop and code-index.db together.
   - Is used by `/orca` and `/nextjs` before ProjectContext.
 
@@ -267,7 +268,7 @@ promote new standards or adjust defaults.
 
 ## 8. Quick Mental Model
 
-For Next.js work in OS 4.2 (three-tier routing):
+For Next.js work in OS 5.0 (three-tier routing):
 
 | Mode | Command | Path |
 |------|---------|------|

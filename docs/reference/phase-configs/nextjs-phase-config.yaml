@@ -1,10 +1,10 @@
-# Nextjs Pipeline Phase Configuration - OS 4.2
+# Nextjs Pipeline Phase Configuration - OS 5.0
 # Nextjs / Frontend Workflow
 
 pipeline:
   name: nextjs
   description: Nextjs frontend development pipeline with design-first approach
-  version: 4.2
+  version: "5.0"
 
 # Phase State Schema (OS 3.1)
 phase_state:

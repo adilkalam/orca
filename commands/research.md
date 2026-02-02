@@ -1,5 +1,5 @@
 ---
-description: "OS 4.2 Research lane entrypoint for deep, cited research"
+description: "OS 5.0 Research lane entrypoint for deep, cited research"
 argument-hint: "[--deep] [--time N] <research question>"
 allowed-tools:
   - Task

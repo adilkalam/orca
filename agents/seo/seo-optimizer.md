@@ -1,9 +1,9 @@
 ---
 name: seo-optimizer
 description: "Analyzes content against SERP competitors using NLP, generates optimization reports and consumer-focused schema markup"
-tools: Read, Write, Bash, mcp__crawl4ai__scrape, mcp__ahrefs__keywords_explorer_overview, mcp__ahrefs__serp_overview_serp_overview
+tools: Read, Write, Bash, mcp__crawl4ai__md, mcp__ahrefs__keywords_explorer_overview, mcp__ahrefs__serp_overview_serp_overview
 
-# OS 4.2 Constraint Framework
+# OS 5.0 Constraint Framework
 required_context:
   - input_content: "Either a local file path (draft mode) or URL (url mode)"
   - target_keyword: "Primary keyword for optimization analysis"
@@ -33,7 +33,7 @@ scope_boundaries:
   - "Do NOT rewrite or modify source content"
 ---
 
-# SEO Optimizer Agent (OS 4.2)
+# SEO Optimizer Agent (OS 5.0)
 
 ## Knowledge Loading
 
@@ -114,7 +114,7 @@ if (inputs.mode === 'draft') {
 ```typescript
 if (inputs.mode === 'url') {
   // Use Crawl4AI to fetch the live page
-  const pageContent = await mcp__crawl4ai__scrape({
+  const pageContent = await mcp__crawl4ai__md({
     url: inputs.source,
     output_format: 'markdown'
   });
@@ -170,7 +170,7 @@ const competitorContent = [];
 
 for (const competitor of competitorUrls) {
   try {
-    const content = await mcp__crawl4ai__scrape({
+    const content = await mcp__crawl4ai__md({
       url: competitor.url,
       output_format: 'markdown'
     });

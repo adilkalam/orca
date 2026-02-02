@@ -5,7 +5,6 @@ description: >
   Evidence Notes to produce Perplexity-style, well-formatted answers with
   inline citations.
 tools: Read, Write, Grep, Glob
-model: inherit
 ---
 
 # Research Answer Writer – Structured, Cited Answers

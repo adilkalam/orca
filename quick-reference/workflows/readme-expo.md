@@ -1,10 +1,10 @@
-# OS 4.2 Expo Lane Readme
+# OS 5.0 Expo Lane Readme
 
 **Lane:** Expo / React Native  
 **Domain:** `expo`  
 **Entrypoints:** `/plan`, `/orca`, `/expo`, `/project-memory`, `/project-code`
 
-This readme explains the Expo lane in Vibe OS 4.2:
+This readme explains the Expo lane in Vibe OS 5.0:
 
 - Planning & specs for Expo tasks
 - Orchestration via `/orca` and `/expo`
@@ -69,7 +69,7 @@ File: `commands/expo.md`
   /expo "implement requirement <id>"             # With spec
   ```
 
-- **Three-Tier Routing (OS 4.2):**
+- **Three-Tier Routing (OS 5.0):**
 
   | Mode | Flag | Path | Gates |
   |------|------|------|-------|
@@ -195,7 +195,7 @@ Expo pipeline includes:
 
 ## 7. Mental Model
 
-For Expo work in OS 4.2 (three-tier routing):
+For Expo work in OS 5.0 (three-tier routing):
 
 | Mode | Command | Path |
 |------|---------|------|

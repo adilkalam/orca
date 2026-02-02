@@ -1,4 +1,4 @@
-# Agent Roster - OS 4.2
+# Agent Roster - OS 5.0
 
 **Total: 90 agents** across 6 domains + cross-cutting specialists.
 

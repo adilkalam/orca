@@ -1,12 +1,14 @@
 # Self-Improvement System
 
-OS 4.2 introduces an agent self-improvement loop that enables agents to learn from execution history and improve their prompts over time.
+**Version:** OS 5.0 | **Last Updated:** 2026-01-24
+
+OS 5.0 provides an agent self-improvement loop that enables agents to learn from execution history and improve their prompts over time.
 
 ---
 
 ## System Overview
 
-OS 4.2 provides learning at three levels:
+OS 5.0 provides learning at three levels:
 
 | Level | Mechanism | Storage | Trigger |
 |-------|-----------|---------|---------|
@@ -480,9 +482,9 @@ workshop --workspace .claude/memory preference "[/reflect] Prefer concise respon
 
 ---
 
-# Reflexion-Enhanced Gates (OS 4.2)
+# Reflexion-Enhanced Gates (OS 5.0)
 
-OS 4.2 introduces Reflexion-enhanced gates based on research by Shinn et al. (NeurIPS 2023). Gates now learn from failures through verbal reinforcement stored in episodic memory (Reflexion-style episodic memory).
+OS 5.0 introduces Reflexion-enhanced gates based on research by Shinn et al. (NeurIPS 2023). Gates now learn from failures through verbal reinforcement stored in episodic memory (Reflexion-style episodic memory).
 
 ## The Research
 
@@ -514,7 +516,7 @@ Future Runs: Load reflexions before gating
 All 8 gate agents now include:
 
 ```markdown
-## Reflexion on Failure (OS 4.2)
+## Reflexion on Failure (OS 5.0)
 
 When `gate_decision` is CAUTION or FAIL:
 
@@ -566,9 +568,9 @@ This enables cross-layer propagation: reflexions can become agent patterns, work
 
 ---
 
-# Chain of Verification (OS 4.2)
+# Chain of Verification (OS 5.0)
 
-OS 4.2 introduces Chain of Verification (CoVe) based on Meta AI research (Dhuliawala et al., 2023). Verification agents now use structured verification questions to catch errors before reporting (CoVe-style question-then-verify loop).
+OS 5.0 introduces Chain of Verification (CoVe) based on Meta AI research (Dhuliawala et al., 2023). Verification agents now use structured verification questions to catch errors before reporting (CoVe-style question-then-verify loop).
 
 ## The Research
 
@@ -598,7 +600,7 @@ Step 4: Determine Final Status (PASS/CAUTION/FAIL)
 All 5 verification agents now include:
 
 ```markdown
-## Chain of Verification Protocol (OS 4.2)
+## Chain of Verification Protocol (OS 5.0)
 
 Before finalizing verification status:
 

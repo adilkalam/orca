@@ -7,7 +7,14 @@ allowed-tools: [Bash, Write]
 
 **PURPOSE**: Capture current session state, tasks, and decisions for automatic loading on next session start.
 
-**EXPECTED OUTCOME**: Create `.claude/orchestration/temp/session-context.md` that SessionStart hook will auto-load.
+**EXPECTED OUTCOME**: Create `.claude/orchestration/active-task.md` that SessionStart hook will auto-load.
+
+**NOTE**: File is stored in `.claude/orchestration/` (not `temp/`) to avoid accidental cleanup. The SessionStart hook automatically outputs this to STDOUT with 5 safeguards:
+- 48h freshness check (skips stale context)
+- 2000 char limit (truncates with indicator)
+- Graceful missing file (silent continue)
+- Absolute paths (reliable across directories)
+- Resume mode awareness (native --continue provides full transcript)
 
 ---
 
@@ -81,10 +88,10 @@ basename $(git rev-parse --show-toplevel)
 
 ## Step 3: Generate Session Context File
 
-**Create `.claude/orchestration/temp/session-context.md`:**
+**Create `.claude/orchestration/active-task.md`:**
 
 ```markdown
-# Session Context - [DATE]
+# Active Task Context - [DATE]
 
 **Last Updated:** [TIMESTAMP]
 **Session Focus:** [What user said they were working on]
@@ -140,7 +147,7 @@ _This file is automatically loaded by SessionStart hook_
 **Write the file:**
 
 ```bash
-Write(.claude/orchestration/temp/session-context.md, [generated content])
+Write(.claude/orchestration/active-task.md, [generated content])
 ```
 
 ---
@@ -148,16 +155,21 @@ Write(.claude/orchestration/temp/session-context.md, [generated content])
 ## Step 4: Confirm Success
 
 ```
- SESSION SAVED
+SESSION SAVED
 
-Context saved to: .claude/orchestration/temp/session-context.md
-Auto-loads on: Next session start via SessionStart hook
+Context saved to: .claude/orchestration/active-task.md
+Auto-loads on: Next session start via SessionStart hook (output to STDOUT)
 
 What was saved:
 - Session focus: [focus area]
 - Current tasks: [task count]
 - Git status: [X modified files, Y commits]
 - Next steps: [planned work]
+
+Safeguards active:
+- 48h freshness (auto-skips stale context)
+- 2000 char limit (truncates if exceeded)
+- Graceful errors (won't block session start)
 
 Next time you open Claude Code in this project, this context
 will automatically load - no need to re-explain!
@@ -175,9 +187,8 @@ Tip: Run /session-save before ending long sessions to preserve context.
 - Note: "Auto-generated from git history"
 
 **If file exists:**
-- Append new session info
-- Keep history of last 3 sessions
-- Mark each with timestamp
+- Overwrite with current session info (file is size-limited to 2000 chars on output)
+- Mark with timestamp for freshness check
 
 **If git dirty state:**
 - Include uncommitted work in context

@@ -1,5 +1,5 @@
 ---
-description: "OS 4.2 orchestrator entrypoint for OS / Claude Code configuration tasks (LOCAL to this repo)"
+description: "OS 5.0 orchestrator entrypoint for OS / Claude Code configuration tasks (LOCAL to this repo)"
 argument-hint: "[-tweak] <task description or requirement ID>"
 allowed-tools:
   - Task
@@ -77,10 +77,10 @@ Even `-tweak` delegates to a builder. It skips gates, not agents.
 
 ---
 
-# /orca-os-dev – OS / Tooling Orchestrator (OS 4.2)
+# /orca-os-dev – OS / Tooling Orchestrator (OS 5.0)
 
 Use this command when the task is clearly OS / Claude Code / tooling
-configuration work for **Vibe OS 4.2**, not application code.
+configuration work for **Vibe OS 5.0**, not application code.
 
 **IMPORTANT: This command is LOCAL to claude-vibe-config repo only.**
 It is NOT deployed to `~/.claude` global config. Use `/orca-os-dev` only
@@ -97,8 +97,8 @@ when working in this repository to modify the OS itself.
 Examples:
 
 - Adjust lane/phase config behavior (Next.js, iOS, etc.)
-- Add or update commands/agents/skills used by OS 4.2
-- Configure MCP servers and integrate them into OS 4.2 lanes
+- Add or update commands/agents/skills used by OS 5.0
+- Configure MCP servers and integrate them into OS 5.0 lanes
 - Change how memory and context are used by `/plan` / `/orca` / `/audit`
 
 **Key Resources:**
@@ -154,7 +154,7 @@ No flag → Default path (light + design gates)
 
 ---
 
-## 0.1 Telemetry (OS 4.2) - MUST EXECUTE
+## 0.1 Telemetry (OS 5.0) - MUST EXECUTE
 
 **Reference:** `docs/reference/telemetry-standard.md`
 
@@ -202,6 +202,34 @@ TELEMETRY_TRACE_ID: <the trace_id>
 ```
 
 Agents may log delegation events using this ID (Phase 2).
+
+### After Each Gate (EXECUTE THIS)
+
+When a gate agent (e.g., os-dev-standards-enforcer) returns results, extract and emit:
+
+```
+Bash({
+  command: 'echo "{\"type\":\"gate_result\",\"trace_id\":\"$TRACE_ID\",\"ts\":\"$(date -u +%Y-%m-%dT%H:%M:%SZ)\",\"data\":{\"gate\":\"$GATE_NAME\",\"score\":$SCORE,\"decision\":\"$DECISION\",\"issues_count\":$ISSUES}}" >> .claude/telemetry/sessions/trace-$TRACE_ID.jsonl',
+  description: "Log gate result"
+})
+```
+
+Variables:
+- `$TRACE_ID`: From pipeline start
+- `$GATE_NAME`: Agent name (e.g., "os-dev-standards-enforcer")
+- `$SCORE`: Numeric score (0-100) from gate output
+- `$DECISION`: "PASS", "WARN", "ERROR", or "BLOCK"
+- `$ISSUES`: Count of issues found
+
+### On Failure (EXECUTE THIS)
+
+If pipeline status is "failed" or "cancelled", show viewer hint:
+
+```
+echo ""
+echo "Debug with: ~/.claude/scripts/telemetry-viewer.sh $TRACE_ID"
+echo ""
+```
 
 ---
 
@@ -417,7 +445,7 @@ Working with `os-dev-grand-architect`:
    python3 ~/.claude/scripts/memory-search-unified.py "$TASK_SUMMARY" --mode all --top-k 10 || true
    ```
 
-2. Load relevant reflexions from past gate failures (OS 4.2):
+2. Load relevant reflexions from past gate failures (OS 5.0):
 
    ```bash
    workshop --workspace .claude/memory search "reflexion" -t os-dev --limit 5 2>/dev/null || true

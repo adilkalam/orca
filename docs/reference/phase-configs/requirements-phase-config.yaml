@@ -1,9 +1,9 @@
-# Requirements Pipeline Phase Configuration - OS 4.2
+# Requirements Pipeline Phase Configuration - OS 5.0
 
 pipeline:
   name: requirements
-  description: Requirements gathering lane for OS 4.2
-  version: 4.2
+  description: Requirements gathering lane for OS 5.0
+  version: "5.0"
 
 context:
   provider: ProjectContextServer

@@ -22,12 +22,13 @@ PENDING_TITLES="${HOME}/.claude/temp/pending-titles.jsonl"
 # Ensure directories exist
 mkdir -p "$ARCHIVE_DIR" "${HOME}/.claude/temp" 2>/dev/null || true
 
-# Read tool output from stdin
-OUTPUT=$(cat)
-LENGTH=${#OUTPUT}
+# Read JSON from stdin (Claude Code passes hook data via stdin)
+HOOK_INPUT=$(cat)
+TOOL_TYPE=$(echo "$HOOK_INPUT" | jq -r '.tool_name // "unknown"' 2>/dev/null || echo "unknown")
 
-# Get tool type from environment
-TOOL_TYPE="${CLAUDE_TOOL_NAME:-unknown}"
+# Extract tool response for truncation logic
+OUTPUT=$(echo "$HOOK_INPUT" | jq -r '.tool_response // empty' 2>/dev/null || echo "")
+LENGTH=${#OUTPUT}
 
 # === PHASE 2: AUTO-DISCOVERY DETECTION ===
 

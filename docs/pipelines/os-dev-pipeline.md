@@ -1,6 +1,6 @@
 # OS-Dev Domain Pipeline
 
-**Status:** OS 4.2 Core Pipeline
+**Status:** OS 5.0 Core Pipeline
 **Domain:** `os-dev`
 **Last Updated:** 2025-11-27
 

@@ -1,6 +1,8 @@
 # Pipeline Model
 
-OS 4.2 uses a **multi-lane pipeline architecture** to handle different types of development work. Each "lane" is a domain-specific pipeline with its own agents, phases, and gates.
+**Version:** OS 5.0 | **Last Updated:** 2026-01-24
+
+OS 5.0 uses a **multi-lane pipeline architecture** to handle different types of development work. Each "lane" is a domain-specific pipeline with its own agents, phases, and gates.
 
 ## Core Concepts
 
@@ -50,7 +52,7 @@ Request
 
 ### Agent Roles
 
-OS 4.2 enforces strict role separation:
+OS 5.0 enforces strict role separation:
 
 #### Orchestrators (Never Write Code)
 - **Commands**: `/orca`, `/ios`, `/nextjs`, etc.
@@ -160,6 +162,26 @@ When user interrupts (questions, clarifications):
 3. Processes new information
 4. Resumes from appropriate phase
 5. Does NOT abandon pipeline or switch to direct implementation
+
+## MCP Tool Propagation Limitation
+
+MCP tools declared in agent YAML frontmatter (`tools:` field) are available to
+that agent but do **not** propagate to subagents spawned via the `Task` tool.
+This is a Claude Code platform constraint: each Task invocation creates an
+isolated execution context without inheriting the parent's MCP connections.
+
+**Workaround:** Subagents that need MCP functionality should call the MCP
+server's REST API directly using `Bash` with `curl`. For example, the research
+pipeline's crawler subagent uses:
+
+```bash
+curl -s "http://localhost:11235/md?url=<target>" | head -c 50000
+```
+
+instead of `mcp__crawl4ai__md`. This pattern -- Bash/curl to localhost -- is the
+canonical workaround for any subagent that needs MCP data.
+
+**Canonical example:** `agents/research/research-site-crawler-subagent.md`
 
 ## See Also
 

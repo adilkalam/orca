@@ -10,7 +10,7 @@ allowed-tools:
   - mcp__project-context__save_standard
 ---
 
-# /self-improve - Improvement Bus Processor (OS 4.2)
+# /self-improve - Improvement Bus Processor (OS 5.0)
 
 Process pending improvement events and route them to appropriate sinks (agent patterns, gate checklists, standards).
 

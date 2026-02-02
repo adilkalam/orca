@@ -208,17 +208,50 @@ You don't call this directly. Agents do. It's why they start with context instea
 
 When you start Claude Code, `session-start.sh` runs automatically:
 
-1. Loads Workshop summary (recent decisions, gotchas)
-2. Writes session context to `.claude/orchestration/temp/session-context.md`
-3. Makes context available to all subsequent work
+1. **Loads active task context** (if saved via `/session-save`) - outputs directly to STDOUT
+2. Loads Workshop summary (recent decisions, gotchas)
+3. Writes session metadata to `.claude/orchestration/temp/session-context.md`
+4. Makes context available to all subsequent work
 
 You see this in the session startup:
 ```
+===============================================================
+PREVIOUS SESSION CONTEXT
+===============================================================
+
+[Your saved task context appears here]
+
+===============================================================
+
 PROJECT CONTEXT AUTO-LOAD
 Memory systems available:
   - Workshop: workshop --workspace .claude/memory <command>
   - ProjectContext MCP: mcp__project-context__query_context
 ```
+
+### Session Persistence (Active Task)
+
+**The Problem:** Sessions don't remember what you were working on.
+
+**The Solution:** Save context before ending, auto-load on next start.
+
+```bash
+# Before ending session
+/session-save
+
+# Context automatically loads next time you open Claude Code
+```
+
+**File:** `.claude/orchestration/active-task.md`
+
+**5 Safeguards protect this system:**
+1. **48h freshness** - Skips stale context (older than 48 hours)
+2. **2000 char limit** - Truncates to prevent context bloat
+3. **Graceful errors** - Won't break session start if file missing
+4. **Absolute paths** - Works from any working directory
+5. **Resume mode** - Native `--continue` provides full transcript for mid-session resumption
+
+**Key insight:** Claude only sees STDOUT from hooks. The active task context outputs directly to STDOUT, not to a file that requires reading.
 
 ### Agent Context Loading
 
@@ -292,4 +325,4 @@ The loop closes: work produces learnings, learnings feed future work.
 
 ---
 
-_Version: OS 4.3 | Memory is continuity, made persistent._
+_Version: OS 5.0 | Memory is continuity, made persistent._

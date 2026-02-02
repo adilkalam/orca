@@ -2,9 +2,8 @@
 name: api-guardian
 description: Validates API contracts and detects breaking changes in API responses/requests. Checks schema compliance, version compatibility, and prevents integration failures from API drift.
 tools: Read, Grep, Bash, Edit
-model: inherit
 
-# OS 4.2 Constraint Framework
+# OS 5.0 Constraint Framework
 required_context:
   - query_context: "MANDATORY - Must call ProjectContextServer.query_context() (domain: expo) before validating APIs"
   - context_bundle: "Use ContextBundle.relevantFiles to identify API contract files and integration points"

@@ -8,8 +8,8 @@ ORCA-OS transforms Claude Code from a coding assistant into a sophisticated mult
 
 ## What's Inside
 
-- **105 Specialized Agents** across 10 lanes (Next.js, iOS, Expo, Django-React, Research, SEO, Data, Audit, OS-Dev, Orca-Pipeline)
-- **30 Slash Commands** for orchestration, planning, thinking, and design review
+- **117 Specialized Agents** across 13 lanes (Next.js, iOS, Expo, Django-React, Research, SEO, Data, Audit, OS-Dev, Orca-Pipeline, KG, Shopify, Design)
+- **32 Slash Commands** for orchestration, planning, thinking, and design review
 - **Persistent Memory** via Workshop and project-context MCP
 - **Self-Improvement System** that learns rules from your interactions
 - **40 Reasoning Operations** via cognition-mcp
@@ -170,7 +170,7 @@ claude
 
 ```
 ~/.claude/
-├── agents/           # 105 specialized agents
+├── agents/           # 117 specialized agents
 │   ├── dev/          # Next.js, OS-Dev agents
 │   ├── iOS/          # iOS specialists
 │   ├── expo/         # React Native agents
@@ -180,7 +180,7 @@ claude
 │   ├── data/         # Analytics agents
 │   ├── audit/        # Audit specialists
 │   └── orca-dev/     # Pipeline creation agents
-├── commands/         # 30 slash commands
+├── commands/         # 32 slash commands
 ├── skills/           # Reusable behavior patterns
 ├── hooks/            # Session lifecycle hooks
 ├── scripts/          # Utility scripts
@@ -335,7 +335,7 @@ mv ~/.claude-backup-* ~/.claude
 
 ## Version
 
-ORCA-OS v4.3.0
+ORCA-OS v5.0.0
 
 ---
 

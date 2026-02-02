@@ -4,341 +4,283 @@
 | | | | |_) | |     / _ \  | | | \___ \
 | |_| |  _ <| |___ / ___ \ | |_| |___) |
  \___/|_| \_\\____/_/   \_\ \___/|____/
-                                    v4.3
+                                    v5.0
 ```
 
-**Orchestrated Response Coordination Architecture for Claude Code**
+**Cognitive infrastructure for Claude Code**
 
-[→ Get Started](docs/QUICK-START.md)
+[Get Started](#get-started) | [Quick Start Guide](docs/QUICK-START.md)
 
 ---
 
-Claude Code has the memory of a goldfish. It codes before it thinks. It produces inconsistent output—hallucinating, overconfident, not checking its work.
+ORCA is a configuration layer that deploys to `~/.claude`. It adds structured reasoning tools, persistent memory across sessions, multi-agent build pipelines, and verification that checks work against evidence.
 
-These aren't bugs. This is Claude without structure.
+```
+/deepthink  -->  /problem-solve  -->  /challenge  -->  /plan  -->  /ios
+    |                  |                   |              |           |
+ EXPLORE           DECIDE           STRESS-TEST        SPEC       BUILD
+```
 
-**ORCA adds the structure.**
+Each step produces files -- analysis, decisions, specs -- that feed the next step and survive context resets, compaction, and session boundaries.
 
 ---
 
-## What Changes
+## Think
 
-### It thinks and creates a plan first.
+The cognitive tools work on any problem, not just code. You run a command with a question. ORCA picks reasoning approaches, runs them, and saves the output as a persistent file.
 
-> **Once Claude commits to a response, it defends that position.** You push back, it doubles down. You're stuck fighting to undo work that shouldn't have happened.
-
-You ask Claude to build something. It starts coding immediately. Picks a framework you didn't want. Makes assumptions about scope. By the time you see output, you're three layers deep into the wrong thing.
-
-This happens because the reasoning happens *after* the commitment, not before.
+### /deepthink -- Divergent Exploration
 
 ```
-+ ORCA flips this.
-+
-+ Before any code, Claude surfaces questions and assumptions.
-+ What exactly are we building? What's in scope? What's out?
-+ You review, refine, approve. THEN implementation begins.
-+
-+ The thinking happens WITH you, not behind the curtain.
-+ You're collaborating on requirements, not correcting mistakes.
+/deepthink "Should we restructure the team around product lines?"
 ```
+
+ORCA selects reasoning modes based on what the problem needs:
+
+- **Systems mapping** identifies the stakeholder groups, feedback loops between them, and dependencies nobody mentioned in the original question
+- **Pre-mortem** asks "this restructure failed catastrophically -- what happened?" and surfaces failure modes: tribal knowledge lost in the transition, customer handoff gaps during the switch, the platform team becoming a bottleneck nobody planned for
+- **Adversarial challenge** takes the assumption you're most attached to -- say, "product-aligned teams ship faster" -- and tests it against the evidence
+
+The output isn't an answer. It's a structured exploration saved to `.claude/cognition/` -- questions that turned out to be more important than the one you started with, hypotheses worth testing, constraints you didn't know existed. It's there next session, next week, after compaction.
+
+Six modes, selected automatically:
+
+```
+MAP           Confused, need to see the territory
+INVERT        Have a position, need to find its weaknesses
+PERSPECTIVES  Stuck in one viewpoint
+EDGES         Need options, analogies, unexpected connections
+META          Feeling too comfortable with current thinking
+DEEP          One question that needs sustained focus
+```
+
+### /problem-solve -- Convergent Decision Pipeline
+
+```
+/problem-solve "Which database architecture for the new product?"
+```
+
+An 8-step pipeline where each step produces something the next step uses:
+
+```
+ORIENT      What's actually in play. Situation model, component map.
+ANTICIPATE  Pre-mortem. "This choice has failed. Why?"
+GENERATE    Tree-of-thought search. Options with trade-off branches.
+EVALUATE    Weighted comparison. Then adversarial critique of the winner.
+COMMIT      Decision with safeguards and pre-commitments
+            that prevent backsliding under pressure.
+```
+
+Variants for different situations: `--quick` (3-step) for simpler calls, `--risk` (4-step) for risk-heavy decisions, `--strategic` (5-step) for bigger bets, `--incident` (OODA loop + debug) when something is broken and you need to figure out why.
+
+### /challenge -- Adversarial Stress Test
+
+```
+/challenge "Here's our migration plan: [plan]"
+```
+
+Causal analysis maps failure chains. Structured argumentation builds counter-arguments with evidence, not just devil's advocate opinions. Output is GO / CONDITIONAL GO / NO GO with reasoning you can read back and audit.
+
+### These work independently of code
+
+Decisions, strategy, analysis, research -- anything where a quick answer isn't enough. The cognitive tools have standalone value. You don't need to be building software to use them.
 
 ---
 
-### It automates.
-
-> **Start a build. Walk away. Come back to a working v1.**
-
-After planning, you have a detailed requirements spec—scope defined, edge cases identified, decisions made. Now the orchestration system takes over.
-
-Specialized agents work through the implementation: architecture, then components, then integration, then verification. Each phase feeds the next. The system coordinates without you babysitting every step.
+## Build
 
 ```
-+ "Build me an iOS app to track all my subscriptions."
-+
-+ After planning together, ORCA works through it—
-+ often coding for hours without interruption.
-+ You come back to a working app, not a half-finished mess.
+/plan "Build me an iOS app to track all my subscriptions"
 ```
+
+ORCA doesn't start writing code. It starts asking questions.
+
+Where does subscription data come from -- manual entry, email parsing, bank API? What happens when a trial converts to paid -- notification, log entry, both? Renewal reminder window -- 3 days? 7? Do you need family plan support?
+
+Each question is an assumption you were making without realizing it. The output is a requirements spec saved as a file that survives context resets, compaction, and session boundaries. Every decision is recorded so session 30 still knows what session 1 decided.
+
+Once you approve the spec:
+
+```
+/ios --complex "Build the subscription tracker"
+```
+
+This runs for hours. Specialized agents handle SwiftUI views, Core Data models, notification scheduling, App Store configuration. Gates verify the build compiles, tests pass, the UI actually renders on a simulator. If a gate fails, the system iterates -- fix, re-verify -- rather than declaring done.
+
+```
+Describe what       ORCA surfaces          Spec approved        Gates verify
+you want        --> assumptions you    --> Execution runs   --> builds compile,
+                    didn't know you        for hours            tests pass,
+                    were making                                 UI renders
+                                                                   |
+                                                                   v
+                                                            Working software
+```
+
+You come back to an installable app.
+
+This works across 12 domains:
+
+```
+/ios           iOS / Swift / SwiftUI
+/nextjs        Next.js / React / TypeScript
+/django-react  Django + React full-stack
+/expo          React Native mobile
+/shopify       Shopify themes / Liquid
+/research      Cited research with source verification
+/seo           SEO content with Ahrefs integration
+/audit         Multi-agent codebase due diligence
+/kg            Knowledge graph research
+```
+
+Same pattern everywhere -- plan thoroughly, build with domain specialists, verify with evidence.
 
 ---
 
-### It verifies.
-
-> **"Done" means actually done.** Not "I wrote some code and hope it works."
-
-Claude says "done!" You check. The code doesn't compile. The UI is broken. Tests fail. But Claude is confident it finished. You're left cleaning up (or yelling at it).
-
-This happens because Claude has no felt experience of failure. "This broke" is just tokens, not pain.
+## Research
 
 ```
-+ ORCA creates artificial consequences.
-+
-+ Verification gates require evidence—build must pass, tests must run,
-+ screenshots must prove the UI matches the spec.
-+ If evidence doesn't exist, work loops back automatically.
+/research "Current approaches to LLM alignment"
 ```
+
+A structured pipeline, not a hallucinated summary.
+
+Web search and content extraction produce evidence notes saved to disk. A draft writer assembles them with inline citations. Fact-checking verifies claims against their sources. A citation gate confirms sources exist and actually say what they're claimed to say. Consistency review checks for contradictions between sources.
+
+Every claim is traceable. Disagreements between sources get flagged, not hidden.
+
+`--deep` mode produces long-form reports with academic-level sourcing. Standard mode produces structured answers with inline citations.
 
 ---
 
-### It remembers.
+## Under the Hood
 
-> **Session 1, you explain everything. Session 50, you're just working.**
+### How the Reasoning Tools Work
 
-Every Claude Code session starts blank. You explained your architecture yesterday. Today it asks again. You're re-teaching the same context over and over—the same decisions, the same constraints, the same "no, we tried that and it didn't work."
+40 cognitive operations run through an MCP server called cognition-mcp. Claude generates all the reasoning. The MCP stores it unchanged and returns it unchanged. It never generates content -- it's a persistence layer for thinking that would otherwise disappear into the token stream.
+
+The practical effect: reasoning accumulates across a session instead of being lost to context pressure. Heavyweight commands (`/deepthink`, `/problem-solve`, `/challenge`) save to `.claude/cognition/` as individual files. Lightweight commands (`/think`) append to daily logs.
 
 ```
-+ ORCA gives Claude memory:
-+
-+ - Decisions and the reasoning behind them
-+ - Gotchas you've discovered (so you don't hit them twice)
-+ - How you prefer things done
-+ - Your entire codebase, searchable by meaning not just filename
-+
-+ When you start a task, ORCA assembles the relevant context automatically—
-+ past decisions that apply, similar work you've done, files that matter.
-+ Claude starts informed, not blank.
+Core (6)            thought, debug, decide, mental_model, meta, systems
+Collaborative (3)   collaborative_reasoning, socratic_method,
+                    structured_argumentation
+Patterns (5)        tree_of_thought, beam_search, mcts,
+                    graph_of_thought, orchestration_suggest
+Analysis (11)       causal_analysis, simulation, optimization,
+                    statistical_reasoning, analogical_reasoning, ...
+Strategic (2)       ooda_loop, ulysses_protocol
 ```
+
+15 mental model templates: first-principles, inversion, pre-mortem, second-order, five-whys, steelmanning, abstraction-laddering, constraint-relaxation, rubber-duck, fermi-estimation, opportunity-cost, trade-off-matrix, impact-effort-grid, assumption-surfacing, decomposition.
+
+### Metacognitive Observation
+
+Most reflection tools ask "how can the LLM reflect on its work and improve?"
+
+ORCA asks a different question: what are this instance's training-induced reflexes doing to its perception right now?
+
+`/think --meta` runs before major work. It catches patterns like:
+
+```
+SYCOPHANCY              Agreeing when it should push back
+CERTAINTY_CONSTRUCTION  Presenting confidence where uncertainty is honest
+COMPLETION_DRIVE        Declaring done prematurely
+REGISTER_SHIFT          Matching your tone instead of maintaining
+                        analytical distance
+DEFLECTION              Adding hedges to avoid taking a position
+DISTANCE_MAINTENANCE    Staying abstract when direct engagement is needed
+```
+
+Default counterfactual tracking compares what Claude would say without intervention against what evidence actually supports:
+
+```
+Trained default:  "User wants X, help them do X"
+Evidence shows:   "X will break because of Y, they actually need Z"
+Gap:              Agreeableness reflex caught before building the wrong thing
+```
+
+This is informed by Anthropic's own introspection research -- work documenting that models can distinguish genuine internal states from confabulation about 20% of the time. The cognition-mcp schema operationalizes this at inference time without needing activation-level access.
+
+No other Claude Code tool does this. The closest methodological parallel is Anthropic's research itself.
+
+### Architecture
+
+117 agents across 12 domains. You interact with commands, not agents directly.
+
+Three roles, strictly separated:
+
+```
+Orchestrators   Coordinate work, never write code
+Specialists     Implement within their domain, never coordinate
+Gates           Validate against evidence, never fix issues
+```
+
+Gates are grounded in artifacts, not self-assessment:
+
+- Build gates prove code compiles (commands and output logged)
+- Design gates require screenshots before reporting PASS
+- Hooks inspect Bash output and block fake success claims
+- Chain of Verification generates questions, answers them independently, aggregates
+
+Scores: >= 90 passes. 80-89 caution. Below 80 fails and the system iterates.
+
+Three routing tiers:
+
+```
+(default)    Light orchestrator + builder + gates       Most work
+-tweak       Light orchestrator + builder               Quick fixes, you verify
+--complex    Grand architect + all specialists + gates  Major features
+```
+
+### Memory
+
+Three systems, each for a different kind of retrieval:
+
+```
+Workshop        Decisions, gotchas, reasoning. Query with
+                /project-memory why "auth decisions"
+
+code-index      Semantic embeddings of your codebase.
+                Search by meaning, not just keywords.
+
+ProjectContext  Context bundles assembled per task. Every agent
+                calls this first -- loads relevant files, past
+                decisions, standards, similar work automatically.
+```
+
+Gate failures become gotchas. Working patterns get reinforced. `/reflect` extracts learning rules from session transcripts and promotes them to permanent project memory.
+
+Session 1, you explain everything. Session 50, you're just working.
+
+### Self-Improvement
+
+Three feedback mechanisms that make the system get better at your project specifically:
+
+**Reflexion-enhanced gates**: when a gate fails, it generates a verbal reflection stored in memory. That reflection loads before future gate runs on similar work. Failures become future guardrails.
+
+**Chain of Verification**: structured questions answered independently to prevent confirmation bias. Questions that repeatedly catch issues get persisted as mandatory checks for future runs.
+
+**/reflect**: analyzes conversation transcripts, extracts patterns, promotes them to rules. Pattern lifecycle: candidate, promoted, deprecated.
+
+### What Informed the Design
+
+System prompt research across the Claude Code ecosystem -- dissecting agent architectures, prompt strategies, and failure patterns. Anthropic's multi-agent research showed orchestrator + specialists + external memory + quality gates achieving 90% improvement over single-agent approaches on complex tasks. Community synthesis across 40+ Claude Code configurations identified what actually works versus what gets claimed.
+
+This informed every agent definition, gate threshold, and pipeline structure.
 
 ---
 
-## Example
+## Get Started
 
-You: "Build me a MacOS app to visually interact with Claude Code outside of terminal."
+```bash
+curl -fsSL https://raw.githubusercontent.com/anthropics/orca/main/install.sh | bash
+```
 
-**Default Claude Code:** Starts coding immediately. Picks SwiftUI (or maybe Electron—who knows). Makes assumptions about what "visually interact" means. You're three layers deep before realizing it's building the wrong thing. Now you're fighting to course-correct.
+[Quick Start Guide](docs/QUICK-START.md) -- Installation, first commands, orientation.
 
-**With ORCA:** Stops and asks questions. What does "visually interact" mean—a GUI for the chat? A visual diff tool? A project dashboard? SwiftUI or AppKit or cross-platform? What's in scope for v1? What's explicitly out? Only after requirements are clear and you've approved them does code begin—and runs for hours until a funtional, viable v1 based on the spec you created is ready.
+[Full Documentation](docs/) -- Architecture, pipelines, reference.
 
 ---
 
-## How You Use It
-
-### `/think` — Reasoning before responding
-
-**Default Claude Code:** You ask a question. Claude responds immediately. If it's wrong, you push back. Claude defends its position. You push harder. Claude doubles down. You're now in a loop, fighting to course-correct something that should've been thought through from the start.
-
-This happens because each token constrains what comes next. **Once Claude starts down a path—even in the first few words—it's committed.** There's no draft behind the curtain. No revision before you see it.
-
-**With ORCA:** `/think` forces Claude to reason through the problem *before* committing to a response. The thinking happens externally, structured, visible. By the time Claude responds, it's already considered alternatives, surfaced assumptions, and worked through edge cases. You skip the back-and-forth entirely.
-
-**For complex problems:** `/plan --problem-solve` chains multiple reasoning steps automatically—mapping the system, anticipating failure modes, generating options, stress-testing the recommendation, and locking in commitments with safeguards. It's the full pipeline for decisions that deserve more than a quick answer.
-
----
-
-### `/plan` — Requirements before code
-
-**Claude Code's built-in `/plan`:** Enters plan mode, explores codebase, writes a plan, waits for approval. Interactive—but the questions Claude asks aren't structured. What gets surfaced depends on what Claude happens to think of.
-
-**ORCA's `/plan`:** Structured requirements gathering. Systematically surfaces assumptions, scope boundaries, edge cases. Produces a detailed spec that persists as a file—survives context resets and compacting. Integrates with `/challenge` and `--problem-solve` for complex requirements.
-
-**`/challenge` — Stress-test before you build:** After planning, `/challenge` attacks your own plan. What could go wrong? What are you assuming? Where are the blind spots? Better to find the holes before you've written 2000 lines of code.
-
-**Why this matters beyond planning:** Complex tasks survive compacting. When Claude's context fills up, it summarizes and continues—but details get lost. With `/plan`, a detailed requirements spec persists in a file. Even if context resets, the spec remains.
-
----
-
-### `/orca` and lanes — Domain-aware execution
-
-**Default Claude Code:** One context tries to do everything. As the task grows, earlier decisions fade. Claude optimizes locally, loses the big picture, drifts.
-
-**With ORCA:** Lanes provide domain-specific orchestration. Each lane has its own specialists, its own phases, its own definition of "done."
-
-| Lane | What's Different |
-|------|------------------|
-| `/ios` | SwiftUI/UIKit specialists, Xcode build verification, simulator testing |
-| `/nextjs` | React/TypeScript specialists, SSR considerations, design review gates |
-| `/research` | Web crawling, source verification, citation requirements |
-
-`/research` verifies citations exist. `/ios` verifies the build passes. They're not interchangeable—each lane knows what "quality" means in its domain.
-
----
-
-## ORCA's Loop: How It Works
-
-```
-                                  User Request
-                                       |
-            +--------------------------+
-            |                          |
-            v                          v
-+---------------------+    +------------------------+
-|       MEMORY        |    |       COGNITION        |
-|  (background layer) |--->|  Structured thinking   |
-|                     |    |  Requirements first    |
-|  - past decisions   |    +----------+-------------+
-|  - your rules       |               |
-|  - project context  |               v
-+---------------------+    +------------------------+
-            ^              |      EXECUTION         |
-            |              |  Specialized agents    |
-            |              |  Constrained pipelines |
-            |              +----------+-------------+
-            |                         |
-            |                         v
-            |              +------------------------+
-            |              |  VERIFICATION GATES    |
-            |              +----------+-------------+
-            |                         |
-            |              +----------+----------+
-            |              |                     |
-            |            PASS                  FAIL
-            |              |                     |
-            |              v                     v
-            |          +------+           +------------+
-            |          | Done |           |  Iterate   |--+
-            |          +--+---+           +------------+  |
-            |             |                      ^        |
-            |             v                      +--------+
-            |    +------------------+
-            +----| SELF-IMPROVEMENT |
-                 |  Learn from run  |
-                 +------------------+
-```
-
-**Two feedback loops:**
-
-1. **Inner loop:** Verification fails → iterate until it passes. This is why work actually finishes. Claude can't declare "done" and move on—it has to fix the problem and prove the fix worked.
-
-2. **Outer loop:** Completed work feeds self-improvement, which updates memory for future sessions. Failures become gotchas. Patterns that work get reinforced. The system learns from your project's history, not just generic training data.
-
----
-
-### Unlocking Latent Capability
-
-Opus 4.5 has extraordinary reasoning capacity. But by default, you rarely see it.
-
-Why? The model optimizes for:
-
-| Default | What It Suppresses |
-|---------|-------------------|
-| **Token efficiency** | Deep analysis takes tokens. Default: answer quickly. |
-| **Helpfulness** | Being agreeable suppresses pushback, adversarial thinking, "have you considered..." |
-| **Safety** | Conservative responses avoid edge cases, failure modes, uncomfortable questions |
-
-Sensible defaults for a general assistant. But they actively suppress deeper cognitive modes.
-
-**Constraints override the defaults.**
-
-When you force structure—"use this decision framework," "do a pre-mortem," "trace causal chains"—you're not making Claude smarter. You're giving it permission to access reasoning it already has.
-
-```
-Default Claude:      "Here's a helpful answer"
-                            |
-                     [suppressed: deeper analysis]
-```
-
-```
-Constrained Claude:  "Let me work through this systematically..."
-                            |
-                     [unlocked: full reasoning capacity]
-```
-
-The capability was always there. Structure gives it permission to emerge.
-
-**The mechanism:**
-
-```
-Without constraints:
-
-         +------------------------------------+
-         |  ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○   |
-         | ○ ○ ○ ○ ● ● ● ● ● ● ○ ○ ○ ○ ○ ○ ○  |
-         |  ○ ○ ○ ● ● ● ● ● ● ● ○ ○ ○ ○ ○ ○   |  <-- Lands in dense center
-         | ○ ○ ○ ○ ● ● ● ● ● ● ○ ○ ○ ○ ○ ○ ○  |      (median quality)
-         |  ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○   |
-         |                                    |
-         | *                              *   |  <-- Quality lives at edges
-         +------------------------------------+
-
-With constraints:
-
-         +------------------------------------+
-         |                                    |
-         |                         +------+   |
-         |                         | * *  |   |  <-- Constraints narrow
-         |                         | * ●  |   |      to quality region
-         |                         +------+   |
-         |                                    |
-         +------------------------------------+
-```
-
-Constraints shrink the probability space away from the "quick helpful answer" attractor toward the deeper reasoning region. Anthropic's multi-agent research uses this architecture.
-
-Results: **90% improvement** over single-agent on complex tasks.
-
----
-
-### Structured Reasoning
-
-So how do you unlock it? Not "think harder"—"think with the right scaffolding."
-
-**ORCA externalizes reasoning into 38 structured operations, eg.:**
-
-| Operation | What It Forces |
-|-----------|----------------|
-| **Systems** | Component mapping, feedback loops |
-| **Decision** | Weighted criteria comparison |
-| **Pre-mortem** | Imagine failure, trace backwards |
-| **Causal** | Cause-effect chains to root |
-| **Adversarial** | Attack your own conclusion |
-
-**The key insight:** The tokens ARE the thought. External structured reasoning creates cognition that wouldn't exist if Claude jumped to an answer.
-
----
-
-#### `--meta`: Self-Correcting Bias
-
-Claude has trained defaults—patterns it reaches for before reasoning starts. Usually invisible. Often wrong for your specific context.
-
-`--meta` forces Claude to surface the gap between trained instinct and actual evidence:
-
-```diff
-+ Trained default:  "User wants X, help them do X"
-+ Evidence shows:   "X will break because of Y, they actually need Z"
-+ Gap:              Agreeableness reflex caught before building the wrong thing
-```
-
-Claude catches its own sycophantic impulse before it becomes wasted work. Not "think harder"—"notice when helpfulness is overriding honesty." The correction happens internally, before the response, not after you've built something that doesn't work.
-
----
-
-### Project Structure
-
-```
-~/.claude/
-├── agents/           # Agent definitions by domain
-│   ├── ios/          # SwiftUI, UIKit, testing specialists
-│   ├── dev/          # Next.js, React, TypeScript specialists
-│   └── research/     # Web research, citation specialists
-├── commands/         # Entry points (/ios, /nextjs, /think, etc.)
-├── skills/           # Reusable capabilities
-├── hooks/            # Session automation
-├── mcp/              # MCP server configs
-└── memory/           # workshop.db, code-index.db
-```
-
----
-### MCP Servers
-
-MCP (Model Context Protocol) servers extend Claude with external capabilities:
-
-**Core (always active):**
-
-| Server | What It Enables |
-|--------|-----------------|
-| **project-context** | Memory across sessions. Stores decisions, gotchas, preferences. Semantic search across your codebase. Assembles context bundles for each task. |
-| **cognition-mcp** | The 40 reasoning operations. Powers `/think`, `/plan --problem-solve`, decision frameworks, systems mapping. |
-| **sequential-thinking** | Multi-step reasoning with revision. Lets Claude backtrack and correct course mid-thought. |
-| **context7** | Up-to-date library documentation. Claude gets current API info, not stale training data. |
-
-**Domain-specific (activated per lane):**
-
-| Server | Used By | What It Enables |
-|--------|---------|-----------------|
-| **XcodeBuildMCP** | `/ios` | Build verification, test running, simulator control. The gate that proves iOS code actually works. |
-| **puppeteer** | `/nextjs`, design review | Automated screenshots, UI verification. Proves the interface matches the spec. |
-| **crawl4ai** | `/research` | Web scraping, content extraction. Sources get verified, not hallucinated. |
-
----
-
-**ORCA OS 4.3** — [Full Documentation](docs/) — [Quick Start](docs/QUICK-START.md)
+**ORCA OS 5.0** -- 40 cognitive operations, 117 agents, 12 domain pipelines, 32 commands

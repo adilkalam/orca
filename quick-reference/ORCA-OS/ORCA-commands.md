@@ -1,8 +1,8 @@
-# OS 4.3 Commands Quick Reference
+# OS 5.0 Commands Quick Reference
 
-**Last Updated:** 2026-01-23
-**Version:** OS 4.3
-**Total Commands:** 30
+**Last Updated:** 2026-01-30
+**Version:** OS 5.0
+**Total Commands:** 32
 
 ---
 
@@ -18,7 +18,7 @@ All `/orca-*` lane commands support three execution modes:
 
 ---
 
-## Lane Orchestrator Commands (9)
+## Lane Orchestrator Commands (11)
 
 ### `/ios` - iOS Lane
 ```bash
@@ -67,6 +67,22 @@ All `/orca-*` lane commands support three execution modes:
 ```
 **Agents:** seo-research-specialist, seo-brief-strategist, seo-draft-writer, seo-quality-guardian, seo-optimizer
 **MCP:** ahrefs, crawl4ai
+
+### `/kg` - Knowledge Graph Research Lane
+```bash
+/kg "mTOR pathway mechanisms"
+```
+**Agents:** kg-lead-agent, kg-query-subagent, kg-mechanism-subagent, kg-answer-writer
+**MCP:** cognition-mcp
+
+### `/shopify` - Shopify Theme Development Lane
+```bash
+/shopify "fix header spacing"            # Default: light + gates
+/shopify -tweak "try new colors"         # Tweak: no gates
+/shopify --complex "redesign collection" # Complex: full pipeline
+```
+**Agents:** shopify-grand-architect, shopify-light-orchestrator, shopify-css-specialist, shopify-js-specialist, shopify-liquid-specialist, shopify-section-builder, shopify-theme-checker, shopify-ui-reviewer
+**MCP:** puppeteer
 
 ### `/research` - Deep Research Lane
 ```bash
@@ -257,12 +273,6 @@ Systematically attacks proposals using cognition-mcp.
 /design-review                      # Full design review
 ```
 
-### `/design-review-from-screenshot` - Screenshot-Based Design Review
-```bash
-/design-review-from-screenshot /path/to/screenshot.png
-```
-Performs design review from a screenshot image. Useful for reviewing mockups or external designs.
-
 ### `/clone-website` - Website Cloning
 ```bash
 /clone-website https://example.com
@@ -360,10 +370,12 @@ $ORCA_OS_PATH/commands/
 | `/expo` | expo-grand-orchestrator, expo-builder-agent, expo-verification-agent |
 | `/research` | research-web-search-subagent, research-site-crawler-subagent, research-answer-writer |
 | `/seo` | seo-research-specialist, seo-brief-strategist, seo-draft-writer, seo-optimizer |
+| `/kg` | kg-lead-agent, kg-query-subagent, kg-mechanism-subagent, kg-answer-writer |
+| `/shopify` | shopify-grand-architect, shopify-light-orchestrator, shopify-liquid-specialist, shopify-ui-reviewer |
 | `/orca-os-dev` | os-dev-architect, os-dev-builder, os-dev-standards-enforcer |
 | `/orca-pipeline` | orca-pipeline-orchestrator, orca-pipeline-researcher, orca-pipeline-generator |
 
 ---
 
 _Source of truth: `docs/reference/os-dependency-graph.yaml`_
-_Last sync: 2026-01-23_
+_Last sync: 2026-01-30_

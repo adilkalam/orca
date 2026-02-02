@@ -302,6 +302,8 @@ Use complex mode for full architect involvement:
 
 6. **Domain commands are smart** - They route to the right specialists automatically. Trust the orchestration.
 
+7. **Save session context** - Before ending a long session, run `/session-save` to capture what you're working on. Next session will automatically load this context.
+
 ---
 
 ## Command Quick Reference

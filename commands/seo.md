@@ -1,9 +1,9 @@
 ---
-description: "SEO content pipeline orchestration with OS 4.2 project context and quality gates"
+description: "SEO content pipeline orchestration with OS 5.0 project context and quality gates"
 allowed-tools: ["Task", "Read", "Write", "Bash", "AskUserQuestion", "TodoWrite", "mcp__project-context__query_context", "mcp__project-context__save_decision"]
 ---
 
-# /seo – SEO Content Pipeline Orchestrator (OS 4.2)
+# /seo – SEO Content Pipeline Orchestrator (OS 5.0)
 
 **Elite SEO orchestration** that produces 3,000+ word sophisticated content with natural clarity—matching manually-crafted gold standards through deep knowledge graph integration, external research citations, and automated clarity quality gates.
 
@@ -288,7 +288,7 @@ await Task({
   subagent_type: "seo-research-specialist",
   description: "SEO research with SERP + direct files + KG + crawl4ai",
   prompt: `
-You are the seo-research-specialist (OS 4.2).
+You are the seo-research-specialist (OS 5.0).
 
 ## Your Mission
 Perform deep SEO research for keyword: "${KEYWORD}"
@@ -330,7 +330,7 @@ AgentDB session: ${SESSION_ID}
 
 ### 4. Web Research via crawl4ai (GAPS + COMPETITORS)
    a) Scrape Top SERP Competitors
-      - Use mcp__crawl4ai__scrape on top 3-5 SERP URLs
+      - Use mcp__crawl4ai__md on top 3-5 SERP URLs
       - Analyze competitor content structure
       - Create: outputs/seo/${SLUG}-competitor-analysis.json
 
@@ -380,7 +380,7 @@ await Task({
   subagent_type: "seo-brief-strategist",
   description: "Strategic brief enhancement",
   prompt: `
-You are the seo-brief-strategist (OS 4.2).
+You are the seo-brief-strategist (OS 5.0).
 
 ## Your Mission
 Refine the research brief with strategic guidance and project context.
@@ -420,7 +420,7 @@ await Task({
   subagent_type: "seo-draft-writer",
   description: "Sophisticated content writing with v4 clarity",
   prompt: `
-You are the seo-draft-writer (OS 4.2).
+You are the seo-draft-writer (OS 5.0).
 
 ## Your Mission
 Write sophisticated, clear long-form content matching v4 gold-standard quality.
@@ -471,7 +471,7 @@ await Task({
   subagent_type: "seo-quality-guardian",
   description: "Comprehensive QA with clarity gates",
   prompt: `
-You are the seo-quality-guardian (OS 4.2).
+You are the seo-quality-guardian (OS 5.0).
 
 ## Your Mission
 Perform comprehensive quality review before human hand-off.

@@ -1,6 +1,6 @@
-# Natural Language Triggers and Tools (OS 4.3)
+# Natural Language Triggers and Tools (OS 5.0)
 
-**Version:** OS 4.3
+**Version:** OS 5.0
 **Last Updated:** 2026-01-19
 
 Say what you want; map to the right command.
@@ -125,7 +125,7 @@ Say what you want; map to the right command.
 
 These old patterns now map to new commands:
 
-| Old Trigger | Old Command | New Command (OS 4.2) |
+| Old Trigger | Old Command | New Command (OS 5.0) |
 |-------------|-------------|----------------------|
 | "Plan this carefully first" | `/response-awareness-plan` | `/plan` |
 | "Implement the approved blueprint" | `/response-awareness-implement` | `/orca-{domain} "implement requirement <id>"` |

@@ -1,11 +1,11 @@
-# OS 4.3 MCP Reference
+# OS 5.0 MCP Reference
 
 **Last Updated:** 2026-01-23
-**Version:** OS 4.3
+**Version:** OS 5.0
 
 ---
 
-## MCP Scoping Strategy (OS 4.2)
+## MCP Scoping Strategy (OS 5.0)
 
 MCPs are now project-scoped to reduce token bloat:
 
@@ -96,7 +96,7 @@ Mandatory context provider for all agents.
 - `save_task_history` - Record task completion
 - `recall` - Retrieve full archived tool output by ID (ORCA-Mem)
 
-**Implementation (OS 4.2):**
+**Implementation (OS 5.0):**
 - **Reads:** SQLite direct access to `workshop.db` via `better-sqlite3`
 - **Writes:** Workshop CLI for schema migration compatibility
 - **Symlink:** Auto-creates `.workshop -> .claude/memory` on macOS/Linux

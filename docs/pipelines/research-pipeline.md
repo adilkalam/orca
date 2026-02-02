@@ -1,6 +1,6 @@
 # Research Domain Pipeline
 
-**Status:** OS 4.2 Pipeline (Research)  
+**Status:** OS 5.0 Pipeline (Research)  
 **Last Updated:** 2025-11-27
 
 ---
@@ -17,7 +17,7 @@ artifact**, not a code change:
 
 It combines:
 
-- OS 4.2 primitives (`phase_state.json`, Workshop, code-index.db, ProjectContext).
+- OS 5.0 primitives (`phase_state.json`, Workshop, code-index.db, ProjectContext).
 - A dedicated **Research lane** with `/research` as entrypoint.
 - Crawl4AI MCP for web crawling and content extraction.
 - Direct orchestration from `/research` command (flat agent hierarchy).
@@ -162,9 +162,8 @@ The Research lane uses **WebSearch + Crawl4AI**:
 
 - Preferred tools:
   - `WebSearch` for open web queries and discovery.
-  - `mcp__crawl4ai__scrape` for extracting markdown from specific URLs.
-  - `mcp__crawl4ai__crawl` for site-level crawling.
-  - `mcp__crawl4ai__crawl_site` for comprehensive site mapping with manifest.
+  - `mcp__crawl4ai__md` for extracting markdown from specific URLs.
+  - `mcp__crawl4ai__crawl` for batch URL crawling.
 - Fallbacks when Crawl4AI is unavailable:
   - `WebFetch` for content retrieval.
   - Memory-only synthesis (Workshop + code-index.db + prior reports).

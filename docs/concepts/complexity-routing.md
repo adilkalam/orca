@@ -1,6 +1,8 @@
-# Complexity Routing – OS 4.2 Three-Tier Structure
+# Complexity Routing - Three-Tier Structure
 
-OS 4.2 uses **three-tier routing** to optimize for speed while maintaining quality gates.
+**Version:** OS 5.0 | **Last Updated:** 2026-01-24
+
+OS 5.0 uses **three-tier routing** to optimize for speed while maintaining quality gates.
 
 ## Three-Tier Routing Table
 

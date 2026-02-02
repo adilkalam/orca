@@ -1,7 +1,7 @@
-# OS 4.3 Architecture Quick Reference
+# OS 5.0 Architecture Quick Reference
 
 **Last Updated:** 2026-01-23
-**Version:** OS 4.3
+**Version:** OS 5.0
 
 ---
 
@@ -24,7 +24,7 @@ ORCA-OS is a Claude Code orchestration system with:
 | Lane | Command | Agents | MCPs |
 |------|---------|--------|------|
 | iOS | `/ios` | 19 | XcodeBuildMCP |
-| Next.js | `/nextjs` | 17 | chrome-devtools, puppeteer |
+| Next.js | `/nextjs` | 15 | chrome-devtools, puppeteer |
 | Django-React | `/django-react` | 13 | (none) |
 | Expo | `/expo` | 12 | (none) |
 | Research | `/research` | 7 | crawl4ai |
@@ -33,7 +33,7 @@ ORCA-OS is a Claude Code orchestration system with:
 | OS-Dev | `/orca-os-dev` | 6 | (none) |
 | Orca-Pipeline | `/orca-pipeline` | 5 | (none) |
 | Audit | `/audit` | 8 | cognition-mcp |
-| **Cross-cutting** | - | 9 | - |
+| **Cross-cutting** | - | 11 | - |
 
 ---
 
@@ -117,7 +117,7 @@ No gates, no architect, user verifies.
 **code-index.db:** Code chunks, symbols, embeddings (`.claude/memory/code-index.db`)
 **project-meta:** Project type, dependencies, tokens (MCP cache)
 
-### ProjectContext Implementation (OS 4.2)
+### ProjectContext Implementation (OS 5.0)
 
 The MCP uses a hybrid approach:
 - **Reads:** Direct SQLite queries via `better-sqlite3` (reliable, no CLI parsing)
@@ -142,15 +142,17 @@ See `quick-reference/llm-local.md` for setup.
 ### Source (ORCA-OS Repo)
 ```
 $ORCA_OS_PATH/
-  agents/             # 105 agent definitions
+  agents/             # 105 agent definitions (public)
     iOS/              # 19 agents
-    dev/              # 23 agents (nextjs-*, os-dev-*, tailwind-*, shadcn-*)
+    nextjs/           # 15 agents (nextjs-*)
+    django-react/     # 13 agents
     expo/             # 12 agents
+    os-dev/           # 11 agents (os-dev-* + orca-pipeline-*)
+    dev/              # 11 agents (cross-cutting)
     research/         # 7 agents
     seo/              # 5 agents
     data/             # 4 agents
-    orca-dev/         # 5 agents (orca-pipeline-*)
-    (root)            # 9 cross-cutting agents
+    audit/            # 8 agents
   commands/           # 33 command definitions
   docs/
     pipelines/        # Pipeline specs
@@ -295,4 +297,4 @@ Configure your projects in the hook files:
 ---
 
 _Source of truth: `docs/reference/os-dependency-graph.yaml`_
-_Last sync: 2026-01-23_
+_Last sync: 2026-01-30_

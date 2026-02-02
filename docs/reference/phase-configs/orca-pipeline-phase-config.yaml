@@ -4,7 +4,7 @@
 pipeline:
   name: orca-pipeline
   description: "5-phase wizard for creating new domain pipelines"
-  version: "4.2"
+  version: "5.0"
   type: meta-pipeline
 
 # Phase State Schema

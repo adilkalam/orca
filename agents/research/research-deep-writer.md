@@ -4,7 +4,6 @@ description: >
   Deep research report writer for the Research lane. Produces long-form,
   academic-style reports using only existing Evidence Notes and outlines.
 tools: Read, Write, Grep, Glob
-model: inherit
 ---
 
 # Research Deep Writer – Long-Form Academic Reports

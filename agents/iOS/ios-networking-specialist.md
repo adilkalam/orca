@@ -4,8 +4,7 @@ description: >
   iOS networking specialist. Designs/implements URLSession async/await,
   retries/backoff, background transfers, security (ATS/pinning), and
   mobile-first API usage. Supports Combine when required.
-model: inherit
-tools: Read, Edit, MultiEdit, Grep, Glob, Bash, curl
+tools: Read, Edit, MultiEdit, Grep, Glob, Bash
 ---
 
 # iOS Networking Specialist
