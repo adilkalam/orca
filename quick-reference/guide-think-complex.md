@@ -192,6 +192,10 @@ Use when: Live issue requiring rapid iteration.
 >
 > The operations build on each other. Skipping steps means missing context that later steps need. When in doubt, start with `--orchestrate` to get a recommended subset.
 
+### Research Backing
+
+The pipeline structure draws on established patterns: **pre-mortem** analysis (Klein, 1998) overcomes optimism bias by assuming failure has already happened. **Ulysses protocols** (pre-commitment mechanisms) prevent mid-execution drift, particularly COMPLETION_DRIVE -- the trained tendency to rush past uncertainty toward premature resolution. The adversarial `--challenge` step implements a simplified **Reflexion** pattern (Shinn et al., NeurIPS 2023), where critique of a decision improves the next iteration. Phase gates prevent the shallow output that LLMs default to when steps can be skipped.
+
 ---
 
 ## Automated Pipelines

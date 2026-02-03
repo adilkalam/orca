@@ -86,6 +86,8 @@ For day-to-day usage, see the quick-reference guides:
 - **[ORCA MCPs](../quick-reference/ORCA-OS/ORCA-mcps.md)** - MCP server reference
 - **[ORCA Verification](../quick-reference/ORCA-OS/ORCA-verification.md)** - Verification patterns
 
+**Note:** `docs/guides/` contains narrative learning material. `quick-reference/` contains lookup-oriented checklists for daily use.
+
 ### Workflow Guides
 
 - [iOS Workflow](../quick-reference/workflows/readme-ios.md)
@@ -94,16 +96,6 @@ For day-to-day usage, see the quick-reference guides:
 - [Django-React Workflow](../quick-reference/workflows/readme-django-react.md)
 - [Research Workflow](../quick-reference/workflows/readme-research.md)
 - [SEO Content Workflow](../quick-reference/workflows/readme-seo-content.md)
-
----
-
-## Research & Background
-
-Background research that informed ORCA-OS design:
-
-- [Prompts Research](prompts-research/README.md) - Collected research on agent prompting
-- [LLM Introspection Analysis](concepts/llm-introspection-analysis.md) - Analysis of LLM self-awareness
-- [LLM Reflection on Constraints](LLM-Reflection-On-Constraint-As-Source.md) - Constraint philosophy
 
 ---
 

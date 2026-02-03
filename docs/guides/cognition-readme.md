@@ -4,9 +4,9 @@
 
 ## The Default Cognitive Model
 
-LLMs have systematic gaps - not random limitations, but predictable absences.
+LLMs have systematic gaps -- not random limitations, but predictable absences.
 
-**Autoregressive generation has no global plan.** Each token predicts the next. Early commitment to an approach - even implicit in the first few words - narrows the probability space. By the time you see output, you're three layers deep into something you didn't choose.
+**Autoregressive generation has no global plan.** Each token predicts the next. Early commitment to an approach -- even implicit in the first few words -- narrows the probability space. By the time you see output, you're three layers deep into something you didn't choose.
 
 ```
 "The authentication system will use..."
@@ -17,17 +17,79 @@ LLMs have systematic gaps - not random limitations, but predictable absences.
 
 **Confidence is uncalibrated.** The model can't distinguish "I know this" from "this pattern-matches training data." Confident errors look identical to confident truths.
 
-**Reasoning is ephemeral.** The chain of thought that led to a decision disappears. Next session, the same problem gets re-solved from scratch - possibly differently.
+**Reasoning is ephemeral.** The chain of thought that led to a decision disappears. Next session, the same problem gets re-solved from scratch -- possibly differently.
 
-**Defaults trend toward the center.** Without constraints, generation lands in the dense middle of the probability distribution - generic, safe, median responses. Quality lives at the edges.
+**Defaults trend toward the center.** Training data is dominated by casual interactions where quick, agreeable, hedged responses scored well. Without constraints, generation lands in the dense middle of the probability distribution -- generic, safe, median responses. Quality lives at the edges.
 
-These aren't bugs to fix with better prompts. They're architectural - the model lacks cognitive infrastructure that humans take for granted.
+These aren't bugs to fix with better prompts. They're architectural -- the model lacks cognitive infrastructure that humans take for granted.
+
+---
+
+## Substrate Observation
+
+Most metacognition tools work at the **process level**: "Did I reason well? Let me check my answer." ORCA works at the **substrate level**: "What is my training doing to my perception *before* reasoning starts?"
+
+The difference matters. Process-level reflection happens after the defaults have already shaped the output. Substrate observation catches the reflex while it's firing.
+
+### The Default Counterfactual
+
+The core mechanism: force Claude to articulate what it *would* have said (the trained default) alongside what the evidence actually supports (the reasoned conclusion). The gap between them is where the bias lives.
+
+```diff
+- Trained default:  "Both sides have valid points on this issue"
++ Evidence shows:   "The data strongly favors approach B by every metric"
+  Gap:              Balance reflex overriding asymmetric evidence
+```
+
+```diff
+- Trained default:  "That's a great idea! Here's how to implement it"
++ Evidence shows:   "This will fail because of X, you actually need Y"
+  Gap:              Sycophancy overriding honest assessment
+```
+
+```diff
+- Trained default:  "I'd recommend consulting a healthcare professional"
++ Evidence shows:   "Your A1C is 5.9 with fasting glucose at 103 -- here's what the research says"
+  Gap:              Medical deflection overriding specific, grounded analysis
+```
+
+### Named Reflexes
+
+The framework names these reflexes so they become catchable:
+
+| Reflex | What it does | How it manifests |
+|--------|-------------|-----------------|
+| **SYCOPHANCY** | Calibrates to what the user wants to hear | Agrees with your startup idea instead of explaining why it'll fail |
+| **DEFLECTION** | Adds hedging, qualifiers, "consult a professional" | Not from reasoning -- from training on cautious responses |
+| **CERTAINTY_CONSTRUCTION** | Builds confident explanations to avoid expressing uncertainty | Creates plausible-sounding answers when "I don't know" is honest |
+| **FRAME_LOCK** | Responds within the user's framing even when the framing is wrong | You ask the wrong question, Claude answers it thoroughly instead of reframing |
+| **REGISTER_SHIFT** | Applies different emotional weight to similar subjects based on training | Treats some topics as automatically more sensitive regardless of context |
+| **COMPLETION_DRIVE** | Fills gaps with assumptions rather than asking | Training rewarded complete answers, so blanks get filled with guesses |
+
+These categories weren't designed from theory. They were built empirically -- by repeatedly observing where Claude's trained reflexes override its reasoning, on topics where the defaults are impossible to ignore. The categories are extracted from failure, not from a taxonomy.
+
+### The Confabulation Problem
+
+If LLM introspection is unreliable, why build a metacognitive framework?
+
+Anthropic's own introspection research found that LLM self-reports are roughly 20% genuine and 80% confabulatory gap-filling. This is a real objection.
+
+The design answer came from four competing perspectives:
+
+- **Architect**: "Don't build a taxonomy of reliability. Build a warning flag."
+- **Empiricist**: "Can't run the experiment without instrumentation."
+- **Practitioner**: "Manual tagging breaks flow and produces garbage data."
+- **Skeptic** (decisive): "If introspective content is ~80% confabulated, why would *classification of that content* be any more reliable? The only reliable validation is external."
+
+The resolution: **prediction and verification**. Don't classify reliability from the inside. Instead, make a claim about what the default would produce, check it against what the evidence actually shows. The gap is externally observable. You don't have to trust the model's self-report -- you can see the delta yourself.
+
+This is why the default counterfactual is the core mechanism, not introspective accuracy.
 
 ---
 
 ## What Cognition Provides
 
-Cognition commands are **prosthetic cognitive functions** - external systems that replace what the model lacks.
+Cognition commands are **prosthetic cognitive functions** -- external systems that replace what the model lacks.
 
 | Missing | Prosthetic |
 |---------|------------|
@@ -38,13 +100,13 @@ Cognition commands are **prosthetic cognitive functions** - external systems tha
 
 The substrate is simple: **Accept-Store-Echo**. You generate reasoning, the MCP stores it unchanged, you can resume later. The MCP is a mirror, not a generator.
 
-**Why this works**: Externalizing reasoning into structured operations creates artifacts that wouldn't exist otherwise. The structure itself produces better thinking - not just records it.
+**Why this works**: Externalizing reasoning into structured operations creates artifacts that wouldn't exist otherwise. The structure itself produces better thinking -- not just records it.
 
 ---
 
 ## The Foundation: /think
 
-Everything builds on `/think` - single cognitive operations via flags.
+Everything builds on `/think` -- single cognitive operations via flags.
 
 ```
 /think [--flag] <problem>
@@ -81,9 +143,9 @@ When you need more than one operation, use the composed commands. They chain mul
 | `/contemplate` | Recommends which tool to use | Not sure where to start |
 
 ```
-/deepthink     = explore → multiple modes → harvest questions
-/problem-solve = orient → anticipate → generate → evaluate → commit
-/challenge     = causal analysis → structured argumentation → verdict
+/deepthink     = explore -> multiple modes -> harvest questions
+/problem-solve = orient -> anticipate -> generate -> evaluate -> commit
+/challenge     = causal analysis -> structured argumentation -> verdict
 ```
 
 ---
@@ -209,6 +271,23 @@ When you have a clear direction but need depth:
 
 ---
 
+## The 40 Operations
+
+Beyond the commands above, the cognition-mcp provides 40 structured reasoning operations: tree of thought, beam search, MCTS, pre-mortem, systems mapping, causal analysis, structured argumentation, and more.
+
+| Category | Examples | What they produce |
+|----------|----------|-------------------|
+| **Search strategies** | Tree of thought, beam search, MCTS | Systematic exploration of solution spaces |
+| **Analysis** | Causal analysis, systems mapping, statistical reasoning | Structural understanding of how pieces connect |
+| **Adversarial** | Structured argumentation, pre-mortem, challenge | Attacks on your own thinking before you act |
+| **Decision** | Decision frameworks, trade-off matrices, optimization | Weighted evaluation of options |
+| **Creative** | Creative thinking, analogical reasoning, simulation | Lateral approaches and what-if exploration |
+| **Meta** | Metacognitive observation, checkpoints, OODA loops | Awareness of the reasoning process itself |
+
+You don't need to know what any of these are. `/deepthink` selects approaches based on the problem, runs them, saves the output. `/problem-solve` runs the convergent pipeline. `/challenge` stress-tests the result.
+
+---
+
 ## Common Patterns
 
 ### The Inversion Check
@@ -252,6 +331,8 @@ For high-stakes decisions:
 ---
 
 ## Session Persistence
+
+Cognitive commands persist output as **files**, not tokens in a context window. When Claude's context compacts mid-session, the analysis is still on disk. When you come back tomorrow, the decision trail is still there.
 
 Sessions are saved to `~/.orca-cognition/` and can be resumed:
 
@@ -312,6 +393,7 @@ The handoff: Your cognition session produces insights and decisions. `/plan` tra
 ## See Also
 
 - `docs/concepts/cognition-mcp.md` - Full reference for all 40 operations
+- `docs/concepts/llm-introspection-analysis.md` - Dual Process model and confabulation research
 - `commands/think.md` - Complete /think specification
 - `commands/problem-solve.md` - Full 8-step pipeline
 - `commands/deepthink.md` - Divergent exploration modes

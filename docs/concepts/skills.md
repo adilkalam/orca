@@ -65,7 +65,7 @@ When loaded, skill content appears in agent context alongside:
 
 ### Universal Skills (Introduced in v4.1)
 
-These skills are referenced by ALL 85 agents via "Required Skills" sections:
+These skills are referenced by ALL 85 agents via "Required Skills" sections. They were not designed from theory -- they were extracted from analysis of 8 competitor system prompts totaling ~3,800 lines of instructions:
 
 | Skill | Purpose | Key Rules |
 |-------|---------|-----------|
@@ -74,6 +74,20 @@ These skills are referenced by ALL 85 agents via "Required Skills" sections:
 | `search-before-edit` | Mandatory search | Always grep before modifying files |
 | `linter-loop-limits` | Linter loop prevention | Max 3 attempts on linter errors |
 | `debugging-first` | Debug-first workflow | Use debug tools before code changes |
+
+#### Provenance: Competitor System Prompt Analysis
+
+Each universal skill traces to specific patterns observed in production AI coding tools:
+
+| Skill | Primary Source | Supporting Sources |
+|-------|---------------|-------------------|
+| `cursor-code-style` | Cursor (230 lines) -- no 1-2 char names, guard clauses, explain "why" not "how" | Devin 2.0 -- code conventions mirroring |
+| `lovable-pitfalls` | Lovable (1,551 lines) -- common pitfalls list, "do STRICTLY what user asks" | V0 (1,267 lines) -- design system enforcement |
+| `search-before-edit` | V0 -- semantic search first | Cursor -- multiple searches with different wording |
+| `linter-loop-limits` | Cursor -- 3x then ask user | Replit (103 lines) -- >3 attempts = ask user |
+| `debugging-first` | Lovable -- console logs before code changes | Bolt.new (284 lines) -- consider ALL files before acting |
+
+Other competitor patterns not yet extracted into skills: Perplexity's report structure (10K word reports, bracket citations), Codex's AGENTS.md spec (scoped instructions, file:line citations), Devin's planning mode (gather info before suggest_plan).
 
 **Format:** Universal skills use explicit DO/DON'T structure with examples:
 ```markdown

@@ -5,6 +5,13 @@
 
 Verification in OS 5.0 is **automated** within pipelines. This guide covers manual verification for edge cases.
 
+### Research Backing
+
+The verification system draws on two research-backed patterns:
+
+- **Reflexion** (Shinn et al., NeurIPS 2023): Agents that reflect on task feedback and persist lessons achieve 88% pass@1 on HumanEval vs 67% baseline. ORCA's gate-failure-to-Workshop-gotcha-to-improvement-bus loop implements this pattern.
+- **Chain-of-Verification (CoVe)** (Dhuliawala et al., Meta AI 2023): Generating verification questions and answering them independently doubles factual precision. ORCA's standards-enforcer agents operate independently from builders -- they score without fixing, preventing self-confirming verification.
+
 ## Automated Verification
 
 ### How Verification Works Now
@@ -288,4 +295,4 @@ Standards Gate Re-run: 92/100 → PASS
 
 ---
 
-_OS 3.1 verification is automatic, enforced, and evidence-based. Manual verification is rarely needed._
+_OS 5.0 verification is automatic, enforced, and evidence-based. Manual verification is rarely needed._

@@ -2,27 +2,41 @@
 
 ---
 
-## What ORCA-OS Does
+## The Problem ORCA Solves
 
-ORCA-OS fills gaps that LLMs have by default:
+LLMs are trained on millions of casual interactions. Quick, agreeable, hedged responses scored well. That training doesn't disappear when you ask a hard question -- it sits underneath the reasoning, shaping output before the model starts thinking about your problem.
+
+Claude agrees with your startup idea instead of telling you why it'll fail. Builds a confident explanation when the honest answer is "I don't know." Hedges on medical claims not because it reasoned toward caution, but because the training data is full of cautious medical responses. Every session starts blank -- no memory of yesterday's architecture discussion, no recall of last week's decisions.
+
+These are structural gaps, not skill gaps. Better prompts don't fix them. ORCA builds external systems that compensate for what the model structurally lacks:
 
 | Default LLM | With ORCA-OS |
 |-------------|--------------|
-| Reasoning is ephemeral | Structured thinking with persistence |
-| Every session starts fresh | Memory across sessions |
-| Self-reports completion | Evidence-based verification |
+| Trained reflexes shape output before reasoning | Substrate observation catches and names reflexes |
+| Reasoning is ephemeral | Structured thinking with file-based persistence |
+| Every session starts fresh | Memory across sessions with decision recall |
+| Self-reports completion | Evidence-based verification with gates |
+| Same mistakes repeat indefinitely | Learning system improves across sessions |
 
-Three systems, working together:
+---
+
+## The Four Systems
 
 ```
-COGNITION          MEMORY             ORCHESTRATION
----------          ------             -------------
-How to think  -->  How to remember  -->  How to build
-                         |                    |
-                         +--------------------+
-                                 |
-                         (learnings loop back)
+COGNITION          MEMORY             ORCHESTRATION        LEARNING
+---------          ------             -------------        --------
+How to think  -->  How to remember -->  How to build  -->  How to improve
+                         |                    |                  |
+                         +--------------------+------------------+
+                                       |
+                               (learnings loop back)
 ```
+
+### How to Use This
+
+The collaboration that works: you bring persistence across sessions, taste, verification, "this feels wrong," "you're missing the point." ORCA brings structured reasoning, synthesis, exploration of implications, and memory of what happened before. Each side handles what it's better at.
+
+ORCA doesn't replace your judgment. It replaces the infrastructure you'd have to provide manually every session -- the context, the structure, the verification, the memory.
 
 ---
 
@@ -35,6 +49,7 @@ How to think  -->  How to remember  -->  How to build
 When to read: You want to think through problems systematically before building.
 
 Key concepts:
+- Substrate observation -- catching trained reflexes before they shape output
 - `/think` with flags (`--systems`, `--debug`, `--decide`, `--model`)
 - Composed commands: `/deepthink`, `/problem-solve`, `/challenge`
 - Accept-Store-Echo pattern via cognition-mcp
@@ -46,8 +61,8 @@ Key concepts:
 When to read: You want decisions and context to persist, not be re-explained every session.
 
 Key concepts:
-- Workshop (decisions, gotchas, preferences)
-- Code index (semantic code search)
+- Workshop (decisions, gotchas, preferences with original reasoning)
+- Code index (semantic code search by meaning)
 - ProjectContext MCP (bundles context for agents)
 - `/project-setup`, `/project-memory`
 
@@ -61,7 +76,19 @@ Key concepts:
 - `/plan` -> `/orca-{domain}` workflow
 - Three-tier routing (default/tweak/complex)
 - Role separation (orchestrators/builders/gates)
-- phase_state.json for resumption
+- Response Awareness annotations for visible assumptions
+
+### 4. [Learning](learning-readme.md)
+
+**Improvement without weight updates.**
+
+When to read: You want the system to get better over time, not repeat the same mistakes.
+
+Key concepts:
+- Three learning levels (agent/gate/conversation)
+- Reflexion-based gate learning (NeurIPS 2023)
+- `/reflect` for extracting rules from your corrections
+- Improvement bus unifying all learning loops
 
 ---
 
@@ -113,6 +140,7 @@ Key concepts:
 | "Build this feature" | [Orchestration](orchestration-readme.md) - `/plan` -> `/orca-*` |
 | "Quick fix" | [Orchestration](orchestration-readme.md) - `/{domain} -tweak` |
 | "Is this a good idea?" | [Cognition](cognition-readme.md) - `/challenge` |
+| "Same bug keeps happening" | [Learning](learning-readme.md) - `/reflect` |
 
 ---
 
@@ -136,11 +164,11 @@ For significant features, use everything:
 # 5. ORCHESTRATION: Execute with verification
 /nextjs   # Reads spec, assembles team, runs gates
 
-# 6. MEMORY: Context saved automatically for next session
-# Decisions recorded, learnings captured
+# 6. MEMORY + LEARNING: Saved automatically
+# Decisions recorded, learnings captured, patterns updated
 ```
 
-Next time you work on checkout, memory loads what you learned.
+Next time you work on checkout, memory loads what you learned. Gates check what failed before. The system is different from when you started.
 
 ---
 

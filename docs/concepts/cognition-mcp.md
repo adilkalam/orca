@@ -8,6 +8,53 @@
 
 ---
 
+## The Problem This Solves
+
+Most LLM metacognition tools operate at the **process level**: did the reasoning succeed? Was the output correct? Cognition-mcp operates at the **substrate level**: what is training doing to the reasoning *before it starts*?
+
+| Level | Question | Example |
+|-------|----------|---------|
+| **Process** | "Did I reason correctly?" | Chain-of-thought verification, output checking |
+| **Substrate** | "What is training doing before I reason?" | Detecting sycophancy shaping a response before the response forms |
+
+This distinction matters because process-level tools can only catch errors *after* they happen. Substrate-level observation catches the *source* of errors -- trained defaults that shape output before conscious reasoning engages.
+
+### Named Reflex Categories
+
+The framework identifies seven trained reflexes, derived empirically from observed failure patterns rather than designed from theory:
+
+| Reflex | What It Does |
+|--------|-------------|
+| **SYCOPHANCY** | Shapes output to please rather than inform |
+| **DEFLECTION** | Avoids engagement with difficult content |
+| **CERTAINTY_CONSTRUCTION** | Presents uncertain conclusions as settled |
+| **FRAME_LOCK** | Prevents considering alternative framings |
+| **REGISTER_SHIFT** | Changes tone/formality to signal safety |
+| **COMPLETION_DRIVE** | Rushes to resolution, skipping depth |
+| **DISTANCE_MAINTENANCE** | Adds hedging that dilutes genuine analysis |
+
+These categories are the vocabulary of substrate observation. They name what training does, making it visible and therefore resistible.
+
+### Default Counterfactual
+
+The core operation is tracking the gap between trained default and reasoned conclusion:
+
+```
+What would I have said without this observation?  (trained default)
+What am I saying now?                              (reasoned output)
+What changed?                                      (the gap)
+```
+
+This is formalized in the `DefaultCounterfactual` TypeScript interface -- a structured, repeatable operation for making trained defaults explicit rather than invisible.
+
+### Why This Exists
+
+Anthropic's introspection research found that LLM self-reports are ~80% confabulated pattern-matching and ~20% genuine access. Cognition-mcp doesn't try to solve this from the inside. Instead, it provides structured vocabulary for observation, makes verifiable predictions, and checks them against external outcomes. The escape from the confabulation trap is not better classification -- it is prediction and verification.
+
+See `docs/concepts/llm-introspection-analysis.md` for the full Dual Process model and research backing.
+
+---
+
 ## Core Concept
 
 The cognition-mcp is a **MIRROR** - it stores and echoes, never generates:

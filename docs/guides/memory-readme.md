@@ -8,7 +8,7 @@ Every session starts fresh. The model has no memory of yesterday.
 
 **You explain the architecture Monday. Tuesday it asks again.** The same context, re-explained, every time. Decisions get re-made. Gotchas get re-discovered. Mistakes repeat.
 
-This isn't a bug - it's how LLMs work. No "self" persists across conversations. Each session reconstructs identity from whatever context is provided.
+This isn't a bug -- it's how LLMs work. No "self" persists across conversations. Each session reconstructs identity from whatever context is provided.
 
 ```
 SESSION 1                    SESSION 2                    SESSION 3
@@ -31,7 +31,7 @@ Without external memory, you're trapped in this loop forever.
 
 ## What Memory Provides
 
-Memory systems are **prosthetic continuity** - external storage that replaces what the model lacks.
+Memory systems are **prosthetic continuity** -- external storage that replaces what the model lacks.
 
 | Missing | Prosthetic |
 |---------|------------|
@@ -77,11 +77,11 @@ This wizard:
 
 ```
 <project>/
-├── CLAUDE.md                 # Project conventions (sacred paths, archive rules)
-└── .claude/
-    └── memory/
-        ├── workshop.db       # Decision/gotcha storage
-        └── code-index.db     # Semantic code search (optional)
+ CLAUDE.md                 # Project conventions (sacred paths, archive rules)
+ .claude/
+    memory/
+        workshop.db       # Decision/gotcha storage
+        code-index.db     # Semantic code search (optional)
 ```
 
 ### Updating Later
@@ -253,6 +253,20 @@ Memory systems available:
 
 **Key insight:** Claude only sees STDOUT from hooks. The active task context outputs directly to STDOUT, not to a file that requires reading.
 
+### Cognition Persistence
+
+Cognitive commands (`/deepthink`, `/problem-solve`, `/challenge`) persist their output as **files**, not as tokens in a context window. When Claude's context compacts mid-session, the analysis is still on disk:
+
+- `.claude/cognition/YYYYMMDD-HHMM-slug.md` - Summary files
+- `~/.orca-cognition/sessions/` - Full session logs
+- Workshop entries tagged `#cognition`
+
+This means session 1's analysis is still readable in session 50.
+
+### Context Management (ORCA-Mem)
+
+Large tool outputs get truncated intelligently -- head and tail preserved, middle archived for recall by ID. The context window stays clean without losing information. If you need the full output, `mcp__project-context__recall` retrieves it from the archive.
+
 ### Agent Context Loading
 
 Every orchestrated agent calls `query_context` before doing anything:
@@ -274,6 +288,18 @@ The loop closes: work produces learnings, learnings feed future work.
 
 ---
 
+## Memory and Learning
+
+Memory stores facts: decisions, gotchas, context. [Learning](learning-readme.md) stores patterns: what works, what fails, what to check next time.
+
+They're complementary:
+- **Memory** answers "why did we choose X?" with original reasoning
+- **Learning** answers "what went wrong last time?" with constraints and reflexions
+
+Both systems feed agents through ProjectContext, so every task starts with both factual context and learned patterns.
+
+---
+
 ## What Gets Persisted
 
 | Type | Example | Stored In |
@@ -283,6 +309,9 @@ The loop closes: work produces learnings, learnings feed future work.
 | Preferences | "Prefer functional components" | Workshop |
 | Standards | "All API responses must include timestamp" | Workshop |
 | Code context | Semantic embeddings of codebase | code-index.db |
+| Cognitive output | Deepthink analyses, decision trails | `.claude/cognition/` files |
+| Learned patterns | Agent success/failure tracking | `.claude/agent-knowledge/` |
+| Learned rules | Your accumulated corrections | CLAUDE.md |
 
 ---
 
@@ -319,6 +348,7 @@ The loop closes: work produces learnings, learnings feed future work.
 ## See Also
 
 - `docs/concepts/memory-systems.md` - Full technical reference
+- [Learning Guide](learning-readme.md) - How the system improves over time
 - `commands/project-setup.md` - Complete setup specification
 - `commands/project-memory.md` - All subcommands
 - `mcp/project-context-server/` - MCP implementation

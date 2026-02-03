@@ -7,7 +7,7 @@
 
 ## Executive Summary
 
-ORCA-OS is a Claude Code configuration system that deploys to `~/.claude`. It consists of **8 architectural layers** working together to provide domain-specific AI-assisted development pipelines.
+ORCA-OS is a Claude Code configuration system that deploys to `~/.claude`. It consists of **8 architectural layers** working together to provide domain-specific AI-assisted development pipelines. Each layer exists to counteract a specific trained default: specialized agents prevent drift toward generic output, phase configs prevent skipping planning and verification, memory systems compensate for no persistent context, and quality gates prevent premature completion. The architecture matches the complexity of the problem it solves -- development orchestration across multiple domains with enforced quality.
 
 | Layer | Count | Purpose |
 |-------|-------|---------|

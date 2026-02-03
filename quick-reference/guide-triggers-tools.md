@@ -135,4 +135,4 @@ These old patterns now map to new commands:
 
 ---
 
-_OS 3.1 simplifies workflows: `/plan` → `/orca` → `/audit` replaces 8+ fragmented commands_
+_OS 5.0 simplifies workflows: `/plan` → `/orca` → `/audit` replaces 8+ fragmented commands_

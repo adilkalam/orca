@@ -7,13 +7,14 @@
 
 ## Overview
 
-ORCA-OS is a Claude Code orchestration system with:
+ORCA-OS is a Claude Code orchestration system that counteracts trained defaults -- the tendency toward quick, shallow, agreeable output that LLM training optimizes for casual users rather than agentic development workflows. The architecture provides structure that prevents bypassing the capability that already exists in the model.
+
 - **105 agents** across 10 public lanes + cross-cutting (117 total including internal lanes)
 - **30 commands** (9 lane orchestrators + utilities)
 - **Project-scoped MCPs** to minimize token usage
 - **Dependency graph** for change impact tracking
 
-> **Scope Note:** This quick-reference covers public lanes. Internal lanes (kg, shopify) are documented in `docs/reference/os-dependency-graph.yaml`.
+> **Scope Note:** This quick-reference covers public lanes. Internal lanes (kg, shopify) are documented in `docs/reference/os-dependency-graph.yaml`. For the reasoning behind this architecture, see `docs/concepts/why-orca-architecture.md`.
 
 ---
 

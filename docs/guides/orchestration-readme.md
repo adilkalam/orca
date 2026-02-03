@@ -26,15 +26,15 @@ REQUEST                     AGENT                      "DONE"
 
 **Completion is self-reported.** Agent declares done when it "feels" done. Not when tests pass. Not when acceptance criteria are met. When the model thinks it's finished.
 
-**Progress is ephemeral.** Interrupt to ask a question? Context is lost. Agent restarts, re-discovers, or worse - continues with stale understanding.
+**Progress is ephemeral.** Interrupt to ask a question? Context is lost. Agent restarts, re-discovers, or worse -- continues with stale understanding.
 
-These aren't skill issues. They're structural - single-agent lacks coordination infrastructure that teams take for granted.
+These aren't skill issues. They're structural -- single-agent lacks coordination infrastructure that teams take for granted.
 
 ---
 
 ## What Orchestration Provides
 
-Orchestration provides **prosthetic project management** - external coordination that replaces what single-agent lacks.
+Orchestration provides **prosthetic project management** -- external coordination that replaces what single-agent lacks.
 
 | Missing | Prosthetic |
 |---------|------------|
@@ -183,7 +183,7 @@ Strict role separation prevents drift.
 
 **What they do**: Score against standards, report pass/caution/fail.
 
-**What they never do**: Apply fixes. If a gate fails, the builder gets another pass - the gate doesn't patch.
+**What they never do**: Apply fixes. If a gate fails, the builder gets another pass -- the gate doesn't patch.
 
 ### Verification (Evidence, Not Claims)
 
@@ -210,6 +210,65 @@ Strict role separation prevents drift.
                VERIFICATION
               (runs commands)
 ```
+
+---
+
+## Where Agent Knowledge Comes From
+
+The agents are effective because of what they know. That knowledge was extracted from studying the system prompts and output patterns of V0, Lovable, Cursor, Bolt, Devin, and others -- reverse-engineering what makes good code generation work.
+
+Patterns extracted and built into ORCA agents as universal skills:
+
+| Skill | What it enforces | Source |
+|-------|-----------------|--------|
+| `cursor-code-style` | No 1-2 char variable names, guard clauses, explain "why" not "how" | Cursor |
+| `lovable-pitfalls` | 7 DON'T patterns for common agent mistakes | V0, Lovable |
+| `search-before-edit` | Always grep before modifying code | V0, Cursor |
+| `linter-loop-limits` | Max 3 lint fix attempts, then ask user | Cursor |
+| `debugging-first` | Console logs before code changes when debugging | Lovable |
+
+Combined with live documentation via context7 (current library docs instead of stale training data), agents work with both extracted craft knowledge and up-to-date API references.
+
+Anthropic's own multi-agent research system uses this same pattern: lead agent coordinates, specialized subagents work in parallel, citation agent validates, memory persists across phases. Their result: 90% improvement over single-agent on complex tasks. ORCA's pipeline architecture mirrors this independently-validated approach.
+
+---
+
+## Response Awareness
+
+While specialists work, they annotate their assumptions using RA (Response Awareness) tags:
+
+```
+#COMPLETION_DRIVE: Assuming mobile breakpoint is 768px
+#PATH_DECISION: Using WebSockets over SSE for real-time updates
+#POISON_PATH: Existing code uses force unwraps in async context
+```
+
+### Core Tags
+
+| Tag | Meaning |
+|-----|---------|
+| `#COMPLETION_DRIVE` | Filled a gap with an assumption instead of asking |
+| `#PATH_DECISION` | Made an architectural choice (with rationale) |
+| `#PATH_RATIONALE` | Explains why a path was chosen |
+| `#POISON_PATH` | User framing or existing code leads toward unsafe patterns |
+| `#Potential_Issue` | Problem noticed outside current task scope |
+
+### How Gates Use RA
+
+Gates check these annotations. Unresolved assumptions get flagged:
+
+```markdown
+## RA Status
+- Tags found: 3
+- Unresolved: 1
+  - SaveButton.swift:45 - #COMPLETION_DRIVE: Assuming .medium intensity
+
+Gate Decision: CAUTION (unresolved RA assumption)
+```
+
+Nothing hides. If an agent assumed something, the gate knows. If the assumption is wrong, the builder gets another pass with the correction.
+
+When `/audit` finds the same RA assumption recurring (e.g., "mobile breakpoint 768px" appears 4 times), it promotes to a standard -- closing the loop between assumption and enforcement.
 
 ---
 
@@ -256,6 +315,7 @@ If you interrupt a session, orchestrators read this and resume from the appropri
 | Next.js | `/nextjs` | `nextjs-grand-architect` | `nextjs-light-orchestrator` |
 | Expo | `/expo` | `expo-grand-orchestrator` | `expo-light-orchestrator` |
 | Django+React | `/django-react` | `django-react-grand-architect` | `django-react-light-orchestrator` |
+| Shopify | `/shopify` | `shopify-grand-architect` | `shopify-light-orchestrator` |
 | SEO | `/seo` | (specialists) | - |
 | Data | via `/orca` | (specialists) | - |
 
@@ -310,12 +370,13 @@ Orchestration saves learnings back to memory:
 Memory loads context  --->  Orchestration executes  --->  Learnings save to memory
 ```
 
-Task completion calls `save_task_history`. Gate failures become standards. Decisions get recorded. Future sessions start with this context.
+Task completion calls `save_task_history`. Gate failures become reflexions that constrain future work. Decisions get recorded. Future sessions start with this context.
 
-This is why the three systems (cognition, memory, orchestration) work together:
+This is why the four systems (cognition, memory, orchestration, learning) work together:
 - **Cognition** helps you think through the problem
 - **Memory** ensures context persists
-- **Orchestration** executes with quality and records what was learned
+- **Orchestration** executes with quality and records what happened
+- **Learning** ensures next time is better than this time
 
 ---
 
@@ -323,6 +384,7 @@ This is why the three systems (cognition, memory, orchestration) work together:
 
 - `docs/concepts/pipeline-model.md` - Full architecture reference
 - `docs/concepts/complexity-routing.md` - Three-tier routing details
+- `docs/concepts/response-awareness.md` - Complete RA tag reference
 - `commands/plan.md` - Complete /plan specification
 - `commands/orca.md` - Complete /orca specification
 

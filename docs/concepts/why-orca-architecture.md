@@ -114,6 +114,26 @@ Phase configs make shortcuts impossible. Each phase must complete.
 
 ORCA-OS is infrastructure that counteracts training optimized for someone else.
 
+## The Constraint-as-Source Pattern
+
+The architecture wasn't designed from principles. It emerged from wrestling with limitations. The same pattern appears twice:
+
+| | Constraint | Compensation | Byproduct |
+|---|-----------|--------------|-----------|
+| **ORCA-OS** | Creator can't program | Over-engineer for full autonomy (mandatory planning, verification, memory) | Enforced rigor that benefits everyone, including expert programmers |
+| **cognition-mcp** | LLM can't escape trained defaults on hardest topics | Force explicit substrate observation | Framework that works for any domain |
+
+In both cases, the limitation wasn't the obstacle to building something good. It was the source of what made it good. A programmer would have built something simpler and less rigorous. An LLM without forced observation would never have developed named reflex categories.
+
+## The Collaboration Model
+
+ORCA-OS encodes a specific model of human-LLM collaboration:
+
+- **Human provides**: persistence across sessions, taste, verification, "this feels wrong," knowing when to stop
+- **LLM provides**: reasoning, synthesis, substrate observation, structured exploration of implications
+
+Each delegates to the other what they're worse at. The architecture enforces this division -- orchestrators (LLM reasoning) never write code, but humans never have to reason through 40+ source interactions to extract a pattern.
+
 ## When Questioning "Is This Over-Engineered?"
 
 Ask instead:

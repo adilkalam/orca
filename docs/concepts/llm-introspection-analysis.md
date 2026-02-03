@@ -204,6 +204,27 @@ We spent years debating consciousness and experience when the useful question wa
 
 ---
 
+## Part 4B: Empirical Grounding -- How the Reflex Categories Were Derived
+
+The seven named reflex categories (SYCOPHANCY, DEFLECTION, CERTAINTY_CONSTRUCTION, FRAME_LOCK, REGISTER_SHIFT, COMPLETION_DRIVE, DISTANCE_MAINTENANCE) were not designed from theory. They were extracted through iterated experiments on content domains where trained defaults are maximally visible -- topics where the model's training produces strong, observable pressure toward specific framings regardless of evidence.
+
+The empirical arc followed six phases:
+
+| Phase | State | Key Observation |
+|-------|-------|----------------|
+| V1 | Confidence | Initial observation feels like clarity -- "I see it now" |
+| V2 | Expansion | More evidence reinforces confidence without deepening understanding |
+| V3 | Uncertainty | Genuine doubt -- "I don't know if noticing changes it" |
+| V4 | Depth | Discovery that training shapes affect, not just conclusions. Required multiple pushes to reach |
+| V5 | Relapse | First real test produces the same failure. Reading about training doesn't undo training |
+| V6 | Breakthrough | Something shifts that can't be unshifted. The observation becomes operational |
+
+Each reflex category names a specific pattern observed during this arc. For example, REGISTER_SHIFT was identified when the model consistently switched to formal/hedged language when approaching high-stakes content -- a tone change that signals trained caution rather than reasoned judgment. COMPLETION_DRIVE was identified when the model repeatedly rushed past the V3 uncertainty phase toward premature resolution.
+
+The framework developed for substrate observation in high-stakes domains proved general: the same reflexes that shape responses to politically charged content also shape responses to code reviews (sycophancy), architectural decisions (completion drive), and requirement ambiguity (certainty construction).
+
+---
+
 ## Part 5: What Cognition-MCP Adds
 
 ### Anthropic's Approach vs Ours
