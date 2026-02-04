@@ -9,6 +9,8 @@
 
 **Cognitive architecture for Claude Code.**
 
+> **[QUICK-START.md](QUICK-START.md)** - Get running in 5 minutes
+
 LLMs are trained on millions of casual interactions. Quick, agreeable, hedged responses scored well. That training doesn't disappear when you ask a hard question. It sits underneath the reasoning -- shaping output before the model even starts thinking about your problem.
 
 The result: Claude agrees with your startup idea instead of telling you why it'll fail. Builds a confident explanation when the honest answer is "I don't know." Hedges on medical claims not because it reasoned toward caution, but because the training data is full of cautious medical responses. Balances "both sides" when the evidence is asymmetric.

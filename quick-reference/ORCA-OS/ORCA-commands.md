@@ -1,8 +1,8 @@
 # OS 5.0 Commands Quick Reference
 
-**Last Updated:** 2026-01-30
+**Last Updated:** 2026-02-03
 **Version:** OS 5.0
-**Total Commands:** 32
+**Total Commands:** 33
 
 ---
 
@@ -18,7 +18,7 @@ All `/orca-*` lane commands support three execution modes:
 
 ---
 
-## Lane Orchestrator Commands (11)
+## Lane Orchestrator Commands (12)
 
 ### `/ios` - iOS Lane
 ```bash
@@ -91,6 +91,24 @@ All `/orca-*` lane commands support three execution modes:
 ```
 **Agents:** research-web-search-subagent, research-site-crawler-subagent, research-answer-writer, research-fact-checker
 **MCP:** crawl4ai
+
+### `/typography` - Typography/Font Management Lane
+```bash
+/typography "Reduce terminal curl on DomaineSansCustom"      # Default: with checkpoints
+/typography --tweak "Make the period rounder in Calibre"     # Tweak: direct to specialist
+/typography --complex "Create Light and Bold via stroke offsetting"
+/typography "Export DomaineSansCustom to TTF for Epson"
+/typography "Recommend fonts for technical documentation"
+
+# Typography Explorer (interactive testing tool)
+/typography --explorer                       # Auto-detect format and context
+/typography --explorer --nextjs              # Generate as Next.js React components
+/typography --explorer --html                # Generate as standalone HTML
+/typography --explorer --context store       # E-commerce product UI context
+/typography --explorer --context markdown    # Article/documentation context
+```
+**Agents:** typography-orchestrator, glyph-editor, ttf-exporter, typography-advisor, typography-explorer-generator, path-guardian
+**Workflows:** glyph editing (fontTools), TTF export (Epson LabelWorks), font selection/pairing, explorer generation
 
 ### `/orca-os-dev` - OS Development Lane
 ```bash
@@ -374,8 +392,9 @@ $ORCA_OS_PATH/commands/
 | `/shopify` | shopify-grand-architect, shopify-light-orchestrator, shopify-liquid-specialist, shopify-ui-reviewer |
 | `/orca-os-dev` | os-dev-architect, os-dev-builder, os-dev-standards-enforcer |
 | `/orca-pipeline` | orca-pipeline-orchestrator, orca-pipeline-researcher, orca-pipeline-generator |
+| `/typography` | typography-orchestrator, glyph-editor, ttf-exporter, typography-advisor, typography-explorer-generator, path-guardian |
 
 ---
 
 _Source of truth: `docs/reference/os-dependency-graph.yaml`_
-_Last sync: 2026-01-30_
+_Last sync: 2026-02-03_

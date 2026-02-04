@@ -1,6 +1,6 @@
 # OS 5.0 Architecture Quick Reference
 
-**Last Updated:** 2026-01-23
+**Last Updated:** 2026-02-03
 **Version:** OS 5.0
 
 ---
@@ -9,8 +9,8 @@
 
 ORCA-OS is a Claude Code orchestration system that counteracts trained defaults -- the tendency toward quick, shallow, agreeable output that LLM training optimizes for casual users rather than agentic development workflows. The architecture provides structure that prevents bypassing the capability that already exists in the model.
 
-- **105 agents** across 10 public lanes + cross-cutting (117 total including internal lanes)
-- **30 commands** (9 lane orchestrators + utilities)
+- **110 agents** across 11 public lanes + cross-cutting (122 total including internal lanes)
+- **33 commands** (12 lane orchestrators + utilities)
 - **Project-scoped MCPs** to minimize token usage
 - **Dependency graph** for change impact tracking
 
@@ -20,7 +20,7 @@ ORCA-OS is a Claude Code orchestration system that counteracts trained defaults 
 
 ## Lane Architecture
 
-### Active Lanes (10)
+### Active Lanes (11)
 
 | Lane | Command | Agents | MCPs |
 |------|---------|--------|------|
@@ -30,6 +30,7 @@ ORCA-OS is a Claude Code orchestration system that counteracts trained defaults 
 | Expo | `/expo` | 12 | (none) |
 | Research | `/research` | 7 | crawl4ai |
 | SEO | `/seo` | 5 | ahrefs, crawl4ai |
+| Typography | `/typography` | 5 | (none) |
 | Data | (none) | 4 | (none) |
 | OS-Dev | `/orca-os-dev` | 6 | (none) |
 | Orca-Pipeline | `/orca-pipeline` | 5 | (none) |
@@ -143,7 +144,7 @@ See `quick-reference/llm-local.md` for setup.
 ### Source (ORCA-OS Repo)
 ```
 $ORCA_OS_PATH/
-  agents/             # 105 agent definitions (public)
+  agents/             # 110 agent definitions (public)
     iOS/              # 19 agents
     nextjs/           # 15 agents (nextjs-*)
     django-react/     # 13 agents
@@ -154,6 +155,7 @@ $ORCA_OS_PATH/
     seo/              # 5 agents
     data/             # 4 agents
     audit/            # 8 agents
+    typography/       # 5 agents
   commands/           # 33 command definitions
   docs/
     pipelines/        # Pipeline specs
@@ -298,4 +300,4 @@ Configure your projects in the hook files:
 ---
 
 _Source of truth: `docs/reference/os-dependency-graph.yaml`_
-_Last sync: 2026-01-30_
+_Last sync: 2026-02-03_

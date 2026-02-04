@@ -407,6 +407,26 @@ lanes:
       - .claude/audit/audit-index.json
     projects: []
 
+  typography:
+    command: typography
+    agents_dir: agents/typography
+    agent_count: 6
+    description: "Font library management - glyph editing, TTF export, font selection, exploration tools"
+    agents:
+      - typography-orchestrator        # Light orchestrator, routing, checkpoints
+      - glyph-editor                   # Heavy - fontTools glyph modifications
+      - ttf-exporter                   # Medium - OTF to TTF conversion
+      - typography-advisor             # Light - font selection/pairing
+      - typography-explorer-generator  # Heavy - generates interactive typography testing tools
+      - path-guardian                  # Gate - path validation, sacred collections
+    mcp_requirements: []
+    workflows:
+      - glyph_edit           # Contour modifications
+      - ttf_export           # OTF to TTF for Epson LabelWorks
+      - font_selection       # Recommendations and pairing
+      - explorer_generation  # Interactive typography testing tools
+    projects: []
+
 # =============================================================================
 # CROSS-CUTTING AGENTS
 # Agents at root level used across multiple lanes
@@ -613,6 +633,17 @@ commands:
       - shopify-theme-checker
       - shopify-ui-reviewer
 
+  - name: typography
+    type: lane_orchestrator
+    lane: typography
+    agents_called:
+      - typography-orchestrator
+      - glyph-editor
+      - ttf-exporter
+      - typography-advisor
+      - typography-explorer-generator
+      - path-guardian
+
   - name: orca-os-dev
     type: lane_orchestrator
     lane: os-dev
@@ -762,8 +793,8 @@ commands:
 # COUNTS (for verification)
 # =============================================================================
 counts:
-  total_agents: 117
-  total_commands: 32
+  total_agents: 123
+  total_commands: 33
   agents_by_domain:
     ios: 19
     nextjs: 15             # agents/nextjs/ (nextjs-* agents only)
@@ -777,6 +808,7 @@ counts:
     audit: 8               # Phase 1 (3): structure, dependency, security. Phase 2 (5): pattern, documentation, test, architecture, design
     kg: 4                  # Knowledge Graph research pipeline
     shopify: 8             # Shopify theme development pipeline
+    typography: 6          # Font library management pipeline (+typography-explorer-generator)
     cross-cutting: 11      # agents/dev/: a11y-enforcer, crash-analyzer, debt-eliminator, design-system-architect, design-token-guardian, performance-enforcer, performance-prophet, security-specialist, shadcn-specialist, tailwind-specialist, version-shield
 
 # =============================================================================

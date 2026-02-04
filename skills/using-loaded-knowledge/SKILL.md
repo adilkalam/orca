@@ -40,15 +40,13 @@ These files are ALREADY in your context (loaded via SessionStart hooks):
 
 ```bash
 # Check if question relates to loaded context
-grep -l "keyword" ~/.claude-vibe-code/.claude-*.md 2>/dev/null
+ls .claude/orchestration/temp/session-context.md 2>/dev/null
 ```
 
 **Files to check:**
-- `.claude-session-context.md` - Recent work, decisions, blockers
-- `.claude-playbook-context.md` - ACE patterns that worked/failed
-- `.claude-design-dna-context.md` - Design taste rules
-- `.claude-orchestration-context.md` - Project detection, team recommendations
-- `USER_PROFILE.md` - User's preferences, principles, quality standards
+- `.claude/orchestration/temp/session-context.md` - Recent work, decisions, Workshop context
+- `CLAUDE.md` - Project instructions, learned rules, workflow guidance
+- Workshop database - Query via `workshop --workspace .claude/memory <command>`
 
 **IF** your response relates to recent work, systems built, or user preferences → READ these files FIRST
 
@@ -218,19 +216,19 @@ Claude: "I'll adjust to align with the 4px grid: 12px or 16px?"
 
 ## INTEGRATION WITH OTHER SYSTEMS
 
-### Works With claude-mem
+### Works With Workshop
 
-When claude-mem is active, add this to Step 1:
+When Workshop is initialized, add this to Step 1:
 
 ```bash
-# Search claude-mem observations
-search_observations --query "relevant keywords"
+# Query past decisions
+workshop --workspace .claude/memory why "relevant topic"
 
-# Find by concept
-find_by_concept --concept "design system"
+# See recent activity
+workshop --workspace .claude/memory recent
 
-# Find by file
-find_by_file --file "DESIGN_DNA_SYSTEM.md"
+# Get full context
+workshop --workspace .claude/memory context
 ```
 
 ### Works With Existing Hooks

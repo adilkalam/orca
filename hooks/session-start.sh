@@ -302,6 +302,17 @@ echo ""
 echo "═══════════════════════════════════════════════════════════"
 echo ""
 
+# Output Workshop context (gotchas & decisions) directly to stdout
+if [ -n "$WORKSHOP_CONTEXT" ] && [ "$WORKSHOP_STATUS" = "loaded" ]; then
+  echo ""
+  echo "═══════════════════════════════════════════════════════════"
+  echo "WORKSHOP CONTEXT (Gotchas & Decisions)"
+  echo "═══════════════════════════════════════════════════════════"
+  echo ""
+  echo "$WORKSHOP_CONTEXT"
+  echo ""
+fi
+
 # Show recent Workshop entries for immediate context
 if [ "$WORKSHOP_STATUS" = "loaded" ] && command -v workshop >/dev/null 2>&1; then
   echo ""

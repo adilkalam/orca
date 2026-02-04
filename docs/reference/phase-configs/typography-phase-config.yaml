@@ -1,0 +1,310 @@
+# Typography Pipeline Phase Configuration - OS 5.0
+# Global pipeline for font library management
+
+pipeline:
+  name: typography
+  description: >
+    Font library management pipeline for glyph editing, TTF export,
+    and typography selection. Glyph-heavy workflow with interactive
+    checkpoints and Workshop memory persistence.
+  version: "5.0"
+  deployment: global
+
+# Context Integration
+context:
+  provider: Workshop
+  required: false
+  memory_first: true
+
+# Complexity tiers for /typography
+complexity_tiers:
+  tweak:
+    description: Single glyph or quick adjustment
+    routing: direct
+    checkpoints_required: false
+    examples:
+      - "Make the period rounder in Calibre Regular"
+      - "What's a good sans-serif to pair with Tiempos?"
+
+  default:
+    description: Standard operation (single font family, one workflow)
+    routing: specialist
+    checkpoints_required: true
+    checkpoints: [backup, batch]
+    examples:
+      - "Reduce terminal curl on DomaineSansCustom"
+      - "Export GT Cinetype to TTF for Epson"
+
+  complex:
+    description: Multi-font, cross-foundry, or experimental operations
+    routing: full-pipeline
+    checkpoints_required: true
+    checkpoints: [backup, preview, batch]
+    examples:
+      - "Create Light and Bold weights via stroke offsetting"
+      - "Export all Klim fonts to TTF"
+
+# Pipeline Phases
+phases:
+  - name: classification
+    agent: typography-orchestrator
+    description: Parse request, classify complexity and workflow type
+    context_required: false
+    outputs:
+      - complexity_tier
+      - workflow_type
+      - target_fonts
+      - operation_summary
+
+  - name: context_validation
+    agent: typography-orchestrator
+    description: Read CLAUDE.md, validate paths, check sacred collections
+    dependencies: [classification]
+    context_required: false
+    outputs:
+      - claude_md_rules
+      - path_validation_status
+      - sacred_collection_check
+
+  - name: backup
+    agent: typography-orchestrator
+    description: Create timestamped backup before edits
+    dependencies: [context_validation]
+    context_required: false
+    condition: workflow_type in [glyph_edit, ttf_export]
+    checkpoint: true
+    outputs:
+      - backup_path
+      - backup_manifest
+
+  - name: glyph_editing
+    agent: glyph-editor
+    description: Surgical glyph modifications with proof generation
+    dependencies: [backup]
+    context_required: false
+    condition: workflow_type == glyph_edit
+    outputs:
+      - modified_fonts
+      - proof_images
+      - edit_summary
+
+  - name: ttf_export
+    agent: ttf-exporter
+    description: OTF to TTF conversion with Epson rules
+    dependencies: [backup]
+    context_required: false
+    condition: workflow_type == ttf_export
+    outputs:
+      - ttf_files
+      - name_table_changes
+      - export_manifest
+
+  - name: font_selection
+    agent: typography-advisor
+    description: Font recommendations and pairing suggestions
+    dependencies: [context_validation]
+    context_required: false
+    condition: workflow_type == font_selection
+    outputs:
+      - recommendations
+      - pairing_suggestions
+      - comparison_analysis
+
+  - name: batch_confirmation
+    agent: typography-orchestrator
+    description: Confirm batch operation across all weights
+    dependencies: [glyph_editing, ttf_export]
+    context_required: false
+    condition: affects_multiple_weights
+    checkpoint: true
+    outputs:
+      - batch_manifest
+      - affected_weights
+
+  - name: batch_execution
+    agent: glyph-editor | ttf-exporter
+    description: Apply operation to all weights
+    dependencies: [batch_confirmation]
+    context_required: false
+    outputs:
+      - processed_files
+      - batch_results
+
+  - name: path_verification
+    agent: path-guardian
+    description: Final verification of all output paths
+    dependencies: [batch_execution, font_selection]
+    context_required: false
+    outputs:
+      - verification_status
+      - warnings
+      - blocked_paths
+
+  - name: memory_persistence
+    agent: typography-orchestrator
+    description: Record operation to Workshop memory
+    dependencies: [path_verification]
+    context_required: false
+    outputs:
+      - workshop_entry
+      - task_summary
+
+  - name: completion
+    agent: typography-orchestrator
+    description: Final summary and cleanup
+    dependencies: [memory_persistence]
+    context_required: false
+    outputs:
+      - final_report
+      - cleanup_status
+
+# Checkpoint Configuration
+checkpoints:
+  backup:
+    trigger: before_font_modification
+    agent: typography-orchestrator
+    required_for: [glyph_edit, ttf_export]
+    skip_for: [font_selection, tweak_mode]
+    
+  batch:
+    trigger: before_multi_weight_operation
+    agent: typography-orchestrator
+    required_for: [default, complex]
+    skip_for: [tweak_mode]
+
+# Sacred Collections (BLOCK - no override)
+sacred_collections:
+  - pattern: "[Adobe]*"
+    name: "Adobe Fonts"
+  - pattern: "[FontShop]*"
+    name: "FontShop 100 Best"
+  - pattern: "Google Fonts/*"
+    name: "Google Fonts"
+  - pattern: "Nerd Fonts/*"
+    name: "Nerd Fonts"
+  - pattern: "Icons/*"
+    name: "Icons"
+
+# Canonical Paths
+canonical_paths:
+  ttf_exports: "/_Epson-TTF/"
+  working_files: "/.claude/temp/"
+  backups: "/.claude/backups/"
+  archive: "/.archived/"
+
+# Path Validation Mode
+path_validation:
+  mode: warn-proceed
+  sacred_action: block
+  non_canonical_action: warn
+
+# Workshop Memory Configuration
+memory:
+  persistence: always
+  record_on:
+    - glyph_edit_complete
+    - ttf_export_complete
+    - font_recommendation_given
+    - batch_operation_complete
+    - backup_created
+    - error_encountered
+
+# Phase State Location
+phase_state:
+  location: ".claude/orchestration/phase_state.json"
+  domain: "typography"
+
+  top_level_fields:
+    - domain
+    - current_phase
+    - complexity_tier
+    - workflow_type
+    - target_fonts
+    - operation_summary
+
+  phase_entries:
+    classification:
+      description: "Request classification and routing"
+      fields:
+        - complexity_tier
+        - workflow_type
+        - target_fonts
+        - operation_summary
+
+    context_validation:
+      description: "CLAUDE.md rules and path validation"
+      fields:
+        - claude_md_rules
+        - path_validation_status
+        - sacred_collection_check
+
+    backup:
+      description: "Pre-edit backup creation"
+      fields:
+        - backup_path
+        - backup_manifest
+        - checkpoint_approved
+
+    glyph_editing:
+      description: "Glyph modification results"
+      fields:
+        - modified_fonts
+        - proof_images
+        - edit_summary
+        - glyphs_modified
+        - weights_processed
+
+    ttf_export:
+      description: "TTF export results"
+      fields:
+        - ttf_files
+        - name_table_changes
+        - export_manifest
+        - weights_exported
+
+    font_selection:
+      description: "Font recommendation results"
+      fields:
+        - recommendations
+        - pairing_suggestions
+        - comparison_analysis
+
+    batch_confirmation:
+      description: "Batch operation approval"
+      fields:
+        - batch_manifest
+        - affected_weights
+        - checkpoint_approved
+
+    batch_execution:
+      description: "Batch processing results"
+      fields:
+        - processed_files
+        - batch_results
+        - errors
+
+    path_verification:
+      description: "Final path validation"
+      fields:
+        - verification_status
+        - warnings
+        - blocked_paths
+
+    memory_persistence:
+      description: "Workshop memory recording"
+      fields:
+        - workshop_entry
+        - task_summary
+
+    completion:
+      description: "Final status and cleanup"
+      fields:
+        - final_report
+        - cleanup_status
+        - outcome
+
+# Config paths
+config:
+  temp_path: .claude/temp/
+  backup_path: .claude/backups/
+  phase_state_path: .claude/orchestration/phase_state.json

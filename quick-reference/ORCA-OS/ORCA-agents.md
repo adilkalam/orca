@@ -1,10 +1,10 @@
 # OS 5.0 Agents Quick Reference
 
-**Last Updated:** 2026-01-30
+**Last Updated:** 2026-02-03
 **Version:** OS 5.0
-**Total Agents:** 105 (public lanes)
+**Total Agents:** 111 (public lanes)
 
-> **Scope Note:** This quick-reference covers public lanes only. Internal lanes (kg, shopify) add 12 agents for a system total of 117. See `docs/reference/os-dependency-graph.yaml` for complete registry.
+> **Scope Note:** This quick-reference covers public lanes only. Internal lanes (kg, shopify) add 12 agents for a system total of 122. See `docs/reference/os-dependency-graph.yaml` for complete registry.
 
 ---
 
@@ -37,8 +37,9 @@
 | SEO | 5 | `agents/seo/` |
 | Data | 4 | `agents/data/` |
 | Audit | 8 | `agents/audit/` |
+| Typography | 6 | `agents/typography/` |
 | Cross-Cutting | 11 | `agents/dev/` |
-| **TOTAL** | **105** | |
+| **TOTAL** | **111** | |
 
 ---
 
@@ -230,6 +231,32 @@ Orchestrated directly by `/research` command (no lead agent).
 
 ---
 
+## Typography Pipeline (6 Agents)
+
+Font library management for glyph editing, TTF export, font selection, and exploration tools.
+
+### Orchestration
+| Agent | Purpose |
+|-------|---------|
+| `typography-orchestrator` | Light orchestrator, routing, checkpoints, Workshop memory |
+
+### Implementation
+| Agent | Purpose |
+|-------|---------|
+| `glyph-editor` | Heavy - fontTools glyph modifications, contour editing, proof generation |
+| `ttf-exporter` | Medium - OTF to TTF conversion for Epson LabelWorks |
+| `typography-advisor` | Light - font selection, pairing recommendations |
+| `typography-explorer-generator` | Heavy - generates interactive typography testing tools (Next.js or HTML) |
+
+### Gates
+| Agent | Purpose |
+|-------|---------|
+| `path-guardian` | Path validation, sacred collection protection |
+
+**Workflows:** glyph_edit, ttf_export, font_selection, explorer_generation
+
+---
+
 ## Data Pipeline (4 Agents)
 
 | Agent | Purpose |
@@ -363,6 +390,7 @@ Located in `agents/dev/`. These agents work across multiple pipelines:
   seo/              # 5 agents
   data/             # 4 agents
   audit/            # 8 agents
+  typography/       # 5 agents
 ```
 
 ### Source (ORCA-OS Repo)
@@ -392,4 +420,4 @@ $ORCA_OS_PATH/agents/
 ---
 
 _Source of truth: `docs/reference/os-dependency-graph.yaml`_
-_Last sync: 2026-01-30_
+_Last sync: 2026-02-03_

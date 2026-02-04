@@ -40,15 +40,15 @@ If RESEARCH_DIR is not provided, ask the orchestrator to provide it.
 
 **IMPORTANT**: MCP tools do not propagate to subagents. Use Crawl4AI via its REST API with `Bash` + `curl`.
 
-1. **Single page markdown** — `/md` endpoint (preferred for most work):
+1. **Single page markdown** — `/md` endpoint with `output_path` (preferred):
    ```bash
    curl -s -X POST "http://localhost:11235/md" \
      -H "Content-Type: application/json" \
-     -d '{"url": "https://example.com/docs/page", "f": "fit"}' \
-     | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('markdown',''))" \
-     > "$RESEARCH_DIR/temp/page-name.md"
+     -d '{"url": "https://example.com/docs/page", "f": "fit", "output_path": "'$RESEARCH_DIR'/temp/page-name.md"}'
    ```
-   Parameters: `url` (required), `f` (filter: raw/fit/bm25/llm), `q` (query for bm25/llm)
+   Returns metadata only: `{"saved": true, "path": "...", "bytes": N, "url": "..."}`
+
+   Parameters: `url` (required), `output_path` (recommended), `f` (filter: raw/fit/bm25/llm), `q` (query for bm25/llm)
 
 2. **Batch crawl multiple URLs** — `/crawl/job` endpoint:
    ```bash
@@ -58,7 +58,10 @@ If RESEARCH_DIR is not provided, ask the orchestrator to provide it.
      > "$RESEARCH_DIR/temp/batch-result.json"
    ```
 
-3. **If MCP tools ARE available** (try `mcp__crawl4ai__md` first), prefer them over curl.
+3. **If MCP tools ARE available**, use with `output_path` to avoid token bloat:
+   ```
+   mcp__crawl4ai__md({ url: "https://...", f: "fit", output_path: "$RESEARCH_DIR/temp/page.md" })
+   ```
 
 ### Disk-Based Workflow (Memory Safety)
 
@@ -106,13 +109,11 @@ When invoked:
 
 3. **Discover URLs**: Use `WebSearch` to find relevant pages on the target site/topic
 
-4. **Extract with Crawl4AI**: For each key URL, use curl:
+4. **Extract with Crawl4AI**: For each key URL, use curl with `output_path` (saves to disk, returns metadata only):
    ```bash
    curl -s -X POST "http://localhost:11235/md" \
      -H "Content-Type: application/json" \
-     -d '{"url": "<target>", "f": "fit"}' \
-     | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('markdown',''))" \
-     > "$RESEARCH_DIR/temp/<slug>.md"
+     -d '{"url": "<target>", "f": "fit", "output_path": "'$RESEARCH_DIR'/temp/<slug>.md"}'
    ```
    - **Maximum 8 pages per evidence note** to manage memory
    - If curl fails, fall back to `WebFetch`

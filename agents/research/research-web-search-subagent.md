@@ -42,17 +42,18 @@ If RESEARCH_DIR is not provided, ask the orchestrator to provide it.
 
 **IMPORTANT**: MCP tools do not propagate to subagents. Use Crawl4AI via its REST API with `Bash` + `curl`.
 
-**Single page markdown extraction** — use the `/md` endpoint:
+**Single page markdown extraction** — use the `/md` endpoint with `output_path`:
 ```bash
 curl -s -X POST "http://localhost:11235/md" \
   -H "Content-Type: application/json" \
-  -d '{"url": "https://example.com/article", "f": "fit"}' \
-  | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('markdown',''))" \
-  > "$RESEARCH_DIR/temp/slug.md"
+  -d '{"url": "https://example.com/article", "f": "fit", "output_path": "'$RESEARCH_DIR'/temp/slug.md"}'
 ```
+
+This returns metadata only: `{"saved": true, "path": "...", "bytes": N, "url": "..."}` (avoids token bloat).
 
 **Parameters for `/md`:**
 - `url` (required): The URL to extract
+- `output_path` (RECOMMENDED): Save markdown to file and return metadata only
 - `f`: Filter strategy — `"raw"` (full page), `"fit"` (cleaned, default), `"bm25"` (query-ranked), `"llm"` (AI-filtered)
 - `q`: Query string for bm25/llm filters
 
@@ -64,9 +65,9 @@ curl -s -X POST "http://localhost:11235/crawl/job" \
   > "$RESEARCH_DIR/temp/batch-result.json"
 ```
 
-**If MCP tools ARE available** (check by trying `mcp__crawl4ai__md`), prefer them:
+**If MCP tools ARE available** (check by trying `mcp__crawl4ai__md`), use with output_path:
 ```
-mcp__crawl4ai__md({ url: "https://...", f: "fit" })
+mcp__crawl4ai__md({ url: "https://...", f: "fit", output_path: "$RESEARCH_DIR/temp/slug.md" })
 ```
 
 ### Disk-Based Workflow
@@ -147,13 +148,11 @@ When invoked by the orchestrator:
 3. **Search**: Run `WebSearch` with a focused query
    - Identify the most promising 3-5 results (not 8+)
 
-4. **Extract with Crawl4AI**: For each key URL, use curl to Crawl4AI's REST API:
+4. **Extract with Crawl4AI**: For each key URL, use curl with `output_path` (saves to disk, returns metadata only):
    ```bash
    curl -s -X POST "http://localhost:11235/md" \
      -H "Content-Type: application/json" \
-     -d '{"url": "<target_url>", "f": "fit"}' \
-     | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('markdown',''))" \
-     > "$RESEARCH_DIR/temp/<slug>.md"
+     -d '{"url": "<target_url>", "f": "fit", "output_path": "'$RESEARCH_DIR'/temp/<slug>.md"}'
    ```
    - **Maximum 5 pages per subquestion**
    - Prioritize the most authoritative/comprehensive source
