@@ -7,7 +7,6 @@
                                     v5.1
 
 Prosthetic cognitive architecture for Claude Code
-
 ```
 > Installation Instruction -> **[QUICK-START.md](QUICK-START.md)**
 
