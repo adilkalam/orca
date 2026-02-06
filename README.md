@@ -12,9 +12,9 @@
      \__\/         \__\/         \__\/         \__\/                  \__\/         \__\/    
                                                                                         v5.1
 
-Prosthetic Cognitive Architecture for Claude Code
 ```
-**ORCA OS: ORCHESTRATED REASONING COORDINATION ARCHITECTURE**
+**ORCA OS: ORCHESTRATED REASONING COGNITIVE ARCHITECTURE**
+Prosthetic Cognition for Claude Code
 
 -> [QUICK-START.md](QUICK-START.md)
 
