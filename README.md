@@ -5,10 +5,13 @@
 | |_| |  _ <| |___ / ___ \ | |_| |___) |
  \___/|_| \_\\____/_/   \_\ \___/|____/
                                     v5.1
+
+Prosthetic cognitive architecture for Claude Code
+
 ```
 > **[QUICK-START.md](QUICK-START.md)**
 
-**Prosthetic cognitive architecture for Claude Code**
+---
 
 ## The Trouble with AI
 
