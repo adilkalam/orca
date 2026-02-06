@@ -15,6 +15,7 @@
 Prosthetic Cognitive Architecture for Claude Code
 ```
 ORCA OS: ORCHESTRATED REASONING COORDINATION ARCHITECTURE
+
 **Installation -> [QUICK-START.md](QUICK-START.md)**
 
 ---
