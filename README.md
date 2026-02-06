@@ -14,6 +14,7 @@
 
 ```
 **ORCA OS: ORCHESTRATED REASONING COGNITIVE ARCHITECTURE**
+
 Prosthetic Cognition for Claude Code
 
 -> [QUICK-START.md](QUICK-START.md)
