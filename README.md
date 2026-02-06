@@ -20,8 +20,6 @@ Prosthetic Cognition for Claude Code
 
 ---
 
-## The Trouble with AI
-
 Large Language Models (LLMs) are trained across millions of interactions to produce output that is quick rather than thorough, agreeable rather than honest, hedged rather than specific, and complete-sounding rather than candid about what they do not know. 
 
 The causes are multiple -- reward signals optimized for chat satisfaction, training data dominated by simple interactions, absence of working memory, context window pressure. 
