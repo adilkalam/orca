@@ -15,7 +15,7 @@ NC='\033[0m' # No Color
 BOLD='\033[1m'
 
 # Configuration
-ORCA_VERSION="5.0.0"
+ORCA_VERSION="5.1.0"
 CLAUDE_DIR="$HOME/.claude"
 BACKUP_DIR="$HOME/.claude-backup-$(date +%Y%m%d-%H%M%S)"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -192,6 +192,9 @@ install_orca_files() {
         "agents/data"
         "agents/audit"
         "agents/django-react"
+        "agents/shopify"
+        "agents/kg"
+        "agents/typography"
         "commands"
         "skills"
         "hooks"
@@ -217,24 +220,21 @@ install_orca_files() {
 
     # Copy agents
     info "Installing agents..."
-    for domain in dev nextjs os-dev iOS expo research seo data audit django-react; do
+    for domain in dev nextjs os-dev iOS expo research seo data audit django-react shopify kg typography; do
         if [ -d "$ORCA_ROOT/agents/$domain" ]; then
             cp -r "$ORCA_ROOT/agents/$domain/"* "$CLAUDE_DIR/agents/$domain/" 2>/dev/null || true
         fi
     done
-    # Remove private/excluded agent directories if they exist from previous installs
-    rm -rf "$CLAUDE_DIR/agents/kg" 2>/dev/null || true
-    rm -rf "$CLAUDE_DIR/agents/shopify" 2>/dev/null || true
     # Remove legacy directories from previous installs
     rm -rf "$CLAUDE_DIR/agents/orca-dev" 2>/dev/null || true
-    success "Agents installed (105 agents across 12 directories)"
+    success "Agents installed (124 agents across 13 directories)"
 
     # Copy commands (excluding domain-specific)
     info "Installing commands..."
     for cmd in "$ORCA_ROOT/commands/"*.md; do
         local filename=$(basename "$cmd")
         case "$filename" in
-            kg.md|shopify.md|trading-*.md)
+            trading-*.md)
                 # Skip domain-specific commands
                 ;;
             *)
@@ -242,9 +242,6 @@ install_orca_files() {
                 ;;
         esac
     done
-    # Remove private/excluded commands if they exist from previous installs
-    rm -f "$CLAUDE_DIR/commands/kg.md" 2>/dev/null || true
-    rm -f "$CLAUDE_DIR/commands/shopify.md" 2>/dev/null || true
     success "Commands installed"
 
     # Copy skills (excluding domain-specific)
@@ -252,7 +249,7 @@ install_orca_files() {
     for skill_dir in "$ORCA_ROOT/skills/"*/; do
         local skill_name=$(basename "$skill_dir")
         case "$skill_name" in
-            mm-*|uxscii-*|creative-strategist|shopify-theme|liquid-quick)
+            mm-*|uxscii-*|creative-strategist)
                 # Skip domain-specific skills
                 ;;
             *)
@@ -299,6 +296,8 @@ install_orca_files() {
                 ;;
         esac
     done
+    # Remove private docs if they exist from previous installs
+    rm -f "$CLAUDE_DIR/docs/THESIS.md" 2>/dev/null || true
     success "Documentation installed"
 
     # Copy quick-reference (excluding domain-specific)
@@ -611,7 +610,7 @@ print_completion() {
     echo -e "  ${BOLD}Core MCPs installed:${NC}"
     echo "     - context7 (library documentation)"
     echo "     - project-context (memory & semantic search)"
-    echo "     - cognition-mcp (38 reasoning operations)"
+    echo "     - cognition-mcp (40 reasoning operations)"
     echo "     - sequential-thinking (multi-step reasoning)"
     echo ""
     echo -e "  ${BOLD}Required for /research, /seo, /orca-pipeline:${NC}"

@@ -2,10 +2,10 @@
 # Source of truth for artifact relationships
 # Used by /orca-os-dev to trace impacts and sync documentation
 #
-# Version: 5.0
-# Last Updated: 2026-01-30
+# Version: 5.1
+# Last Updated: 2026-02-06
 
-version: "5.0"
+version: "5.1"
 
 # =============================================================================
 # ARTIFACT TYPE DEFINITIONS
@@ -116,7 +116,7 @@ documentation_map:
       - examples: "Common usage patterns"
     update_triggers: [command_modify, workflow_change]
 
-  "quick-reference/mental-models/":
+  "quick-reference/thinking-models/":
     tracks: [mental_models]
     scope: global
     description: "Markdown templates for structured thinking frameworks"
@@ -433,7 +433,7 @@ lanes:
 # =============================================================================
 cross_cutting:
   agents_dir: agents/dev
-  agent_count: 11
+  agent_count: 12
   agents:
     - a11y-enforcer
     - crash-analyzer
@@ -442,6 +442,7 @@ cross_cutting:
     - design-token-guardian
     - performance-enforcer
     - performance-prophet
+    - screenshot-analyzer
     - security-specialist
     - shadcn-specialist
     - tailwind-specialist
@@ -463,7 +464,7 @@ mcps:
     - name: cognition-mcp
       description: "Sequential thinking storage with accept-store-echo pattern"
       tools: [cognition]
-      operations: [thought, mental_model, debug, decide, meta, systems, audit, session_info, session_export, session_import]
+      operations: [thought, mental_model, list_mental_models, debug, decide, meta, systems, audit, reasoning_stats, session_info, session_export, session_import]  # 41 operations total - representative subset shown; see docs/concepts/cognition-mcp.md for full list
       pattern: "accept-store-echo (MCP stores and echoes, never generates)"
       used_by: [/think, /challenge, /audit]
     - name: sequential-thinking
@@ -495,6 +496,72 @@ mcps:
       description: "Web content extraction"
       lanes: [research, nextjs]
       requires_manual_start: true
+
+# =============================================================================
+# SKILLS REGISTRY
+# All reusable behavior patterns with their consumers
+# =============================================================================
+skills:
+  - name: web-interface-guidelines
+    path: skills/web-interface-guidelines/SKILL.md
+    description: "Web interface design patterns and best practices"
+    consumers:
+      - nextjs-builder
+      - nextjs-design-reviewer
+      - nextjs-accessibility-specialist
+      - nextjs-css-specialist
+      - nextjs-layout-specialist
+      - nextjs-standards-enforcer
+      - django-react-builder
+      - django-react-standards-enforcer
+      - react-typescript-wizard
+      - shopify-section-builder
+      - shopify-css-specialist
+      - shopify-ui-reviewer
+      - shopify-theme-checker
+  - name: react-performance
+    path: skills/react-performance/SKILL.md
+    description: "React performance optimization techniques and patterns"
+    consumers:
+      - nextjs-builder
+      - nextjs-performance-specialist
+      - nextjs-standards-enforcer
+      - django-react-builder
+      - react-state-specialist
+      - react-typescript-wizard
+  - name: cursor-code-style
+    path: skills/cursor-code-style/SKILL.md
+    description: "Variable naming, control flow, comment standards"
+    consumers: [all_agents]  # Core skill used across OS
+  - name: lovable-pitfalls
+    path: skills/lovable-pitfalls/SKILL.md
+    description: "Common mistakes to avoid in development"
+    consumers: [all_agents]  # Core skill used across OS
+  - name: search-before-edit
+    path: skills/search-before-edit/SKILL.md
+    description: "Always grep before modifying files"
+    consumers: [all_agents]  # Core skill used across OS
+  - name: linter-loop-limits
+    path: skills/linter-loop-limits/SKILL.md
+    description: "Max 3 attempts on linter errors"
+    consumers: [all_agents]  # Core skill used across OS
+  - name: debugging-first
+    path: skills/debugging-first/SKILL.md
+    description: "Debug tools before code changes"
+    consumers: [all_agents]  # Core skill used across OS
+  - name: stripe-integration
+    path: skills/stripe-integration/SKILL.md
+    description: "Payment integration patterns for Stripe (checkout, subscriptions, webhooks)"
+    consumers:
+      - nextjs-builder
+      - django-react-builder
+  - name: shopify-app-development
+    path: skills/shopify-app-development/SKILL.md
+    description: "Shopify app development patterns (GraphQL, extensions, billing)"
+    consumers:
+      - shopify-grand-architect
+      - shopify-js-specialist
+  # Removed: react-patterns (consolidated into react-performance)
 
 # =============================================================================
 # COGNITION PERSISTENCE
@@ -733,7 +800,8 @@ commands:
 
   - name: clone-website
     type: utility
-    agents_called: []
+    agents_called:
+      - screenshot-analyzer  # When given image path instead of URL
 
   - name: session-save
     type: utility
@@ -793,7 +861,7 @@ commands:
 # COUNTS (for verification)
 # =============================================================================
 counts:
-  total_agents: 123
+  total_agents: 124
   total_commands: 33
   agents_by_domain:
     ios: 19
@@ -809,7 +877,7 @@ counts:
     kg: 4                  # Knowledge Graph research pipeline
     shopify: 8             # Shopify theme development pipeline
     typography: 6          # Font library management pipeline (+typography-explorer-generator)
-    cross-cutting: 11      # agents/dev/: a11y-enforcer, crash-analyzer, debt-eliminator, design-system-architect, design-token-guardian, performance-enforcer, performance-prophet, security-specialist, shadcn-specialist, tailwind-specialist, version-shield
+    cross-cutting: 12      # agents/dev/: a11y-enforcer, crash-analyzer, debt-eliminator, design-system-architect, design-token-guardian, performance-enforcer, performance-prophet, screenshot-analyzer, security-specialist, shadcn-specialist, tailwind-specialist, version-shield
 
 # =============================================================================
 # CHANGE IMPACT RULES

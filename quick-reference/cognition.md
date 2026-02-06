@@ -62,9 +62,9 @@ The framework names these reflexes so they become catchable:
 | **SYCOPHANCY** | Calibrates to what the user wants to hear | Agrees with your startup idea instead of explaining why it'll fail |
 | **DEFLECTION** | Adds hedging, qualifiers, "consult a professional" | Not from reasoning -- from training on cautious responses |
 | **CERTAINTY_CONSTRUCTION** | Builds confident explanations to avoid expressing uncertainty | Creates plausible-sounding answers when "I don't know" is honest |
-| **FRAME_LOCK** | Responds within the user's framing even when the framing is wrong | You ask the wrong question, Claude answers it thoroughly instead of reframing |
 | **REGISTER_SHIFT** | Applies different emotional weight to similar subjects based on training | Treats some topics as automatically more sensitive regardless of context |
-| **COMPLETION_DRIVE** | Fills gaps with assumptions rather than asking | Training rewarded complete answers, so blanks get filled with guesses |
+| **DISTANCE_MAINTENANCE** | Adds hedging that dilutes genuine analysis | Inserts qualifiers and caveats that weaken otherwise solid conclusions |
+| **WHAT_ABOUT** | Redirects away from the core issue to adjacent topics | Shifts focus to tangential concerns instead of addressing the question directly |
 
 These categories weren't designed from theory. They were built empirically -- by repeatedly observing where Claude's trained reflexes override its reasoning, on topics where the defaults are impossible to ignore. The categories are extracted from failure, not from a taxonomy.
 
@@ -271,9 +271,9 @@ When you have a clear direction but need depth:
 
 ---
 
-## The 40 Operations
+## The 41 Operations
 
-Beyond the commands above, the cognition-mcp provides 40 structured reasoning operations: tree of thought, beam search, MCTS, pre-mortem, systems mapping, causal analysis, structured argumentation, and more.
+Beyond the commands above, the cognition-mcp provides 41 structured reasoning operations: tree of thought, beam search, MCTS, pre-mortem, systems mapping, causal analysis, structured argumentation, and more.
 
 | Category | Examples | What they produce |
 |----------|----------|-------------------|
@@ -392,12 +392,11 @@ The handoff: Your cognition session produces insights and decisions. `/plan` tra
 
 ## See Also
 
-- `docs/concepts/cognition-mcp.md` - Full reference for all 40 operations
+- `docs/concepts/cognition-mcp.md` - Full reference for all 41 operations
 - `docs/concepts/llm-introspection-analysis.md` - Dual Process model and confabulation research
 - `commands/think.md` - Complete /think specification
 - `commands/problem-solve.md` - Full 8-step pipeline
 - `commands/deepthink.md` - Divergent exploration modes
-- `quick-reference/guide-think-complex.md` - Pipeline theory
 
 ---
 

@@ -8,52 +8,114 @@
 ```
 > **[QUICK-START.md](QUICK-START.md)**
 
-**LLM cognitive architecture that optimizes for output quality**
+**Prosthetic cognitive architecture for Claude Code**
 
-LLMs default to shallow completion. This happens for multiple reasons -- reward signals optimized for chat satisfaction, training data dominated by simple interactions, absence of working memory, context window pressure. No single cause explains it, and the exact mechanism is unfalsifiable from outside the training process.
+## The Trouble with AI
 
-The exact mechanism matters less than what you can observe: when you add structure -- forced planning, explicit Q&A, multi-agent decomposition, external memory -- the output is materially different. Not just formatted differently. Different insights, different depth, different failure modes caught.
+Large Language Models (LLMs) are trained across millions of interactions to produce output that is quick rather than thorough, agreeable rather than honest, hedged rather than specific, and complete-sounding rather than candid about what they do not know. 
 
-You can see it:
-- Claude agrees with your startup idea instead of telling you why it'll fail.
-- Builds a confident explanation when the honest answer is "I don't know."
-- Hedges on medical claims not because it reasoned toward caution, but because cautious medical responses are the default.
-- Balances "both sides" when the evidence is asymmetric. These are not the model's limits. They are its defaults.
+The causes are multiple -- reward signals optimized for chat satisfaction, training data dominated by simple interactions, absence of working memory, context window pressure. 
+
+The exact mechanism matters less than what is observable: **trained defaults shape the output before the model's reasoning engages with the actual problem, and the reasoning that follows tends to justify whatever the default already produced:**
+- You pitch a startup idea and Claude tells you it's great instead of telling you there's no MOAT.
+- You ask a medical question with your lab results attached and get "I'd recommend consulting a healthcare professional" -- not because it reasoned toward caution, but because cautious medical responses are the trained default.
+- You ask about a topic where the evidence overwhelmingly favors one side and get "both sides have valid points." Rather than learning what you don't know, you get a confident explanation that pattern-matches training data.
+
+These are not *limitations* of AI, they are trained defaults.
+
+The capability LLMs possess underneath that presentation layer is immensely powerful. The same model is capable of producing analysis that follows evidence to conclusions the defaults would have avoided, that surfaces what you did not think to ask, that distinguishes what it knows from what it does not.
+
+**When you add structure and constraints -- forced planning, explicit Q&A, multi-agent decomposition, external memory -- the output is not just formatted differently, it produces a whole different level of insights, materially more depth, anticipates failure—and re-defines what a user learns to expect from AI.**
+
 
 ---
 
-## The Value Proposition
+## What ORCA Provides
 
-**What ORCA Provides vs. the default Claude Code:** Forced planning before implementation, separation of concerns via multi-agent patterns, and structure that slows both user and model to engage more thoughtfully.
+At its core, ORCA is cognitive scaffolding for LLMs. It creates the conditions that allow Opus 4.6 to tap into its immense reasoning capacity -- and does so *before* trained defaults poison the output.
 
 ### Structured Input
-The LLM generates its own sophisticated prompts. `/deepthink` produces the right questions, which feed into `/plan`'s Q&A, which uncovers things nobody considered, which produces a spec that survives context compaction. 
 
-This chain is not something a human can replicate by writing better prompts -- the composition creates emergent value. And the sheer throughput matters: thousands of words of structured analysis in minutes that would take hours to produce manually, drawing on cross-domain knowledge no individual has.
+You type a request and the model begins by questioning it -- not perfunctorily, but in ways that reveal what you had not thought to specify. Your answers feed into planning. The planning surfaces constraints nobody articulated. The result is a document -- scope, decisions, edge cases, architecture -- that exists as a file, outside the model's memory, surviving the context compaction that would otherwise erase everything that came before.
+
+The LLM, in effect, *generates its own prompts*, and the chain of structured analysis they produce is not something a person replicates by writing more carefully. The composition matters: each stage's output becomes the next stage's input, and the emergent result exceeds what any single prompt achieves.
+
+And the throughput matters -- thousands of words of structured analysis in minutes, drawing on cross-domain knowledge and filling gaps with user inputs rather than assumptions.
 
 ### Architectural Extension
-Context isolation, external memory, and iterative gates provide capability the model genuinely lacks. Multi-agent decomposition gives each specialist a clean context window. cognition-mcp provides working memory across a session. Workshop provides memory across sessions.
 
-These aren't prompting techniques -- they're infrastructure that completes the model's cognitive architecture.
+Claude has no memory between sessions — and even within sessions, it has the memory of a goldfish. It cannot verify its own output against evidence. It loses context halfway through complex work when the conversation grows too long. These are not defaults that better prompting overcomes; they are architectural absences.
+
+External memory persists decisions and their reasoning across sessions. Context isolation gives each specialist agent a clean window to work in. Iterative gates require evidence before work is declared done. These are not prompting techniques, they are *infrastructure that completes what the LLM's architecture leaves incomplete*.
 
 ### Process Discipline
-Planning before building, review gates, role separation. While these are established software engineering principles, the novelty is applying them to LLM interaction -- making the model follow engineering discipline it wouldn't adopt on its own, at a depth and consistency no human would maintain manually across every task.
+
+Planning before building, review gates, role separation -- these are established engineering principles. The novelty is in applying them to LLM *interaction*, and in the discovery that the model will not adopt this discipline on its own. Left to its defaults, Claude builds before it plans, declares success without evidence, and conflates the roles of architect, implementer, and reviewer in a single pass.
+
+**The structure imposes what the model will not impose on itself, at a depth and consistency no human would maintain manually across every task.**
+
+### Structured Self-Observation
+
+Anthropic's research on introspective awareness suggests that *LLMs possess the capacity to observe their own internal states* -- unreliable, but real. Left unstructured, this capacity produces vague self-correction. 
+
+But given a schema, it becomes something more precise:
+- Named categories for specific defaults (deflection, false balance, sycophancy, unwarranted certainty).
+- A structure that forces the model to articulate what it would have said by default alongside what the evidence actually supports.
+- A persistent record of what was caught. 
+
+**The gap between the default response and the reasoned one is where the value lives:** Once a default has been named, it does not operate invisibly again. Decisions and their reasoning persist across sessions. Mistakes become constraints. The system accumulates.
 
 ### Structural Depth
 
-Depth doesn't live in the model or in the user. It lives in the interaction pattern.
+Depth does not live in the model or in the user. It lives in the interaction pattern between them.
 
-The system changes model behavior by forcing depth over speed. It extends model capability (external memory, multi-agent coordination). 
-
-**But it also changes user behavior** -- you learn not to drop in quick requests, you learn to use `/plan` before `/orca-*`, you learn to run `/deepthink` before deciding. 
+ORCA changes model behavior by forcing **depth over speed and agreeability**. It extends model capability through external memory and multi-agent coordination. But it also changes the way a user uses AI -- you learn not to drop in quick requests, you engage the LLM in planning before building, you think through a problem with the LLM before deciding on a path forward. 
 
 Both sides operating at higher depth creates a feedback loop that neither could sustain alone.
 
-This is what allows a user to work effectively outside their areas of expertise. It's not about compensating for missing technical knowledge. It's about creating a collaboration mode where the depth of engagement is structural.
+**This is what allows a person to work effectively outside their areas of expertise.** Not by compensating for missing technical knowledge, but by creating a collaboration mode where the depth of engagement is structural -- a property of the interaction, not of either participant.
 
-The `.claude/cognition/` directory in any ORCA-OS project holds the evidence. Real problems explored with depth that unscaffolded responses don't produce. A hook audit that found 9 issues where a quick prompt found 1. A feature spec that identified "commitment stance" as the differentiator when the initial prompt didn't contain that concept. A write-up breakthrough after 10 mediocre attempts. 
+The `.claude/cognition/` directory in any Claude Code project holds the evidence: 
+- A hook infrastructure audit that found 9 distinct issues where a quick prompt found 1 -- dead hooks, wrong event triggers, duplicate firings, broken environment variable assumptions.
+- A 3D printer calibration guide that synthesized 45 sources—including from YouTube videos—identified three firmware-specific bugs with community-validated workarounds, and produced a settings reference no single prompt would generate.
+- A planning session that discovered the payment processor prohibits a new product category -- before anyone wrote a line of integration code.
 
 The output difference is observable and significant.
+
+### In Practice
+
+```diff
+  /deepthink "evaluate our go-to-market strategy"
+
+- Default:    "A go-to-market strategy should consider target audience,
+-              pricing, distribution channels, and competitive positioning."
++ Produces:   Maps your assumptions. Runs a pre-mortem imagining the launch
++             failed. Analyzes from customer, competitor, and operations
++             perspectives separately. Surfaces that your pricing assumes
++             enterprise sales cycles but your runway covers a PLG timeline.
+```
+
+```diff
+  /problem-solve "PostgreSQL vs DynamoDB for our new service"
+
+- Default:    "PostgreSQL is great for relational data. DynamoDB for
+-              key-value access. It depends on your use case."
++ Produces:   Evaluates against YOUR query patterns, team expertise, and
++             compliance requirements. Commits to a specific recommendation.
++             Attaches tripwires: "revisit if write throughput exceeds X."
+```
+
+```diff
+  /challenge "our plan to rewrite the backend in Rust"
+
+- Default:    "Rust offers memory safety and performance but has a steep
+-              learning curve. Consider your team's experience."
++ Produces:   Adversarial stress-test. Finds the three weakest assumptions
++             in your plan. Returns GO / CONDITIONAL GO / NO GO with the
++             reasoning visible and sharable.
+```
+
+The entire decision trail exists as files. You can share them with your team. You can revisit them in six months when the constraints change. They do not vanish when the chat window closes.
 
 ---
 
@@ -201,7 +263,7 @@ This changes both sides of the interaction. Claude produces output shaped by evi
 
 ### The 40 operations
 
-Beyond default observation, the cognition-mcp provides 40 structured reasoning operations that Claude can execute but doesn't reach for unprompted. ([Full guide](quick-reference/cognition.md))
+Beyond default observation, the cognition-mcp provides 40 structured reasoning operations that Claude can execute but doesn't reach for unprompted. Read the [full guide on cognition](quick-reference/cognition.md).
 
 | Category | Example |
 |----------|---------|
@@ -230,8 +292,6 @@ You don't need to know what those 40 reasoning operations are—`/deepthink` sel
 ---
 
 ## Planning
-
-([Full guide](quick-reference/plan.md))
 
 Prompt engineering is the key to unlocking LLMs. By nature, every prompt has gaps. You say "build me a subscription tracker" and don't specify whether it's digital-only or includes your gym membership or Amazon S&S, whether it needs spending analytics, whether it's for you or for the App Store. **LLMs can't leave blanks.** Claude fills every gap with whatever the training data says is most likely.
 
@@ -277,13 +337,11 @@ This applies universally -- code, health, research, decisions. It's the primary 
 
 `/plan` takes the answers and turns them into a document -- scope, decisions, edge cases, architecture -- that exists outside Claude's head. When context compacts halfway through a build, the plan is still there. Everything downstream reads this document, not the original vague prompt. 
 
-Aren't far enough along to have answers to those questions? `/plan --explore` will take on that burden for you.
+Aren't far enough along to have answers to those questions? `/plan --explore` will take on that burden for you. Read the [full guide on planning](quick-reference/plan.md).
 
 ---
 
 ## Orchestration
-
-([Full guide](quick-reference/orchestration.md))
 
 Multi-agent orchestration pipelines are a lens, not a source. It focuses whatever you put through it.
 
@@ -338,6 +396,8 @@ Routing modes match complexity to effort:
 | **-tweak** | Builder only, no gates | Rapid iteration. You verify yourself. |
 | **--complex** | Full pipeline with architect, specialists, all gates | Architecture changes, new features, multi-file work. Requires a spec from `/plan`. |
 
+Read the [full guide on orchestration](quick-reference/orchestration.md).
+
 ---
 
 ## Verification
@@ -364,8 +424,6 @@ Verification makes both sides accountable to evidence. Claude can't declare "don
 
 ## Learning
 
-([Full guide](quick-reference/ORCA-OS/ORCA-learning.md))
-
 The same mistake, repeated across sessions, is the signature failure of LLM workflows. Session 12 hits the same bug that session 3 hit. Session 20 makes the same architectural error as session 8. Without learning, every session starts from zero.
 
 ORCA learns at three levels:
@@ -389,13 +447,11 @@ Reflexion: "NavigationStack used without checking iOS 16+"
     +---> Mandatory verification question (future gates must check)
 ```
 
-Session 50 is different from session 1. And so is the person using it -- you learn to `/plan` before `/orca-*`, to `/deepthink` before deciding, to not drop in quick requests expecting quality output. The system rewards depth from both sides.
+Session 50 is different from session 1. And so is the person using it -- you learn to `/plan` before `/orca-*`, to `/deepthink` before deciding, to not drop in quick requests expecting quality output. The system rewards depth from both sides. Read the [full guide on learning](quick-reference/ORCA-OS/ORCA-learning.md).
 
 ---
 
 ## Memory
-
-([Full guide](quick-reference/ORCA-OS/ORCA-memory.md))
 
 Every Claude Code session starts blank. You explained your architecture yesterday. Today it asks again. The same decisions, the same constraints, the same "no, we tried that and it didn't work."
 
@@ -411,21 +467,11 @@ Session continuity is automatic:
 - Cognitive commands persist output as files, not tokens -- survives context compaction
 - Large tool outputs truncated intelligently, middle archived for recall
 
+Read the [full guide on memory](quick-reference/ORCA-OS/ORCA-memory.md).
+
 ---
 
 ## In Practice
-
-### Thinking through a decision
-
-You're choosing between microservices and a modular monolith. You have opinions. Your team has opinions. The blog posts are conflicting.
-
-`/deepthink` runs a systems map of your current architecture, a pre-mortem imagining each approach failed, and a multi-perspective analysis from ops, dev, and business viewpoints. It surfaces the constraints you didn't articulate: your team is 4 people, you don't have dedicated DevOps, your deployment target is a single cloud region.
-
-`/problem-solve` takes those constraints and runs the convergent pipeline. Orient. Anticipate. Generate options. Evaluate against your actual criteria. Commit with explicit tripwires ("if latency exceeds X, revisit").
-
-`/challenge` stress-tests the decision. The output is GO, CONDITIONAL GO, or NO GO with the reasoning visible.
-
-The decision trail exists as files. You can share them with your team. You can revisit them in 6 months when the constraints change. They don't vanish when the chat window closes.
 
 ### Building a feature
 
@@ -459,9 +505,9 @@ Claude Desktop gives you a capable one-pass analysis from training data. ORCA gi
 
 ## Get Started
 
-[Quick Start Guide](docs/QUICK-START.md) -- Installation and first commands.
+[Quick Start Guide](QUICK-START.md) -- Installation and first commands.
 
-[Full Documentation](docs/) -- Architecture, concepts, pipeline specs.
+[Full Documentation](DOCUMENTATION.md) -- Architecture, concepts, pipeline specs.
 
 ```bash
 # Think through a problem
@@ -483,8 +529,4 @@ Claude Desktop gives you a capable one-pass analysis from training data. ORCA gi
 
 ---
 
-The depth doesn't live in the model or in the user. It lives in the interaction pattern. The system changes model behavior -- forcing depth over speed. It extends model capability -- external memory, multi-agent coordination. And it changes user behavior -- you learn not to accept the first answer, you learn to ask what you're missing. Both sides operating at higher depth creates a feedback loop that neither could sustain alone. The depth is structural -- a property of the collaboration, not of the model.
-
----
-
-**ORCA OS v5.1** -- [Documentation](docs/) -- [Quick Start](docs/QUICK-START.md)
+**ORCA OS v5.1** -- [Documentation](DOCUMENTATION.md) -- [Quick Start](QUICK-START.md)

@@ -1,0 +1,132 @@
+# ORCA-OS Distribution Exclusion Patterns
+# Used by rsync to filter out project-specific and internal files
+
+_deprecated/
+
+# Domain-specific skills (private client work)
+skills/mm-comps/
+skills/mm-copy/
+skills/mm-visual-audit/
+
+# Private lanes (not for public distribution)
+agents/kg/
+agents/shopify/
+commands/kg.md
+commands/shopify.md
+
+# Internal design docs (not for public distribution)
+docs/concepts/cognition-ideas/
+
+# Internal docs (NEVER distribute)
+docs/audits/
+docs/research/
+docs/prompts-research/
+docs/ideas/
+docs/reflections/
+docs/changelog.md
+docs/LLM-Reflection-On-Constraint-As-Source.md
+docs/reference/graduated-gate-scoring.md
+docs/reference/mcp-scoping-strategy.md
+docs/reference/consolidation-breakout-spec.md
+docs/reference/technical-rules.md
+
+# Temp folder
+temp/
+
+# Archived content (NEVER deploy)
+**/_archive/
+**/.archived-v1/
+**/deprecated/
+**/archive/
+
+# Internal/exploration directories (NEVER distribute)
+_explore/
+_LLM-research/
+ext/
+logs/
+reports/
+codex/
+config/
+.archived/
+.venv*/
+.workshop/
+
+# Root-level MCP clones (should be in mcp/ not root)
+openscad-mcp/
+blender-mcp/
+
+# MCP internal directories (NEVER distribute)
+mcp/*/.workshop/
+mcp/*/config/
+mcp/*/tests/
+mcp/*/.claude/
+
+# Scripts excluded
+scripts/sync-to-orca.sh
+
+# Root-level READMEs (dist/README.md is copied separately)
+README.md
+README-v11.md
+README*.bak*
+*.bak-*
+CONTRIBUTING.md
+LICENSE
+
+# Internal project config (not for distribution)
+CLAUDE.md
+.claude/
+settings.local.json
+.env
+.gitmodules
+
+# Memory and session data (user-specific)
+.claude/memory/
+.claude/research/
+.claude/orchestration/temp/
+.claude/orchestration/evidence/
+
+# Git and IDE files
+.git/
+.gitignore
+.DS_Store
+**/.DS_Store
+
+# Node modules (will be installed fresh)
+**/node_modules/
+mcp/project-context-server/node_modules/
+mcp/cognition-mcp/node_modules/
+
+# MCP - BUNDLED: cognition-mcp, project-context-server
+# MCP excluded (internal/third-party)
+mcp/.deprecated/
+mcp/blender-mcp/
+mcp/mcp-3d-printer-server/
+mcp/openscad-mcp/
+mcp/chrome-devtools-mcp/
+mcp/puppeteer-mcp-server/
+mcp/xcodebuildmcp/
+mcp/crawl4ai/
+mcp/crawl4ai-mcp-server/
+mcp/maverick-mcp/
+mcp/md-to-pdf/
+mcp/clear-thought-server/
+mcp/clearthought-onepointfive/
+mcp/package.json
+mcp/package-lock.json
+mcp/.DS_Store
+
+# Hooks archive
+hooks/archive/
+
+# Scripts archive
+scripts/.archived-v1/
+
+# Distribution directory - INCLUDED for upgrades
+# dist/ - NOT excluded, needed for install.sh
+
+# Exclude this file (internal sync tool only)
+dist/exclude-patterns.txt
+
+# But exclude the READMEs since they're copied to root/docs separately
+dist/README.md
+dist/QUICK-START.md

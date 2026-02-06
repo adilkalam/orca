@@ -1,7 +1,7 @@
 # ORCA-OS Documentation
 
-**Version:** OS 5.0
-**Last Updated:** 2025-12-26
+**Version:** OS 5.1
+**Last Updated:** 2026-02-06
 
 Welcome to the ORCA-OS documentation. This document serves as the entry point and navigation hub for all ORCA-OS documentation.
 
@@ -11,10 +11,11 @@ Welcome to the ORCA-OS documentation. This document serves as the entry point an
 
 New to ORCA-OS? Start here:
 
-1. **[Why ORCA Architecture](concepts/why-orca-architecture.md)** - Understand why the system is designed this way
-2. **[Pipeline Model](concepts/pipeline-model.md)** - Learn the multi-lane pipeline architecture
-3. **[Complexity Routing](concepts/complexity-routing.md)** - Three-tier routing (tweak/default/complex)
-4. **[Memory Systems](concepts/memory-systems.md)** - Workshop, code-index.db, and ProjectContext
+1. **[README](../README.md)** - What ORCA is and why it exists
+2. **[Quick Start Guide](../QUICK-START.md)** - Installation and first commands
+3. **[Why ORCA Architecture](concepts/why-orca-architecture.md)** - Design philosophy
+4. **[Pipeline Model](concepts/pipeline-model.md)** - Multi-lane pipeline architecture
+5. **[Complexity Routing](concepts/complexity-routing.md)** - Three-tier routing (tweak/default/complex)
 
 ---
 
@@ -33,6 +34,8 @@ Foundational concepts that power ORCA-OS:
 | [Self-Improvement](concepts/self-improvement.md) | Agent learning loops and reflexion |
 | [Improvement Bus](concepts/improvement-bus.md) | Unified event stream for system improvements |
 | [Why ORCA Architecture](concepts/why-orca-architecture.md) | Design philosophy and justification |
+| [Dependency Graph](concepts/dependency-graph.md) | Agent and command dependencies |
+| [LLM Introspection Analysis](concepts/llm-introspection-analysis.md) | Research on LLM self-observation |
 
 ---
 
@@ -55,10 +58,14 @@ Each development lane has its own pipeline with specific agents, phases, and gat
 |------|-------------|---------------|
 | OS Development | [os-dev-pipeline.md](pipelines/os-dev-pipeline.md) | `/orca-os-dev` |
 | Requirements | [requirements-pipeline.md](pipelines/requirements-pipeline.md) | `/plan` |
-| SEO Content | [seo-pipeline.md](pipelines/seo-pipeline.md) | `/seo` |
 | Research | [research-pipeline.md](pipelines/research-pipeline.md) | `/research` |
+| SEO Content | [seo-pipeline.md](pipelines/seo-pipeline.md) | `/seo` |
+| SEO Optimizer | [seo-optimizer-pipeline.md](pipelines/seo-optimizer-pipeline.md) | via `/seo` |
 | Data Analysis | [data-pipeline.md](pipelines/data-pipeline.md) | via `/orca` |
 | Design | [design-pipeline.md](pipelines/design-pipeline.md) | via `/orca` |
+| Audit | [audit-pipeline.md](pipelines/audit-pipeline.md) | `/audit` |
+| Typography | [typography-pipeline.md](pipelines/typography-pipeline.md) | `/typography` |
+| Pipeline Creation | [orca-pipeline-pipeline.md](pipelines/orca-pipeline-pipeline.md) | `/orca-pipeline` |
 
 ---
 
@@ -72,7 +79,7 @@ Technical specifications and standards:
 | [MCP Project Config](reference/mcp-project-config.md) | Project-scoped MCP configuration |
 | [MCP Scoping Strategy](reference/mcp-scoping-strategy.md) | How MCPs are scoped to projects |
 | [Telemetry Standard](reference/telemetry-standard.md) | Logging and telemetry conventions |
-| [Dependency Graph](concepts/dependency-graph.md) | Agent and command dependencies |
+| [OS Dependency Graph](reference/os-dependency-graph.yaml) | Source of truth for all agents, commands, and pipelines |
 
 ---
 
@@ -81,12 +88,12 @@ Technical specifications and standards:
 For day-to-day usage, see the quick-reference guides:
 
 - **[ORCA Commands](../quick-reference/ORCA-OS/ORCA-commands.md)** - All 31 commands
-- **[ORCA Agents](../quick-reference/ORCA-OS/ORCA-agents.md)** - All 89 agents
+- **[ORCA Agents](../quick-reference/ORCA-OS/ORCA-agents.md)** - All 111 agents
 - **[ORCA Architecture](../quick-reference/ORCA-OS/ORCA-architecture.md)** - System architecture overview
 - **[ORCA MCPs](../quick-reference/ORCA-OS/ORCA-mcps.md)** - MCP server reference
 - **[ORCA Verification](../quick-reference/ORCA-OS/ORCA-verification.md)** - Verification patterns
-
-**Note:** `docs/guides/` contains narrative learning material. `quick-reference/` contains lookup-oriented checklists for daily use.
+- **[ORCA Memory](../quick-reference/ORCA-OS/ORCA-memory.md)** - Memory systems guide
+- **[ORCA Learning](../quick-reference/ORCA-OS/ORCA-learning.md)** - Learning and self-improvement
 
 ### Workflow Guides
 
@@ -96,19 +103,29 @@ For day-to-day usage, see the quick-reference guides:
 - [Django-React Workflow](../quick-reference/workflows/readme-django-react.md)
 - [Research Workflow](../quick-reference/workflows/readme-research.md)
 - [SEO Content Workflow](../quick-reference/workflows/readme-seo-content.md)
+- [Data Workflow](../quick-reference/workflows/readme-data.md)
+- [Audit Workflow](../quick-reference/workflows/readme-audit.md)
+- [OS-Dev Workflow](../quick-reference/workflows/readme-os-dev.md)
 
 ---
 
 ## Agent Roster
 
-See [agents.md](agents.md) for the complete agent inventory, or browse by lane:
+See [agents.md](agents.md) for the complete agent inventory. 111 agents across 11 domains:
 
-- `agents/iOS/` - 19 iOS agents
-- `agents/dev/` - Next.js, Django-React, OS-Dev agents
-- `agents/expo/` - 11 Expo/React Native agents
-- `agents/seo/` - 4 SEO content agents
-- `agents/research/` - 7 research agents
-- `agents/data/` - 4 data analysis agents
+| Domain | Count | Directory |
+|--------|-------|-----------|
+| iOS | 19 | `agents/iOS/` |
+| Next.js | 15 | `agents/nextjs/` |
+| Django-React | 13 | `agents/django-react/` |
+| Expo/React Native | 12 | `agents/expo/` |
+| Dev (cross-domain) | 11 | `agents/dev/` |
+| OS-Dev | 11 | `agents/os-dev/` |
+| Audit | 8 | `agents/audit/` |
+| Research | 7 | `agents/research/` |
+| Typography | 6 | `agents/typography/` |
+| SEO | 5 | `agents/seo/` |
+| Data | 4 | `agents/data/` |
 
 ---
 
@@ -122,25 +139,14 @@ See [changelog.md](changelog.md) for version history and recent changes.
 
 ```
 docs/
-├── DOCUMENTATION.md       ← You are here
-├── agents.md              ← Agent roster
-├── changelog.md           ← Version history
-├── concepts/              ← Core concepts
-│   ├── pipeline-model.md
-│   ├── complexity-routing.md
-│   ├── memory-systems.md
-│   └── ...
-├── pipelines/             ← Lane-specific pipelines
-│   ├── ios-pipeline.md
-│   ├── nextjs-pipeline.md
-│   └── ...
-├── reference/             ← Technical specifications
-│   ├── graduated-gate-scoring.md
-│   └── ...
-├── research/              ← Background research
-└── prompts-research/      ← Prompting research
++-- DOCUMENTATION.md       <- You are here
++-- agents.md              <- Agent roster
++-- changelog.md           <- Version history
++-- concepts/              <- Core concepts (11 docs)
++-- pipelines/             <- Lane-specific pipelines (14 docs)
++-- reference/             <- Technical specifications
 ```
 
 ---
 
-_Part of ORCA-OS v5.0 | See [quick-reference/](../quick-reference/) for day-to-day guides_
+_ORCA-OS v5.1 | [Quick Start](../QUICK-START.md) | [README](../README.md)_

@@ -66,19 +66,26 @@ check "$CLAUDE_DIR/memory" "memory directory" false
 echo ""
 echo "Checking agents..."
 check "$CLAUDE_DIR/agents/iOS" "iOS agents"
-check "$CLAUDE_DIR/agents/dev" "Next.js/OS-Dev agents"
+check "$CLAUDE_DIR/agents/nextjs" "Next.js agents"
+check "$CLAUDE_DIR/agents/dev" "Cross-cutting agents"
 check "$CLAUDE_DIR/agents/expo" "Expo agents"
+check "$CLAUDE_DIR/agents/django-react" "Django-React agents"
+check "$CLAUDE_DIR/agents/os-dev" "OS-Dev agents"
 check "$CLAUDE_DIR/agents/research" "Research agents"
-check "$CLAUDE_DIR/agents/seo" "SEO agents" false
-check "$CLAUDE_DIR/agents/data" "Data agents" false
+check "$CLAUDE_DIR/agents/seo" "SEO agents"
+check "$CLAUDE_DIR/agents/data" "Data agents"
+check "$CLAUDE_DIR/agents/audit" "Audit agents"
+check "$CLAUDE_DIR/agents/shopify" "Shopify agents"
+check "$CLAUDE_DIR/agents/kg" "KG agents"
+check "$CLAUDE_DIR/agents/typography" "Typography agents"
 
-# Count agents
-ios_agents=$(count_files "$CLAUDE_DIR/agents/iOS" "*.md")
-nextjs_agents=$(count_files "$CLAUDE_DIR/agents/dev" "*.md")
-expo_agents=$(count_files "$CLAUDE_DIR/agents/expo" "*.md")
-research_agents=$(count_files "$CLAUDE_DIR/agents/research" "*.md")
-total_agents=$((ios_agents + nextjs_agents + expo_agents + research_agents))
-echo "  Agents found: $total_agents (iOS:$ios_agents, Next.js:$nextjs_agents, Expo:$expo_agents, Research:$research_agents)"
+# Count all agents
+total_agents=0
+for domain_dir in "$CLAUDE_DIR/agents/"*/; do
+    count=$(count_files "$domain_dir" "*.md")
+    total_agents=$((total_agents + count))
+done
+echo "  Agents found: $total_agents"
 
 echo ""
 echo "Checking commands..."
@@ -108,7 +115,7 @@ echo ""
 echo "Checking hooks..."
 check "$CLAUDE_DIR/hooks/session-start.sh" "session-start hook"
 check "$CLAUDE_DIR/hooks/session-end.sh" "session-end hook"
-check "$CLAUDE_DIR/hooks/detect-project-type.sh" "detect-project-type hook"
+check "$CLAUDE_DIR/hooks/post-tool-use.sh" "post-tool-use hook"
 
 echo ""
 echo "Checking MCP configuration..."
@@ -216,21 +223,6 @@ exclusion_issues=0
 
 if [ -d "$CLAUDE_DIR/agents/OBDN" ]; then
     echo -e "  ${RED}[ISSUE]${NC} agents/OBDN should not be installed"
-    exclusion_issues=$((exclusion_issues + 1))
-fi
-
-if [ -d "$CLAUDE_DIR/agents/shopify" ]; then
-    echo -e "  ${RED}[ISSUE]${NC} agents/shopify should not be installed"
-    exclusion_issues=$((exclusion_issues + 1))
-fi
-
-if [ -f "$CLAUDE_DIR/commands/kg.md" ]; then
-    echo -e "  ${RED}[ISSUE]${NC} commands/kg.md should not be installed"
-    exclusion_issues=$((exclusion_issues + 1))
-fi
-
-if [ -f "$CLAUDE_DIR/commands/shopify.md" ]; then
-    echo -e "  ${RED}[ISSUE]${NC} commands/shopify.md should not be installed"
     exclusion_issues=$((exclusion_issues + 1))
 fi
 

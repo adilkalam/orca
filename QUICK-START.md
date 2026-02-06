@@ -190,7 +190,8 @@ claude
 ├── scripts/          # Utility scripts
 ├── docs/             # Documentation
 │   ├── pipelines/    # Pipeline specifications
-│   └── mcp-setup.md  # MCP configuration guide
+│   ├── concepts/     # Core concept docs
+│   └── reference/    # Technical specifications
 ├── quick-reference/  # Quick reference guides
 ├── mcp/              # Custom MCP servers
 │   ├── project-context-server/

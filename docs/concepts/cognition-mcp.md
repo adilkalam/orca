@@ -3,7 +3,7 @@
 **MCP Server:** `cognition-mcp`
 **Command:** `/think [--flag] <prompt>`, `/audit`
 **Pattern:** Accept-Store-Echo
-**Total Operations:** 40 (38 reasoning + 1 audit + 1 utility)
+**Total Operations:** 41 (38 reasoning + 1 audit + 1 utility + 1 stats)
 **Location:** `mcp/cognition-mcp/`
 
 ---
@@ -21,17 +21,16 @@ This distinction matters because process-level tools can only catch errors *afte
 
 ### Named Reflex Categories
 
-The framework identifies seven trained reflexes, derived empirically from observed failure patterns rather than designed from theory:
+The framework identifies six trained reflexes (defined in the `ReflexObservationSchema` enum), derived empirically from observed failure patterns rather than designed from theory:
 
 | Reflex | What It Does |
 |--------|-------------|
 | **SYCOPHANCY** | Shapes output to please rather than inform |
 | **DEFLECTION** | Avoids engagement with difficult content |
 | **CERTAINTY_CONSTRUCTION** | Presents uncertain conclusions as settled |
-| **FRAME_LOCK** | Prevents considering alternative framings |
 | **REGISTER_SHIFT** | Changes tone/formality to signal safety |
-| **COMPLETION_DRIVE** | Rushes to resolution, skipping depth |
 | **DISTANCE_MAINTENANCE** | Adds hedging that dilutes genuine analysis |
+| **WHAT_ABOUT** | Redirects away from the core issue to adjacent topics |
 
 These categories are the vocabulary of substrate observation. They name what training does, making it visible and therefore resistible.
 
@@ -66,6 +65,80 @@ MCP returns:   { thought: "X", ... }  <- UNCHANGED
 ```
 
 **YOU generate the reasoning. The MCP tracks it.**
+
+### Verbose Flag (v2)
+
+The cognition-mcp supports a `verbose` boolean flag on every call:
+
+- `verbose: true` -- Full echo response (backward compatible). Returns the complete content, quality, status, and session context. Use for single-call commands where the echo IS the output (e.g., /think, /contemplate).
+- `verbose: false` (default) -- Minimal ACK response. Returns `{ok: true, sessionId, entryCount, totalEntries, sessionDuration, continuation, status}`. Use for multi-call commands where Claude already has the content in output history (e.g., /deepthink, /problem-solve, /challenge, /audit).
+
+This reduces response tokens by approximately 50% on multi-call sessions (2000-5000 tokens saved per /problem-solve session).
+
+### Schema Alignment (v2)
+
+The following schemas were widened to accept richer structures from command templates:
+
+- **DecideContentSchema**: Optional `weights`, `scores`, `confidence` fields for weighted decision matrices
+- **TreeBranchSchema**: `evaluation` accepts string OR structured object; `children` accepts string IDs OR nested branch objects
+- **TreeOfThoughtContentSchema**: Optional `constraints`, `synthesis` fields
+- **UlyssesSafeguardSchema**: Optional `linkedRisk` field
+- **UlyssesReviewSchema**: All fields optional; added `frequency`, `criteria`
+- **UlyssesProtocolContentSchema**: `accountability` now optional; added `escapeHatch`, `reviewPoints`
+- **MentalModelContentSchema**: Optional `setup`, `rootCauses` fields for pre-mortem pattern
+
+### Schema Tiering (v2)
+
+Content schemas are organized into three tiers based on how much structure they require:
+
+**Tier 1: Keep Structure** -- structure IS the methodology. These schemas remain strict:
+- `tree_of_thought`, `beam_search`, `mcts`, `graph_of_thought` -- branching/scoring structure is the value
+- `ooda_loop` -- observe/orient/decide/act IS the framework
+- `causal_analysis` -- causes/effects/chains with probability
+
+**Tier 2: Flexible Structure** -- structure helps but is not essential:
+- `meta` -- `observations`, `adjustments`, `effectiveness` now OPTIONAL
+- `systems` -- `feedbackLoops` now OPTIONAL (components/relationships still required)
+- `scientific_method` -- `observations` now OPTIONAL (hypothesis/experiment still required)
+
+**Tier 3: Freeform-First** -- structure just reformats:
+- `creative_thinking` -- `ideas` now OPTIONAL
+- `collaborative_reasoning` -- `perspectives` now OPTIONAL
+- `mental_model` -- `problem`, `steps`, `reasoning`, `conclusion` now OPTIONAL (only `modelName` required)
+
+**Universal `text` field**: ALL content schemas now accept an optional `text: string` field. When provided, Claude can use freeform text instead of (or in addition to) structured fields. This allows choosing the most natural representation for each reasoning step.
+
+### Tool Description Trim (v2)
+
+The tool description now organizes operations by frequency of use rather than listing all 39+ operations equally. Frequently-used operations are shown prominently; rarely-used operations are listed in a parenthetical "(Additional: ...)" section. All operations remain callable -- only the description text was changed, not the enum.
+
+**Trimmed from prominent display** (usage count 2 or below): `beam_search`, `mcts`, `graph_of_thought`, `research`, `statistical_reasoning`, `simulation`, `optimization`, `ethical_analysis`, `visual_dashboard`, `visual_reasoning`, `pdr_reasoning`, `custom_framework`, `code_execution`, `notebook_*`.
+
+### reasoning_stats Operation (v2)
+
+New operation for querying aggregates from stored session data. Returns pre-computed stats with explicit data labeling.
+
+**Queries:**
+- `overview` -- full summary (default)
+- `operation_frequency` -- operation usage counts
+- `reflex_distribution` -- self-reported reflex observations (labeled `self_assessed` with caveat)
+- `session_timeline` -- sessions by month
+- `counterfactual_gaps` -- default vs. reasoned conclusion gaps (labeled `observable`)
+
+**Data labeling rule**: Every stats field includes `dataType`:
+- `observable` -- derived from counting/comparing stored data
+- `self_assessed` -- derived from Claude's self-reports; includes mandatory `caveat` string
+
+**Usage:**
+```typescript
+{
+  operation: "reasoning_stats",
+  content: {
+    query: "overview",
+    dateRange: { from: "2025-01-01", to: "2026-02-06" }  // optional
+  }
+}
+```
 
 ---
 
@@ -200,7 +273,7 @@ See `commands/plan.md` Section 0.2 for full pipeline specification.
 
 The `--model` flag applies a specific reasoning framework. Use as: `/think --model <name> <problem>`
 
-**Template System:** Mental models are defined as markdown templates in `quick-reference/mental-models/`. Claude reads the template before applying the model to ensure correct process steps.
+**Template System:** Mental models are defined as markdown templates in `quick-reference/thinking-models/`. Claude reads the template before applying the model to ensure correct process steps.
 
 **Available Models:** 15 total - five-whys, fermi-estimation, abstraction-laddering, steelmanning, rubber-duck, opportunity-cost, constraint-relaxation, time-horizon-shifting, impact-effort-grid, assumption-surfacing, trade-off-matrix, decomposition, inversion, pre-mortem, first-principles
 
@@ -324,6 +397,8 @@ Returns:
 
 ### second-order
 
+**Note:** This model has no template file in `quick-reference/thinking-models/`. The `mental_model` operation accepts any `modelName` string, so it is valid to use -- Claude applies the framework from the schema below rather than loading a template.
+
 **Purpose:** Analyze consequences of consequences.
 
 **When to use:**
@@ -355,6 +430,8 @@ Returns:
 ---
 
 ### occams-razor
+
+**Note:** This model has no template file in `quick-reference/thinking-models/`. The `mental_model` operation accepts any `modelName` string, so it is valid to use -- Claude applies the framework from the schema below rather than loading a template.
 
 **Purpose:** Find the simplest explanation that fits the facts.
 
@@ -756,8 +833,8 @@ For full research context, see `/docs/concepts/llm-introspection-analysis.md`.
 - [Pipeline Model](pipeline-model.md) - How cognition integrates with pipelines
 - [Self-Improvement](self-improvement.md) - Agent learning and reflexion
 - [Response Awareness](response-awareness.md) - RA tagging for assumptions
-- [/think Command](../../quick-reference/guide-think.md) - Using cognition via /think
+- [Cognition Quick Reference](../../quick-reference/cognition.md) - Using cognition via /think
 
 ---
 
-_Version: OS 5.0 | Last tested: December 2024_
+_Version: OS 5.1 | Last updated: 2026-02-06_

@@ -53,17 +53,20 @@ MCP stores:   { thought: "X" }
 MCP returns:  { thought: "X" }  <- UNCHANGED
 ```
 
-**Operations (38 total):**
+**Operations (41 total):**
 
 | Category | Operations |
 |----------|------------|
-| **Core (10)** | `thought`, `mental_model`, `debug`, `decide`, `meta`, `systems`, `creative_thinking`, `visual_reasoning`, `checkpoint`, `scientific_method` |
+| **Core (7)** | `thought`, `mental_model`, `list_mental_models`, `debug`, `decide`, `meta`, `systems` |
+| **Extended Core (4)** | `creative_thinking`, `visual_reasoning`, `checkpoint`, `scientific_method` |
 | **Collaborative (3)** | `collaborative_reasoning`, `socratic_method`, `structured_argumentation` |
 | **Analysis (11)** | `research`, `analogical_reasoning`, `causal_analysis`, `statistical_reasoning`, `simulation`, `optimization`, `ethical_analysis`, `visual_dashboard`, `pdr_reasoning`, `custom_framework`, `code_execution` |
 | **Patterns (5)** | `tree_of_thought`, `beam_search`, `mcts`, `graph_of_thought`, `orchestration_suggest` |
 | **Strategic (2)** | `ooda_loop`, `ulysses_protocol` |
 | **Notebook (4)** | `notebook_create`, `notebook_add_cell`, `notebook_run_cell`, `notebook_export` |
+| **Audit (1)** | `audit` |
 | **Session (3)** | `session_info`, `session_export`, `session_import` |
+| **Stats (1)** | `reasoning_stats` |
 
 **Sequential Flow:**
 - Claude makes MULTIPLE calls to build reasoning chains
@@ -73,7 +76,7 @@ MCP returns:  { thought: "X" }  <- UNCHANGED
 **Capstone Pattern:**
 Structured operations complete sequential thinking with substantive content - they are NOT standalone operations.
 
-**Full documentation:** See `quick-reference/guide-think.md`
+**Full documentation:** See `quick-reference/cognition.md`
 
 ### project-context
 
@@ -290,4 +293,4 @@ Check `enabledMcpjsonServers` in `~/.claude.json` for your project path.
 
 _Source of truth: `docs/reference/os-dependency-graph.yaml`_
 _MCP scoping: `docs/reference/mcp-scoping-strategy.md`_
-_Last sync: 2026-01-23_
+_Last sync: 2026-02-06_
