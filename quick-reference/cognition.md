@@ -401,4 +401,4 @@ The handoff: Your cognition session produces insights and decisions. `/plan` tra
 
 ---
 
-_Version: OS 5.0 | Cognition is thinking, made visible._
+_Version: OS 5.1 | Cognition is thinking, made visible._

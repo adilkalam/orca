@@ -36,7 +36,7 @@ User entry points invoked via `/command`.
 | Reasoning | 4 | `/think`, `/contemplate`, `/challenge`, `/ultra-think` |
 | Utility | 14 | `/enhance`, `/root-cause`, `/design-dna`, `/design-review`, `/clone-website`, `/session-save`, `/session-resume`, `/project-memory`, `/project-code`, `/reflect`, `/self-improve`, `/design-review-from-screenshot`, `/memory-search` |
 
-### Three-Tier Routing
+### Routing Modes
 
 All lane commands support:
 
@@ -360,7 +360,7 @@ Edit in ORCA-OS → auto-deploy.sh → rsync to ~/.claude → available in all p
 4. **Context mandatory**: All agents call ProjectContext MCP first
 5. **State preserved**: phase_state.json enables resumption
 6. **Quality gates**: >=90 to pass
-7. **All Opus 4.5**: Default model, never specify
+7. **All Opus 4.6**: Default model, never specify
 
 ---
 

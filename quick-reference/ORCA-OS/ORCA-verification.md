@@ -1,9 +1,9 @@
-# Verification & Evidence Quick Reference (OS 5.0)
+# Verification & Evidence Quick Reference (OS 5.1)
 
-**Version:** OS 5.0
+**Version:** OS 5.1
 **Last Updated:** 2026-01-30
 
-Verification in OS 5.0 is **automated** within pipelines. This guide covers manual verification for edge cases.
+Verification in OS 5.1 is **automated** within pipelines. This guide covers manual verification for edge cases.
 
 ### Research Backing
 
@@ -21,7 +21,7 @@ The verification system draws on two research-backed patterns:
 2. `/ios` → Implementation → **Standards Gate (≥90)** → **UI Review Gate (≥90)** → **xcodebuild + tests (automatic)** → Done
 3. `/expo` → Implementation → **Design Tokens** → **A11y** → **Performance** → **Security** → **Build/Test (automatic)** → Done
 
-**What Changed from OS 2.4 → OS 5.0:**
+**What Changed from OS 2.4 → OS 5.1:**
 -  No more manual `/finalize` script
 -  Verification agents run automatically in Phase 6
 -  Evidence captured automatically in `.claude/orchestration/evidence/`
@@ -295,4 +295,4 @@ Standards Gate Re-run: 92/100 → PASS
 
 ---
 
-_OS 5.0 verification is automatic, enforced, and evidence-based. Manual verification is rarely needed._
+_OS 5.1 verification is automatic, enforced, and evidence-based. Manual verification is rarely needed._

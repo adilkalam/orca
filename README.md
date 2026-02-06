@@ -8,7 +8,7 @@
 ```
 > **[QUICK-START.md](QUICK-START.md)**
 
-## ORCA-OS is cognitive architecture and a constraint system that optimizes for output quality.**
+**LLM cognitive architecture that optimizes for output quality**
 
 LLMs default to shallow completion. This happens for multiple reasons -- reward signals optimized for chat satisfaction, training data dominated by simple interactions, absence of working memory, context window pressure. No single cause explains it, and the exact mechanism is unfalsifiable from outside the training process.
 
@@ -20,11 +20,9 @@ You can see it:
 - Hedges on medical claims not because it reasoned toward caution, but because cautious medical responses are the default.
 - Balances "both sides" when the evidence is asymmetric. These are not the model's limits. They are its defaults.
 
-It achieves this through forced planning before implementation, separation of concerns via multi-agent patterns, and structure that slows both user and model to engage more thoughtfully.
-
 ---
 
-## The Value Proposition:
+## The Value Proposition
 
 **What ORCA Provides vs. the default Claude Code:** Forced planning before implementation, separation of concerns via multi-agent patterns, and structure that slows both user and model to engage more thoughtfully.
 
@@ -203,7 +201,7 @@ This changes both sides of the interaction. Claude produces output shaped by evi
 
 ### The 40 operations
 
-Beyond default observation, the cognition-mcp provides 40 structured reasoning operations that Claude can execute but doesn't reach for unprompted. ([Full guide](docs/guides/cognition-readme.md))
+Beyond default observation, the cognition-mcp provides 40 structured reasoning operations that Claude can execute but doesn't reach for unprompted. ([Full guide](quick-reference/cognition.md))
 
 | Category | Example |
 |----------|---------|
@@ -229,10 +227,11 @@ You don't need to know what those 40 reasoning operations are—`/deepthink` sel
 /plan (commit to spec)
 ```
 
-t
 ---
 
 ## Planning
+
+([Full guide](quick-reference/plan.md))
 
 Prompt engineering is the key to unlocking LLMs. By nature, every prompt has gaps. You say "build me a subscription tracker" and don't specify whether it's digital-only or includes your gym membership or Amazon S&S, whether it needs spending analytics, whether it's for you or for the App Store. **LLMs can't leave blanks.** Claude fills every gap with whatever the training data says is most likely.
 
@@ -284,6 +283,8 @@ Aren't far enough along to have answers to those questions? `/plan --explore` wi
 
 ## Orchestration
 
+([Full guide](quick-reference/orchestration.md))
+
 Multi-agent orchestration pipelines are a lens, not a source. It focuses whatever you put through it.
 
 ```
@@ -318,7 +319,7 @@ Multi-agent orchestration pipelines are a lens, not a source. It focuses whateve
 
 Send a vague prompt into a pipeline and you get a focused version of vague. Send a detailed spec and you get the thing you actually wanted.
 
-124 agents across 13 domain lanes (iOS, Next.js, Django-React, Expo, Data Analytics, Research, SEO, and more). Role separation is strict: orchestrators coordinate and never write code, specialists implement scoped tasks, gates validate and never fix.
+111 agents across 11 domains (iOS, Next.js, Django-React, Expo, Research, SEO, Data, Audit, and more). Role separation is strict: orchestrators coordinate and never write code, specialists implement scoped tasks, gates validate and never fix.
 
 The agents are effective because of what they know -- extracted from studying market leaders and others:
 
@@ -337,7 +338,6 @@ Routing modes match complexity to effort:
 | **-tweak** | Builder only, no gates | Rapid iteration. You verify yourself. |
 | **--complex** | Full pipeline with architect, specialists, all gates | Architecture changes, new features, multi-file work. Requires a spec from `/plan`. |
 
-m
 ---
 
 ## Verification
@@ -363,6 +363,8 @@ Verification makes both sides accountable to evidence. Claude can't declare "don
 ---
 
 ## Learning
+
+([Full guide](quick-reference/ORCA-OS/ORCA-learning.md))
 
 The same mistake, repeated across sessions, is the signature failure of LLM workflows. Session 12 hits the same bug that session 3 hit. Session 20 makes the same architectural error as session 8. Without learning, every session starts from zero.
 
@@ -392,6 +394,8 @@ Session 50 is different from session 1. And so is the person using it -- you lea
 ---
 
 ## Memory
+
+([Full guide](quick-reference/ORCA-OS/ORCA-memory.md))
 
 Every Claude Code session starts blank. You explained your architecture yesterday. Today it asks again. The same decisions, the same constraints, the same "no, we tried that and it didn't work."
 

@@ -1,12 +1,12 @@
-# OS 5.0 Commands Quick Reference
+# OS 5.1 Commands Quick Reference
 
 **Last Updated:** 2026-02-03
-**Version:** OS 5.0
+**Version:** OS 5.1
 **Total Commands:** 33
 
 ---
 
-## Three-Tier Routing
+## Routing Modes
 
 All `/orca-*` lane commands support three execution modes:
 

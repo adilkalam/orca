@@ -1,7 +1,7 @@
-# Quick Reference: Telemetry (OS 5.0)
+# Quick Reference: Telemetry (OS 5.1)
 
 **Last Updated:** 2026-01-24
-**Version:** OS 5.0
+**Version:** OS 5.1
 
 Telemetry tracks pipeline execution for debugging and performance analysis.
 
@@ -137,4 +137,4 @@ The following features are planned for future implementation:
 
 ---
 
-*Part of ORCA OS 5.0*
+*Part of ORCA OS 5.1*

@@ -1,16 +1,16 @@
-# OS 5.0 Agents Quick Reference
+# OS 5.1 Agents Quick Reference
 
 **Last Updated:** 2026-02-03
-**Version:** OS 5.0
+**Version:** OS 5.1
 **Total Agents:** 111 (public lanes)
 
 > **Scope Note:** This quick-reference covers public lanes only. Internal lanes (kg, shopify) add 12 agents for a system total of 122. See `docs/reference/os-dependency-graph.yaml` for complete registry.
 
 ---
 
-## Agent Architecture (OS 5.0)
+## Agent Architecture (OS 5.1)
 
-**All Agents Use Opus 4.5:**
+**All Agents Use Opus 4.6:**
 - Grand architects (coordination & architecture)
 - Builders (implementation)
 - Specialists (domain-specific work)

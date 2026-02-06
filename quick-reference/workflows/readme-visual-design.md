@@ -1,11 +1,11 @@
-# Visual Design Spec — Quick Reference (OS 5.0)
+# Visual Design Spec — Quick Reference (OS 5.1)
 
-**Version:** OS 5.0
+**Version:** OS 5.1
 **Last Updated:** 2025-12-05
 
-Use this template to define clear, testable acceptance criteria for visual work. In OS 5.0, design QA is **automated** within pipelines via design-reviewer agents.
+Use this template to define clear, testable acceptance criteria for visual work. In OS 5.1, design QA is **automated** within pipelines via design-reviewer agents.
 
-## OS 5.0 Integration
+## OS 5.1 Integration
 
 **Automatic Design QA:**
 - Design QA agents run automatically in Phase 5 (after implementation)
@@ -13,12 +13,12 @@ Use this template to define clear, testable acceptance criteria for visual work.
 - Evidence captured automatically in `.claude/orchestration/evidence/`
 - Design QA gate enforces ≥90 score
 
-**Related commands (OS 5.0):**
+**Related commands (OS 5.1):**
 - `/plan "feature"` → Include visual acceptance criteria in blueprint
 - `/orca-{domain} "implement"` → Design QA runs automatically
 - `/design-dna init/audit` → Initialize or audit design system
 
-**Evidence locations (OS 5.0):**
+**Evidence locations (OS 5.1):**
 - Screenshots: `.claude/orchestration/evidence/screenshots/`
 - Design QA reports: `.claude/orchestration/evidence/design-qa-*.md`
 - Gate scores: `.claude/orchestration/phase_state.json`

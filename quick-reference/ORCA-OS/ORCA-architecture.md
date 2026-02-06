@@ -1,7 +1,7 @@
-# OS 5.0 Architecture Quick Reference
+# OS 5.1 Architecture Quick Reference
 
 **Last Updated:** 2026-02-03
-**Version:** OS 5.0
+**Version:** OS 5.1
 
 ---
 
@@ -39,7 +39,7 @@ ORCA-OS is a Claude Code orchestration system that counteracts trained defaults 
 
 ---
 
-## Three-Tier Routing
+## Routing Modes
 
 All lane commands support:
 
@@ -119,7 +119,7 @@ No gates, no architect, user verifies.
 **code-index.db:** Code chunks, symbols, embeddings (`.claude/memory/code-index.db`)
 **project-meta:** Project type, dependencies, tokens (MCP cache)
 
-### ProjectContext Implementation (OS 5.0)
+### ProjectContext Implementation (OS 5.1)
 
 The MCP uses a hybrid approach:
 - **Reads:** Direct SQLite queries via `better-sqlite3` (reliable, no CLI parsing)
@@ -293,7 +293,7 @@ Configure your projects in the hook files:
 2. **Role Boundaries Enforced** - Orchestrators never code
 3. **State Preserved** - phase_state.json survives interruptions
 4. **Quality Non-Negotiable** - Gates >=90 (except tweak mode)
-5. **All Opus 4.5** - Unified model across all agents
+5. **All Opus 4.6** - Unified model across all agents
 6. **Dependency Aware** - Changes trace the graph
 7. **Git Tracking Enforced** - Critical projects warn on untracked edits
 

@@ -1,10 +1,10 @@
-# OS 5.0 Django + React Lane Readme
+# OS 5.1 Django + React Lane Readme
 
 **Lane:** Django + React TypeScript Full-Stack
 **Domain:** `django-react`
 **Entrypoints:** `/plan`, `/orca`, `/django-react`, `/project-memory`, `/project-code`
 
-This document explains how the Django + React lane works in Vibe OS 5.0:
+This document explains how the Django + React lane works in Vibe OS 5.1:
 
 - How planning and specs work (`/plan`)
 - How orchestration routes (`/orca`, `/django-react`)
@@ -53,7 +53,7 @@ For **complex** Django + React tasks the spec is **required** before the full la
 
 ### 2.2 Global Orchestrator - `/orca`
 
-`/orca` is the pure OS 5.0 orchestrator:
+`/orca` is the pure OS 5.1 orchestrator:
 
 - Checks Workshop + code-index.db first (memory-first).
 - Checks for an active requirements spec.
@@ -80,7 +80,7 @@ File: `commands/django-react.md`
   /django-react "implement requirement <id>"             # With spec
   ```
 
-- **Three-Tier Routing (OS 5.0):**
+- **Routing Modes (OS 5.1):**
 
   | Mode | Flag | Path | Gates |
   |------|------|------|-------|
@@ -137,7 +137,7 @@ Response Awareness:
 
 ### 4.1 Heavy Lane Agents (Full Pipeline)
 
-Core agents (all Opus 4.5):
+Core agents (all Opus 4.6):
 
 - `agents/django-react/django-react-grand-architect.md`
   - Orchestrates the entire Django + React lane.
@@ -269,7 +269,7 @@ Two primary commands:
 
 Unified memory search:
 
-- The OS 5.0 hooks and scripts provide a unified search that:
+- The OS 5.1 hooks and scripts provide a unified search that:
   - Queries Workshop and code-index.db together.
   - Is used by `/orca` and `/django-react` before ProjectContext.
 
@@ -292,7 +292,7 @@ promote new standards or adjust defaults.
 
 ## 9. Quick Mental Model
 
-For Django + React work in OS 5.0 (three-tier routing):
+For Django + React work in OS 5.1 (routing modes):
 
 | Mode | Command | Path |
 |------|---------|------|

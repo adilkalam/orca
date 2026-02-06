@@ -48,7 +48,7 @@ Bounded search in `_explore/` for quality templates:
 Design pipeline architecture:
 - Agent taxonomy
 - Phase flow with assignments
-- Three-tier complexity routing
+- Complexity routing modes
 - MCP requirements
 
 ### Phase 4: Generate

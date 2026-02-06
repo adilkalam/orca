@@ -8,11 +8,12 @@ ORCA-OS transforms Claude Code from a coding assistant into a sophisticated mult
 
 ## What's Inside
 
-- **117 Specialized Agents** across 13 lanes (Next.js, iOS, Expo, Django-React, Research, SEO, Data, Audit, OS-Dev, Orca-Pipeline, KG, Shopify, Design)
-- **32 Slash Commands** for orchestration, planning, thinking, and design review
+- **111 Specialized Agents** across 11 domains (Next.js, iOS, Expo, Django-React, Research, SEO, Data, Audit, OS-Dev, Orca-Pipeline, Typography)
+- **31 Slash Commands** for orchestration, planning, thinking, and design review
 - **Persistent Memory** via Workshop and project-context MCP
 - **Self-Improvement System** that learns rules from your interactions
 - **40 Reasoning Operations** via cognition-mcp
+
 
 ---
 
@@ -112,6 +113,7 @@ claude
 | `/django-react` | Django + React fullstack |
 | `/research` | Deep research with citations |
 | `/seo` | SEO content pipeline |
+| `/typography` | Font editing, TTF export, exploration tools |
 | `/orca-os-dev` | ORCA-OS development (for contributors) |
 | `/orca-pipeline` | Create new domain pipelines |
 
@@ -133,17 +135,17 @@ claude
 
 | Domain | Agents | Purpose |
 |--------|--------|---------|
-| Next.js/Dev | 17 | Web development with React, TypeScript, CSS, design systems |
 | iOS | 19 | Native iOS/macOS development with SwiftUI, UIKit |
-| Expo | 12 | React Native mobile development |
+| Next.js | 15 | Web development with React, TypeScript, CSS, design systems |
 | Django-React | 13 | Full-stack Django + React TypeScript |
+| Expo | 12 | React Native mobile development |
+| Dev (shared) | 11 | Cross-cutting specialists (a11y, performance, security, design) |
+| OS-Dev | 11 | ORCA-OS development and maintenance |
+| Audit | 8 | Due diligence code auditing |
 | Research | 7 | Deep research with citations and fact-checking |
+| Typography | 6 | Font editing, TTF export, exploration tools |
 | SEO | 5 | Content optimization and brief creation |
 | Data | 4 | Analytics, competitive analysis |
-| Audit | 8 | Due diligence code auditing |
-| OS-Dev | 6 | ORCA-OS development and maintenance |
-| Orca-Pipeline | 5 | Meta-pipeline for creating new lanes |
-| Cross-Cutting | 9 | Shared specialists (a11y, performance, security, design) |
 
 ---
 
@@ -153,7 +155,7 @@ claude
 
 - **context7** - Up-to-date library documentation
 - **sequential-thinking** - Multi-step reasoning
-- **cognition-mcp** - 38 reasoning operations
+- **cognition-mcp** - 40 reasoning operations
 - **project-context** - Project memory and semantic search
 - **crawl4ai** - Web scraping & research (Python-based, auto-configured)
 
@@ -170,17 +172,19 @@ claude
 
 ```
 ~/.claude/
-├── agents/           # 117 specialized agents
-│   ├── dev/          # Next.js, OS-Dev agents
+├── agents/           # 111 specialized agents
 │   ├── iOS/          # iOS specialists
-│   ├── expo/         # React Native agents
+│   ├── nextjs/       # Next.js web development
 │   ├── django-react/ # Django + React specialists
-│   ├── research/     # Research pipeline agents
-│   ├── seo/          # SEO agents
-│   ├── data/         # Analytics agents
+│   ├── expo/         # React Native agents
+│   ├── dev/          # Cross-cutting specialists
+│   ├── os-dev/       # ORCA-OS development
 │   ├── audit/        # Audit specialists
-│   └── orca-dev/     # Pipeline creation agents
-├── commands/         # 32 slash commands
+│   ├── research/     # Research pipeline agents
+│   ├── typography/   # Font and type specialists
+│   ├── seo/          # SEO agents
+│   └── data/         # Analytics agents
+├── commands/         # 31 slash commands
 ├── skills/           # Reusable behavior patterns
 ├── hooks/            # Session lifecycle hooks
 ├── scripts/          # Utility scripts
@@ -231,11 +235,11 @@ Rules are stored in your project's CLAUDE.md and persist across sessions.
 
 ## Workflow Guide
 
-See `docs/workflow-guide.md` for detailed usage patterns including:
-- General workflow (plan -> execute)
-- Debug workflow (debug -> challenge -> fix)
-- Complex task workflow (deep analysis -> stress test -> execute)
-- Clear Thought quick reference
+See `quick-reference/` for detailed usage patterns:
+- `cognition.md` -- Thinking and reasoning commands
+- `plan.md` -- Planning and requirements
+- `orchestration.md` -- Multi-agent execution
+- `research.md` -- Research with verified sources
 
 ---
 
@@ -335,7 +339,7 @@ mv ~/.claude-backup-* ~/.claude
 
 ## Version
 
-ORCA-OS v5.0.0
+ORCA-OS v5.1
 
 ---
 
@@ -345,4 +349,4 @@ MIT License - See LICENSE file for details.
 
 ---
 
-Built with Claude Code. Powered by Opus 4.5.
+Built with Claude Code. Powered by Opus 4.6.

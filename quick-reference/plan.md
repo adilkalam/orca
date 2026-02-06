@@ -1,4 +1,4 @@
-# Quick Reference: /plan Command (OS 5.0)
+# Quick Reference: /plan Command (OS 5.1)
 
 The `/plan` command creates blueprint-quality requirements specs before implementation.
 
@@ -20,13 +20,19 @@ This creates a requirements folder at `.claude/requirements/YYYY-MM-DD-HHMM-dark
 |------|-------|-----------|----------|
 | `-tweak` | Quick | 2-3 scope only | Small changes, config updates |
 | (none) | Standard | 10 total | Most features |
+| `--explore` | Exploratory | 2-3 after exploration | Half-baked ideas, early-stage thinking |
+| `--problem-solve` | Convergent | 10 + structured analysis | Complex decisions, architectural choices |
 | `-complex` | Deep | 10 + risk assessment | Architecture, refactors |
 
 ```bash
 /plan -tweak Fix button padding          # Quick: ~2 min
 /plan Add user preferences page          # Standard: ~5 min
+/plan --explore What if we rebuilt auth?  # Exploratory: produces tentative brief
+/plan --problem-solve Migrate to OAuth2  # Convergent: 8-step analysis + spec
 /plan -complex Migrate to OAuth2         # Deep: ~10 min
 ```
+
+`--explore` produces a tentative brief (not committed). Convert to a committed spec with `/plan --from-brief`.
 
 ---
 
@@ -193,4 +199,4 @@ Grand architects respect these tags and don't re-decide settled `#PATH_DECISION`
 
 ---
 
-*Part of ORCA OS 5.0*
+*Part of ORCA OS 5.1*

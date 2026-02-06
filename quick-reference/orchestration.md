@@ -93,15 +93,17 @@ Orchestration:
 
 ---
 
-## Three-Tier Routing
+## Routing Modes
 
-Not all tasks need the same ceremony. ORCA-OS routes based on complexity:
+Not all tasks need the same ceremony. ORCA routes based on complexity:
 
-| Mode | Flag | Team Size | Gates | Use Case |
-|------|------|-----------|-------|----------|
-| **Default** | (none) | 2-4 | YES | Most work - fast with quality |
-| **Tweak** | `-tweak` | 1-2 | NO | Speed iteration, you verify |
-| **Complex** | `--complex` | 5-10 | YES | Architecture, multi-file, risky |
+| Mode | Flag | Gates | Use Case |
+|------|------|-------|----------|
+| **Default** | (none) | YES | Most work -- fast with quality checks |
+| **Explore** | `--explore` | NO | Divergent exploration, produces tentative brief |
+| **Problem-solve** | `--problem-solve` | YES | Root-cause analysis with structured reasoning |
+| **Tweak** | `-tweak` | NO | Speed iteration, you verify |
+| **Complex** | `--complex` | YES | Architecture, multi-file, risky. Requires spec from `/plan` |
 
 ### Default Mode (Light + Gates)
 
@@ -329,18 +331,19 @@ The main `/orca` command auto-detects domain based on project files and routes a
 
 ```bash
 # Planning
-/plan "description"              # Standard planning
-/plan -tweak "description"       # Quick scope only
-/plan --complex "description"    # Deep analysis
+/plan "description"                # Standard planning
+/plan --explore "description"      # Divergent exploration
+/plan --problem-solve "description"  # Convergent analysis
+/plan -tweak "description"         # Quick scope only
+/plan --complex "description"      # Deep analysis
 
 # Execution
-/nextjs "task"                   # Default (with gates)
-/ios -tweak "task"               # Speed mode (no gates)
-/expo --complex "task"           # Full pipeline
+/nextjs "task"                     # Default (with gates)
+/ios -tweak "task"                 # Speed mode (no gates)
+/expo --complex "task"             # Full pipeline
 
 # Audit (no implementation)
-/ios --audit                     # Review codebase quality
-/audit                           # Multi-domain audit
+/audit                             # Multi-domain audit
 ```
 
 ### Flags
@@ -348,6 +351,8 @@ The main `/orca` command auto-detects domain based on project files and routes a
 | Flag | Effect |
 |------|--------|
 | (none) | Default mode - light orchestrator + gates |
+| `--explore` | Divergent exploration, tentative brief |
+| `--problem-solve` | Root-cause analysis with structured reasoning |
 | `-tweak` | Speed mode - skip gates, user verifies |
 | `--complex` | Full mode - grand architect, requires spec |
 | `--audit` | Review only - produces report, no changes |
@@ -383,11 +388,11 @@ This is why the four systems (cognition, memory, orchestration, learning) work t
 ## See Also
 
 - `docs/concepts/pipeline-model.md` - Full architecture reference
-- `docs/concepts/complexity-routing.md` - Three-tier routing details
+- `docs/concepts/complexity-routing.md` - Routing mode details
 - `docs/concepts/response-awareness.md` - Complete RA tag reference
 - `commands/plan.md` - Complete /plan specification
 - `commands/orca.md` - Complete /orca specification
 
 ---
 
-_Version: OS 5.0 | Orchestration is execution, made reliable._
+_Version: OS 5.1 | Orchestration is execution, made reliable._

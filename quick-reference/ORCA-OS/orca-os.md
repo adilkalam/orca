@@ -74,7 +74,7 @@ When to read: You want work executed reliably with verification, not self-report
 
 Key concepts:
 - `/plan` -> `/orca-{domain}` workflow
-- Three-tier routing (default/tweak/complex)
+- Routing modes (default/tweak/complex)
 - Role separation (orchestrators/builders/gates)
 - Response Awareness annotations for visible assumptions
 
@@ -181,4 +181,4 @@ Next time you work on checkout, memory loads what you learned. Gates check what 
 
 ---
 
-_Version: OS 5.0_
+_Version: OS 5.1_
