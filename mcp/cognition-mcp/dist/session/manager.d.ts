@@ -2,6 +2,7 @@
  * SessionManager - Create, load, and manage sessions
  *
  * Handles session lifecycle: create, load, persist, complete.
+ * Supports per-project storage via projectPath parameter.
  */
 import { SessionState } from './state.js';
 import type { SessionStores, StoredEntry, SessionExport } from '../types.js';
@@ -12,17 +13,18 @@ export declare class SessionManager {
      * Get or create a session.
      * If sessionId is provided, load existing session.
      * If not, create new session.
+     * projectPath routes storage to {project}/.claude/.cognition/
      */
-    getOrCreate(sessionId?: string, title?: string, tags?: string[]): Promise<SessionState>;
+    getOrCreate(sessionId?: string, title?: string, tags?: string[], projectPath?: string): Promise<SessionState>;
     /**
      * Get a session by ID.
      * Returns null if not found.
      */
-    get(sessionId: string): Promise<SessionState | null>;
+    get(sessionId: string, projectPath?: string): Promise<SessionState | null>;
     /**
      * Check if session exists.
      */
-    exists(sessionId: string): boolean;
+    exists(sessionId: string, projectPath?: string): boolean;
     /**
      * Add an entry to a session and persist.
      * This is the core store operation.

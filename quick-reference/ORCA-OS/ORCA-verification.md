@@ -1,9 +1,9 @@
 # Verification & Evidence Quick Reference (OS 5.1)
 
 **Version:** OS 5.1
-**Last Updated:** 2026-01-30
+**Last Updated:** 2026-02-07
 
-Verification in OS 5.1 is **automated** within pipelines. This guide covers manual verification for edge cases.
+Verification in OS 5.1 is **automated** within pipelines. Gates use graduated scoring (PASS/WARN/ERROR/BLOCK), not binary pass/fail.
 
 ### Research Backing
 
@@ -12,69 +12,158 @@ The verification system draws on two research-backed patterns:
 - **Reflexion** (Shinn et al., NeurIPS 2023): Agents that reflect on task feedback and persist lessons achieve 88% pass@1 on HumanEval vs 67% baseline. ORCA's gate-failure-to-Workshop-gotcha-to-improvement-bus loop implements this pattern.
 - **Chain-of-Verification (CoVe)** (Dhuliawala et al., Meta AI 2023): Generating verification questions and answering them independently doubles factual precision. ORCA's standards-enforcer agents operate independently from builders -- they score without fixing, preventing self-confirming verification.
 
-## Automated Verification
+---
 
-### How Verification Works Now
+## Verification Workflow
 
-**Automatic in Pipelines:**
-1. `/nextjs` → Implementation → **Standards Gate (≥90)** → **Design QA Gate (≥90)** → **Build/Test Verification (automatic)** → Done
-2. `/ios` → Implementation → **Standards Gate (≥90)** → **UI Review Gate (≥90)** → **xcodebuild + tests (automatic)** → Done
-3. `/expo` → Implementation → **Design Tokens** → **A11y** → **Performance** → **Security** → **Build/Test (automatic)** → Done
+Every pipeline follows this three-stage verification sequence:
 
-**What Changed from OS 2.4 → OS 5.1:**
--  No more manual `/finalize` script
--  Verification agents run automatically in Phase 6
--  Evidence captured automatically in `.claude/orchestration/evidence/`
--  Build/test results stored in phase_state.json
--  Gate scores enforced (≥90 or fail)
+1. **Standards Enforcer Gate** -- Code-level quality audit (score 0-100, graduated decision)
+2. **Design/UI Gate** -- Visual or UI quality review (where applicable)
+3. **Verification Agent** -- Build, test, and lint execution (mechanical pass/fail)
 
-### Where Evidence Lives
+### Per-Domain Flows
+
+| Domain | Standards Gate | Design/UI Gate | Verification Agent | Verification Phase |
+|--------|---------------|----------------|--------------------|--------------------|
+| Next.js | `nextjs-standards-enforcer` (Phase 4) | `nextjs-design-reviewer` (Phase 3) | `nextjs-verification-agent` (Phase 6) | Phase 6 |
+| iOS | `ios-standards-enforcer` (Phase 5) | `ios-ui-reviewer` (Phase 6, code-only) | `ios-verification` (Phase 7) | Phase 7 |
+| Expo | Specialized gates (design tokens, a11y, perf, security) | `expo-aesthetics-specialist` | `expo-verification-agent` (Phase 7) | Phase 7 |
+| OS-Dev | `os-dev-standards-enforcer` | N/A | `os-dev-verification` | After standards gate |
+| Django+React | `django-react-standards-enforcer` (Phase 6) | N/A | `django-react-verification` (Phase 8) | Phase 8 |
+
+**Note:** Shopify uses `shopify-theme-checker` for linting but does not have a dedicated verification agent.
+
+---
+
+## Graduated Gate Scoring
+
+All gates use the graduated scoring standard defined in `docs/reference/graduated-gate-scoring.md`.
+
+| Score Range | Gate Decision | Behavior | User Action |
+|-------------|---------------|----------|-------------|
+| >= 90 | **PASS** | Continue pipeline | None |
+| 80-89 | **WARN** | Continue, note issues | Optional fix |
+| 70-79 | **ERROR** | Pause, suggest fixes | User decides: fix or proceed |
+| < 70 | **BLOCK** | Stop pipeline | Must fix before continuing |
+
+### Threshold Presets
+
+| Preset | PASS | WARN | ERROR | BLOCK |
+|--------|------|------|-------|-------|
+| strict | >=95 | 85-94 | 75-84 | <75 |
+| standard | >=90 | 80-89 | 70-79 | <70 |
+| lenient | >=85 | 75-84 | 65-74 | <65 |
+
+Individual gates may customize these baselines (e.g., a11y uses 95/85/70, security uses 95/90/80).
+
+### Net Positive Auto-Promotion
+
+When a score is 80-89 (WARN) but the change is clearly beneficial:
+- Zero [Critical] violations
+- At most 2 [Improvement] violations
+- Feature/enhancement (not bugfix)
+- No security violations
+
+Then WARN promotes to PASS. See `docs/reference/graduated-gate-scoring.md` for full rules.
+
+---
+
+## Verification Agents by Domain
+
+### Next.js (`nextjs-verification-agent`)
+
+**Phase:** 6 (after standards and design QA gates)
+**Model:** Haiku (lightweight)
+**Checks:**
+- `npm run lint` (ESLint -- TypeScript style gate)
+- `npm run test` (Jest/Vitest)
+- `npm run build` (Next.js production build)
+- Chain of Verification (CoVe) table with domain-specific questions
+
+**Status values:** `pass`, `fail`, `partial`
+
+### iOS (`ios-verification`)
+
+**Phase:** 7 (after standards and UI review gates)
+**Model:** Haiku (lightweight)
+**Checks:**
+- `xcodebuild build` (all targets)
+- `xcodebuild test` (test plan execution)
+- Visual verification via XcodeBuildMCP (`screenshot`, `describe_ui`)
+- Pixel measurement with zero-tolerance alignment protocol
+- CoVe table with iOS-specific questions
+
+**Special capability:** Only iOS agent with simulator access (XcodeBuildMCP).
+
+### Expo (`expo-verification-agent`)
+
+**Phase:** 7 (after design token, a11y, performance, and security gates)
+**Model:** Haiku (lightweight)
+**Checks:**
+- `npx expo doctor` (health check)
+- `npm run lint` / `npm run test`
+- Build verification (`npm run build` or `eas build --local`)
+- CoVe table with Expo/React Native-specific questions
+
+**Status values:** `pass`, `fail`, `partial`
+
+### OS-Dev (`os-dev-verification`)
+
+**Phase:** After standards gate
+**Model:** Haiku (lightweight)
+**Checks:**
+- JSON/YAML syntax validation (`jq`, YAML linter)
+- Markdown/agent frontmatter structure
+- CLI smoke check (non-destructive)
+- CoVe table with OS-Dev-specific questions (tools format, model convention, path safety)
+
+**Status values:** `PASS`, `FAIL`
+
+### Django+React (`django-react-verification`)
+
+**Phase:** 8 (after standards gate)
+**Checks:**
+- Backend: `uv run ruff check .`, `uv run mypy .`, `uv run pytest`, `manage.py check`
+- Frontend: `bun run lint`, `bun run tsc --noEmit`, `bun run test`, `bun run build`
+- CoVe table with full-stack questions (N+1 queries, type matching, auth)
+
+**Status values:** `PASS`, `CAUTION`, `FAIL`
+
+---
+
+## Chain of Verification (CoVe)
+
+All verification agents apply CoVe before rendering final status:
+
+1. **Generate questions** -- 3-5 domain-specific verification questions based on actual changes
+2. **Answer independently** -- Examine code/files directly, not by trusting the builder
+3. **Aggregate** -- CoVe table with YES/NO/UNCERTAIN per question
+4. **Determine status** -- All YES = PASS, any NO = FAIL, only UNCERTAIN = CAUTION
+
+The CoVe table is **mandatory** in all verification output. Build/test success alone is insufficient.
+
+---
+
+## Where Evidence Lives
 
 ```
 <project>/.claude/
- project/
-    phase_state.json          # Gate results, verification status
-    code-index.db                    # Task history
- orchestration/
+  memory/
+    code-index.db              # Local code/doc context with embeddings
+  orchestration/
+    phase_state.json           # Gate results, verification status
     evidence/                  # Final artifacts
-       screenshots/           # UI evidence
-       audit-*.md             # Audit reports (from /audit)
-       verification-*.md      # Verification reports
+      screenshots/             # UI evidence
+      audit-*.md               # Audit reports (from /audit)
+      verification-*.md        # Verification reports
     temp/                      # Working files (clean up after)
- requirements/                  # Planning outputs
-     YYYY-MM-DD-HHMM-<slug>/
-         06-requirements-spec.md
+  requirements/                # Planning outputs
+    YYYY-MM-DD-HHMM-<slug>/
+      06-requirements-spec.md
 ```
 
-## Verification Agents (Automatic)
-
-### Next.js Verification (`nextjs-verification-agent`)
-**Runs:** Phase 6 (after gates pass)
-**Checks:**
-- `npm run build` succeeds
-- `npm run test` passes
-- `npm run lint` passes
-- Reports results to orchestrator
-- Stores evidence in phase_state.json
-
-### iOS Verification (`ios-verification`)
-**Runs:** Phase 7 (after gates pass)
-**Checks:**
-- `xcodebuild build` succeeds (all targets)
-- `xcodebuild test` passes
-- Swift syntax errors caught
-- Reports results to orchestrator
-- Stores evidence in phase_state.json
-
-### Expo Verification (`expo-verification-agent`)
-**Runs:** Phase 6 (after gates pass)
-**Checks:**
-- `expo doctor` health check
-- `npm run build` or `eas build --local` succeeds
-- `npm run test` passes
-- Bundle size within budget
-- Reports results to orchestrator
-- Stores evidence in phase_state.json
+---
 
 ## Manual Verification (Edge Cases Only)
 
@@ -98,201 +187,54 @@ xcodebuild clean build 2>&1 | tee .claude/orchestration/evidence/build-$(date +%
 # iOS tests
 xcodebuild test 2>&1 | tee .claude/orchestration/evidence/test-$(date +%Y%m%d-%H%M%S).log
 
-# Screenshots (if MCP not available)
-# Next.js:
-# Visit http://localhost:3000, take screenshot, save to .claude/orchestration/evidence/screenshots/
-
-# iOS:
+# iOS screenshots
 xcrun simctl io booted screenshot .claude/orchestration/evidence/screenshots/after-$(date +%s).png
 ```
 
-## Quality Gates
-
-### Standards Gate (≥90 required)
-**Agent:** domain-standards-enforcer
-**Measures:**
-- Code quality
-- Best practices compliance
-- No inline styles
-- Design token usage
-- No arbitrary values
-
-**Result:** Numerical score
-- ≥90 → PASS (continue)
-- <90 → FAIL (iterate)
-
-### Design QA Gate (≥90 required, UI only)
-**Agent:** domain-design-reviewer / domain-ui-reviewer
-**Measures:**
-- Visual consistency
-- Design system compliance
-- Responsive behavior
-- Typography hierarchy
-- Spacing correctness
-
-**Result:** Numerical score
-- ≥90 → PASS (continue)
-- <90 → FAIL (iterate)
-
-### Build/Test Gate (PASS required)
-**Agent:** domain-verification
-**Measures:**
-- Build succeeds
-- All tests pass
-- Linting passes
-- No compilation errors
-
-**Result:** PASS/FAIL
-- PASS → Continue to completion
-- FAIL → Block pipeline, fix issues
-
-## Response Awareness Tags
-
-Tags now recorded automatically in `/plan` output:
-
-```markdown
-## Assumptions
-
-#COMPLETION_DRIVE: Assumed dark mode applies to all routes. User mentioned "main app" but didn't specify if auth pages are included. VALIDATE during implementation.
-
-## Implementation Path
-
-#PATH_DECISION: Chose Tailwind dark: classes over CSS variables because Tailwind integrates better with existing design system. Alternative: CSS custom properties (rejected - requires refactoring existing components).
-```
-
-**Meta-Audit:**
-`/audit "last 10 tasks"` analyzes these tags for patterns:
-- Scope creep (#CARGO_CULT)
-- Premature completion (#RESOLUTION_PRESSURE)
-- Unvalidated assumptions (#COMPLETION_DRIVE)
-
-## Typical Flows
-
-### Frontend Feature (Next.js)
-```bash
-# 1. Plan
-/plan "Add dark mode toggle"
-
-# 2. Implement (automatic verification)
-/nextjs "Implement requirement 2025-11-24-1430-dark-mode using that spec"
-
-# Pipeline automatically:
-# - Confirms team (AskUserQuestion)
-# - Implements feature
-# - Runs standards gate (≥90)
-# - Runs design QA gate (≥90)
-# - Runs build/test verification
-# - Reports results
-
-# 3. Later: Meta-audit
-/audit "last 5 tasks"
-```
-
-### iOS Feature
-```bash
-# 1. Plan
-/plan "Add biometric authentication"
-
-# 2. Implement (automatic verification)
-/ios "Implement requirement 2025-11-24-1500-biometric-auth using that spec"
-
-# Pipeline automatically:
-# - Confirms team
-# - Implements feature
-# - Runs standards gate (≥90)
-# - Runs UI review gate (≥90)
-# - Runs xcodebuild + tests
-# - Reports results
-```
-
-### Quick Fix (No Planning)
-```bash
-# Direct implementation for trivial tasks
-/nextjs "Fix typo in homepage title"
-
-# Pipeline still runs:
-# - Team confirmation
-# - Implementation
-# - Standards gate
-# - Build verification
-```
+---
 
 ## Verification Failures (Troubleshooting)
 
-### Build Fails
-**What happens:**
-- Verification agent reports FAIL
-- Orchestrator asks: "Build failed with error X. How should I proceed?"
-- User clarifies issue
+### Gate Score in WARN Range (80-89)
+Pipeline continues. Issues are logged for optional fix. Net Positive may promote to PASS.
+
+### Gate Score in ERROR Range (70-79)
+Pipeline pauses. User is asked: "Found X issues. Fix now or proceed anyway?"
+- Fix: Orchestrator delegates to builder for corrective pass, then re-runs gate.
+- Proceed: Issues logged, pipeline continues.
+
+### Gate Score BLOCK (< 70)
+Pipeline stops. Must fix issues before continuing. No user override.
+
+### Build/Test Failure
+- Verification agent reports FAIL with specific error output
 - Orchestrator delegates back to builder agent to fix
-- Re-runs verification
-
-**State preservation:** Pipeline continues from where it failed.
-
-### Gate Score <90
-**What happens:**
-- Gate agent reports score (e.g., 85/100)
-- Orchestrator delegates to builder to fix issues
-- Re-runs gate
-- Must reach ≥90 to pass
-
-**Example:**
-```
-Standards Gate: 85/100
-Issues:
-- 3 inline styles found
-- 2 arbitrary values used
-- 1 magic number
-
-Action: Delegating to nextjs-builder to fix...
-[Builder fixes issues]
-Standards Gate Re-run: 92/100 → PASS
-```
-
-### Screenshot Missing (UI Work)
-**What happens:**
-- Design QA gate flags missing visual evidence
-- Orchestrator delegates to capture screenshot
-- Evidence stored in `.claude/orchestration/evidence/screenshots/`
-- Gate re-runs
-
-## Deprecated Workflows (OS 2.2)
-
-### Old Way (Manual)
-```bash
- bash scripts/finalize.sh
- bash scripts/capture-build.sh
- bash scripts/capture-tests.sh
- Manual evidence collection
- Manual gate checking
-```
-
-### New Way (Automatic)
-```bash
- /plan "feature"
- /orca-{domain} "implement requirement <id>"
- Verification happens automatically
- Evidence captured automatically
- Gates enforced automatically
-```
-
-## When Manual Verification Still Needed
-
-**Almost never.** But if you must:
-
-1. **Debugging gate failures:** Run build/test manually to see full output
-2. **Pre-pipeline testing:** Quick sanity check before starting pipeline
-3. **External tool integration:** Tools not integrated with verification agents
-
-**For everything else:** Trust the pipeline.
-
-## Related Docs
-
-- **Commands:** `quick-reference/ORCA-OS/ORCA-commands.md`
-- **Agents:** `quick-reference/ORCA-OS/ORCA-agents.md`
-- **Architecture:** `quick-reference/ORCA-OS/ORCA-architecture.md`
-- **Quality Gates:** `docs/reference/standards-gate.md`, `docs/reference/design-qa-gate.md`
+- Re-runs verification after fix
 
 ---
 
-_OS 5.1 verification is automatic, enforced, and evidence-based. Manual verification is rarely needed._
+## Response Awareness Tags
+
+Tags recorded automatically in `/plan` output and scanned by standards enforcers:
+
+- `#COMPLETION_DRIVE` -- Assumptions made without explicit requirements
+- `#CARGO_CULT` -- Patterns followed without clear justification
+- `#PATH_DECISION` -- Explicit decisions (documented, not penalized)
+- `#POISON_PATH` -- Flagged anti-patterns
+- `#CONTEXT_DEGRADED` -- Known missing context
+
+`/audit "last 10 tasks"` analyzes these tags for patterns across sessions.
+
+---
+
+## Related Docs
+
+- **Gate Scoring Standard:** `docs/reference/graduated-gate-scoring.md`
+- **Commands:** `quick-reference/ORCA-OS/ORCA-commands.md`
+- **Agents:** `quick-reference/ORCA-OS/ORCA-agents.md`
+- **Architecture:** `quick-reference/ORCA-OS/ORCA-architecture.md`
+- **Telemetry:** `quick-reference/ORCA-OS/ORCA-telemetry.md`
+
+---
+
+_OS 5.1 verification is automatic, graduated, and evidence-based. Manual verification is rarely needed._

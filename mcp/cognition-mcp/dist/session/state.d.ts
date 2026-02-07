@@ -8,7 +8,7 @@ export declare class SessionState implements SessionStateInterface {
     id: string;
     metadata: SessionMetadata;
     stores: SessionStores;
-    constructor(id: string, title?: string, tags?: string[]);
+    constructor(id: string, title?: string, tags?: string[], projectPath?: string);
     /**
      * Add an entry to the specified store.
      * Entry is stored EXACTLY as provided - no modification.

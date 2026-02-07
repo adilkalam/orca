@@ -1,6 +1,10 @@
 /**
- * Persistence Layer - JSONL read/write to ~/.orca-cognition/
- * 
+ * Persistence Layer - Per-project + global fallback storage
+ *
+ * Per-project: {projectPath}/.claude/.cognition/sessions/{sessionId}/
+ * Global fallback: ~/.orca-cognition/sessions/ (unattributed sessions)
+ * Global index: ~/.orca-cognition/index.jsonl (cross-project search)
+ *
  * Append-only JSONL format for each store type.
  * Prevents corruption and allows streaming reads.
  */
@@ -12,10 +16,9 @@ import { homedir } from 'os';
 import type { SessionMetadata, SessionStores, SessionExport, StoredEntry } from '../types.js';
 import { SessionState } from './state.js';
 
-// Base directory for all cognition data
-const BASE_DIR = path.join(homedir(), '.orca-cognition');
-const SESSIONS_DIR = path.join(BASE_DIR, 'sessions');
-const EXPORTS_DIR = path.join(BASE_DIR, 'exports');
+// Global base directory (fallback for unattributed sessions)
+const GLOBAL_BASE_DIR = path.join(homedir(), '.orca-cognition');
+const GLOBAL_INDEX_PATH = path.join(GLOBAL_BASE_DIR, 'index.jsonl');
 
 // Store type to filename mapping
 const STORE_FILES: Record<keyof SessionStores, string> = {
@@ -64,46 +67,136 @@ const STORE_FILES: Record<keyof SessionStores, string> = {
   audit: 'audit.jsonl',
 };
 
+// ============================================================================
+// PATH RESOLUTION - Per-project or global
+// ============================================================================
+
+/**
+ * Resolve the base cognition directory for a project or global.
+ */
+export function resolveBaseDir(projectPath?: string): string {
+  if (projectPath) {
+    return path.join(projectPath, '.claude', '.cognition');
+  }
+  return GLOBAL_BASE_DIR;
+}
+
+/**
+ * Resolve the sessions directory for a project or global.
+ */
+export function resolveSessionsDir(projectPath?: string): string {
+  return path.join(resolveBaseDir(projectPath), 'sessions');
+}
+
+/**
+ * Resolve the exports directory for a project or global.
+ */
+export function resolveExportsDir(projectPath?: string): string {
+  return path.join(resolveBaseDir(projectPath), 'exports');
+}
+
+// ============================================================================
+// DIRECTORY MANAGEMENT
+// ============================================================================
+
 /**
  * Ensure all required directories exist.
  */
-export function ensureDirectories(): void {
-  if (!existsSync(BASE_DIR)) {
-    mkdirSync(BASE_DIR, { recursive: true });
+export function ensureDirectories(projectPath?: string): void {
+  const baseDir = resolveBaseDir(projectPath);
+  const sessionsDir = resolveSessionsDir(projectPath);
+  const exportsDir = resolveExportsDir(projectPath);
+
+  if (!existsSync(baseDir)) {
+    mkdirSync(baseDir, { recursive: true });
   }
-  if (!existsSync(SESSIONS_DIR)) {
-    mkdirSync(SESSIONS_DIR, { recursive: true });
+  if (!existsSync(sessionsDir)) {
+    mkdirSync(sessionsDir, { recursive: true });
   }
-  if (!existsSync(EXPORTS_DIR)) {
-    mkdirSync(EXPORTS_DIR, { recursive: true });
+  if (!existsSync(exportsDir)) {
+    mkdirSync(exportsDir, { recursive: true });
+  }
+
+  // Always ensure global base exists (for index.jsonl)
+  if (projectPath && !existsSync(GLOBAL_BASE_DIR)) {
+    mkdirSync(GLOBAL_BASE_DIR, { recursive: true });
   }
 }
 
 /**
  * Get the directory path for a session.
  */
-function getSessionDir(sessionId: string): string {
-  return path.join(SESSIONS_DIR, sessionId);
+function getSessionDir(sessionId: string, projectPath?: string): string {
+  return path.join(resolveSessionsDir(projectPath), sessionId);
 }
 
 /**
  * Ensure session directory exists.
  */
-function ensureSessionDir(sessionId: string): string {
-  const sessionDir = getSessionDir(sessionId);
+function ensureSessionDir(sessionId: string, projectPath?: string): string {
+  const sessionDir = getSessionDir(sessionId, projectPath);
   if (!existsSync(sessionDir)) {
     mkdirSync(sessionDir, { recursive: true });
   }
   return sessionDir;
 }
 
+// ============================================================================
+// GLOBAL INDEX - Cross-project session registry
+// ============================================================================
+
+/**
+ * Global index entry for cross-project search.
+ */
+interface GlobalIndexEntry {
+  sessionId: string;
+  projectPath?: string;
+  title: string;
+  tags: string[];
+  createdAt: number;
+  lastAccessedAt: number;
+  status: 'active' | 'complete';
+}
+
+/**
+ * Append/update entry in global index.
+ * Called on every session metadata save.
+ */
+export function updateGlobalIndex(metadata: SessionMetadata): void {
+  // Ensure global base directory exists
+  if (!existsSync(GLOBAL_BASE_DIR)) {
+    mkdirSync(GLOBAL_BASE_DIR, { recursive: true });
+  }
+
+  const entry: GlobalIndexEntry = {
+    sessionId: metadata.id,
+    projectPath: metadata.projectPath,
+    title: metadata.title,
+    tags: metadata.tags,
+    createdAt: metadata.createdAt,
+    lastAccessedAt: metadata.lastAccessedAt,
+    status: metadata.status,
+  };
+
+  const line = JSON.stringify(entry) + '\n';
+  appendFileSync(GLOBAL_INDEX_PATH, line, 'utf8');
+}
+
+// ============================================================================
+// SESSION PERSISTENCE
+// ============================================================================
+
 /**
  * Save session metadata to session.json
  */
 export async function saveSessionMetadata(session: SessionState): Promise<void> {
-  const sessionDir = ensureSessionDir(session.id);
+  const projectPath = session.metadata.projectPath;
+  const sessionDir = ensureSessionDir(session.id, projectPath);
   const metadataPath = path.join(sessionDir, 'session.json');
   await fs.writeFile(metadataPath, JSON.stringify(session.metadata, null, 2));
+
+  // Update global index for cross-project discovery
+  updateGlobalIndex(session.metadata);
 }
 
 /**
@@ -113,12 +206,13 @@ export async function saveSessionMetadata(session: SessionState): Promise<void> 
 export function appendEntry(
   sessionId: string,
   storeType: keyof SessionStores,
-  entry: StoredEntry<unknown>
+  entry: StoredEntry<unknown>,
+  projectPath?: string
 ): void {
-  const sessionDir = ensureSessionDir(sessionId);
+  const sessionDir = ensureSessionDir(sessionId, projectPath);
   const filename = STORE_FILES[storeType];
   const filepath = path.join(sessionDir, filename);
-  
+
   // Append single JSON line
   const line = JSON.stringify(entry) + '\n';
   appendFileSync(filepath, line, 'utf8');
@@ -126,11 +220,27 @@ export function appendEntry(
 
 /**
  * Load session from filesystem.
- * Returns null if session doesn't exist.
+ * Checks project-local first, then global fallback.
+ * Returns null if session doesn't exist in either location.
  */
-export async function loadSession(sessionId: string): Promise<SessionState | null> {
-  const sessionDir = getSessionDir(sessionId);
-  
+export async function loadSession(sessionId: string, projectPath?: string): Promise<SessionState | null> {
+  // Try project-local first
+  if (projectPath) {
+    const local = await loadSessionFromDir(sessionId, projectPath);
+    if (local) return local;
+  }
+
+  // Fallback to global
+  const global = await loadSessionFromDir(sessionId, undefined);
+  return global;
+}
+
+/**
+ * Load session from a specific directory (project-local or global).
+ */
+async function loadSessionFromDir(sessionId: string, projectPath?: string): Promise<SessionState | null> {
+  const sessionDir = getSessionDir(sessionId, projectPath);
+
   if (!existsSync(sessionDir)) {
     return null;
   }
@@ -146,7 +256,7 @@ export async function loadSession(sessionId: string): Promise<SessionState | nul
     const metadata: SessionMetadata = JSON.parse(metadataContent);
 
     // Create session
-    const session = new SessionState(metadata.id, metadata.title, metadata.tags);
+    const session = new SessionState(metadata.id, metadata.title, metadata.tags, metadata.projectPath);
     session.metadata = metadata;
 
     // Load each store from JSONL files
@@ -155,7 +265,7 @@ export async function loadSession(sessionId: string): Promise<SessionState | nul
       if (existsSync(filepath)) {
         const content = await fs.readFile(filepath, 'utf8');
         const lines = content.trim().split('\n').filter(line => line.length > 0);
-        
+
         for (const line of lines) {
           try {
             const entry = JSON.parse(line);
@@ -180,13 +290,15 @@ export async function loadSession(sessionId: string): Promise<SessionState | nul
  * Called when nextThoughtNeeded: false
  */
 export async function exportSession(session: SessionState): Promise<string> {
-  ensureDirectories();
-  
+  const projectPath = session.metadata.projectPath;
+  ensureDirectories(projectPath);
+
   const exportData = session.toExport();
-  const exportPath = path.join(EXPORTS_DIR, session.id + '.json');
-  
+  const exportsDir = resolveExportsDir(projectPath);
+  const exportPath = path.join(exportsDir, session.id + '.json');
+
   await fs.writeFile(exportPath, JSON.stringify(exportData, null, 2));
-  
+
   return exportPath;
 }
 
@@ -194,16 +306,17 @@ export async function exportSession(session: SessionState): Promise<string> {
  * Import session from export data.
  */
 export async function importSession(data: SessionExport): Promise<SessionState> {
-  ensureDirectories();
-  
+  const projectPath = data.metadata.projectPath;
+  ensureDirectories(projectPath);
+
   const session = SessionState.fromExport(data);
-  
+
   // Save metadata
   await saveSessionMetadata(session);
-  
+
   // Save all stores to JSONL files
-  const sessionDir = ensureSessionDir(session.id);
-  
+  const sessionDir = ensureSessionDir(session.id, projectPath);
+
   for (const [storeType, entries] of Object.entries(session.stores)) {
     if (entries.length > 0) {
       const filename = STORE_FILES[storeType as keyof SessionStores];
@@ -212,27 +325,36 @@ export async function importSession(data: SessionExport): Promise<SessionState> 
       await fs.writeFile(filepath, content);
     }
   }
-  
+
   return session;
 }
 
 /**
- * Check if session exists.
+ * Check if session exists (project-local or global).
  */
-export function sessionExists(sessionId: string): boolean {
-  const sessionDir = getSessionDir(sessionId);
-  const metadataPath = path.join(sessionDir, 'session.json');
-  return existsSync(metadataPath);
+export function sessionExists(sessionId: string, projectPath?: string): boolean {
+  // Check project-local first
+  if (projectPath) {
+    const localDir = getSessionDir(sessionId, projectPath);
+    const localMeta = path.join(localDir, 'session.json');
+    if (existsSync(localMeta)) return true;
+  }
+
+  // Check global
+  const globalDir = getSessionDir(sessionId, undefined);
+  const globalMeta = path.join(globalDir, 'session.json');
+  return existsSync(globalMeta);
 }
 
 /**
- * List all session IDs.
+ * List all session IDs for a project (or global).
  */
-export async function listSessions(): Promise<string[]> {
-  ensureDirectories();
-  
+export async function listSessions(projectPath?: string): Promise<string[]> {
+  const sessionsDir = resolveSessionsDir(projectPath);
+  ensureDirectories(projectPath);
+
   try {
-    const entries = await fs.readdir(SESSIONS_DIR, { withFileTypes: true });
+    const entries = await fs.readdir(sessionsDir, { withFileTypes: true });
     return entries
       .filter(entry => entry.isDirectory())
       .map(entry => entry.name);

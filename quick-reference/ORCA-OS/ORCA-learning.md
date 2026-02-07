@@ -349,7 +349,7 @@ Session 50 is different from session 1.
 - `docs/concepts/self-improvement.md` - Full technical reference
 - `docs/concepts/improvement-bus.md` - Event routing specification
 - `commands/self-improve.md` - /self-improve command spec
-- `skills/reflect/` - /reflect skill specification
+- `commands/reflect.md` - /reflect command specification
 
 ---
 

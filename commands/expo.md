@@ -1,5 +1,5 @@
 ---
-description: "OS 5.0 Expo/React Native Orchestrator – coordinates the Expo lane pipeline, never writes code"
+description: "OS 5.1 Expo/React Native Orchestrator – coordinates the Expo lane pipeline, never writes code"
 argument-hint: "[-tweak] <task description or requirement ID>"
 allowed-tools:
   - Task
@@ -36,7 +36,7 @@ Even `-tweak` delegates to a builder. It skips gates, not agents.
 
 ---
 
-# /expo - Expo Lane Orchestrator (OS 5.0)
+# /expo - Expo Lane Orchestrator (OS 5.1)
 
 Use this command for Expo/React Native mobile work.
 
@@ -72,7 +72,7 @@ No flag → Default path (light + design gates)
 
 ---
 
-## 0.1 Telemetry (OS 5.0) - MUST EXECUTE
+## 0.1 Telemetry (OS 5.1) - MUST EXECUTE
 
 **Reference:** `docs/reference/telemetry-standard.md`
 
@@ -282,7 +282,7 @@ If memory hits are relevant:
 - Note them for context
 - May skip or reduce ProjectContext query scope
 
-### 1.1.1 Reflexion Loading (OS 5.0)
+### 1.1.1 Reflexion Loading (OS 5.1)
 
 Load relevant reflexions from past gate failures:
 
@@ -542,7 +542,7 @@ Initialize phase_state.json:
 
 Delegate to `expo-grand-orchestrator` with Context Inheritance:
 
-**Context Inheritance Protocol (OS 5.0):**
+**Context Inheritance Protocol (OS 5.1):**
 
 When delegating, wrap the ContextBundle with inheritance headers:
 
@@ -690,7 +690,7 @@ Update phase_state.verification.
 
 ---
 
-## 5. Standards Inputs (OS 5.0 Learning Loop)
+## 5. Standards Inputs (OS 5.1 Learning Loop)
 
 ### Gate Enforcement
 
@@ -716,7 +716,7 @@ violation → /audit → save_standard → code-index.db → future relatedStand
 
 - Use **Customization Gate** to block when design-dna is missing for UI work
 - Keep expo-grand-orchestrator in pure orchestration mode (Opus)
-- All agents use Opus 4.5 (default model)
+- All agents use Opus 4.6 (default model)
 - Complex tasks MUST have specs
 - Simple tasks use light path for speed
 - High-risk domains (auth, payments, PII) → mandatory security-specialist

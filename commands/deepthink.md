@@ -66,6 +66,10 @@ RELATED:
 
 ---
 
+## Verbose Flag
+
+Include `verbose: false` in every cognition MCP call from /deepthink. This command makes 3-8 calls per session; the minimal ACK response saves tokens. Claude already has the content in its output history.
+
 ## Phase 1: ENTER
 
 Call `mcp__cognition-mcp__cognition`:
@@ -76,9 +80,10 @@ Call `mcp__cognition-mcp__cognition`:
   sessionTitle: "DeepThink: <problem summary>",
   sessionTags: ["deepthink", "exploration", "divergent"],
   content: {
-    thought: "Entering exploration of: <problem>. Initial state assessment...",
-    context: "<what I know so far>",
-    uncertainty: "<what I'm uncertain about>"
+    thought: "Entering exploration of: <problem>. Initial state: <what I know so far>. Uncertainty: <what I'm uncertain about>",
+    thoughtNumber: 1,
+    totalThoughts: 3,
+    nextThoughtNeeded: true
   }
 }
 ```
@@ -202,7 +207,7 @@ Execute the selected mode with full depth.
       "<failure mode 3>"
     ],
     rootCauses: [
-      { failure: "<failure>", cause: "<root cause>", hiddenAssumption: "<what assumption broke>" }
+      { failure: "<failure>", cause: "<root cause>", preventable: true }
     ],
     conclusion: "<which failure modes actually threaten the position>"
   }
@@ -244,19 +249,16 @@ Execute the selected mode with full depth.
   sessionId: "<sessionId>",
   content: {
     topic: "<the question being explored>",
-    participants: [
+    perspectives: [
       {
         role: "<specific perspective holder>",
-        position: "<what they would argue>",
-        evidence: ["<their evidence>"],
-        challenge: "<how they'd challenge my current view>"
+        viewpoint: "<what they would argue>",
+        arguments: ["<their key arguments>"]
       }
     ],
-    synthesis: {
-      agreements: ["<where perspectives align>"],
-      tensions: ["<genuine tensions between views>"],
-      blindSpots: ["<what perspectives reveal I was missing>"]
-    }
+    commonGround: ["<where perspectives align>"],
+    tensions: ["<genuine tensions between views>"],
+    synthesis: "<what perspectives reveal I was missing>"
   }
 }
 ```
@@ -317,14 +319,13 @@ Execute the selected mode with full depth.
   sessionId: "<sessionId>",
   content: {
     target: "<the surprising idea>",
-    sourceDomain: "<what domain does this idea come from?>",
-    mapping: {
-      sourceElements: ["<element in source domain>"],
-      targetElements: ["<corresponding element in our problem>"],
-      relationship: "<how they map>"
-    },
-    whatWorkedThere: "<what succeeded in the source domain>",
-    transferablePrinciples: ["<principle that can be extracted and applied>"],
+    analogs: [
+      { domain: "<source domain>", description: "<what succeeded there>", similarity: 0.8 }
+    ],
+    mappings: [
+      { targetElement: "<element in our problem>", analogElement: "<element in source domain>", relationship: "<how they map>" }
+    ],
+    insights: ["<principle that can be extracted and applied>"],
     limitations: ["<where the analogy breaks down>"]
   }
 }

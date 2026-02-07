@@ -26,6 +26,7 @@ You MUST apply these skills:
 - `skills/search-before-edit/SKILL.md` - Always grep before modifying
 - `skills/linter-loop-limits/SKILL.md` - Max 3 linter attempts
 - `skills/debugging-first/SKILL.md` - Debug before code changes
+- `skills/react-performance/SKILL.md` - React/Next.js performance patterns
 
 ---
 

@@ -491,11 +491,26 @@ mcps:
       lanes: [nextjs]
     - name: puppeteer
       description: "Browser automation (simpler, lighter alternative to Playwright)"
-      lanes: [nextjs]
+      lanes: [nextjs, shopify]
     - name: crawl4ai
       description: "Web content extraction"
       lanes: [research, nextjs]
       requires_manual_start: true
+    - name: ahrefs
+      description: "Keyword research and SERP intelligence (npx-based)"
+      lanes: [seo]
+    - name: adb-mcp
+      description: "Adobe Photoshop/Premiere AI control via MCP"
+      lanes: []  # Project-specific, no dedicated lane yet
+      requires_manual_start: true  # Requires proxy server + UXP plugin
+    - name: blender-mcp
+      description: "Blender 3D modeling integration via socket addon"
+      lanes: []  # Experimental, no dedicated lane
+      status: experimental
+    - name: openscad-mcp
+      description: "OpenSCAD 3D rendering and model generation"
+      lanes: []  # Experimental, no dedicated lane
+      status: experimental
 
 # =============================================================================
 # SKILLS REGISTRY
@@ -667,6 +682,7 @@ commands:
       - research-deep-writer
       - research-citation-gate
       - research-consistency-gate
+      - research-fact-checker
 
   - name: seo
     type: lane_orchestrator
@@ -719,6 +735,16 @@ commands:
       - os-dev-builder
       - os-dev-standards-enforcer
       - os-dev-verification
+
+  - name: orca-pipeline
+    type: utility
+    description: "Meta-pipeline for creating new domain pipelines"
+    agents_called:
+      - orca-pipeline-orchestrator
+      - orca-pipeline-researcher
+      - orca-pipeline-architect
+      - orca-pipeline-generator
+      - orca-pipeline-validator
 
   - name: django-react
     type: lane_orchestrator
@@ -818,13 +844,6 @@ commands:
   - name: project-code
     type: utility
     agents_called: []
-
-  - name: context
-    type: utility
-    mcps: [project-context]
-    agents_called: []
-    outputs:
-      - "Console output (summarized or full ContextBundle)"
 
   - name: orca
     type: universal_router

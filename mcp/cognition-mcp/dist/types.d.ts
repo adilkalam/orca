@@ -4,7 +4,7 @@
  * Pure data structures. The MCP stores these exactly as received.
  * No content generation, no transformation, no enhancement.
  */
-export type OperationType = 'thought' | 'mental_model' | 'list_mental_models' | 'debug' | 'decide' | 'meta' | 'systems' | 'creative_thinking' | 'visual_reasoning' | 'checkpoint' | 'scientific_method' | 'collaborative_reasoning' | 'socratic_method' | 'structured_argumentation' | 'tree_of_thought' | 'beam_search' | 'mcts' | 'graph_of_thought' | 'orchestration_suggest' | 'research' | 'analogical_reasoning' | 'causal_analysis' | 'statistical_reasoning' | 'simulation' | 'optimization' | 'ethical_analysis' | 'visual_dashboard' | 'pdr_reasoning' | 'custom_framework' | 'code_execution' | 'ooda_loop' | 'ulysses_protocol' | 'notebook_create' | 'notebook_add_cell' | 'notebook_run_cell' | 'notebook_export' | 'audit' | 'session_info' | 'session_export' | 'session_import';
+export type OperationType = 'thought' | 'mental_model' | 'list_mental_models' | 'debug' | 'decide' | 'meta' | 'systems' | 'creative_thinking' | 'visual_reasoning' | 'checkpoint' | 'scientific_method' | 'collaborative_reasoning' | 'socratic_method' | 'structured_argumentation' | 'tree_of_thought' | 'beam_search' | 'mcts' | 'graph_of_thought' | 'orchestration_suggest' | 'research' | 'analogical_reasoning' | 'causal_analysis' | 'statistical_reasoning' | 'simulation' | 'optimization' | 'ethical_analysis' | 'visual_dashboard' | 'pdr_reasoning' | 'custom_framework' | 'code_execution' | 'ooda_loop' | 'ulysses_protocol' | 'notebook_create' | 'notebook_add_cell' | 'notebook_run_cell' | 'notebook_export' | 'audit' | 'session_info' | 'session_export' | 'session_import' | 'reasoning_stats';
 export interface ThoughtContent {
     thought: string;
     thoughtNumber: number;
@@ -17,19 +17,27 @@ export interface ThoughtContent {
     introspection?: IntrospectionFields;
 }
 export interface MentalModelContent {
-    modelName: string;
-    problem: string;
-    steps: string[];
-    reasoning: string;
-    conclusion: string;
+    text?: string;
+    modelName?: string;
+    problem?: string;
+    steps?: string[];
+    reasoning?: string;
+    conclusion?: string;
     nextThoughtNeeded?: boolean;
+    setup?: string;
+    rootCauses?: Array<{
+        failure: string;
+        cause: string;
+        preventable: boolean;
+    }>;
 }
 export interface DebugContent {
-    approach: string;
-    issue: string;
-    steps: string[];
-    findings: string;
-    resolution: string;
+    text?: string;
+    approach?: string;
+    issue?: string;
+    steps?: string[];
+    findings?: string;
+    resolution?: string;
     nextThoughtNeeded?: boolean;
 }
 export interface DecideContent {
@@ -39,6 +47,9 @@ export interface DecideContent {
     analysis: string;
     choice: string;
     nextThoughtNeeded?: boolean;
+    weights?: Record<string, number>;
+    scores?: Record<string, number>;
+    confidence?: number;
 }
 export interface DecisionOption {
     name: string;
@@ -76,11 +87,12 @@ export interface IntrospectionFields {
     ownership?: IntrospectionOwnership;
 }
 export interface MetaContent {
-    process: string;
-    observations: string[];
-    adjustments: string[];
-    effectiveness: number;
-    insights: string;
+    text?: string;
+    process?: string;
+    observations?: string[];
+    adjustments?: string[];
+    effectiveness?: number;
+    insights?: string;
     nextThoughtNeeded?: boolean;
     introspection?: IntrospectionFields;
 }
@@ -146,10 +158,11 @@ export interface VisualSubstrate {
     epistemicNote: string;
 }
 export interface SystemsContent {
-    system: string;
-    components: SystemComponent[];
-    relationships: SystemRelationship[];
-    feedbackLoops: string[];
+    text?: string;
+    system?: string;
+    components?: SystemComponent[];
+    relationships?: SystemRelationship[];
+    feedbackLoops?: string[];
     nextThoughtNeeded?: boolean;
 }
 export interface SystemComponent {
@@ -168,10 +181,11 @@ export interface CreativeIdea {
     challenges: string[];
 }
 export interface CreativeThinkingContent {
-    prompt: string;
-    techniques: string[];
-    ideas: CreativeIdea[];
-    synthesis: string;
+    text?: string;
+    prompt?: string;
+    techniques?: string[];
+    ideas?: CreativeIdea[];
+    synthesis?: string;
     nextThoughtNeeded?: boolean;
 }
 export interface VisualElement {
@@ -191,19 +205,21 @@ export interface VisualReasoningContent {
     nextThoughtNeeded?: boolean;
 }
 export interface CheckpointContent {
-    label: string;
-    summary: string;
-    keyFindings: string[];
-    openQuestions: string[];
-    nextSteps: string[];
+    text?: string;
+    label?: string;
+    summary?: string;
+    keyFindings?: string[];
+    openQuestions?: string[];
+    nextSteps?: string[];
 }
 export interface ScientificMethodContent {
-    question: string;
-    hypothesis: string;
-    experiment: string;
-    observations: string[];
-    analysis: string;
-    conclusion: string;
+    text?: string;
+    question?: string;
+    hypothesis?: string;
+    experiment?: string;
+    observations?: string[];
+    analysis?: string;
+    conclusion?: string;
     nextThoughtNeeded?: boolean;
 }
 export interface Perspective {
@@ -212,11 +228,12 @@ export interface Perspective {
     arguments: string[];
 }
 export interface CollaborativeReasoningContent {
-    topic: string;
-    perspectives: Perspective[];
-    commonGround: string[];
-    tensions: string[];
-    synthesis: string;
+    text?: string;
+    topic?: string;
+    perspectives?: Perspective[];
+    commonGround?: string[];
+    tensions?: string[];
+    synthesis?: string;
     nextThoughtNeeded?: boolean;
 }
 export interface SocraticQuestion {
@@ -225,10 +242,11 @@ export interface SocraticQuestion {
     response?: string;
 }
 export interface SocraticMethodContent {
-    initialClaim: string;
-    questions: SocraticQuestion[];
-    assumptions: string[];
-    refinedPosition: string;
+    text?: string;
+    initialClaim?: string;
+    questions?: SocraticQuestion[];
+    assumptions?: string[];
+    refinedPosition?: string;
     nextThoughtNeeded?: boolean;
 }
 export interface Evidence {
@@ -248,13 +266,20 @@ export interface StructuredArgumentationContent {
     conclusion: string;
     nextThoughtNeeded?: boolean;
 }
+export interface TreeBranchEvaluation {
+    score?: number;
+    strengths?: string[];
+    weaknesses?: string[];
+    feasibility?: string;
+    [key: string]: unknown;
+}
 export interface TreeBranch {
     id: string;
     parent: string | null;
     thought: string;
-    evaluation: string;
+    evaluation: string | TreeBranchEvaluation;
     score: number;
-    children: string[];
+    children: (string | TreeBranch)[];
 }
 export interface TreeOfThoughtContent {
     root: string;
@@ -263,6 +288,8 @@ export interface TreeOfThoughtContent {
     bestPath: string[];
     pruned: string[];
     nextThoughtNeeded?: boolean;
+    constraints?: string[];
+    synthesis?: string;
 }
 export interface BeamCandidate {
     id: string;
@@ -612,20 +639,28 @@ export interface UlyssesCommitment {
 export interface UlyssesSafeguard {
     safeguard: string;
     trigger: string;
+    linkedRisk?: string;
 }
 export interface UlyssesReview {
-    successes: string[];
-    failures: string[];
-    adjustments: string[];
+    frequency?: string;
+    criteria?: string;
+    successes?: string[];
+    failures?: string[];
+    adjustments?: string[];
 }
 export interface UlyssesProtocolContent {
     goal: string;
     temptations: UlyssesTemptation[];
     commitments: UlyssesCommitment[];
     safeguards: UlyssesSafeguard[];
-    accountability: string;
+    accountability?: string;
     review: UlyssesReview;
     nextThoughtNeeded?: boolean;
+    escapeHatch?: string;
+    reviewPoints?: Array<{
+        milestone: string;
+        criteria: string;
+    }>;
 }
 export interface NotebookCreateContent {
     name: string;
@@ -654,6 +689,13 @@ export interface NotebookExportContent {
     includeOutputs: boolean;
     content: string;
 }
+export interface ReasoningStatsContent {
+    query?: 'overview' | 'operation_frequency' | 'reflex_distribution' | 'session_timeline' | 'counterfactual_gaps';
+    dateRange?: {
+        from?: string;
+        to?: string;
+    };
+}
 export interface QualityMetrics {
     confidence?: number;
     consistency?: number;
@@ -678,6 +720,7 @@ export interface SessionMetadata {
     createdAt: number;
     lastAccessedAt: number;
     status: 'active' | 'complete';
+    projectPath?: string;
 }
 export interface SessionStores {
     thoughts: StoredEntry<any>[];
@@ -730,6 +773,8 @@ export interface CognitionRequest {
     sessionTitle?: string;
     sessionTags?: string[];
     data?: SessionExport;
+    verbose?: boolean;
+    projectPath?: string;
 }
 export interface SessionContext {
     sessionId: string;

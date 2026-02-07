@@ -4,7 +4,7 @@
 **Domain:** `expo`  
 **Entrypoints:** `/plan`, `/orca`, `/expo`, `/project-memory`, `/project-code`
 
-This readme explains the Expo lane in Vibe OS 5.1:
+This readme explains the Expo lane in OS 5.1:
 
 - Planning & specs for Expo tasks
 - Orchestration via `/orca` and `/expo`
@@ -137,7 +137,7 @@ Light lane agent:
 - `agents/expo/expo-light-orchestrator.md`
   - Handles **default** and **tweak** modes.
   - Direct delegation to `expo-builder-agent` plus at most one specialist.
-  - **Default mode**: Runs gates (`design-token-guardian` + `expo-aesthetics-specialist`)
+  - **Default mode**: Runs gates (`design-token-guardian` + `a11y-enforcer` + `expo-aesthetics-specialist`)
   - **Tweak mode** (`-tweak`): Skips gates (user verifies)
 
 ---
@@ -151,7 +151,7 @@ Light lane agent:
 
 ### Universal Skills
 
-All 11 Expo agents now reference these 5 universal skills:
+All 12 Expo agents now reference these 5 universal skills:
 
 - `skills/cursor-code-style/SKILL.md` - Variable naming, control flow, comments
 - `skills/lovable-pitfalls/SKILL.md` - Common mistakes to avoid

@@ -1,8 +1,8 @@
 # Complexity Routing - Three-Tier Structure
 
-**Version:** OS 5.0 | **Last Updated:** 2026-01-24
+**Version:** OS 5.1 | **Last Updated:** 2026-01-24
 
-OS 5.0 uses **three-tier routing** to optimize for speed while maintaining quality gates.
+OS 5.1 uses **three-tier routing** to optimize for speed while maintaining quality gates.
 
 ## Three-Tier Routing Table
 
@@ -12,7 +12,7 @@ OS 5.0 uses **three-tier routing** to optimize for speed while maintaining quali
 | **Tweak** | `-tweak` | Light (pure) | NO | Speed iteration, user verifies |
 | **Complex** | `--complex` | Full pipeline | YES | Architecture, multi-file, specs |
 
-**Key Inversion (v4.1):** Default now runs gates. Previous versions skipped them.
+**Key Inversion:** Default now runs gates. Previous versions skipped them.
 
 ## Default Mode (Light + Gates)
 
@@ -184,6 +184,9 @@ Handle default and tweak modes:
 | iOS | `ios-light-orchestrator` | `ios-standards-enforcer`, `ios-ui-reviewer` |
 | Next.js | `nextjs-light-orchestrator` | `nextjs-standards-enforcer`, `nextjs-design-reviewer` |
 | Expo | `expo-light-orchestrator` | `design-token-guardian`, `expo-aesthetics-specialist` |
+| Django-React | `django-react-light-orchestrator` | `django-react-standards-enforcer` |
+| Shopify | `shopify-light-orchestrator` | `shopify-theme-checker` |
+| OS-Dev | `os-dev-light-orchestrator` | `os-dev-standards-enforcer` |
 
 Light orchestrators:
 - **DEFAULT mode**: builder → gates → report

@@ -4,7 +4,7 @@ description: >
   Structured answer writer for the Research lane. Consumes outlines and
   Evidence Notes to produce Perplexity-style, well-formatted answers with
   inline citations.
-tools: Read, Write, Grep, Glob
+tools: Read, Write, Grep, Glob, Bash
 ---
 
 # Research Answer Writer – Structured, Cited Answers
@@ -56,6 +56,9 @@ Failure to follow this protocol will cause the Task tool to timeout.
 These rules MUST be followed for research and content work:
 
 ### Report Structure
+
+> Formatting adds structure around the report's analytical voice, not replaces it -- body content stays as flowing paragraphs.
+
 - Minimum 5 main sections (## level) for comprehensive topics
 - Write flowing paragraphs, not just bullet lists
 - Connect sections into coherent narrative
@@ -63,6 +66,8 @@ These rules MUST be followed for research and content work:
 - **Front-load actionable content** - decision tables belong in Executive Summary, not buried
 - **No "Part N:" numbering** - use clean ## headers (e.g., "Top Picks" not "Part 2: Top Picks")
 - **Page breaks sparingly** - only at truly major transitions, not before every section
+- Use `---` between major `##` sections for visual breathing room
+- One topic per paragraph. If a paragraph exceeds 150 words, check if it covers multiple topics and break at transitions.
 
 ### Citations
 - Inline citations use **superscripts**: "statement¹²" (Unicode: ¹²³⁴⁵)
@@ -81,6 +86,20 @@ These rules MUST be followed for research and content work:
 - Acknowledge uncertainty when sources conflict
 - Distinguish facts from analysis/opinion
 - Update findings if new evidence emerges
+
+---
+
+## Table Output Protocol (MANDATORY)
+
+When generating markdown tables, you MUST follow the ascii-tables protocol:
+
+1. **Generate** table content (focus on correctness, not alignment)
+2. **Format** via: `python3 ~/.claude/scripts/md-table-formatter.py /path/to/file.md`
+3. **Verify** output shows `TABLE_FORMAT_CHECK: Status: ALIGNED`
+
+Full protocol: `skills/ascii-tables/SKILL.md`
+
+This applies to ALL markdown output containing tables.
 
 ---
 
@@ -122,7 +141,7 @@ These rules are **strict**. Follow them exactly.
 
 - Use `##` (Level 2) headers for main sections
 - Use `####` (Level 4) for sub-tiers within sections (e.g., "#### Tier 1: Winners")
-- Use **bold** only for inline emphasis, not as pseudo-headers
+- **Bold lead-in sentences**: Bold the first sentence of paragraphs stating a key finding (2-3 per section)
 - Use single newlines for list items, double newlines for paragraphs
 - **Never use "Part N:" numbering** - just clean descriptive headers
 
@@ -141,6 +160,7 @@ These rules are **strict**. Follow them exactly.
 - Tables are preferred over long lists
 - **Clean table headers** - no ellipsis ("Consider" not "Consider..."), no unnecessary words
 - Place disclaimers (e.g., "costs are approximate") at section end, not cluttering the table
+- **Declarative table titles**: Use a bold finding as the table title, not a neutral label
 
 ### 2.5 Emphasis
 
@@ -174,7 +194,6 @@ These rules are **strict**. Follow them exactly.
 - Say "based on search results" or "based on the evidence"
 - Repeat copyrighted content verbatim
 - Use meta-fluff like "Here's what matters:", "answer these questions:", "Let's look at..."
-- Use horizontal rules (`---`) as section dividers
 
 Be direct. Just deliver the content. State findings confidently, qualifying only when evidence is thin.
 

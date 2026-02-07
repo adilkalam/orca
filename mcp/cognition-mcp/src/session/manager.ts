@@ -1,7 +1,8 @@
 /**
  * SessionManager - Create, load, and manage sessions
- * 
+ *
  * Handles session lifecycle: create, load, persist, complete.
+ * Supports per-project storage via projectPath parameter.
  */
 
 import { randomUUID } from 'crypto';
@@ -27,11 +28,13 @@ export class SessionManager {
    * Get or create a session.
    * If sessionId is provided, load existing session.
    * If not, create new session.
+   * projectPath routes storage to {project}/.claude/.cognition/
    */
   async getOrCreate(
     sessionId?: string,
     title?: string,
-    tags?: string[]
+    tags?: string[],
+    projectPath?: string
   ): Promise<SessionState> {
     // If sessionId provided, try to load existing
     if (sessionId) {
@@ -41,23 +44,29 @@ export class SessionManager {
         return cached;
       }
 
-      // Try to load from filesystem
-      const loaded = await loadSession(sessionId);
+      // Try to load from filesystem (project-local then global fallback)
+      const loaded = await loadSession(sessionId, projectPath);
       if (loaded) {
         this.sessions.set(sessionId, loaded);
         return loaded;
       }
 
       // Session doesn't exist, create new with provided ID
-      const newSession = new SessionState(sessionId, title, tags);
+      if (projectPath) {
+        ensureDirectories(projectPath);
+      }
+      const newSession = new SessionState(sessionId, title, tags, projectPath);
       this.sessions.set(sessionId, newSession);
       await saveSessionMetadata(newSession);
       return newSession;
     }
 
     // No sessionId provided, create new
+    if (projectPath) {
+      ensureDirectories(projectPath);
+    }
     const newId = randomUUID();
-    const session = new SessionState(newId, title, tags);
+    const session = new SessionState(newId, title, tags, projectPath);
     this.sessions.set(newId, session);
     await saveSessionMetadata(session);
     return session;
@@ -67,7 +76,7 @@ export class SessionManager {
    * Get a session by ID.
    * Returns null if not found.
    */
-  async get(sessionId: string): Promise<SessionState | null> {
+  async get(sessionId: string, projectPath?: string): Promise<SessionState | null> {
     // Check memory cache
     const cached = this.sessions.get(sessionId);
     if (cached) {
@@ -75,7 +84,7 @@ export class SessionManager {
     }
 
     // Try to load from filesystem
-    const loaded = await loadSession(sessionId);
+    const loaded = await loadSession(sessionId, projectPath);
     if (loaded) {
       this.sessions.set(sessionId, loaded);
       return loaded;
@@ -87,8 +96,8 @@ export class SessionManager {
   /**
    * Check if session exists.
    */
-  exists(sessionId: string): boolean {
-    return this.sessions.has(sessionId) || sessionExists(sessionId);
+  exists(sessionId: string, projectPath?: string): boolean {
+    return this.sessions.has(sessionId) || sessionExists(sessionId, projectPath);
   }
 
   /**
@@ -103,8 +112,8 @@ export class SessionManager {
     // Add to in-memory state
     session.add(storeType, entry);
 
-    // Persist to filesystem (append-only)
-    appendEntry(session.id, storeType, entry);
+    // Persist to filesystem (append-only, routed by session's projectPath)
+    appendEntry(session.id, storeType, entry, session.metadata.projectPath);
 
     // Update metadata
     await saveSessionMetadata(session);
@@ -117,7 +126,7 @@ export class SessionManager {
   async completeSession(session: SessionState): Promise<string> {
     session.markComplete();
     await saveSessionMetadata(session);
-    
+
     const exportPath = await exportSession(session);
     return exportPath;
   }
@@ -127,14 +136,15 @@ export class SessionManager {
    */
   async importFromExport(data: SessionExport): Promise<SessionState> {
     const session = SessionState.fromExport(data);
-    
+
     // Save to filesystem
     await saveSessionMetadata(session);
-    
-    // Save all stores
+
+    // Save all stores (routed by session's projectPath)
+    const projectPath = session.metadata.projectPath;
     for (const [storeType, entries] of Object.entries(session.stores)) {
       for (const entry of entries) {
-        appendEntry(session.id, storeType as keyof SessionStores, entry);
+        appendEntry(session.id, storeType as keyof SessionStores, entry, projectPath);
       }
     }
 

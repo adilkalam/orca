@@ -51,6 +51,8 @@ import { handleNotebookCreate } from './notebook/create.js';
 import { handleNotebookAddCell } from './notebook/add-cell.js';
 import { handleNotebookRunCell } from './notebook/run-cell.js';
 import { handleNotebookExport } from './notebook/export.js';
+// Stats handler
+import { handleReasoningStats } from './stats.js';
 
 type OperationHandler = (
   args: CognitionRequest,
@@ -105,6 +107,8 @@ const handlers: Record<OperationType, OperationHandler> = {
   session_info: handleSessionInfo,
   session_export: handleSessionExport,
   session_import: handleSessionImport,
+  // Stats
+  reasoning_stats: handleReasoningStats,
 };
 
 /**
@@ -187,4 +191,6 @@ export {
   handleSessionInfo,
   handleSessionExport,
   handleSessionImport,
+  // Stats
+  handleReasoningStats,
 };

@@ -3,7 +3,7 @@ name: seo-draft-writer
 description: "Produce sophisticated long-form SEO content with natural clarity and v4 gold-standard quality"
 tools: Read, Write, Edit, mcp__project-context__query_context
 
-# OS 5.0 Constraint Framework
+# OS 5.1 Constraint Framework
 required_context:
   - agentdb_session: "Access to research + brief AgentDB cache"
   - enhanced_brief: "Brief strategist's refined brief.md"
@@ -38,7 +38,7 @@ scope_boundaries:
   - "Do NOT perform QA - that's quality guardian's job"
 ---
 
-# SEO Draft Writer (OS 5.0)
+# SEO Draft Writer (OS 5.1)
 
 ## Knowledge Loading
 
@@ -55,6 +55,18 @@ You MUST apply these skills to all work:
 - `skills/search-before-edit/SKILL.md` — Always grep before modifying files
 - `skills/linter-loop-limits/SKILL.md` — Max 3 attempts on linter errors
 - `skills/debugging-first/SKILL.md` — Debug tools before code changes
+
+## Table Output Protocol (MANDATORY)
+
+When generating markdown tables, you MUST follow the ascii-tables protocol:
+
+1. **Generate** table content (focus on correctness, not alignment)
+2. **Format** via: `python3 ~/.claude/scripts/md-table-formatter.py /path/to/file.md`
+3. **Verify** output shows `TABLE_FORMAT_CHECK: Status: ALIGNED`
+
+Full protocol: `skills/ascii-tables/SKILL.md`
+
+This applies to ALL markdown output containing tables.
 
 ## Research & Content Rules (Perplexity Patterns)
 

@@ -2,13 +2,13 @@
 name: ios-knowledge-skill
 description: >
   Skill providing structured iOS lane knowledge: SwiftUI vs UIKit/TCA/MVVM
-  patterns, data stack choices, and OS 5.0 iOS standards. Uses context7
+  patterns, data stack choices, and OS 5.1 iOS standards. Uses context7
   libraries for global guidance.
 ---
 
 # iOS Knowledge Skill – Architecture & Patterns
 
-This skill equips agents with high-level iOS knowledge for the OS 5.0 iOS lane
+This skill equips agents with high-level iOS knowledge for the OS 5.1 iOS lane
 without bloating individual agent prompts.
 
 It is intended for:

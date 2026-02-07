@@ -85,7 +85,7 @@ The following schemas were widened to accept richer structures from command temp
 - **UlyssesSafeguardSchema**: Optional `linkedRisk` field
 - **UlyssesReviewSchema**: All fields optional; added `frequency`, `criteria`
 - **UlyssesProtocolContentSchema**: `accountability` now optional; added `escapeHatch`, `reviewPoints`
-- **MentalModelContentSchema**: Optional `setup`, `rootCauses` fields for pre-mortem pattern
+- **MentalModelContentSchema**: Optional `setup`, `rootCauses` fields for pre-mortem pattern. `rootCauses: [{ failure: string, cause: string, preventable: boolean }]`
 
 ### Schema Tiering (v2)
 
@@ -104,13 +104,13 @@ Content schemas are organized into three tiers based on how much structure they 
 **Tier 3: Freeform-First** -- structure just reformats:
 - `creative_thinking` -- `ideas` now OPTIONAL
 - `collaborative_reasoning` -- `perspectives` now OPTIONAL
-- `mental_model` -- `problem`, `steps`, `reasoning`, `conclusion` now OPTIONAL (only `modelName` required)
+- `mental_model` -- all fields OPTIONAL (including `modelName`)
 
 **Universal `text` field**: ALL content schemas now accept an optional `text: string` field. When provided, Claude can use freeform text instead of (or in addition to) structured fields. This allows choosing the most natural representation for each reasoning step.
 
 ### Tool Description Trim (v2)
 
-The tool description now organizes operations by frequency of use rather than listing all 39+ operations equally. Frequently-used operations are shown prominently; rarely-used operations are listed in a parenthetical "(Additional: ...)" section. All operations remain callable -- only the description text was changed, not the enum.
+The tool description now organizes operations by frequency of use rather than listing all 41 operations equally. Frequently-used operations are shown prominently; rarely-used operations are listed in a parenthetical "(Additional: ...)" section. All operations remain callable -- only the description text was changed, not the enum.
 
 **Trimmed from prominent display** (usage count 2 or below): `beam_search`, `mcts`, `graph_of_thought`, `research`, `statistical_reasoning`, `simulation`, `optimization`, `ethical_analysis`, `visual_dashboard`, `visual_reasoning`, `pdr_reasoning`, `custom_framework`, `code_execution`, `notebook_*`.
 
@@ -648,9 +648,11 @@ Call 2: → Include sessionId: "abc-123" to continue
 Final:  → nextThoughtNeeded: false triggers export
 ```
 
-**Persistence location:** `~/.orca-cognition/`
-- `sessions/{id}/*.jsonl` - Append-only logs
-- `exports/{id}.json` - Full session export
+**Persistence locations:**
+- Per-project: `{project}/.claude/.cognition/sessions/{id}/*.jsonl` (when `projectPath` is provided)
+- Global fallback: `~/.orca-cognition/sessions/{id}/*.jsonl` (when no `projectPath`)
+- Global index: `~/.orca-cognition/index.jsonl` (cross-project search)
+- Exports: `~/.orca-cognition/exports/{id}.json` - Full session export
 
 ---
 
@@ -827,6 +829,8 @@ For full research context, see `/docs/concepts/llm-introspection-analysis.md`.
 | Strategic (2) | 5.0 | 5.0 | 4.5 |
 | Session (3) | 5.0 | 4.0 | 4.3 |
 | **Overall (34)** | **5.0** | **4.4** | **4.0** |
+
+(34 of 41 graded; `list_mental_models`, `notebook_*`, `reasoning_stats` not individually scored)
 
 ## See Also
 

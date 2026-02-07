@@ -1,8 +1,8 @@
-# Telemetry Standard (OS 5.0)
+# Telemetry Standard (OS 5.1)
 
-**Version:** 3.0.0
+**Version:** 3.0.0 (spec document version; `index.json` uses data format version "2.5.0")
 **Status:** Active
-**Effective:** OS 5.0
+**Effective:** OS 5.1
 
 ---
 
@@ -63,13 +63,11 @@ The `/orca-os-dev` command is LOCAL to ORCA-OS repo only and is NOT deployed glo
 ```
 .claude/telemetry/
   sessions/
-    {session-id}/
-      trace.jsonl          # Event stream for this session
-      summary.json         # Session summary (generated at end)
+    trace-{trace-id}.jsonl   # Event stream (flat file per trace)
   metrics/
-    gate-scores.jsonl      # Aggregated gate scores over time
-    delegation-times.jsonl # Time spent per delegation
-  index.json               # Session index for quick lookup
+    gate-scores.jsonl        # Aggregated gate scores over time
+    delegation-times.jsonl   # Time spent per delegation
+  index.json                 # Session index for quick lookup
 ```
 
 ---
@@ -100,6 +98,11 @@ Components:
 {"type": "gate_result", "trace_id": "...", "ts": "...", "data": {"gate": "nextjs-standards-enforcer", "score": 87, "decision": "WARN", "issues_count": 3}}
 {"type": "pipeline_end", "trace_id": "...", "ts": "...", "data": {"status": "success", "duration_sec": 45, "total_delegations": 5}}
 ```
+
+**Emission notes:**
+- `pipeline_start` and `pipeline_end` are emitted by `scripts/utilities/telemetry-emit.sh`.
+- `gate_result` events are emitted inline by orchestrator commands (via echo/append to the trace file), NOT by `telemetry-emit.sh`.
+- `delegation` events are documented here for Phase 2 but are not yet emitted by any script or agent.
 
 ### Event Schema
 
@@ -164,7 +167,7 @@ Components:
     "total_delegations": "number",
     "gates_run": "number",
     "files_modified": "number",
-    "user_prompts": "number (how many times user was asked)"
+    "user_prompts": "number (optional - how many times user was asked)"
   }
 }
 ```
@@ -270,7 +273,7 @@ For debugging:
 cat .claude/telemetry/index.json
 
 # View specific session trace
-cat .claude/telemetry/sessions/{session-id}/trace.jsonl
+cat .claude/telemetry/sessions/trace-{trace-id}.jsonl
 
 # View gate score trends
 cat .claude/telemetry/metrics/gate-scores.jsonl | tail -10
@@ -315,4 +318,4 @@ Phase 2 (Intelligence) - Planned:
 
 ---
 
-*Part of OS 5.0*
+*Part of OS 5.1*

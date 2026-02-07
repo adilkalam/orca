@@ -1,8 +1,8 @@
 # Response Awareness (RA)
 
-**Version:** OS 5.0 | **Last Updated:** 2026-01-24
+**Version:** OS 5.1 | **Last Updated:** 2026-01-24
 
-Response Awareness is OS 5.0's system for **making assumptions and decisions explicit** during agent work. RA is **instrumentation**, not a primary scoring mechanism: tags surface where the model is guessing, following bad framing, or making architectural choices so that gates, audits, and humans can react.
+Response Awareness is OS 5.1's system for **making assumptions and decisions explicit** during agent work. RA is **instrumentation**, not a primary scoring mechanism: tags surface where the model is guessing, following bad framing, or making architectural choices so that gates, audits, and humans can react.
 
 ## Why RA?
 
@@ -14,7 +14,7 @@ AI agents make assumptions. Without tracking:
 
 RA makes the implicit explicit but **does not by itself prove correctness**. Tags must be paired with real checks (tests, pixel measurements, code metrics).
 
-## Core RA Tags (OS 5.0)
+## Core RA Tags (OS 5.1)
 
 These tags are the **cross-lane core** used in all dev pipelines.
 
@@ -49,16 +49,16 @@ User framing or prior code is leading toward unsafe or clearly suboptimal patter
 #POISON_PATH: Request implies skipping validation
 ```
 
+## Additional Tags
+
+Some lanes and agents use additional RA tags for more nuanced analysis. These are **optional** and lane-specific; they must never be used as standalone "accuracy" metrics.
+
 ### `#Potential_Issue`
-Problem noticed outside the current task scope that deserves follow‑up.
+Problem noticed outside the current task scope that deserves follow-up.
 
 ```
 #Potential_Issue: Duplicated layout logic in PricingCard and PlanCard
 ```
-
-## Additional Tags
-
-Some lanes and agents use additional RA tags for more nuanced analysis. These are **optional** and lane-specific; they must never be used as standalone “accuracy” metrics.
 
 ### `#CARGO_CULT`
 Copied pattern from elsewhere in codebase without understanding.
@@ -84,7 +84,7 @@ Operating with reduced context quality.
 ```
 
 ### `#SCOPE_EXCEEDED`
-Task is beyond the agent's intended scope.
+Task is beyond the agent's intended scope. (Not yet implemented in agents.)
 
 ```
 #SCOPE_EXCEEDED: This requires multi-file changes, recommend full pipeline
@@ -128,6 +128,13 @@ could not explore as widely as desired.
 
 ```
 #TOOL_ERROR: Crawl4AI server unavailable while exploring vendor docs
+```
+
+#### `#RATE_LIMITED`
+Search tools hit rate limits, resulting in incomplete coverage for some domains.
+
+```
+#RATE_LIMITED: Google search rate-limited after 15 queries, skipping secondary sources
 ```
 
 #### `#RETRY_EXHAUSTED`
@@ -188,48 +195,11 @@ RA status affects gate decisions:
 - `ra_status: "present_resolved"` - Tags exist but documented/resolved
 - `ra_status: "present_unresolved"` - Unresolved assumptions (flag for review)
 
-**Important (OS 5.0):**
+**Important (OS 5.1):**
 - RA tags are **signals**, not scores. Gates MAY downgrade to CAUTION/FAIL when high‑risk RA tags remain unresolved (e.g., `#COMPLETION_DRIVE` in auth/checkout flows, `#POISON_PATH` ignored).
 - Gates MUST NOT derive standalone “RA accuracy percentages” from tag counts. Final quality judgments come from tests, builds, pixel checks, and domain-specific metrics.
 
-## RA in /audit
-
-The `/audit` command mines RA events across tasks:
-
-```bash
-/audit "last 10 tasks"
-```
-
-Audit report includes:
-```markdown
-## RA Event Summary
-- #COMPLETION_DRIVE: 7 occurrences (3 unresolved)
-- #CARGO_CULT: 2 occurrences
-- #PATH_DECISION: 5 occurrences (all documented)
-
-### Frequent Assumptions
-- "Mobile breakpoint 768px" appeared 4 times → candidate for standard
-```
-
-## RA → Standards Loop
-
-When `/audit` finds recurring RA patterns, it can promote them to standards:
-
-```
-Recurring RA assumption
-    ↓
-/audit identifies pattern
-    ↓
-mcp__project-context__save_standard()
-    ↓
-Standard appears in future ContextBundles
-    ↓
-Gates enforce the standard
-```
-
-This closes the learning loop: assumption → audit → standard → enforcement.
-
-## v2.4 Roadmap: Automatic Escalation
+## Future: Automatic Escalation
 
 **Not yet implemented** - future evolution:
 

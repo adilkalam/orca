@@ -11,11 +11,10 @@ Welcome to the ORCA-OS documentation. This document serves as the entry point an
 
 New to ORCA-OS? Start here:
 
-1. **[README](../README.md)** - What ORCA is and why it exists
-2. **[Quick Start Guide](../QUICK-START.md)** - Installation and first commands
-3. **[Why ORCA Architecture](concepts/why-orca-architecture.md)** - Design philosophy
-4. **[Pipeline Model](concepts/pipeline-model.md)** - Multi-lane pipeline architecture
-5. **[Complexity Routing](concepts/complexity-routing.md)** - Three-tier routing (tweak/default/complex)
+1. **[Why ORCA Architecture](concepts/why-orca-architecture.md)** - Design philosophy
+2. **[Pipeline Model](concepts/pipeline-model.md)** - Multi-lane pipeline architecture
+3. **[Complexity Routing](concepts/complexity-routing.md)** - Three-tier routing (tweak/default/complex)
+4. **[Memory Systems](concepts/memory-systems.md)** - Workshop, code-index.db, and ProjectContext
 
 ---
 
@@ -88,7 +87,7 @@ Technical specifications and standards:
 For day-to-day usage, see the quick-reference guides:
 
 - **[ORCA Commands](../quick-reference/ORCA-OS/ORCA-commands.md)** - All 31 commands
-- **[ORCA Agents](../quick-reference/ORCA-OS/ORCA-agents.md)** - All 111 agents
+- **[ORCA Agents](../quick-reference/ORCA-OS/ORCA-agents.md)** - All 124 agents
 - **[ORCA Architecture](../quick-reference/ORCA-OS/ORCA-architecture.md)** - System architecture overview
 - **[ORCA MCPs](../quick-reference/ORCA-OS/ORCA-mcps.md)** - MCP server reference
 - **[ORCA Verification](../quick-reference/ORCA-OS/ORCA-verification.md)** - Verification patterns
@@ -111,7 +110,7 @@ For day-to-day usage, see the quick-reference guides:
 
 ## Agent Roster
 
-See [agents.md](agents.md) for the complete agent inventory. 111 agents across 11 domains:
+See [agent-index.md](agent-index.md) for the complete agent inventory. 124 agents across 13 domains:
 
 | Domain | Count | Directory |
 |--------|-------|-----------|
@@ -119,12 +118,14 @@ See [agents.md](agents.md) for the complete agent inventory. 111 agents across 1
 | Next.js | 15 | `agents/nextjs/` |
 | Django-React | 13 | `agents/django-react/` |
 | Expo/React Native | 12 | `agents/expo/` |
-| Dev (cross-domain) | 11 | `agents/dev/` |
+| Dev (cross-domain) | 12 | `agents/dev/` |
 | OS-Dev | 11 | `agents/os-dev/` |
 | Audit | 8 | `agents/audit/` |
+| Shopify | 8 | `agents/shopify/` |
 | Research | 7 | `agents/research/` |
 | Typography | 6 | `agents/typography/` |
 | SEO | 5 | `agents/seo/` |
+| KG | 4 | `agents/kg/` |
 | Data | 4 | `agents/data/` |
 
 ---
@@ -140,7 +141,7 @@ See [changelog.md](changelog.md) for version history and recent changes.
 ```
 docs/
 +-- DOCUMENTATION.md       <- You are here
-+-- agents.md              <- Agent roster
++-- agent-index.md         <- Agent roster
 +-- changelog.md           <- Version history
 +-- concepts/              <- Core concepts (11 docs)
 +-- pipelines/             <- Lane-specific pipelines (14 docs)
@@ -149,4 +150,4 @@ docs/
 
 ---
 
-_ORCA-OS v5.1 | [Quick Start](../QUICK-START.md) | [README](../README.md)_
+_ORCA-OS v5.1 | See [quick-reference/](../quick-reference/) for day-to-day guides_

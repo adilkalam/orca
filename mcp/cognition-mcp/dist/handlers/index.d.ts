@@ -44,10 +44,11 @@ import { handleNotebookCreate } from './notebook/create.js';
 import { handleNotebookAddCell } from './notebook/add-cell.js';
 import { handleNotebookRunCell } from './notebook/run-cell.js';
 import { handleNotebookExport } from './notebook/export.js';
+import { handleReasoningStats } from './stats.js';
 /**
  * Route operation to appropriate handler.
  * Returns error response for unknown operations.
  */
 export declare function routeOperation(args: CognitionRequest, session: SessionState): Promise<HandlerResult>;
-export { handleThought, handleMentalModel, handleListMentalModels, handleDebug, handleDecide, handleMeta, handleSystems, handleAudit, handleCreativeThinking, handleVisualReasoning, handleCheckpoint, handleScientificMethod, handleCollaborativeReasoning, handleSocraticMethod, handleStructuredArgumentation, handleTreeOfThought, handleBeamSearch, handleMCTS, handleGraphOfThought, handleOrchestrationSuggest, handleResearch, handleAnalogicalReasoning, handleCausalAnalysis, handleStatisticalReasoning, handleSimulation, handleOptimization, handleEthicalAnalysis, handleVisualDashboard, handlePDRReasoning, handleCustomFramework, handleCodeExecution, handleOODALoop, handleUlyssesProtocol, handleNotebookCreate, handleNotebookAddCell, handleNotebookRunCell, handleNotebookExport, handleSessionInfo, handleSessionExport, handleSessionImport, };
+export { handleThought, handleMentalModel, handleListMentalModels, handleDebug, handleDecide, handleMeta, handleSystems, handleAudit, handleCreativeThinking, handleVisualReasoning, handleCheckpoint, handleScientificMethod, handleCollaborativeReasoning, handleSocraticMethod, handleStructuredArgumentation, handleTreeOfThought, handleBeamSearch, handleMCTS, handleGraphOfThought, handleOrchestrationSuggest, handleResearch, handleAnalogicalReasoning, handleCausalAnalysis, handleStatisticalReasoning, handleSimulation, handleOptimization, handleEthicalAnalysis, handleVisualDashboard, handlePDRReasoning, handleCustomFramework, handleCodeExecution, handleOODALoop, handleUlyssesProtocol, handleNotebookCreate, handleNotebookAddCell, handleNotebookRunCell, handleNotebookExport, handleSessionInfo, handleSessionExport, handleSessionImport, handleReasoningStats, };
 //# sourceMappingURL=index.d.ts.map

@@ -1,15 +1,20 @@
+---
+status: draft
+note: "Design pipeline concept from early OS versions. Not fully integrated -- has no dedicated command or phase config. Consider deprecating or refreshing for OS 5.1."
+---
+
 # Design Domain Pipeline
 
-**Status:** OS 5.0 Pipeline (DesignPipeline)
+**Status:** OS 5.1 Pipeline (DesignPipeline)
 **Last Updated:** 2025-11-27
 
 The design pipeline handles design-first work: turning briefs and visual inputs
 into structured design artifacts (`design-dna.json`, component/layout specs,
-and optional Figma/HTML exports) that downstream pipelines (webdev, brand)
+and optional Figma/HTML exports) that downstream pipelines (nextjs, brand)
 can implement.
 
 It combines:
-- OS 5.0 primitives (ProjectContextServer, `phase_state.json`, code-index.db, Workshop)
+- OS 5.1 primitives (ProjectContextServer, `phase_state.json`, code-index.db, Workshop)
 - Memory-first context (Workshop + code-index.db before ProjectContext)
 - Design agents:
   - `design-system-architect` (lead)
@@ -42,7 +47,7 @@ Request (design-heavy)
 [Phase 6: Completion]
 ```
 
-Design work is domain‑specific but still follows OS 2.2 principles:
+Design work is domain‑specific but still follows OS principles:
 - Context is mandatory (ProjectContextServer).
 - Design-dna is the machine source of truth.
 - Constraints (minimums, tokens, CSS architecture) are enforced.
@@ -122,7 +127,7 @@ Design work is domain‑specific but still follows OS 2.2 principles:
    - `rules` – additional hard rules specific to this request (if any).
    - `css_architecture` references – which CSS files and modules are expected
      to host the implementation.
-2. Produce a compact **implementation spec** for webdev that describes:
+2. Produce a compact **implementation spec** for nextjs that describes:
    - Which components/pages are in scope.
    - Which design tokens and component variants they should use.
    - Any layout constraints or bento patterns to follow.
@@ -153,13 +158,13 @@ Design work is domain‑specific but still follows OS 2.2 principles:
 
 **Outputs:**
 - Exported design artifacts (paths recorded in `phase_state.json`).  
-- Handoff note for the webdev pipeline.
+- Handoff note for the nextjs pipeline.
 
 ---
 ## Phase 5: Design QA Gate
 
 **Agents:**
-- `frontend-design-reviewer-agent` (reused from webdev; review is design‑only
+- `nextjs-design-reviewer` (reused from nextjs; review is design‑only
   at this stage, no implementation yet).
 
 **Inputs:**
@@ -191,7 +196,7 @@ Design work is domain‑specific but still follows OS 2.2 principles:
 **Tasks:**
 1. Ensure:
    - `design-dna.json` is updated and stored.  
-   - Implementation spec exists and is accessible to webdev/expo pipelines.  
+   - Implementation spec exists and is accessible to nextjs/expo pipelines.
    - Any design artifacts paths are recorded in `phase_state.json`.
 2. Record decisions in `code-index.db`:
    - `decisions` – key design choices and rationale.  
@@ -199,6 +204,6 @@ Design work is domain‑specific but still follows OS 2.2 principles:
    - `task_history` – linkage between this design task and future implementation.
 
 **Outputs:**
-- Completed design phase, ready for webdev/brand pipelines to consume.  
+- Completed design phase, ready for nextjs/brand pipelines to consume.
 - Updated `phase_state.json` marking the design pipeline as `completed` or
   `completed_with_caveats`.

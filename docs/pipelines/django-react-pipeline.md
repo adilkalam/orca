@@ -1,13 +1,13 @@
 # Django + React TypeScript Domain Pipeline
 
-**Status:** OS 5.0 Core Pipeline
+**Status:** OS 5.1 Core Pipeline
 **Last Updated:** 2025-12-15
 
 ## Overview
 
 The Django + React pipeline handles **full-stack development** combining Django backend (with Django REST Framework) and React TypeScript frontend. It features:
 
-- OS 5.0 primitives (ProjectContextServer, phase_state.json, code-index.db, Workshop, constraint framework)
+- OS 5.1 primitives (ProjectContextServer, phase_state.json, code-index.db, Workshop, constraint framework)
 - Memory-first context (Workshop + code-index.db before ProjectContext)
 - Three-tier routing (Default/Tweak/Complex with default running gates)
 - Spec gating (complex tasks require requirements spec)
@@ -33,7 +33,7 @@ The Django + React pipeline handles **full-stack development** combining Django 
 
 ---
 
-## Three-Tier Routing (OS 5.0)
+## Three-Tier Routing (OS 5.1)
 
 The Django + React pipeline uses three-tier routing:
 

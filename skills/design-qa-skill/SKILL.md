@@ -37,11 +37,7 @@ Design review should cover:
   - Layout reflow and component adaptation,
   - Touch targets and mobile usability.
 
-- **Interaction & Accessibility**
-  - Keyboard navigation,
-  - Focus states and indicators,
-  - ARIA attributes where needed,
-  - Loading and error states.
+- **Accessibility**: See `skills/web-interface-guidelines/SKILL.md` for interaction and accessibility rules.
 
 ## Usage Pattern
 

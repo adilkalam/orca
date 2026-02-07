@@ -100,10 +100,9 @@ Not all tasks need the same ceremony. ORCA routes based on complexity:
 | Mode | Flag | Gates | Use Case |
 |------|------|-------|----------|
 | **Default** | (none) | YES | Most work -- fast with quality checks |
-| **Explore** | `--explore` | NO | Divergent exploration, produces tentative brief |
-| **Problem-solve** | `--problem-solve` | YES | Root-cause analysis with structured reasoning |
 | **Tweak** | `-tweak` | NO | Speed iteration, you verify |
 | **Complex** | `--complex` | YES | Architecture, multi-file, risky. Requires spec from `/plan` |
+| **Audit** | `--audit` | NO | Review only -- produces report, no changes |
 
 ### Default Mode (Light + Gates)
 
@@ -318,8 +317,14 @@ If you interrupt a session, orchestrators read this and resume from the appropri
 | Expo | `/expo` | `expo-grand-orchestrator` | `expo-light-orchestrator` |
 | Django+React | `/django-react` | `django-react-grand-architect` | `django-react-light-orchestrator` |
 | Shopify | `/shopify` | `shopify-grand-architect` | `shopify-light-orchestrator` |
-| SEO | `/seo` | (specialists) | - |
-| Data | via `/orca` | (specialists) | - |
+| Research | `/research` | - | - |
+| KG | `/kg-research` | - | - |
+| Typography | `/typography` | - | `typography-orchestrator` |
+| Audit | `/audit` | - | - |
+| OS-Dev | `/orca-os-dev` | `os-dev-grand-architect` | `os-dev-light-orchestrator` |
+| Orca-Pipeline | `/orca-pipeline` | - | `orca-pipeline-orchestrator` |
+| SEO | `/seo` | - | - |
+| Data | (none) | - | - |
 
 The main `/orca` command auto-detects domain based on project files and routes appropriately.
 

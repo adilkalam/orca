@@ -49,6 +49,10 @@ OUTPUT: Structured analysis with persisted session + verdict.
 
 ---
 
+## Verbose Flag
+
+Include `verbose: false` in every cognition MCP call from /challenge. This command makes 4-5 calls per session; the minimal ACK response saves tokens.
+
 ## Parse Arguments
 
 Extract mode and proposal from $ARGUMENTS:

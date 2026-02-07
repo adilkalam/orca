@@ -62,7 +62,7 @@ if [[ "$DEST" == "$HOME/.claude/" ]] || [[ -z "$DEPLOY_DIR" ]]; then
     exit 0
 fi
 
-rsync -av --exclude='.archive' --exclude='.archived' --exclude='_archive' --exclude='archive/' --exclude='*deprecated*' "$SOURCE" "$DEST" 2>/dev/null
+rsync -av --exclude='.archive' --exclude='.archived' --exclude='_archive' --exclude='archive/' --exclude='*deprecated*' --exclude='shopify*' --exclude='liquid-quick' "$SOURCE" "$DEST" 2>/dev/null
 
 if [[ $? -eq 0 ]]; then
     echo "AUTO-DEPLOYED: $DEPLOY_DIR/ -> ~/.claude/$DEPLOY_DIR/"

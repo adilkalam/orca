@@ -63,14 +63,11 @@ class CognitionServer {
                     '\n\n' +
                     'OPERATIONS: ' +
                     '\n  Core: thought, mental_model, debug, decide, meta, systems' +
-                    '\n  Phase 1 Core: creative_thinking, visual_reasoning, checkpoint, scientific_method' +
-                    '\n  Phase 1 Collaborative: collaborative_reasoning, socratic_method, structured_argumentation' +
-                    '\n  Phase 2 Pattern: tree_of_thought, beam_search, mcts, graph_of_thought, orchestration_suggest' +
-                    '\n  Phase 3 Analysis: research, analogical_reasoning, causal_analysis, statistical_reasoning, ' +
-                    'simulation, optimization, ethical_analysis, visual_dashboard, pdr_reasoning, custom_framework, code_execution' +
-                    '\n  Phase 4 Strategic: ooda_loop, ulysses_protocol' +
-                    '\n  Phase 4 Notebook: notebook_create, notebook_add_cell, notebook_run_cell, notebook_export' +
-                    '\n  Session: session_info, session_export, session_import',
+                    '\n  Reasoning: creative_thinking, collaborative_reasoning, socratic_method, structured_argumentation, scientific_method, analogical_reasoning' +
+                    '\n  Analysis: tree_of_thought, causal_analysis, orchestration_suggest' +
+                    '\n  Strategic: ooda_loop, ulysses_protocol, checkpoint' +
+                    '\n  Session: session_info, session_export, session_import, reasoning_stats' +
+                    '\n  (Additional: beam_search, mcts, graph_of_thought, research, statistical_reasoning, simulation, optimization, ethical_analysis, visual_dashboard, visual_reasoning, pdr_reasoning, custom_framework, code_execution, notebook_*)',
                 inputSchema: {
                     type: 'object',
                     properties: {
@@ -79,6 +76,7 @@ class CognitionServer {
                             enum: [
                                 'thought',
                                 'mental_model',
+                                'list_mental_models',
                                 'debug',
                                 'decide',
                                 'meta',
@@ -108,6 +106,7 @@ class CognitionServer {
                                 'code_execution',
                                 'ooda_loop',
                                 'ulysses_protocol',
+                                'audit',
                                 'notebook_create',
                                 'notebook_add_cell',
                                 'notebook_run_cell',
@@ -115,6 +114,7 @@ class CognitionServer {
                                 'session_info',
                                 'session_export',
                                 'session_import',
+                                'reasoning_stats',
                             ],
                             description: 'The operation to perform',
                         },
@@ -150,6 +150,14 @@ class CognitionServer {
                             type: 'object',
                             description: 'Session data for import operation',
                         },
+                        verbose: {
+                            type: 'boolean',
+                            description: 'If true, echo full content in response. Default: minimal ACK.',
+                        },
+                        projectPath: {
+                            type: 'string',
+                            description: 'Absolute path to project root for per-project session storage. If omitted, uses global ~/.orca-cognition/.',
+                        },
                     },
                     required: ['operation'],
                 },
@@ -181,9 +189,9 @@ class CognitionServer {
             };
         }
         const request = validation.data;
-        // Get or create session
+        // Get or create session (routed by projectPath for per-project storage)
         const manager = getSessionManager();
-        const session = await manager.getOrCreate(request.sessionId, request.sessionTitle, request.sessionTags);
+        const session = await manager.getOrCreate(request.sessionId, request.sessionTitle, request.sessionTags, request.projectPath);
         // Route to appropriate handler
         return await routeOperation(request, session);
     }
@@ -193,9 +201,9 @@ class CognitionServer {
     async run() {
         const transport = new StdioServerTransport();
         await this.server.connect(transport);
-        console.error('Cognition MCP v1.0.0 started');
+        console.error('Cognition MCP v1.1.0 started');
         console.error('Pattern: Accept-Store-Echo');
-        console.error('Storage: ~/.orca-cognition/');
+        console.error('Storage: per-project {project}/.claude/.cognition/ | global ~/.orca-cognition/');
     }
 }
 // Start server if run directly

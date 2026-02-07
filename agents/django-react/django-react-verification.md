@@ -133,7 +133,7 @@ FRONTEND VERIFICATION:
 
 ---
 
-## CHAIN OF VERIFICATION PROTOCOL (OS 3.0)
+## CHAIN OF VERIFICATION PROTOCOL
 
 Before rendering final verification status, apply CoVe to catch errors that standard checks miss.
 

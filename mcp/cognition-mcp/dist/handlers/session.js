@@ -19,6 +19,7 @@ export async function handleSessionInfo(_args, session) {
             status: session.metadata.status,
             createdAt: session.metadata.createdAt,
             lastAccessedAt: session.metadata.lastAccessedAt,
+            projectPath: session.metadata.projectPath || null,
             counts: {
                 thoughts: session.getCount('thoughts'),
                 mentalModels: session.getCount('mentalModels'),

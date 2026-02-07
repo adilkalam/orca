@@ -1,13 +1,12 @@
-/opt/homebrew/Library/Homebrew/cmd/shellenv.sh: line 18: /bin/ps: Operation not permitted
 # OS 5.1 OS-Dev Lane Readme
 
 **Lane:** OS / Tooling Configuration  
 **Domain:** `os-dev`  
-**Entrypoints:** `/plan`, `/orca-os-dev`, `/project-memory`, `/project-code`
+**Entrypoints:** `/plan`, `/orca-os-dev [-tweak | --complex]`, `/project-memory`, `/project-code`
 
 This readme explains the OS-Dev lane, which manages changes to:
 
-- Vibe OS 5.1 orchestration behavior
+- OS 5.1 orchestration behavior
 - Claude Code commands, agents, skills, MCPs, hooks
 - Memory integration behavior
 
@@ -22,6 +21,14 @@ application code:
 - Add or reconfigure MCPs
 - Add OS‑level skills or adjust their usage
 - Tweak hooks, scripts, and safety defaults for OS 5.1
+
+**Routing Modes:**
+
+| Mode | Flag | Path | Gates |
+|------|------|------|-------|
+| **Default** | (none) | Light + Gates | YES |
+| **Tweak** | `-tweak` | Light (pure) | NO |
+| **Complex** | `--complex` | Full pipeline | YES |
 
 ---
 
@@ -46,11 +53,12 @@ OS-Dev writes into `.claude/orchestration/phase_state.json` with
 
 ## 3. Agents & Standards
 
-Agents:
+Agents (6 total):
 
 - `agents/os-dev/os-dev-grand-architect.md`
 - `agents/os-dev/os-dev-architect.md`
 - `agents/os-dev/os-dev-builder.md`
+- `agents/os-dev/os-dev-light-orchestrator.md`
 - `agents/os-dev/os-dev-standards-enforcer.md`
 - `agents/os-dev/os-dev-verification.md`
 

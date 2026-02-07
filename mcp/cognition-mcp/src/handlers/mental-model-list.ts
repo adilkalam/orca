@@ -48,7 +48,7 @@ function parseFrontmatter(content: string): { title: string; tags: string[]; des
  */
 function loadMentalModels(tagFilter?: string): MentalModelMetadata[] {
   // Path to mental models directory
-  const modelsDir = path.join(process.cwd(), 'quick-reference', 'mental-models');
+  const modelsDir = path.join(process.cwd(), 'quick-reference', 'thinking-models');
   
   if (!fs.existsSync(modelsDir)) {
     return [];

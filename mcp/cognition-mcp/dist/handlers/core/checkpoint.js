@@ -8,6 +8,7 @@
  */
 import { validateOperationContent } from '../../schema.js';
 import { getSessionManager } from '../../session/manager.js';
+import { buildResponse } from '../shared.js';
 export async function handleCheckpoint(args, session) {
     const manager = getSessionManager();
     // 1. VALIDATE structure (not content)
@@ -40,24 +41,7 @@ export async function handleCheckpoint(args, session) {
     // 3. PERSIST to filesystem
     await manager.addEntry(session, 'checkpoints', entry);
     // Checkpoints never complete the session - they are mid-chain saves
-    // 4. ECHO unchanged + context
-    const response = {
-        ...checkpointContent,
-        quality: args.quality,
-        status: 'stored',
-        sessionContext: {
-            sessionId: session.id,
-            entryCount: session.getCount('checkpoints'),
-            totalEntries: session.getTotalCount(),
-            sessionDuration: session.getDuration(),
-            continuation: 'Continue with sessionId: ' + session.id,
-        },
-    };
-    return {
-        content: [{
-                type: 'text',
-                text: JSON.stringify(response),
-            }],
-    };
+    // 4. ECHO unchanged + context (respects verbose flag)
+    return buildResponse(checkpointContent, args, session, 'checkpoints', 'stored');
 }
 //# sourceMappingURL=checkpoint.js.map

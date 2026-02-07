@@ -22,6 +22,10 @@ allowed-tools:
 
 ---
 
+## Verbose Flag
+
+Include `verbose: false` in every cognition MCP call from /audit. This is a multi-call command; the minimal ACK response saves tokens.
+
 ## Command Modes
 
 ```bash

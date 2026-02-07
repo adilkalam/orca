@@ -1,10 +1,10 @@
-# Django-React Pipeline Phase Configuration - OS 5.0
+# Django-React Pipeline Phase Configuration - OS 5.1
 # Full-stack Django + React TypeScript Development Workflow
 
 pipeline:
   name: django-react
   description: Full-stack development pipeline with Django backend (DRF) and React TypeScript frontend
-  version: "5.0"
+  version: "5.1"
   stacks:
     backend:
       framework: Django 4.2+

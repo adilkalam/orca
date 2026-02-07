@@ -279,7 +279,7 @@ Beyond the commands above, the cognition-mcp provides 41 structured reasoning op
 |----------|----------|-------------------|
 | **Search strategies** | Tree of thought, beam search, MCTS | Systematic exploration of solution spaces |
 | **Analysis** | Causal analysis, systems mapping, statistical reasoning | Structural understanding of how pieces connect |
-| **Adversarial** | Structured argumentation, pre-mortem, challenge | Attacks on your own thinking before you act |
+| **Adversarial** | Structured argumentation, pre-mortem, causal analysis | Attacks on your own thinking before you act |
 | **Decision** | Decision frameworks, trade-off matrices, optimization | Weighted evaluation of options |
 | **Creative** | Creative thinking, analogical reasoning, simulation | Lateral approaches and what-if exploration |
 | **Meta** | Metacognitive observation, checkpoints, OODA loops | Awareness of the reasoning process itself |
@@ -345,8 +345,10 @@ Sessions are saved to `~/.orca-cognition/` and can be resumed:
 ```
 
 **Persisted artifacts**:
-- `.claude/cognition/YYYYMMDD-HHMM-slug.md` - Summary files
-- `~/.orca-cognition/sessions/` - Full session logs
+- `.claude/cognition/YYYYMMDD-HHMM-slug.md` - Summary files (created by command specs, not the MCP)
+- Per-project: `{project}/.claude/.cognition/sessions/{id}/*.jsonl` - Session logs (when `projectPath` provided)
+- Global: `~/.orca-cognition/sessions/{id}/*.jsonl` - Session logs (global fallback)
+- `~/.orca-cognition/index.jsonl` - Cross-project search index
 - Workshop entries with `#cognition` tag
 
 ---

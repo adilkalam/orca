@@ -48,6 +48,8 @@ import { handleNotebookCreate } from './notebook/create.js';
 import { handleNotebookAddCell } from './notebook/add-cell.js';
 import { handleNotebookRunCell } from './notebook/run-cell.js';
 import { handleNotebookExport } from './notebook/export.js';
+// Stats handler
+import { handleReasoningStats } from './stats.js';
 const handlers = {
     thought: handleThought,
     mental_model: handleMentalModel,
@@ -96,6 +98,8 @@ const handlers = {
     session_info: handleSessionInfo,
     session_export: handleSessionExport,
     session_import: handleSessionImport,
+    // Stats
+    reasoning_stats: handleReasoningStats,
 };
 /**
  * Route operation to appropriate handler.
@@ -137,5 +141,7 @@ handleOODALoop, handleUlyssesProtocol,
 // Phase 4: Notebook handlers
 handleNotebookCreate, handleNotebookAddCell, handleNotebookRunCell, handleNotebookExport, 
 // Session management
-handleSessionInfo, handleSessionExport, handleSessionImport, };
+handleSessionInfo, handleSessionExport, handleSessionImport, 
+// Stats
+handleReasoningStats, };
 //# sourceMappingURL=index.js.map

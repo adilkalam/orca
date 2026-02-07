@@ -9,6 +9,7 @@ import type { CognitionRequest, HandlerResult, CodeExecutionContent } from '../.
 import { validateOperationContent } from '../../schema.js';
 import { SessionState } from '../../session/state.js';
 import { getSessionManager } from '../../session/manager.js';
+import { buildResponse } from '../shared.js';
 
 export async function handleCodeExecution(
   args: CognitionRequest,
@@ -57,27 +58,13 @@ export async function handleCodeExecution(
     exportPath = await manager.completeSession(session);
   }
 
-  // 4. ECHO unchanged + context
-  const response = {
-    ...codeContent,
-    quality: args.quality,
-    status: shouldComplete ? 'exported' : 'stored',
-    sessionContext: {
-      sessionId: session.id,
-      entryCount: session.getCount('codeExecution'),
-      totalEntries: session.getTotalCount(),
-      sessionDuration: session.getDuration(),
-      continuation: shouldComplete
-        ? null
-        : 'Continue with sessionId: ' + session.id,
-    },
-    ...(exportPath ? { exportPath } : {}),
-  };
-
-  return {
-    content: [{
-      type: 'text',
-      text: JSON.stringify(response),
-    }],
-  };
+  // 4. ECHO unchanged + context (respects verbose flag)
+  return buildResponse(
+    codeContent as unknown as Record<string, unknown>,
+    args,
+    session,
+    'codeExecution',
+    shouldComplete ? 'exported' : 'stored',
+    exportPath,
+  );
 }

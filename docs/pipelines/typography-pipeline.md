@@ -1,6 +1,6 @@
 # Typography Domain Pipeline
 
-**Status:** OS 5.0 Pipeline (Typography)
+**Status:** OS 5.1 Pipeline (Typography)
 **Last Updated:** 2026-02-03
 **Deployment:** Global (~/.claude/)
 
@@ -15,7 +15,7 @@ The typography pipeline handles font library management workflows:
 - **Typography exploration** - Generate interactive testing tools for font decisions
 
 It combines:
-- OS 5.0 primitives (phase_state.json, Workshop memory)
+- OS 5.1 primitives (phase_state.json, Workshop memory)
 - Domain-specific agents for font operations
 - Interactive checkpoints (backup, batch confirmation)
 - Path verification against CLAUDE.md canonical rules
@@ -33,7 +33,7 @@ Use this pipeline when:
 
 Do NOT use for:
 - General design work (use design pipeline)
-- Web typography CSS (use webdev pipeline)
+- Web typography CSS (use nextjs pipeline)
 - Font installation or system font management
 
 ---

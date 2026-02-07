@@ -1,5 +1,5 @@
 ---
-description: "OS 5.0 orchestrator entrypoint for OS / Claude Code configuration tasks (LOCAL to this repo)"
+description: "OS 5.1 orchestrator entrypoint for OS / Claude Code configuration tasks (LOCAL to this repo)"
 argument-hint: "[-tweak] <task description or requirement ID>"
 allowed-tools:
   - Task
@@ -41,13 +41,13 @@ allowed-tools:
 **THEN deploy ALL together:**
 ```bash
 # Note: $ORCA_OS_PATH should be set to your ORCA-OS installation path
-rsync -av --exclude='*archive*' --exclude='*deprecated*' $ORCA_OS_PATH/agents/ ~/.claude/agents/
-rsync -av --exclude='*archive*' --exclude='*deprecated*' $ORCA_OS_PATH/commands/ ~/.claude/commands/
-rsync -av --exclude='*archive*' --exclude='*deprecated*' $ORCA_OS_PATH/docs/ ~/.claude/docs/
-rsync -av --exclude='*archive*' --exclude='*deprecated*' $ORCA_OS_PATH/quick-reference/ ~/.claude/quick-reference/
-rsync -av --exclude='*archive*' --exclude='*deprecated*' $ORCA_OS_PATH/scripts/ ~/.claude/scripts/
-rsync -av --exclude='*archive*' --exclude='*deprecated*' $ORCA_OS_PATH/hooks/ ~/.claude/hooks/
-rsync -av --exclude='*archive*' --exclude='*deprecated*' $ORCA_OS_PATH/skills/ ~/.claude/skills/
+rsync -av --exclude='*archive*' --exclude='*deprecated*' --exclude='shopify*' --exclude='liquid-quick' $ORCA_OS_PATH/agents/ ~/.claude/agents/
+rsync -av --exclude='*archive*' --exclude='*deprecated*' --exclude='shopify*' --exclude='liquid-quick' $ORCA_OS_PATH/commands/ ~/.claude/commands/
+rsync -av --exclude='*archive*' --exclude='*deprecated*' --exclude='shopify*' --exclude='liquid-quick' $ORCA_OS_PATH/docs/ ~/.claude/docs/
+rsync -av --exclude='*archive*' --exclude='*deprecated*' --exclude='shopify*' --exclude='liquid-quick' $ORCA_OS_PATH/quick-reference/ ~/.claude/quick-reference/
+rsync -av --exclude='*archive*' --exclude='*deprecated*' --exclude='shopify*' --exclude='liquid-quick' $ORCA_OS_PATH/scripts/ ~/.claude/scripts/
+rsync -av --exclude='*archive*' --exclude='*deprecated*' --exclude='shopify*' --exclude='liquid-quick' $ORCA_OS_PATH/hooks/ ~/.claude/hooks/
+rsync -av --exclude='*archive*' --exclude='*deprecated*' --exclude='shopify*' --exclude='liquid-quick' $ORCA_OS_PATH/skills/ ~/.claude/skills/
 ```
 
 **Show deployment confirmation table BEFORE saying done.**
@@ -77,10 +77,10 @@ Even `-tweak` delegates to a builder. It skips gates, not agents.
 
 ---
 
-# /orca-os-dev – OS / Tooling Orchestrator (OS 5.0)
+# /orca-os-dev – OS / Tooling Orchestrator (OS 5.1)
 
 Use this command when the task is clearly OS / Claude Code / tooling
-configuration work for **Vibe OS 5.0**, not application code.
+configuration work for **Vibe OS 5.1**, not application code.
 
 **IMPORTANT: This command is LOCAL to claude-vibe-config repo only.**
 It is NOT deployed to `~/.claude` global config. Use `/orca-os-dev` only
@@ -97,8 +97,8 @@ when working in this repository to modify the OS itself.
 Examples:
 
 - Adjust lane/phase config behavior (Next.js, iOS, etc.)
-- Add or update commands/agents/skills used by OS 5.0
-- Configure MCP servers and integrate them into OS 5.0 lanes
+- Add or update commands/agents/skills used by OS 5.1
+- Configure MCP servers and integrate them into OS 5.1 lanes
 - Change how memory and context are used by `/plan` / `/orca` / `/audit`
 
 **Key Resources:**
@@ -154,7 +154,7 @@ No flag → Default path (light + design gates)
 
 ---
 
-## 0.1 Telemetry (OS 5.0) - MUST EXECUTE
+## 0.1 Telemetry (OS 5.1) - MUST EXECUTE
 
 **Reference:** `docs/reference/telemetry-standard.md`
 
@@ -445,7 +445,7 @@ Working with `os-dev-grand-architect`:
    python3 ~/.claude/scripts/memory-search-unified.py "$TASK_SUMMARY" --mode all --top-k 10 || true
    ```
 
-2. Load relevant reflexions from past gate failures (OS 5.0):
+2. Load relevant reflexions from past gate failures (OS 5.1):
 
    ```bash
    workshop --workspace .claude/memory search "reflexion" -t os-dev --limit 5 2>/dev/null || true
@@ -625,13 +625,13 @@ accepts residual risk):
    ```bash
    # SACRED LAW: Deploy to subdirectories, NEVER to root, NEVER with --delete
    # Note: $ORCA_OS_PATH should be set to your ORCA-OS installation path
-   rsync -av --exclude='*archive*' --exclude='*deprecated*' $ORCA_OS_PATH/commands/ ~/.claude/commands/
-   rsync -av --exclude='*archive*' --exclude='*deprecated*' $ORCA_OS_PATH/agents/ ~/.claude/agents/
-   rsync -av --exclude='*archive*' --exclude='*deprecated*' $ORCA_OS_PATH/docs/ ~/.claude/docs/
-   rsync -av --exclude='*archive*' --exclude='*deprecated*' $ORCA_OS_PATH/quick-reference/ ~/.claude/quick-reference/
-   rsync -av --exclude='*archive*' --exclude='*deprecated*' $ORCA_OS_PATH/scripts/ ~/.claude/scripts/
-   rsync -av --exclude='*archive*' --exclude='*deprecated*' $ORCA_OS_PATH/hooks/ ~/.claude/hooks/
-   rsync -av --exclude='*archive*' --exclude='*deprecated*' $ORCA_OS_PATH/skills/ ~/.claude/skills/
+   rsync -av --exclude='*archive*' --exclude='*deprecated*' --exclude='shopify*' --exclude='liquid-quick' $ORCA_OS_PATH/commands/ ~/.claude/commands/
+   rsync -av --exclude='*archive*' --exclude='*deprecated*' --exclude='shopify*' --exclude='liquid-quick' $ORCA_OS_PATH/agents/ ~/.claude/agents/
+   rsync -av --exclude='*archive*' --exclude='*deprecated*' --exclude='shopify*' --exclude='liquid-quick' $ORCA_OS_PATH/docs/ ~/.claude/docs/
+   rsync -av --exclude='*archive*' --exclude='*deprecated*' --exclude='shopify*' --exclude='liquid-quick' $ORCA_OS_PATH/quick-reference/ ~/.claude/quick-reference/
+   rsync -av --exclude='*archive*' --exclude='*deprecated*' --exclude='shopify*' --exclude='liquid-quick' $ORCA_OS_PATH/scripts/ ~/.claude/scripts/
+   rsync -av --exclude='*archive*' --exclude='*deprecated*' --exclude='shopify*' --exclude='liquid-quick' $ORCA_OS_PATH/hooks/ ~/.claude/hooks/
+   rsync -av --exclude='*archive*' --exclude='*deprecated*' --exclude='shopify*' --exclude='liquid-quick' $ORCA_OS_PATH/skills/ ~/.claude/skills/
    ```
 
 2. **SHOW DEPLOYMENT PROOF (MANDATORY)**:

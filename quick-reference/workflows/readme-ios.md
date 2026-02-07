@@ -4,7 +4,7 @@
 **Domain:** `ios`  
 **Entrypoints:** `/plan`, `/orca`, `/ios`, `/project-memory`, `/project-code`
 
-This document explains how the iOS lane works in Vibe OS 5.1:
+This document explains how the iOS lane works in OS 5.1:
 
 - Planning & specs (`/plan`)
 - Orchestration (`/orca`, `/ios`)

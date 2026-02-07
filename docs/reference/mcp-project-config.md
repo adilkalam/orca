@@ -85,6 +85,20 @@ Create `.claude/settings.local.json` in your project:
 
 **CRITICAL:** MCPs defined in `.mcp.json` are NOT automatically enabled. You MUST add them to `enabledMcpjsonServers` or they won't load.
 
+**Alternative:** `enabledMcpjsonServers` can also be placed in `~/.claude.json` under a project-specific key:
+
+```json
+{
+  "projects": {
+    "/Users/yourname/project": {
+      "enabledMcpjsonServers": ["my-mcp", "my-local-mcp"]
+    }
+  }
+}
+```
+
+See `quick-reference/ORCA-OS/ORCA-mcps.md` for the project mapping approach used by ORCA-OS.
+
 ## Step 3: Restart Claude
 
 After changing either file, restart your Claude Code session in that project directory.
@@ -123,4 +137,4 @@ Verify with `/mcp` command - all enabled MCPs should show as connected.
 ```
 
 ---
-_Last updated: 2025-12-11_
+_Last updated: 2026-02-07_

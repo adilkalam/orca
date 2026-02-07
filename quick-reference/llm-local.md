@@ -1,6 +1,6 @@
 # Local LLM Setup
 
-Workshop uses local LLM for quality session extraction. Without it, imports use heuristic extraction which produces noisy/fragmented entries.
+Local LLM models (Ollama) power code-index.db semantic search embeddings. Session event extraction uses a heuristic approach via the session-end hook -- no LLM is involved in that process.
 
 ---
 
@@ -24,20 +24,17 @@ ollama serve
 
 Or launch the Ollama app (macOS menu bar) - it starts the server automatically.
 
-**Keep it running** - code-index.db embeddings and Workshop extraction both need it.
+**Keep it running** - code-index.db embeddings need it.
 
 ---
 
-## Pull Required Models
+## Pull Required Model
 
 ```bash
 # Embeddings model (required for code-index.db)
 ollama pull nomic-embed-text
 
-# Chat model (required for Workshop extraction)
-ollama pull mistral
-
-# Verify both installed
+# Verify installed
 ollama list
 ```
 
@@ -51,27 +48,9 @@ curl -s http://localhost:11434/api/tags | jq -r '.models[].name'
 
 # Should show:
 #   nomic-embed-text:latest
-#   mistral:latest
 ```
 
-Done. The `session-end.sh` hook auto-detects Ollama.
-
----
-
-## Priority Order
-
-```
-Session End Hook
-    │
-    ▼
-1. Ollama (port 11434) - if chat model available
-    │
-    ▼
-2. LM Studio (port 1234) - fallback
-    │
-    ▼
-3. Heuristic - no LLM (lowest quality)
-```
+Done. Ollama is now available for code-index.db embeddings.
 
 ---
 
@@ -79,18 +58,7 @@ Session End Hook
 
 | Model | Size | Use |
 |-------|------|-----|
-| `nomic-embed-text` | 274 MB | code-index.db embeddings (already installed) |
-| `mistral` | 4.1 GB | Workshop extraction (INSTALL THIS) |
-| `llama3` | 4.7 GB | Alternative chat model |
-| `phi3` | 2.2 GB | Smaller/faster option |
-
-```bash
-# Install recommended chat model
-ollama pull mistral
-
-# Or smaller option
-ollama pull phi3
-```
+| `nomic-embed-text` | 274 MB | code-index.db embeddings (required) |
 
 ---
 
@@ -100,15 +68,8 @@ ollama pull phi3
 # Check Ollama is running
 curl -s http://localhost:11434/api/tags | grep -o '"name":"[^"]*"'
 
-# Should show both:
+# Should show:
 #   "name":"nomic-embed-text:latest"  (embeddings)
-#   "name":"mistral:latest"           (chat - for Workshop)
-
-# Test Workshop import manually
-workshop --workspace .claude/memory import --llm-local --llm-endpoint http://localhost:11434/v1
-
-# Check extraction quality
-workshop --workspace .claude/memory recent
 ```
 
 ---
@@ -116,33 +77,24 @@ workshop --workspace .claude/memory recent
 ## Manual Import Commands
 
 ```bash
-# With Ollama (preferred)
-workshop --workspace .claude/memory import --llm-local --llm-endpoint http://localhost:11434/v1 --execute
-
-# With LM Studio
-workshop --workspace .claude/memory import --llm-local --execute
-
-# Heuristic only (no LLM)
+# Import session events (heuristic extraction)
 workshop --workspace .claude/memory import --execute
 
-# Preview (no --execute)
-workshop --workspace .claude/memory import --llm-local --llm-endpoint http://localhost:11434/v1
+# Preview without executing
+workshop --workspace .claude/memory import
 ```
 
 ---
 
 ## Troubleshooting
 
-**"heuristic extraction" in session end:**
-- No chat model installed. Run: `ollama pull mistral`
-
 **Ollama not detected:**
 - Check running: `ollama list`
 - Start if needed: `ollama serve`
 
-**Only nomic-embed-text showing:**
-- That's for embeddings (code-index.db). You need a chat model too.
-- Run: `ollama pull mistral`
+**Code-index embeddings not working:**
+- Ensure `nomic-embed-text` is pulled: `ollama pull nomic-embed-text`
+- Ensure Ollama server is running on port 11434
 
 ---
 
@@ -150,7 +102,7 @@ workshop --workspace .claude/memory import --llm-local --llm-endpoint http://loc
 
 | File | Purpose |
 |------|---------|
-| `hooks/session-end.sh` | Auto-detects Ollama/LM Studio, runs import |
+| `hooks/session-end.sh` | Saves session events to Workshop via CLI (heuristic extraction) |
 | `.claude/memory/workshop.db` | Where extractions are stored |
 | `~/.claude/scripts/code-index.py` | Uses Ollama for embeddings |
 
@@ -161,10 +113,10 @@ workshop --workspace .claude/memory import --llm-local --llm-endpoint http://loc
 | Component | Ollama Model | Port |
 |-----------|--------------|------|
 | **code-index.db** (code search) | `nomic-embed-text` | 11434 |
-| **Workshop** (session extraction) | `mistral` | 11434 |
+| **Workshop** (session extraction) | N/A (heuristic) | N/A |
 
-Both use Ollama. One install, unified stack.
+Ollama is used for code-index embeddings. Session extraction uses heuristic parsing with no LLM dependency.
 
 ---
 
-_Last Updated: 2025-12-17_
+_Last Updated: 2026-02-07_

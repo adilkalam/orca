@@ -11,6 +11,7 @@ import type { CognitionRequest, HandlerResult, CheckpointContent } from '../../t
 import { validateOperationContent } from '../../schema.js';
 import { SessionState } from '../../session/state.js';
 import { getSessionManager } from '../../session/manager.js';
+import { buildResponse } from '../shared.js';
 
 export async function handleCheckpoint(
   args: CognitionRequest,
@@ -53,24 +54,12 @@ export async function handleCheckpoint(
 
   // Checkpoints never complete the session - they are mid-chain saves
 
-  // 4. ECHO unchanged + context
-  const response = {
-    ...checkpointContent,
-    quality: args.quality,
-    status: 'stored',
-    sessionContext: {
-      sessionId: session.id,
-      entryCount: session.getCount('checkpoints'),
-      totalEntries: session.getTotalCount(),
-      sessionDuration: session.getDuration(),
-      continuation: 'Continue with sessionId: ' + session.id,
-    },
-  };
-
-  return {
-    content: [{
-      type: 'text',
-      text: JSON.stringify(response),
-    }],
-  };
+  // 4. ECHO unchanged + context (respects verbose flag)
+  return buildResponse(
+    checkpointContent as unknown as Record<string, unknown>,
+    args,
+    session,
+    'checkpoints',
+    'stored',
+  );
 }

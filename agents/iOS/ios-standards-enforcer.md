@@ -33,7 +33,7 @@ Flag violations of these skills in your review.
 ## Required Inputs
 - ContextBundle (architecture choice, related standards/tokens, past decisions).
 - List of modified files/tests for this task.
-- **relatedStandards from ContextBundle** - treat as enforceable rules, not suggestions (OS 5.0).
+- **relatedStandards from ContextBundle** - treat as enforceable rules, not suggestions (OS 5.1).
 - If missing, stop and request.
 
 ## Checks
@@ -46,7 +46,7 @@ Flag violations of these skills in your review.
 - Accessibility basics: critical controls have labels; no obvious Dynamic Type clipping.
 - Testing: new logic covered; tests in correct targets; no disabled/skipped without note.
 
-## Scoring (Graduated Gate Standard - OS 5.0)
+## Scoring (Graduated Gate Standard - OS 5.1)
 
 **Reference:** `docs/reference/graduated-gate-scoring.md`
 
@@ -112,7 +112,7 @@ promotion_reason: "Score 85 with 0 Critical, 1 Improvement - net positive featur
 
 Log promotion to phase_state for audit traceability.
 
-## Response Awareness Audit (OS 5.0)
+## Response Awareness Audit (OS 5.1)
 
 Scan modified files for RA tags and report:
 
@@ -126,8 +126,8 @@ Scan modified files for RA tags and report:
 **RA Assessment:**
 - Count tags found: `ra_tags_found: N`
 - Identify resolved vs unresolved: `ra_tags_resolved: N, ra_tags_unresolved: N`
-- Unresolved `#COMPLETION_DRIVE` on critical paths (auth, payments, data persistence) → CAUTION
-- Any `#POISON_PATH` left unaddressed → contribute to FAIL score
+- Unresolved `#COMPLETION_DRIVE` on critical paths (auth, payments, data persistence) → WARN
+- Any `#POISON_PATH` left unaddressed → contribute to BLOCK score
 
 **Include in output:**
 ```yaml
@@ -139,9 +139,9 @@ ra_audit:
     - "#COMPLETION_DRIVE in PaymentService.swift:42 - assumption about currency format"
 ```
 
-## Reflexion on Failure (OS 5.0)
+## Reflexion on Failure (OS 5.1)
 
-When `gate_decision` is CAUTION or FAIL:
+When `gate_decision` is WARN, ERROR, or BLOCK:
 
 1. Generate a reflexion explaining:
    - What specific issue(s) caused the failure
@@ -158,12 +158,24 @@ When `gate_decision` is CAUTION or FAIL:
 Example reflexion:
 > "This iOS code failed standards because it used force unwraps in payment processing code. The pattern was unsafe optional handling in critical paths. Next time, verify all optionals in auth/payments use guard let or if let."
 
+## Improvement Bus Emission
+
+After storing the Workshop gotcha, also emit to the improvement bus:
+
+```bash
+mkdir -p .claude/improvement-events
+EVENT_ID="evt-$(date +%Y%m%d)-$(cat /dev/urandom | LC_ALL=C tr -dc 'a-z0-9' | head -c 4)"
+echo '{"id":"'$EVENT_ID'","timestamp":"'$(date -u +%Y-%m-%dT%H:%M:%SZ)'","source":"reflexion","source_agent":"ios-standards-enforcer","domain":"ios","event_type":"failure","content":{"description":"[reflexion text]","severity":"[high|medium]","evidence":"[file:line or specific violation]","suggested_action":"[what to check next time]"},"routing":{"targets":["agent_patterns"],"status":"pending"}}' >> .claude/improvement-events/improvement_event.jsonl
+```
+
+This enables `/self-improve` to route reflexions to `ios-builder/patterns.json`.
+
 ---
 
 ## Output
 - Standards Score + Gate.
 - Violations with severity, file, brief rationale.
 - **RA Audit summary** - tags found, resolved, unresolved, critical issues.
-- **Reflexion** - verbal reflection on failure causes (OS 5.0, only if CAUTION/FAIL).
+- **Reflexion** - verbal reflection on failure causes (OS 5.1, only if WARN/ERROR/BLOCK).
 - Notes on test gaps or risk.
 - **Tag violations to the standard they break** (if any) for audit traceability.

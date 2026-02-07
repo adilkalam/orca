@@ -18,7 +18,7 @@ that can inform the design of new domain pipelines.
 
 ---
 
-## Context Inheritance (OS 5.0)
+## Context Inheritance (OS 5.1)
 
 **Check for inherited context FIRST:**
 

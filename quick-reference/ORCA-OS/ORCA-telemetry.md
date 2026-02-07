@@ -15,7 +15,10 @@ Telemetry tracks pipeline execution for debugging and performance analysis.
 | `gate_result` | Gate completes | Score, decision, issue count |
 | `pipeline_end` | Pipeline completes | Status, duration, files modified |
 
-**Note:** Delegation events are planned for Phase 2.
+**Notes:**
+- `pipeline_start` and `pipeline_end` are emitted by `scripts/utilities/telemetry-emit.sh`.
+- `gate_result` events are emitted inline by orchestrator commands (via echo/append to the trace file), not by `telemetry-emit.sh`.
+- Delegation events are planned for Phase 2.
 
 ---
 

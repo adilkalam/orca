@@ -121,18 +121,6 @@ Say what you want; map to the right command.
 - **Architecture:** `quick-reference/ORCA-OS/ORCA-architecture.md`
 - **Main Overview:** `/README.md`
 
-## Deprecated Triggers (OS 2.2)
-
-These old patterns now map to new commands:
-
-| Old Trigger | Old Command | New Command (OS 5.1) |
-|-------------|-------------|----------------------|
-| "Plan this carefully first" | `/response-awareness-plan` | `/plan` |
-| "Implement the approved blueprint" | `/response-awareness-implement` | `/orca-{domain} "implement requirement <id>"` |
-| "Start gathering requirements" | `/requirements-start` | `/plan` |
-| "Continue requirements" | `/requirements-status` | `/plan` (does full cycle) |
-| "Finalize requirements" | `/requirements-end` | `/plan` (outputs blueprint) |
-
 ---
 
 _OS 5.1 simplifies workflows: `/plan` → `/orca` → `/audit` replaces 8+ fragmented commands_

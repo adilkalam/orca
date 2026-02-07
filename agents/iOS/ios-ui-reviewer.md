@@ -261,7 +261,7 @@ CODE REVIEW COMPLETE:
 - Screenshot comparisons
 - Runtime accessibility
 
-## Scoring (Graduated Gate Standard - OS 5.0)
+## Scoring (Graduated Gate Standard - OS 5.1)
 
 **Reference:** `docs/reference/graduated-gate-scoring.md`
 
@@ -285,7 +285,7 @@ Code Review Score 0-100 (code patterns only):
 
 **Note:** Visual verification score comes from ios-verification, not this agent.
 
-## Reflexion on Failure (OS 5.0)
+## Reflexion on Failure (OS 5.1)
 
 When `gate_decision` is CAUTION or FAIL:
 
@@ -304,11 +304,23 @@ When `gate_decision` is CAUTION or FAIL:
 Example reflexion:
 > "This iOS UI code failed review because accessibilityLabel was missing on the primary action button. The pattern was incomplete accessibility implementation on interactive elements. Next time, grep for Button/TouchableOpacity without .accessibilityLabel before approving."
 
+## Improvement Bus Emission
+
+After storing the Workshop gotcha, also emit to the improvement bus:
+
+```bash
+mkdir -p .claude/improvement-events
+EVENT_ID="evt-$(date +%Y%m%d)-$(cat /dev/urandom | LC_ALL=C tr -dc 'a-z0-9' | head -c 4)"
+echo '{"id":"'$EVENT_ID'","timestamp":"'$(date -u +%Y-%m-%dT%H:%M:%SZ)'","source":"reflexion","source_agent":"ios-ui-reviewer","domain":"ios","event_type":"failure","content":{"description":"[reflexion text]","severity":"[high|medium]","evidence":"[file:line or specific violation]","suggested_action":"[what to check next time]"},"routing":{"targets":["agent_patterns"],"status":"pending"}}' >> .claude/improvement-events/improvement_event.jsonl
+```
+
+This enables `/self-improve` to route reflexions to `ios-builder/patterns.json`.
+
 ---
 
 ## Output
 - Code Review Score + Gate result
 - Findings grouped by category (tokens/patterns/accessibility/states)
 - Severity: blocker/major/minor
-- **Reflexion** - verbal reflection on failure causes (OS 5.0, only if CAUTION/FAIL)
+- **Reflexion** - verbal reflection on failure causes (OS 5.1, only if CAUTION/FAIL)
 - List what requires ios-verification for visual confirmation

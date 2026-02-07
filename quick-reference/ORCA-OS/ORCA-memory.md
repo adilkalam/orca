@@ -151,7 +151,8 @@ mcp__project-context__query_context({
   relevantFiles: [...],      // From code index semantic search
   pastDecisions: [...],      // From Workshop
   relatedStandards: [...],   // From Workshop
-  projectState: {...}        // Structure, dependencies
+  projectState: {...},       // Structure, dependencies
+  similarTasks: [...]        // Previous task history
 }
 ```
 
@@ -209,9 +210,12 @@ You don't call this directly. Agents do. It's why they start with context instea
 When you start Claude Code, `session-start.sh` runs automatically:
 
 1. **Loads active task context** (if saved via `/session-save`) - outputs directly to STDOUT
-2. Loads Workshop summary (recent decisions, gotchas)
-3. Writes session metadata to `.claude/orchestration/temp/session-context.md`
-4. Makes context available to all subsequent work
+2. Loads previous session summary (if less than 24h old)
+3. Loads Workshop summary (recent decisions, gotchas)
+4. Initializes telemetry and code-index
+5. Outputs architecture reminders
+6. Writes session metadata to `.claude/orchestration/temp/session-context.md`
+7. Makes context available to all subsequent work
 
 You see this in the session startup:
 ```
@@ -290,7 +294,7 @@ The loop closes: work produces learnings, learnings feed future work.
 
 ## Memory and Learning
 
-Memory stores facts: decisions, gotchas, context. [Learning](learning-readme.md) stores patterns: what works, what fails, what to check next time.
+Memory stores facts: decisions, gotchas, context. [Learning](ORCA-learning.md) stores patterns: what works, what fails, what to check next time.
 
 They're complementary:
 - **Memory** answers "why did we choose X?" with original reasoning
@@ -310,7 +314,7 @@ Both systems feed agents through ProjectContext, so every task starts with both 
 | Standards | "All API responses must include timestamp" | Workshop |
 | Code context | Semantic embeddings of codebase | code-index.db |
 | Cognitive output | Deepthink analyses, decision trails | `.claude/cognition/` files |
-| Learned patterns | Agent success/failure tracking | `.claude/agent-knowledge/` |
+| Learned patterns | Agent success/failure tracking | `.claude/agent-knowledge/` (created per-project by agents when they record learnings; convention-based, no central infrastructure) |
 | Learned rules | Your accumulated corrections | CLAUDE.md |
 
 ---
@@ -348,7 +352,7 @@ Both systems feed agents through ProjectContext, so every task starts with both 
 ## See Also
 
 - `docs/concepts/memory-systems.md` - Full technical reference
-- [Learning Guide](learning-readme.md) - How the system improves over time
+- [Learning Guide](ORCA-learning.md) - How the system improves over time
 - `commands/project-setup.md` - Complete setup specification
 - `commands/project-memory.md` - All subcommands
 - `mcp/project-context-server/` - MCP implementation

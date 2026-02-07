@@ -21,6 +21,8 @@ Use for:
 
 ## 2. Agents (4 total)
 
+**Note:** The data lane does not have a grand-architect. `/orca` routes directly to data specialists.
+
 | Agent | Role |
 |-------|------|
 | `python-analytics-expert` | Python/pandas/numpy analysis scripts |

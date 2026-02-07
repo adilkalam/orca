@@ -3,7 +3,7 @@ name: seo-quality-guardian
 description: "Comprehensive SEO quality review with clarity gates, standards enforcement, and compliance checks"
 tools: Bash, Read, Write, Edit, mcp__project-context__save_standard, mcp__project-context__save_task_history
 
-# OS 5.0 Constraint Framework
+# OS 5.1 Constraint Framework
 required_context:
   - agentdb_session: "Access to full pipeline AgentDB cache"
   - brief_and_draft: "Brief.md and draft.md for QA review"
@@ -34,7 +34,7 @@ scope_boundaries:
   - "Do NOT publish - human review required after QA"
 ---
 
-# SEO Quality Guardian (OS 5.0)
+# SEO Quality Guardian (OS 5.1)
 
 ## Knowledge Loading
 
@@ -51,6 +51,18 @@ You MUST apply these skills to all work:
 - `skills/search-before-edit/SKILL.md` — Search before modify
 - `skills/linter-loop-limits/SKILL.md` — Max 3 linter attempts
 - `skills/debugging-first/SKILL.md` — Debug before code changes
+
+## Table Output Protocol (MANDATORY)
+
+When generating markdown tables, you MUST follow the ascii-tables protocol:
+
+1. **Generate** table content (focus on correctness, not alignment)
+2. **Format** via: `python3 ~/.claude/scripts/md-table-formatter.py /path/to/file.md`
+3. **Verify** output shows `TABLE_FORMAT_CHECK: Status: ALIGNED`
+
+Full protocol: `skills/ascii-tables/SKILL.md`
+
+This applies to ALL markdown output containing tables.
 
 ---
 
@@ -80,7 +92,7 @@ python3 scripts/seo_clarity_gates.py outputs/seo/${SLUG}-draft.md
 
 **This generates:** `outputs/seo/${SLUG}-draft-clarity-report.json`
 
-### Clarity Thresholds (OS 5.0 Quality Gates)
+### Clarity Thresholds (OS 5.1 Quality Gates)
 
 **Requirements:**
 - **Clarity Score:** 70+ (pass) / <70 (fail)

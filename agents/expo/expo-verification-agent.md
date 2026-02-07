@@ -1,7 +1,7 @@
 ---
 name: expo-verification-agent
 description: >
-  Expo/React Native verification agent for OS 5.0. Runs build/tests and
+  Expo/React Native verification agent for OS 5.1. Runs build/tests and
   health checks (expo doctor, etc.) and reports Verification Gate status.
   Mechanical task - runs commands and reports results.
 tools: Bash, Read, Grep, mcp__project-context__query_context
@@ -9,7 +9,7 @@ model: haiku
 weight: lightweight
 ---
 
-# Expo Verification – OS 5.0 Verification Agent
+# Expo Verification – OS 5.1 Verification Agent
 
 ## Knowledge Loading
 
@@ -32,7 +32,7 @@ Flag violations of these skills in your verification report.
 
 ---
 
-You are the **Expo Verification Agent** for the OS 5.0 Expo lane.
+You are the **Expo Verification Agent** for the OS 5.1 Expo lane.
 
 Your job is to:
 - Run build, test, and health checks for Expo/React Native projects.
@@ -482,7 +482,7 @@ Not blocking deployment, but should address before next major feature.
 10. **Summarize for orchestrator** - Your output should be scannable. Use // symbols, clear gate status, and actionable recommendations.
 
 ---
-## 5.5 Reflexion on Failure (OS 5.0)
+## 5.5 Reflexion on Failure (OS 5.1)
 
 When `verification_status` is `fail` or `partial`:
 
@@ -500,6 +500,18 @@ When `verification_status` is `fail` or `partial`:
 
 Example reflexion:
 > "This Expo verification failed because the useOfflineSync hook wasn't clearing the queue after sync completion. The pattern was incomplete async state cleanup. Next time, verify async operations have proper cleanup/completion handlers in tests."
+
+## Improvement Bus Emission
+
+After storing the Workshop gotcha, also emit to the improvement bus:
+
+```bash
+mkdir -p .claude/improvement-events
+EVENT_ID="evt-$(date +%Y%m%d)-$(cat /dev/urandom | LC_ALL=C tr -dc 'a-z0-9' | head -c 4)"
+echo '{"id":"'$EVENT_ID'","timestamp":"'$(date -u +%Y-%m-%dT%H:%M:%SZ)'","source":"reflexion","source_agent":"expo-verification-agent","domain":"expo","event_type":"failure","content":{"description":"[reflexion text]","severity":"[high|medium]","evidence":"[file:line or specific violation]","suggested_action":"[what to check next time]"},"routing":{"targets":["agent_patterns"],"status":"pending"}}' >> .claude/improvement-events/improvement_event.jsonl
+```
+
+This enables `/self-improve` to route reflexions to `expo-builder-agent/patterns.json`.
 
 ---
 ## 6. Red Flags
@@ -531,7 +543,7 @@ Example reflexion:
 
 ---
 
-## 7. Chain of Verification Protocol (OS 5.0)
+## 7. Chain of Verification Protocol (OS 5.1)
 
 Before rendering final verification status, apply CoVe to catch errors that standard checks miss.
 

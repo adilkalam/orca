@@ -1,6 +1,6 @@
 # Skills
 
-**Version:** OS 5.0 | **Last Updated:** 2026-01-24
+**Version:** OS 5.1 | **Last Updated:** 2026-02-07 | **Total:** 34 skills (36 directories, 2 empty/consolidated)
 
 Skills are reusable knowledge packages that provide domain expertise to agents.
 
@@ -17,14 +17,46 @@ Skills load into agent context when relevant, providing:
 
 ## Skill Structure
 
+36 skill directories, 34 with standard SKILL.md layout (2 are empty/consolidated):
+
 ```
 skills/
- ios-knowledge-skill/
-    SKILL.md
- nextjs-knowledge-skill/
-    SKILL.md
- os-dev-knowledge-skill/
-     SKILL.md
+  adversarial-analysis/SKILL.md
+  alignment-verification/SKILL.md
+  api-design/SKILL.md
+  article-extractor/SKILL.md
+  ascii-tables/SKILL.md
+  cursor-code-style/SKILL.md
+  debugging-first/SKILL.md
+  design-dna-skill/SKILL.md
+  design-qa-skill/SKILL.md
+  elements-of-style/SKILL.md
+  frontend-aesthetics/SKILL.md
+  git-workflow/SKILL.md
+  ios-knowledge-skill/SKILL.md
+  ios-testing-skill/SKILL.md
+  linter-loop-limits/SKILL.md
+  lovable-pitfalls/SKILL.md
+  mm-comps/SKILL.md
+  mm-copy/SKILL.md
+  mm-visual-audit/SKILL.md
+  nextjs-knowledge-skill/SKILL.md
+  orca-confirm/SKILL.md
+  os-dev-knowledge-skill/SKILL.md
+  pg-style-editor/SKILL.md
+  react-patterns/                  # empty (consolidated into react-performance)
+  react-performance/SKILL.md
+  search-before-edit/SKILL.md
+  security-basics/SKILL.md
+  ship-learn-next/SKILL.md
+  shopify-app-development/SKILL.md
+  stripe-integration/SKILL.md
+  tapestry/SKILL.md
+  testing-strategy/SKILL.md
+  using-loaded-knowledge/SKILL.md
+  web-interface-guidelines/SKILL.md
+  youtube-transcript/SKILL.md
+  ...
 ```
 
 ## SKILL.md Format
@@ -63,9 +95,9 @@ When loaded, skill content appears in agent context alongside:
 
 ## Available Skills
 
-### Universal Skills (Introduced in v4.1)
+### Universal Skills
 
-These skills are referenced by ALL 85 agents via "Required Skills" sections. They were not designed from theory -- they were extracted from analysis of 8 competitor system prompts totaling ~3,800 lines of instructions:
+These skills are referenced by ALL 124 agents via "Required Skills" sections. They were not designed from theory -- they were extracted from analysis of 8 competitor system prompts totaling ~3,800 lines of instructions:
 
 | Skill | Purpose | Key Rules |
 |-------|---------|-----------|
@@ -100,13 +132,48 @@ Other competitor patterns not yet extracted into skills: Perplexity's report str
 - Mix naming conventions
 ```
 
+### Design Skills
+- `alignment-verification` - Zero-tolerance alignment verification protocol; alignment is binary with no tolerances
+- `design-dna-skill` - Interpret, enforce, and evolve design-dna.json across projects
+- `design-qa-skill` - Design QA checklists and principles for visual review (hierarchy, spacing, color, responsiveness)
+- `frontend-aesthetics` - Global frontend aesthetics skill to avoid generic "AI slop" UI and make bold visual decisions
+- `mm-comps` - Marina Moscone competitor-dossier skill for structured competitor research
+- `mm-copy` - Marina Moscone ad-copy framework and Performance Voice for SKU-level copy variants
+- `mm-visual-audit` - Marina Moscone casting and visual audit skill for imagery evaluation
+
+### Development Skills
+- `api-design` - REST and GraphQL API design principles (HTTP methods, status codes, pagination, error handling)
+- `git-workflow` - Git branching strategies, commit conventions, and collaboration patterns
+- `react-performance` - React/Next.js performance patterns with wrong/right code examples (adapted from Vercel best practices)
+- `security-basics` - Essential security checklist covering OWASP top 10, input validation, and secure coding
+- `testing-strategy` - Testing strategies for unit, integration, and E2E tests (test pyramid, mocking, coverage)
+- `web-interface-guidelines` - Web UI quality rules for interactions, forms, loading, animations, accessibility (adapted from Vercel)
+- `stripe-integration` - Stripe payment integration patterns (checkout sessions, subscriptions, webhooks, idempotency)
+- `shopify-app-development` - Shopify app development patterns (GraphQL Admin API, checkout extensions, OAuth, billing)
+
 ### Domain Knowledge Skills
 - `ios-knowledge-skill` - iOS/Swift patterns and conventions
 - `nextjs-knowledge-skill` - Next.js patterns and conventions
-- `os-dev-knowledge-skill` - OS 5.0 configuration knowledge (LOCAL)
+- `os-dev-knowledge-skill` - OS 5.1 configuration knowledge (LOCAL)
+
+### Content/Writing Skills
+- `elements-of-style` - Classic writing guide by William Strunk Jr. (1918) for clarity, conciseness, and grammar
+- `pg-style-editor` - Edit writing to adopt Paul Graham's clear style for research and long-form content
+- `article-extractor` - Extract clean article content from URLs, removing ads/navigation/clutter
+- `youtube-transcript` - Download YouTube video transcripts via yt-dlp
+
+### Process/Utility Skills
+- `orca-confirm` - Handle team confirmation with automatic bypass mode detection for /orca
+- `ship-learn-next` - Transform learning content into actionable implementation plans using Ship-Learn-Next framework
+- `using-loaded-knowledge` - Mandatory pre-response protocol enforcing knowledge check before every response
+- `ascii-tables` - Markdown table generation with pixel-perfect alignment via mandatory post-processing
+- `tapestry` - Unified content extraction and action planning (YouTube, articles, PDFs to Ship-Learn-Next plans)
+- `adversarial-analysis` - 6-phase framework for stress-testing proposals before commitment
 
 ### Testing Skills
 - `ios-testing-skill` - iOS testing patterns
+
+**Note:** `react-patterns/` is empty and has been consolidated into `react-performance`.
 
 ## Creating a Skill
 
@@ -156,9 +223,9 @@ Why it's bad and what to do instead...
 
 Skills inform agents; agents do work.
 
-## Skill Wiring to Agents (v4.1)
+## Skill Wiring to Agents
 
-All 85 agents now have explicit skill references in their definitions:
+All 124 agents now have explicit skill references in their definitions:
 
 ```markdown
 ## Required Skills

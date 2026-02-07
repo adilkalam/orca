@@ -1,5 +1,5 @@
 ---
-description: "OS 5.0 Pure Orchestrator - Coordinates pipelines, never writes code"
+description: "OS 5.1 Pure Orchestrator - Coordinates pipelines, never writes code"
 argument-hint: "[--audit <scope>] <task description or requirement ID>"
 allowed-tools:
   - Task
@@ -252,7 +252,7 @@ Your first tool call MUST NOT be:
 
 ---
 
-# /orca – OS 5.0 Pure Orchestrator
+# /orca – OS 5.1 Pure Orchestrator
 
 **Philosophy:** Orca is a pure coordinator. It NEVER writes code. It detects the pipeline type, queries context ONCE, integrates with /plan if needed, and delegates to domain orchestrators.
 
@@ -265,7 +265,7 @@ Your first tool call MUST NOT be:
 6. **Domain Routing** - Routes to `/{domain}` commands for specialized handling
 7. **Never Codes** - Orchestrates agents, doesn't implement
 
-**OS 5.0 Updates:**
+**OS 5.1 Updates:**
 - Memory-first context (Workshop + code-index.db before ProjectContext)
 - Routes to domain-specific `/{domain}` commands which handle three-tier flag routing
 - Three-tier structure:
@@ -285,7 +285,7 @@ pwd
 
 ---
 
-### Step 1.5: Memory-First Context (OS 5.0)
+### Step 1.5: Memory-First Context (OS 5.1)
 
 **Before expensive ProjectContext queries, check local memory:**
 
@@ -635,7 +635,7 @@ AskUserQuestion({
 
 ---
 
-### Step 7: Route to Domain Orchestrator (OS 5.0)
+### Step 7: Route to Domain Orchestrator (OS 5.1)
 
 **For pipelines with domain-specific `/{domain}` commands, route to them.**
 
@@ -658,7 +658,7 @@ Task({
   subagent_type: "nextjs-grand-architect",
   description: "Next.js pipeline coordination",
   prompt: `
-You are the Next.js Grand Architect for OS 5.0.
+You are the Next.js Grand Architect for OS 5.1.
 
 USER HAS ALREADY CONFIRMED THE PLAN. DO NOT ASK FOR CONFIRMATION AGAIN.
 EXECUTE IMMEDIATELY. NO QUESTIONS. DELEGATE TO SPECIALISTS NOW.
@@ -728,7 +728,7 @@ Task({
   subagent_type: "ios-grand-architect",
   description: "iOS pipeline coordination",
   prompt: `
-You are the iOS Grand Architect for OS 5.0.
+You are the iOS Grand Architect for OS 5.1.
 
 USER HAS ALREADY CONFIRMED THE PLAN. DO NOT ASK FOR CONFIRMATION AGAIN.
 EXECUTE IMMEDIATELY. NO QUESTIONS. DELEGATE TO SPECIALISTS NOW.
@@ -798,7 +798,7 @@ Task({
   subagent_type: "expo-grand-orchestrator",
   description: "Expo pipeline coordination",
   prompt: `
-You are the Expo Grand Orchestrator for OS 5.0.
+You are the Expo Grand Orchestrator for OS 5.1.
 
 USER HAS ALREADY CONFIRMED THE PLAN. DO NOT ASK FOR CONFIRMATION AGAIN.
 EXECUTE IMMEDIATELY. NO QUESTIONS. DELEGATE TO SPECIALISTS NOW.
@@ -864,7 +864,7 @@ Task({
   subagent_type: "data-researcher",
   description: "Data analysis pipeline",
   prompt: `
-You are leading the Data pipeline for OS 5.0.
+You are leading the Data pipeline for OS 5.1.
 
 MEMORY CONTEXT:
 ${memorySummary || "No prior memory hits"}
@@ -912,7 +912,7 @@ Task({
   subagent_type: "seo-research-specialist",
   description: "SEO content pipeline",
   prompt: `
-You are leading the SEO pipeline for OS 5.0.
+You are leading the SEO pipeline for OS 5.1.
 
 MEMORY CONTEXT:
 ${memorySummary || "No prior memory hits"}
@@ -953,7 +953,7 @@ Task({
   subagent_type: "design-system-architect",
   description: "Design system pipeline",
   prompt: `
-You are leading the Design pipeline for OS 5.0.
+You are leading the Design pipeline for OS 5.1.
 
 MEMORY CONTEXT:
 ${memorySummary || "No prior memory hits"}
@@ -1089,7 +1089,7 @@ When grand-architect signals completion:
 
 ## Memory Architecture
 
-OS 5.0 uses TWO memory systems:
+OS 5.1 uses TWO memory systems:
 
 1. **Workshop** (.claude/memory/workshop.db):
    - Decisions with reasoning

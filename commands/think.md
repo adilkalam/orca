@@ -90,6 +90,8 @@ MCP returns:   { thought: "X", ... }  <- UNCHANGED
 
 **YOU generate the reasoning. The MCP tracks it.**
 
+**Verbose flag**: Include `verbose: true` in every cognition MCP call from /think. Since /think is a single-call command, the echo IS the output -- you need it back.
+
 ---
 
 ## Phase 1: Parse Arguments
@@ -429,7 +431,7 @@ Make additional calls, incrementing thoughtNumber:
 
 // For --model <name>
 // IMPORTANT: First read the template file to understand the model's process
-// Read: quick-reference/mental-models/<model-name>.md
+// Read: quick-reference/thinking-models/<model-name>.md
 // Then apply the process steps from the template
 
 {

@@ -65,6 +65,7 @@ export const IntrospectionFieldsSchema = z.object({
 // ============================================================================
 
 export const ThoughtContentSchema = z.object({
+  text: z.string().optional(),
   thought: z.string(),
   thoughtNumber: z.number(),
   totalThoughts: z.number(),
@@ -77,20 +78,28 @@ export const ThoughtContentSchema = z.object({
 });
 
 export const MentalModelContentSchema = z.object({
-  modelName: z.string(),
-  problem: z.string(),
-  steps: z.array(z.string()),
-  reasoning: z.string(),
-  conclusion: z.string(),
+  text: z.string().optional(),
+  modelName: z.string().optional(),
+  problem: z.string().optional(),
+  steps: z.array(z.string()).optional(),
+  reasoning: z.string().optional(),
+  conclusion: z.string().optional(),
   nextThoughtNeeded: z.boolean().optional(),
+  setup: z.string().optional(),
+  rootCauses: z.array(z.object({
+    failure: z.string(),
+    cause: z.string(),
+    preventable: z.boolean(),
+  })).optional(),
 });
 
 export const DebugContentSchema = z.object({
-  approach: z.string(),
-  issue: z.string(),
-  steps: z.array(z.string()),
-  findings: z.string(),
-  resolution: z.string(),
+  text: z.string().optional(),
+  approach: z.string().optional(),
+  issue: z.string().optional(),
+  steps: z.array(z.string()).optional(),
+  findings: z.string().optional(),
+  resolution: z.string().optional(),
   nextThoughtNeeded: z.boolean().optional(),
 });
 
@@ -102,12 +111,16 @@ export const DecisionOptionSchema = z.object({
 });
 
 export const DecideContentSchema = z.object({
+  text: z.string().optional(),
   statement: z.string(),
   options: z.array(DecisionOptionSchema),
   criteria: z.array(z.string()),
   analysis: z.string(),
   choice: z.string(),
   nextThoughtNeeded: z.boolean().optional(),
+  weights: z.record(z.number()).optional(),
+  scores: z.record(z.number()).optional(),
+  confidence: z.number().min(0).max(1).optional(),
 });
 
 // Substrate observation schemas
@@ -180,11 +193,12 @@ export const VisualSubstrateSchema = z.object({
 });
 
 export const MetaContentSchema = z.object({
-  process: z.string(),
-  observations: z.array(z.string()),
-  adjustments: z.array(z.string()),
-  effectiveness: z.number(),
-  insights: z.string(),
+  text: z.string().optional(),
+  process: z.string().optional(),
+  observations: z.array(z.string()).optional(),
+  adjustments: z.array(z.string()).optional(),
+  effectiveness: z.number().optional(),
+  insights: z.string().optional(),
   nextThoughtNeeded: z.boolean().optional(),
   // Substrate observation fields (all optional for backward compatibility)
   defaultCounterfactual: DefaultCounterfactualSchema.optional(),
@@ -214,10 +228,11 @@ export const SystemRelationshipSchema = z.object({
 });
 
 export const SystemsContentSchema = z.object({
-  system: z.string(),
-  components: z.array(SystemComponentSchema),
-  relationships: z.array(SystemRelationshipSchema),
-  feedbackLoops: z.array(z.string()),
+  text: z.string().optional(),
+  system: z.string().optional(),
+  components: z.array(SystemComponentSchema).optional(),
+  relationships: z.array(SystemRelationshipSchema).optional(),
+  feedbackLoops: z.array(z.string()).optional(),
   nextThoughtNeeded: z.boolean().optional(),
 });
 
@@ -232,10 +247,11 @@ export const CreativeIdeaSchema = z.object({
 });
 
 export const CreativeThinkingContentSchema = z.object({
-  prompt: z.string(),
-  techniques: z.array(z.string()),
-  ideas: z.array(CreativeIdeaSchema),
-  synthesis: z.string(),
+  text: z.string().optional(),
+  prompt: z.string().optional(),
+  techniques: z.array(z.string()).optional(),
+  ideas: z.array(CreativeIdeaSchema).optional(),
+  synthesis: z.string().optional(),
   nextThoughtNeeded: z.boolean().optional(),
 });
 
@@ -251,6 +267,7 @@ export const VisualRelationshipSchema = z.object({
 });
 
 export const VisualReasoningContentSchema = z.object({
+  text: z.string().optional(),
   description: z.string(),
   elements: z.array(VisualElementSchema),
   relationships: z.array(VisualRelationshipSchema),
@@ -259,20 +276,22 @@ export const VisualReasoningContentSchema = z.object({
 });
 
 export const CheckpointContentSchema = z.object({
-  label: z.string(),
-  summary: z.string(),
-  keyFindings: z.array(z.string()),
-  openQuestions: z.array(z.string()),
-  nextSteps: z.array(z.string()),
+  text: z.string().optional(),
+  label: z.string().optional(),
+  summary: z.string().optional(),
+  keyFindings: z.array(z.string()).optional(),
+  openQuestions: z.array(z.string()).optional(),
+  nextSteps: z.array(z.string()).optional(),
 });
 
 export const ScientificMethodContentSchema = z.object({
-  question: z.string(),
-  hypothesis: z.string(),
-  experiment: z.string(),
-  observations: z.array(z.string()),
-  analysis: z.string(),
-  conclusion: z.string(),
+  text: z.string().optional(),
+  question: z.string().optional(),
+  hypothesis: z.string().optional(),
+  experiment: z.string().optional(),
+  observations: z.array(z.string()).optional(),
+  analysis: z.string().optional(),
+  conclusion: z.string().optional(),
   nextThoughtNeeded: z.boolean().optional(),
 });
 
@@ -287,11 +306,12 @@ export const PerspectiveSchema = z.object({
 });
 
 export const CollaborativeReasoningContentSchema = z.object({
-  topic: z.string(),
-  perspectives: z.array(PerspectiveSchema),
-  commonGround: z.array(z.string()),
-  tensions: z.array(z.string()),
-  synthesis: z.string(),
+  text: z.string().optional(),
+  topic: z.string().optional(),
+  perspectives: z.array(PerspectiveSchema).optional(),
+  commonGround: z.array(z.string()).optional(),
+  tensions: z.array(z.string()).optional(),
+  synthesis: z.string().optional(),
   nextThoughtNeeded: z.boolean().optional(),
 });
 
@@ -302,10 +322,11 @@ export const SocraticQuestionSchema = z.object({
 });
 
 export const SocraticMethodContentSchema = z.object({
-  initialClaim: z.string(),
-  questions: z.array(SocraticQuestionSchema),
-  assumptions: z.array(z.string()),
-  refinedPosition: z.string(),
+  text: z.string().optional(),
+  initialClaim: z.string().optional(),
+  questions: z.array(SocraticQuestionSchema).optional(),
+  assumptions: z.array(z.string()).optional(),
+  refinedPosition: z.string().optional(),
   nextThoughtNeeded: z.boolean().optional(),
 });
 
@@ -321,6 +342,7 @@ export const CounterargumentSchema = z.object({
 });
 
 export const StructuredArgumentationContentSchema = z.object({
+  text: z.string().optional(),
   claim: z.string(),
   premises: z.array(z.string()),
   evidence: z.array(EvidenceSchema),
@@ -333,22 +355,33 @@ export const StructuredArgumentationContentSchema = z.object({
 // PHASE 2: PATTERN OPERATIONS
 // ============================================================================
 
-export const TreeBranchSchema = z.object({
+export const TreeBranchSchema: z.ZodType = z.object({
   id: z.string(),
   parent: z.string().nullable(),
   thought: z.string(),
-  evaluation: z.string(),
+  evaluation: z.union([
+    z.string(),
+    z.object({
+      score: z.number().optional(),
+      strengths: z.array(z.string()).optional(),
+      weaknesses: z.array(z.string()).optional(),
+      feasibility: z.string().optional(),
+    }).passthrough(),
+  ]),
   score: z.number(),
-  children: z.array(z.string()),
+  children: z.array(z.union([z.string(), z.lazy(() => TreeBranchSchema)])),
 });
 
 export const TreeOfThoughtContentSchema = z.object({
+  text: z.string().optional(),
   root: z.string(),
   branches: z.array(TreeBranchSchema),
   currentPath: z.array(z.string()),
   bestPath: z.array(z.string()),
   pruned: z.array(z.string()),
   nextThoughtNeeded: z.boolean().optional(),
+  constraints: z.array(z.string()).optional(),
+  synthesis: z.string().optional(),
 });
 
 export const BeamCandidateSchema = z.object({
@@ -359,6 +392,7 @@ export const BeamCandidateSchema = z.object({
 });
 
 export const BeamSearchContentSchema = z.object({
+  text: z.string().optional(),
   problem: z.string(),
   beamWidth: z.number(),
   candidates: z.array(BeamCandidateSchema),
@@ -377,6 +411,7 @@ export const MCTSNodeSchema = z.object({
 });
 
 export const MCTSContentSchema = z.object({
+  text: z.string().optional(),
   problem: z.string(),
   simulations: z.number(),
   nodes: z.array(MCTSNodeSchema),
@@ -405,6 +440,7 @@ export const GraphClusterSchema = z.object({
 });
 
 export const GraphOfThoughtContentSchema = z.object({
+  text: z.string().optional(),
   topic: z.string(),
   nodes: z.array(GraphNodeSchema),
   edges: z.array(GraphEdgeSchema),
@@ -425,6 +461,7 @@ export const AlternativeApproachSchema = z.object({
 });
 
 export const OrchestrationSuggestContentSchema = z.object({
+  text: z.string().optional(),
   task: z.string(),
   complexity: z.enum(['simple', 'medium', 'complex']),
   suggestedOperations: z.array(SuggestedOperationSchema),
@@ -450,6 +487,7 @@ export const ResearchFindingSchema = z.object({
 });
 
 export const ResearchContentSchema = z.object({
+  text: z.string().optional(),
   question: z.string(),
   sources: z.array(ResearchSourceSchema),
   findings: z.array(ResearchFindingSchema),
@@ -472,6 +510,7 @@ export const AnalogMappingSchema = z.object({
 });
 
 export const AnalogicalReasoningContentSchema = z.object({
+  text: z.string().optional(),
   target: z.string(),
   analogs: z.array(AnalogSchema),
   mappings: z.array(AnalogMappingSchema),
@@ -499,6 +538,7 @@ export const CausalChainSchema = z.object({
 });
 
 export const CausalAnalysisContentSchema = z.object({
+  text: z.string().optional(),
   phenomenon: z.string(),
   causes: z.array(CauseSchema),
   effects: z.array(EffectSchema),
@@ -514,6 +554,7 @@ export const DataPointSchema = z.object({
 });
 
 export const StatisticalReasoningContentSchema = z.object({
+  text: z.string().optional(),
   question: z.string(),
   data: z.array(DataPointSchema),
   analysis: z.string(),
@@ -535,6 +576,7 @@ export const SimulationStepSchema = z.object({
 });
 
 export const SimulationContentSchema = z.object({
+  text: z.string().optional(),
   scenario: z.string(),
   initialConditions: z.array(SimulationConditionSchema),
   steps: z.array(SimulationStepSchema),
@@ -557,6 +599,7 @@ export const TradeoffSchema = z.object({
 });
 
 export const OptimizationContentSchema = z.object({
+  text: z.string().optional(),
   objective: z.string(),
   constraints: z.array(z.string()),
   variables: z.array(OptimizationVariableSchema),
@@ -585,6 +628,7 @@ export const EthicalOptionSchema = z.object({
 });
 
 export const EthicalAnalysisContentSchema = z.object({
+  text: z.string().optional(),
   situation: z.string(),
   stakeholders: z.array(StakeholderSchema),
   principles: z.array(EthicalPrincipleSchema),
@@ -601,6 +645,7 @@ export const DashboardSectionSchema = z.object({
 });
 
 export const VisualDashboardContentSchema = z.object({
+  text: z.string().optional(),
   title: z.string(),
   sections: z.array(DashboardSectionSchema),
   highlights: z.array(z.string()),
@@ -621,6 +666,7 @@ export const PDRResolutionSchema = z.object({
 });
 
 export const PDRReasoningContentSchema = z.object({
+  text: z.string().optional(),
   problem: z.string(),
   constraints: z.array(z.string()),
   design: PDRDesignSchema,
@@ -645,6 +691,7 @@ export const CustomFrameworkApplicationSchema = z.object({
 });
 
 export const CustomFrameworkContentSchema = z.object({
+  text: z.string().optional(),
   name: z.string(),
   description: z.string(),
   stages: z.array(CustomFrameworkStageSchema),
@@ -654,6 +701,7 @@ export const CustomFrameworkContentSchema = z.object({
 });
 
 export const CodeExecutionContentSchema = z.object({
+  text: z.string().optional(),
   language: z.string(),
   purpose: z.string(),
   code: z.string(),
@@ -703,6 +751,7 @@ export const AuditSummarySchema = z.object({
 });
 
 export const AuditContentSchema = z.object({
+  text: z.string().optional(),
   scope: z.enum(['quick', 'comprehensive', 'core', 'item']),
   target: z.string().optional(),
   baseline: AuditBaselineSchema,
@@ -742,6 +791,7 @@ export const OODAActSchema = z.object({
 });
 
 export const OODALoopContentSchema = z.object({
+  text: z.string().optional(),
   situation: z.string(),
   observe: OODAObserveSchema,
   orient: OODAOrientSchema,
@@ -766,22 +816,31 @@ export const UlyssesCommitmentSchema = z.object({
 export const UlyssesSafeguardSchema = z.object({
   safeguard: z.string(),
   trigger: z.string(),
+  linkedRisk: z.string().optional(),
 });
 
 export const UlyssesReviewSchema = z.object({
-  successes: z.array(z.string()),
-  failures: z.array(z.string()),
-  adjustments: z.array(z.string()),
+  frequency: z.string().optional(),
+  criteria: z.string().optional(),
+  successes: z.array(z.string()).optional(),
+  failures: z.array(z.string()).optional(),
+  adjustments: z.array(z.string()).optional(),
 });
 
 export const UlyssesProtocolContentSchema = z.object({
+  text: z.string().optional(),
   goal: z.string(),
   temptations: z.array(UlyssesTemptationSchema),
   commitments: z.array(UlyssesCommitmentSchema),
   safeguards: z.array(UlyssesSafeguardSchema),
-  accountability: z.string(),
+  accountability: z.string().optional(),
   review: UlyssesReviewSchema,
   nextThoughtNeeded: z.boolean().optional(),
+  escapeHatch: z.string().optional(),
+  reviewPoints: z.array(z.object({
+    milestone: z.string(),
+    criteria: z.string(),
+  })).optional(),
 });
 
 // ============================================================================
@@ -789,6 +848,7 @@ export const UlyssesProtocolContentSchema = z.object({
 // ============================================================================
 
 export const NotebookCreateContentSchema = z.object({
+  text: z.string().optional(),
   name: z.string(),
   description: z.string(),
   tags: z.array(z.string()),
@@ -796,6 +856,7 @@ export const NotebookCreateContentSchema = z.object({
 });
 
 export const NotebookAddCellContentSchema = z.object({
+  text: z.string().optional(),
   notebookId: z.string(),
   cellType: z.string(),  // "code", "markdown", "output"
   content: z.string(),
@@ -804,6 +865,7 @@ export const NotebookAddCellContentSchema = z.object({
 });
 
 export const NotebookRunCellContentSchema = z.object({
+  text: z.string().optional(),
   notebookId: z.string(),
   cellId: z.string(),
   input: z.string(),
@@ -813,10 +875,29 @@ export const NotebookRunCellContentSchema = z.object({
 });
 
 export const NotebookExportContentSchema = z.object({
+  text: z.string().optional(),
   notebookId: z.string(),
   format: z.string(),  // "json", "markdown", "html"
   includeOutputs: z.boolean(),
   content: z.string(),
+});
+
+// ============================================================================
+// REASONING STATS SCHEMA
+// ============================================================================
+
+export const ReasoningStatsContentSchema = z.object({
+  query: z.enum([
+    'overview',
+    'operation_frequency',
+    'reflex_distribution',
+    'session_timeline',
+    'counterfactual_gaps',
+  ]).optional(),
+  dateRange: z.object({
+    from: z.string().optional(),
+    to: z.string().optional(),
+  }).optional(),
 });
 
 // ============================================================================
@@ -874,6 +955,8 @@ export const CognitionInputSchema = z.object({
     'session_info',
     'session_export',
     'session_import',
+    // Stats
+    'reasoning_stats',
   ]),
 
   // Content - Claude provides ALL of this
@@ -891,6 +974,13 @@ export const CognitionInputSchema = z.object({
 
   // For session_import
   data: z.any().optional(),
+
+  // Verbose flag: if true, echo full content in response (backward compat)
+  // If false or undefined, return minimal ACK with session context only
+  verbose: z.boolean().optional(),
+
+  // Per-project storage: absolute path to project root
+  projectPath: z.string().optional(),
 });
 
 // ============================================================================
@@ -951,6 +1041,8 @@ export function validateOperationContent(
     notebook_export: NotebookExportContentSchema,
     // Codebase audit operation
     audit: AuditContentSchema,
+    // Stats
+    reasoning_stats: ReasoningStatsContentSchema,
   };
 
   const schema = schemas[operation];

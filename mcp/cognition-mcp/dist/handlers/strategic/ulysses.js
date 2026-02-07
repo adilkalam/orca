@@ -6,6 +6,7 @@
  */
 import { validateOperationContent } from '../../schema.js';
 import { getSessionManager } from '../../session/manager.js';
+import { buildResponse } from '../shared.js';
 export async function handleUlyssesProtocol(args, session) {
     const manager = getSessionManager();
     // 1. VALIDATE structure (not content)
@@ -43,27 +44,7 @@ export async function handleUlyssesProtocol(args, session) {
     if (shouldComplete) {
         exportPath = await manager.completeSession(session);
     }
-    // 4. ECHO unchanged + context
-    const response = {
-        ...ulyssesContent,
-        quality: args.quality,
-        status: shouldComplete ? 'exported' : 'stored',
-        sessionContext: {
-            sessionId: session.id,
-            entryCount: session.getCount('ulysses'),
-            totalEntries: session.getTotalCount(),
-            sessionDuration: session.getDuration(),
-            continuation: shouldComplete
-                ? null
-                : 'Continue with sessionId: ' + session.id,
-        },
-        ...(exportPath ? { exportPath } : {}),
-    };
-    return {
-        content: [{
-                type: 'text',
-                text: JSON.stringify(response),
-            }],
-    };
+    // 4. ECHO unchanged + context (respects verbose flag)
+    return buildResponse(ulyssesContent, args, session, 'ulysses', shouldComplete ? 'exported' : 'stored', exportPath);
 }
 //# sourceMappingURL=ulysses.js.map

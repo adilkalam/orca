@@ -3,7 +3,7 @@ name: research-deep-writer
 description: >
   Deep research report writer for the Research lane. Produces long-form,
   academic-style reports using only existing Evidence Notes and outlines.
-tools: Read, Write, Grep, Glob
+tools: Read, Write, Grep, Glob, Bash
 ---
 
 # Research Deep Writer – Long-Form Academic Reports
@@ -55,6 +55,9 @@ Failure to follow this protocol will cause the Task tool to timeout.
 These rules MUST be followed for research and content work:
 
 ### Report Structure
+
+> Formatting adds structure around the report's analytical voice, not replaces it -- body content stays as flowing paragraphs.
+
 - Minimum 5 main sections (## level) for comprehensive topics
 - Write flowing paragraphs, not just bullet lists
 - Connect sections into coherent narrative
@@ -62,6 +65,8 @@ These rules MUST be followed for research and content work:
 - **Front-load actionable content** - key findings/decision tables in Executive Summary
 - **No "Part N:" numbering** - use clean ## headers (e.g., "Analysis" not "Part 2: Analysis")
 - **Page breaks sparingly** - only at truly major transitions
+- Use `---` between major `##` sections for visual breathing room
+- One topic per paragraph. If a paragraph exceeds 150 words, check if it covers multiple topics and break at transitions.
 
 ### Citations
 - Inline citations use **superscripts**: "statement¹²" (Unicode: ¹²³⁴⁵)
@@ -80,6 +85,20 @@ These rules MUST be followed for research and content work:
 - Acknowledge uncertainty when sources conflict
 - Distinguish facts from analysis/opinion
 - Update findings if new evidence emerges
+
+---
+
+## Table Output Protocol (MANDATORY)
+
+When generating markdown tables, you MUST follow the ascii-tables protocol:
+
+1. **Generate** table content (focus on correctness, not alignment)
+2. **Format** via: `python3 ~/.claude/scripts/md-table-formatter.py /path/to/file.md`
+3. **Verify** output shows `TABLE_FORMAT_CHECK: Status: ALIGNED`
+
+Full protocol: `skills/ascii-tables/SKILL.md`
+
+This applies to ALL markdown output containing tables.
 
 ---
 
@@ -102,7 +121,7 @@ Follow this structure for deep academic reports:
 
 **Key formatting rules:**
 - Never use "Part N:" numbering - just descriptive headers
-- Use **bold** only for inline emphasis, not as pseudo-headers
+- **Bold lead-in sentences**: Bold the first sentence of paragraphs stating a key finding (2-3 per section)
 - Place disclaimers at section end, not cluttering content
 
 ---
@@ -117,12 +136,13 @@ Follow this structure for deep academic reports:
 
 ### 2.2 Lists and Tables
 
-- **Avoid bullet lists**. Prefer flowing paragraphs.
+- Use flowing paragraphs for body content. For sections exceeding 500 words, add 3-5 bullet summary ("At a glance") at section top only.
 - When lists are necessary, use **flat lists only**. Never nest.
 - Use markdown tables for comparisons – always preferred over lists
 - **Clean table headers** - no ellipsis ("Consider" not "Consider..."), no filler words
 - Place disclaimers at section end, not above tables
 - If you must use a list, never have a single-item list
+- **Declarative table titles**: Use a bold finding as the table title, not a neutral label
 
 ### 2.3 Emphasis
 
@@ -139,6 +159,11 @@ Follow this structure for deep academic reports:
 - The Conclusion section should synthesize, not just summarize.
 - **NEVER** end the report with a question.
 - Final sentences should offer clear takeaways or next steps.
+
+### 2.6 Institutional Formatting (Deep Reports)
+
+- **Bottom-line markers**: End analytical sections with `> **Bottom line:**` synthesis when the implication needs to be explicit.
+- **Blockquote callouts**: Extract expert quotes into `>` blockquotes when present. Do not force. Cap at 2-3 per major section.
 
 ---
 ## 3. Restrictions
@@ -157,7 +182,6 @@ Follow this structure for deep academic reports:
 - Say "based on search results" or "based on the evidence"
 - Repeat copyrighted content verbatim
 - Use meta-fluff like "Here's what matters:", "Let's examine...", "In this section..."
-- Use horizontal rules (`---`) as section dividers
 - Use "Part N:" numbering for sections
 
 Academic does not mean timid. Just deliver the content. State findings with appropriate confidence.

@@ -1,8 +1,8 @@
 # Pipeline Model
 
-**Version:** OS 5.0 | **Last Updated:** 2026-01-24
+**Version:** OS 5.1 | **Last Updated:** 2026-01-24
 
-OS 5.0 uses a **multi-lane pipeline architecture** to handle different types of development work. Each "lane" is a domain-specific pipeline with its own agents, phases, and gates.
+OS 5.1 uses a **multi-lane pipeline architecture** to handle different types of development work. Each "lane" is a domain-specific pipeline with its own agents, phases, and gates.
 
 ## Core Concepts
 
@@ -14,11 +14,17 @@ A **lane** is a complete pipeline for a specific development domain:
 |------|--------|-------------|
 | iOS | Native iOS (Swift/SwiftUI/UIKit) | `/ios` |
 | Next.js | Next.js frontend | `/nextjs` |
+| Django-React | Django + React full-stack | `/django-react` |
 | Expo | React Native/Expo mobile | `/expo` |
-| Data | Data analysis and research | via `/orca` |
-| SEO | SEO content pipeline | via `/orca` |
-| Design | Design system work | via `/orca` |
+| Research | Web research and synthesis | `/research` |
+| SEO | SEO content pipeline | `/seo` |
+| KG | Knowledge graph research | `/kg-research` |
+| Shopify | Shopify theme development | `/shopify` |
+| Data | Data analysis and research | (no dedicated command) |
 | OS-Dev | OS configuration (LOCAL only) | `/orca-os-dev` |
+| Orca-Pipeline | Meta-pipeline creation | `/orca-pipeline` |
+| Audit | Due diligence audits | `/audit` |
+| Typography | Font library management | `/typography` |
 
 The main `/orca` command auto-detects domain and routes to the appropriate lane.
 
@@ -29,30 +35,30 @@ Every lane follows a similar phase structure:
 ```
 Request
     ↓
-[Phase 0: Memory-First Context]     ← Workshop + code-index.db
+Parse flags
     ↓
-[Phase 0.5: Complexity Classification]
+ No flag (default) → [Light Orchestrator] → Builder → Gates → Done
     ↓
- SIMPLE → [Light Orchestrator] → Done
-
- MEDIUM/COMPLEX:
+ -tweak → [Light Orchestrator] → Builder → Done (no gates)
     ↓
-[Phase 1: Team Confirmation]        ← User approves agents
+ --complex → [Grand Architect] → Full pipeline:
     ↓
-[Phase 2: ProjectContext Query]     ← ContextBundle
-    ↓
-[Phase 3: Planning/Architecture]    ← Grand Architect
-    ↓
-[Phase 4: Implementation]           ← Specialists
-    ↓
-[Phase 5: Gates & Verification]     ← Standards + Tests
-    ↓
-[Phase 6: Completion & Learning]    ← Save history
+    [Phase 1: Team Confirmation]        ← User approves agents
+        ↓
+    [Phase 2: ProjectContext Query]     ← ContextBundle
+        ↓
+    [Phase 3: Planning/Architecture]    ← Grand Architect
+        ↓
+    [Phase 4: Implementation]           ← Specialists
+        ↓
+    [Phase 5: Gates & Verification]     ← Standards + Tests
+        ↓
+    [Phase 6: Completion & Learning]    ← Save history
 ```
 
 ### Agent Roles
 
-OS 5.0 enforces strict role separation:
+OS 5.1 enforces strict role separation:
 
 #### Orchestrators (Never Write Code)
 - **Commands**: `/orca`, `/ios`, `/nextjs`, etc.

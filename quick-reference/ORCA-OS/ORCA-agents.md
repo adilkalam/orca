@@ -2,9 +2,9 @@
 
 **Last Updated:** 2026-02-03
 **Version:** OS 5.1
-**Total Agents:** 111 (public lanes)
+**Total Agents:** 124
 
-> **Scope Note:** This quick-reference covers public lanes only. Internal lanes (kg, shopify) add 12 agents for a system total of 122. See `docs/reference/os-dependency-graph.yaml` for complete registry.
+> **Scope Note:** This quick-reference covers all 124 agents across 13 domains. See `docs/reference/os-dependency-graph.yaml` for complete registry.
 
 ---
 
@@ -31,15 +31,16 @@
 | Next.js | 15 | `agents/nextjs/` |
 | Django-React | 13 | `agents/django-react/` |
 | Expo | 12 | `agents/expo/` |
-| OS-Dev | 6 | `agents/os-dev/` (os-dev-*) |
-| Orca-Pipeline | 5 | `agents/os-dev/` (orca-pipeline-*) |
-| Research | 7 | `agents/research/` |
-| SEO | 5 | `agents/seo/` |
-| Data | 4 | `agents/data/` |
+| Dev (cross-cutting) | 12 | `agents/dev/` |
+| OS-Dev | 11 | `agents/os-dev/` |
 | Audit | 8 | `agents/audit/` |
+| Shopify | 8 | `agents/shopify/` |
+| Research | 7 | `agents/research/` |
 | Typography | 6 | `agents/typography/` |
-| Cross-Cutting | 11 | `agents/dev/` |
-| **TOTAL** | **111** | |
+| SEO | 5 | `agents/seo/` |
+| KG | 4 | `agents/kg/` |
+| Data | 4 | `agents/data/` |
+| **TOTAL** | **124** | |
 
 ---
 
@@ -315,6 +316,43 @@ Meta-pipeline for creating new domain pipelines. 5-phase wizard: Interview → R
 
 ---
 
+## Shopify Pipeline (8 Agents)
+
+### Orchestration
+| Agent | Purpose |
+|-------|---------|
+| `shopify-grand-architect` | Shopify lane coordination and planning |
+| `shopify-light-orchestrator` | Default/tweak mode coordination |
+
+### Implementation
+| Agent | Purpose |
+|-------|---------|
+| `shopify-liquid-specialist` | Liquid templating, objects, filters, logic |
+| `shopify-section-builder` | Section development, schema, blocks |
+| `shopify-js-specialist` | JavaScript for Shopify themes |
+| `shopify-css-specialist` | CSS and design tokens for Shopify themes |
+
+### Gates
+| Agent | Purpose |
+|-------|---------|
+| `shopify-theme-checker` | Theme quality and linting |
+| `shopify-ui-reviewer` | Visual validation via Puppeteer |
+
+---
+
+## KG Pipeline (4 Agents)
+
+Knowledge-graph-augmented research agents for OBDN research.
+
+| Agent | Purpose |
+|-------|---------|
+| `kg-lead-agent` | Lead researcher, planning and coordination |
+| `kg-query-subagent` | KG query specialist |
+| `kg-mechanism-subagent` | Mechanism path mapping |
+| `kg-answer-writer` | KG-grounded answer writing |
+
+---
+
 ## Audit Pipeline (8 Agents)
 
 Specialist agents for due-diligence audits. Run in parallel via `/audit` command.
@@ -341,7 +379,7 @@ Specialist agents for due-diligence audits. Run in parallel via `/audit` command
 
 ---
 
-## Cross-Cutting Agents (11 Agents)
+## Cross-Cutting Agents (12 Agents)
 
 Located in `agents/dev/`. These agents work across multiple pipelines:
 
@@ -354,6 +392,7 @@ Located in `agents/dev/`. These agents work across multiple pipelines:
 | `design-token-guardian` | Expo, Next.js | Token enforcement, no hardcoded values |
 | `performance-enforcer` | Expo, Next.js | Bundle size, performance budgets |
 | `performance-prophet` | Expo | Predictive performance analysis |
+| `screenshot-analyzer` | All UI lanes | Screenshot analysis and visual comparison |
 | `security-specialist` | Expo, iOS | OWASP Mobile Top 10, secure storage |
 | `shadcn-specialist` | Next.js | shadcn/ui components (auto-detected) |
 | `tailwind-specialist` | Next.js | Tailwind CSS (auto-detected) |
@@ -381,16 +420,18 @@ Located in `agents/dev/`. These agents work across multiple pipelines:
 ```
 ~/.claude/agents/
   iOS/              # 19 agents
-  nextjs/           # 15 agents (nextjs-*)
+  nextjs/           # 15 agents
   django-react/     # 13 agents
   expo/             # 12 agents
+  dev/              # 12 agents (cross-cutting)
   os-dev/           # 11 agents (os-dev-* + orca-pipeline-*)
-  dev/              # 11 agents (cross-cutting: a11y, crash, debt, design-*, perf-*, security, shadcn, tailwind, version)
-  research/         # 7 agents
-  seo/              # 5 agents
-  data/             # 4 agents
   audit/            # 8 agents
-  typography/       # 5 agents
+  shopify/          # 8 agents
+  research/         # 7 agents
+  typography/       # 6 agents
+  seo/              # 5 agents
+  kg/               # 4 agents
+  data/             # 4 agents
 ```
 
 ### Source (ORCA-OS Repo)
@@ -420,4 +461,4 @@ $ORCA_OS_PATH/agents/
 ---
 
 _Source of truth: `docs/reference/os-dependency-graph.yaml`_
-_Last sync: 2026-02-03_
+_Last sync: 2026-02-06_

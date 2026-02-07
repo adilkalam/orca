@@ -1,6 +1,6 @@
 # OS 5.1 MCP Reference
 
-**Last Updated:** 2026-01-23
+**Last Updated:** 2026-02-07
 **Version:** OS 5.1
 
 ---
@@ -38,7 +38,7 @@ Sequential thinking storage with accept-store-echo pattern.
   "cognition-mcp": {
     "type": "stdio",
     "command": "node",
-    "args": ["~/.claude/mcp/cognition-mcp/dist/cli.js"]
+    "args": ["~/.claude/mcp/cognition-mcp/dist/index.js"]
   }
 }
 ```
@@ -97,6 +97,8 @@ Mandatory context provider for all agents.
 - `save_decision` - Log decisions
 - `save_standard` - Create standards
 - `save_task_history` - Record task completion
+- `index_project` - Index project files for context analysis
+- `reanalyze_project` - Re-analyze project after changes
 - `recall` - Retrieve full archived tool output by ID (ORCA-Mem)
 
 **Implementation (OS 5.1):**
@@ -219,7 +221,116 @@ crawl-server  # alias for ~/.crawl4ai-server/bin/python server.py
 ```
 
 **Used by:** research-* agents, seo-* agents
-**Projects:** Global (configured in ~/.claude.json)
+**Projects:** Project-scoped (configured in project `.mcp.json` + `enabledMcpjsonServers`)
+
+### ahrefs (SEO)
+
+Keyword research and SERP intelligence for the SEO content pipeline. npx-based MCP that launches externally (not from the `mcp/` directory).
+
+```json
+{
+  "ahrefs": {
+    "type": "stdio",
+    "command": "npx",
+    "args": ["-y", "ahrefs-mcp"]
+  }
+}
+```
+
+**Tools:**
+- `keywords_explorer_overview` - Keyword volume, difficulty, CPC, traffic potential
+- `keywords_explorer_related_terms` - LSI keywords, "also rank for" terms
+- `serp_overview_serp_overview` - Top 10 SERP results, features, PAA
+
+**Used by:** seo-research-specialist, seo-optimizer
+**Projects:** Project-scoped (configured in project `.mcp.json` + `enabledMcpjsonServers`)
+
+### adb-mcp (Adobe Creative Suite)
+
+AI control of Adobe Photoshop and Premiere via MCP protocol. Python-based MCP server communicates through a Node proxy to UXP plugins.
+
+```json
+"adobe-photoshop": {
+  "type": "stdio",
+  "command": "/Users/adilkalam/ORCA-OS/mcp/adb-mcp/mcp/run-ps-mcp.sh",
+  "args": [],
+  "env": {}
+},
+"adobe-illustrator": {
+  "type": "stdio",
+  "command": "/Users/adilkalam/ORCA-OS/mcp/adb-mcp/mcp/run-ai-mcp.sh",
+  "args": [],
+  "env": {}
+}
+```
+
+**Note:** Each Adobe app has its own MCP server entry. The shell scripts handle `uv` environment setup. See `docs/reference/adobe-mcp-setup.md` for full configuration details.
+
+**Architecture:** AI <-> MCP Server (Python/stdio) <-> Proxy Server (Node/WebSocket) <-> Adobe Plugin <-> Adobe App
+
+**Requires:**
+- Adobe Photoshop 26.0+ or Adobe Premiere Beta 25.3+
+- Adobe UXP Developer Tool (via Creative Cloud)
+- Node proxy server running (`adb-proxy-socket`)
+- UXP plugin loaded in target Adobe app
+
+**Tools (Photoshop):** Document management, layer operations, selections, filters, effects, text, shapes, colors, transforms, blend modes, masks, smart objects, batch operations
+
+**Tools (Premiere):** Project management, sequences, clips, transitions, effects, audio
+
+**Source:** [github.com/mikechambers/adb-mcp](https://github.com/mikechambers/adb-mcp)
+**Used by:** (project-specific configuration)
+**Projects:** (project-specific configuration)
+
+### blender-mcp (3D Modeling - Experimental)
+
+Blender integration through MCP, allowing AI-assisted 3D modeling, scene creation, and manipulation. Connects to Blender via a socket-based addon.
+
+```json
+{
+  "blender": {
+    "type": "stdio",
+    "command": "uvx",
+    "args": ["blender-mcp"]
+  }
+}
+```
+
+**Requires:**
+- Blender 3.0+ with BlenderMCP addon installed and connected
+- `uv` package manager
+
+**Capabilities:** Scene inspection, object creation/manipulation, material control, code execution, Poly Haven assets, Hyper3D model generation
+
+**Source:** [github.com/ahujasid/blender-mcp](https://github.com/ahujasid/blender-mcp)
+**Status:** Experimental (project-scoped, no dedicated lane)
+**Location:** `mcp/blender-mcp/`
+
+### openscad-mcp (3D Rendering - Experimental)
+
+OpenSCAD 3D rendering capabilities for AI assistants. Provides tools for single and multi-view rendering of OpenSCAD models.
+
+```json
+{
+  "openscad": {
+    "type": "stdio",
+    "command": "uv",
+    "args": ["run", "--with", "git+https://github.com/quellant/openscad-mcp.git", "openscad-mcp"],
+    "env": {
+      "OPENSCAD_PATH": "/usr/bin/openscad"
+    }
+  }
+}
+```
+
+**Tools:**
+- `render_single` - Render a single view of an OpenSCAD model
+- `render_perspectives` - Render multiple perspective views
+- `check_openscad` - Verify OpenSCAD installation
+
+**Source:** [github.com/quellant/openscad-mcp](https://github.com/quellant/openscad-mcp)
+**Status:** Experimental (project-scoped, no dedicated lane)
+**Location:** `mcp/openscad-mcp/`
 
 ---
 
@@ -233,9 +344,13 @@ crawl-server  # alias for ~/.crawl4ai-server/bin/python server.py
 | Expo | (none) |
 | Research | crawl4ai |
 | SEO | ahrefs, crawl4ai |
+| KG | cognition-mcp |
+| Shopify | puppeteer |
 | Data | (none) |
 | Audit | cognition-mcp |
+| Typography | (none) |
 | OS-Dev | (none) |
+| orca-pipeline | (none) |
 
 ---
 
@@ -293,4 +408,4 @@ Check `enabledMcpjsonServers` in `~/.claude.json` for your project path.
 
 _Source of truth: `docs/reference/os-dependency-graph.yaml`_
 _MCP scoping: `docs/reference/mcp-scoping-strategy.md`_
-_Last sync: 2026-02-06_
+_Last sync: 2026-02-07_

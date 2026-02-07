@@ -110,6 +110,7 @@ Analyze the request to determine workflow type:
 
 | Keywords | Workflow | Primary Agent |
 |----------|----------|---------------|
+| name, rename, family, metadata, name table, register | `name_table_rename` | direct (no delegation) |
 | glyph, contour, stroke, curve, terminal, edit, modify | `glyph_edit` | glyph-editor |
 | ttf, export, epson, convert, labelworks | `ttf_export` | ttf-exporter |
 | recommend, pair, suggest, compare, select, what font | `font_selection` | typography-advisor |
@@ -171,6 +172,36 @@ cp -r "{source_path}"/* "$BACKUP_DIR/"
 ### 4. Delegate to Specialist
 
 Based on workflow_type, delegate to appropriate agent:
+
+**Name Table Rename (MANDATORY PROTOCOL — NO SHORTCUTS):**
+
+When the user asks to change a font's family name / metadata / registered name, this is a name table operation. Do NOT delegate to a subagent — execute directly with this exact procedure:
+
+1. **DUMP** current name table (nameIDs 1, 2, 4, 6, 16, 17) for ALL font files, BOTH platforms (Mac platID=1 + Windows platID=3)
+2. **SHOW** the user what the current state is before changing anything
+3. **FIX** all 5 nameIDs across BOTH platforms in EVERY file:
+   - nameID 1 = new family name (e.g., "Domaine Sans Display")
+   - nameID 4 = new family name + weight (e.g., "Domaine Sans Display Bold")
+   - nameID 6 = PostScript name, no spaces (e.g., "DomaineSansDisplay-Bold")
+   - nameID 16 = typographic family = same as nameID 1 (ADD if missing)
+   - nameID 17 = typographic subfamily = weight/style name
+   - Platform 1 (Mac): platID=1, encID=0, langID=0
+   - Platform 3 (Win): platID=3, encID=1, langID=1033
+4. **PROCESS EVERY FILE** — all weights, all variants (upright + italic). Zero exceptions.
+5. **VERIFY** by re-reading the saved files — confirm zero instances of old name remain on either platform
+6. **REPORT** final state showing all files with their new nameID values
+
+**Why this exists:** Partial name fixes (some files fixed, some not; one platform fixed, other not; some nameIDs fixed, others missed) have caused repeated failures where macOS registers the font under the wrong name. The ONLY fix is absolute completeness.
+
+```python
+# Reference implementation pattern:
+for platID, encID, langID in [(1, 0, 0), (3, 1, 1033)]:
+    name_table.setName(new_family,    1, platID, encID, langID)
+    name_table.setName(new_full,      4, platID, encID, langID)
+    name_table.setName(new_ps,        6, platID, encID, langID)
+    name_table.setName(new_family,   16, platID, encID, langID)  # ALWAYS set, even if missing
+    name_table.setName(new_subfam,   17, platID, encID, langID)
+```
 
 **Glyph Editing:**
 ```

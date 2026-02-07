@@ -1,6 +1,6 @@
 # Unified Improvement Bus
 
-**Version:** OS 5.0 | **Last Updated:** 2026-01-24
+**Version:** OS 5.1 | **Last Updated:** 2026-01-24
 
 The Improvement Bus unifies all self-improvement mechanisms into a single event stream with explicit routing to appropriate sinks.
 
@@ -8,7 +8,7 @@ The Improvement Bus unifies all self-improvement mechanisms into a single event 
 
 ## The Problem
 
-OS 5.0 introduced multiple improvement loops, but they operate in silos:
+OS 5.1 has multiple improvement loops that each work independently. Individual agents already persist patterns and reflexions, but without a unified bus these improvements stay siloed:
 
 | Loop | Output | Storage | Consumption |
 |------|--------|---------|-------------|
@@ -38,7 +38,7 @@ A single event stream (`improvement_event.jsonl`) that all loops write to, with 
   CoVe failures        ──┼──▶ improvement_event.jsonl ──┼── CLAUDE.md rules
   /reflect rules       ──┤         │                 ├── Workshop standards
   /audit proposals     ──┤         ▼                 ├── Gate checklists
-  Agent discoveries    ──┘   improvement-bus-sync.py ──┘── phase_state constraints
+  Agent discoveries    ──┘     /self-improve         ──┘── phase_state constraints
 
 ```
 
@@ -92,11 +92,11 @@ Each event is a single JSON line in `.claude/improvement-events/improvement_even
 
 ### 1. Reflexion (Gates)
 
-When gates emit CAUTION/FAIL, they now also append to improvement bus:
+When gates emit CAUTION/FAIL, all 10 gate agents also append to the improvement bus:
 
 ```bash
 # In gate agent, after storing Workshop gotcha:
-echo '{"id":"evt-...", "source":"reflexion", "source_agent":"nextjs-standards-enforcer", ...}' >> .claude/improvement-events/improvement_event.jsonl
+echo '{"id":"evt-...", "source":"reflexion", "source_agent":"{agent-name}", ...}' >> .claude/improvement-events/improvement_event.jsonl
 ```
 
 **Routing targets:** `agent_patterns` (for the source agent only)
@@ -193,7 +193,7 @@ When builder agents discover effective patterns:
 
 ## Routing Logic
 
-`scripts/improvement-bus-sync.py` processes pending events:
+The `/self-improve` command processes pending events:
 
 ### Routing Rules
 
@@ -312,7 +312,7 @@ In `phase_state.gates.verification`:
 
 ### Mining
 
-When `improvement-bus-sync.py` runs:
+When `/self-improve` runs:
 
 1. Scan `phase_state` for CoVe tables with NO answers
 2. Count question failures across tasks (keyed by question text + domain)
@@ -341,19 +341,14 @@ Include these in your CoVe table with explicit YES/NO answers.
 ### Manual: /self-improve
 
 ```bash
-/self-improve              # Run improvement-bus-sync.py, show report
+/self-improve              # Process pending events, show report
 /self-improve --dry-run    # Show what would be routed without applying
 /self-improve --domain ios # Only process events for iOS domain
 ```
 
-### Hook: session-end (optional)
+### Hook: session-end (future enhancement)
 
-Add to `hooks/session-end.sh`:
-
-```bash
-# Run improvement bus sync at session end
-python3 scripts/improvement-bus-sync.py --batch >> .claude/telemetry/improvement-bus.log 2>&1
-```
+Automated session-end processing of improvement events is a planned enhancement. Currently, run `/self-improve` manually to process pending events.
 
 ---
 
@@ -362,7 +357,7 @@ python3 scripts/improvement-bus-sync.py --batch >> .claude/telemetry/improvement
 | Artifact | Path |
 |----------|------|
 | Event stream | `.claude/improvement-events/improvement_event.jsonl` |
-| Routing script | `scripts/improvement-bus-sync.py` |
+| Routing command | `/self-improve` |
 | Agent patterns | `.claude/agent-knowledge/{agent}/patterns.json` |
 | Gate checklists | `.claude/agent-knowledge/{agent}/mandatory_checks.json` |
 | Workshop standards | Workshop entries via `mcp__project-context__save_standard` |

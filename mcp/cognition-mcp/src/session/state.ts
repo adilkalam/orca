@@ -17,10 +17,10 @@ export class SessionState implements SessionStateInterface {
   metadata: SessionMetadata;
   stores: SessionStores;
 
-  constructor(id: string, title?: string, tags?: string[]) {
+  constructor(id: string, title?: string, tags?: string[], projectPath?: string) {
     this.id = id;
     const now = Date.now();
-    
+
     this.metadata = {
       id,
       title: title || 'Session ' + id.substring(0, 8),
@@ -28,6 +28,7 @@ export class SessionState implements SessionStateInterface {
       createdAt: now,
       lastAccessedAt: now,
       status: 'active',
+      ...(projectPath ? { projectPath } : {}),
     };
 
     this.stores = {
@@ -302,7 +303,8 @@ export class SessionState implements SessionStateInterface {
     const session = new SessionState(
       data.metadata.id,
       data.metadata.title,
-      data.metadata.tags
+      data.metadata.tags,
+      data.metadata.projectPath
     );
 
     session.metadata = { ...data.metadata };

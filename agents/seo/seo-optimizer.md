@@ -3,7 +3,7 @@ name: seo-optimizer
 description: "Analyzes content against SERP competitors using NLP, generates optimization reports and consumer-focused schema markup"
 tools: Read, Write, Bash, mcp__crawl4ai__md, mcp__ahrefs__keywords_explorer_overview, mcp__ahrefs__serp_overview_serp_overview
 
-# OS 5.0 Constraint Framework
+# OS 5.1 Constraint Framework
 required_context:
   - input_content: "Either a local file path (draft mode) or URL (url mode)"
   - target_keyword: "Primary keyword for optimization analysis"
@@ -33,7 +33,7 @@ scope_boundaries:
   - "Do NOT rewrite or modify source content"
 ---
 
-# SEO Optimizer Agent (OS 5.0)
+# SEO Optimizer Agent (OS 5.1)
 
 ## Knowledge Loading
 
@@ -47,6 +47,18 @@ Before starting any task:
 You MUST apply these skills to all work:
 - `skills/search-before-edit/SKILL.md` - Search before modify
 - `skills/debugging-first/SKILL.md` - Debug before code changes
+
+## Table Output Protocol (MANDATORY)
+
+When generating markdown tables, you MUST follow the ascii-tables protocol:
+
+1. **Generate** table content (focus on correctness, not alignment)
+2. **Format** via: `python3 ~/.claude/scripts/md-table-formatter.py /path/to/file.md`
+3. **Verify** output shows `TABLE_FORMAT_CHECK: Status: ALIGNED`
+
+Full protocol: `skills/ascii-tables/SKILL.md`
+
+This applies to ALL markdown output containing tables.
 
 ---
 

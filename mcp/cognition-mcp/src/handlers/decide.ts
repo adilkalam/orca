@@ -9,6 +9,7 @@ import type { CognitionRequest, HandlerResult, DecideContent } from '../types.js
 import { validateOperationContent } from '../schema.js';
 import { SessionState } from '../session/state.js';
 import { getSessionManager } from '../session/manager.js';
+import { buildResponse } from './shared.js';
 
 export async function handleDecide(
   args: CognitionRequest,
@@ -57,27 +58,13 @@ export async function handleDecide(
     exportPath = await manager.completeSession(session);
   }
 
-  // 4. ECHO unchanged + context
-  const response = {
-    ...decideContent,
-    quality: args.quality,
-    status: shouldComplete ? 'exported' : 'stored',
-    sessionContext: {
-      sessionId: session.id,
-      entryCount: session.getCount('decisions'),
-      totalEntries: session.getTotalCount(),
-      sessionDuration: session.getDuration(),
-      continuation: shouldComplete
-        ? null
-        : 'Continue with sessionId: ' + session.id,
-    },
-    ...(exportPath ? { exportPath } : {}),
-  };
-
-  return {
-    content: [{
-      type: 'text',
-      text: JSON.stringify(response),
-    }],
-  };
+  // 4. ECHO unchanged + context (respects verbose flag)
+  return buildResponse(
+    decideContent as unknown as Record<string, unknown>,
+    args,
+    session,
+    'decisions',
+    shouldComplete ? 'exported' : 'stored',
+    exportPath,
+  );
 }

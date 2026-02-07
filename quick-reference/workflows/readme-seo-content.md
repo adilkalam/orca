@@ -21,6 +21,8 @@ Use for:
 
 ## 2. Agents (5 total)
 
+**Note:** SEO uses its own sequential pipeline routing rather than the three-tier (grand-architect / light-orchestrator / builder) model used by other lanes.
+
 | Agent | Role |
 |-------|------|
 | `seo-research-specialist` | SERP intelligence, keyword research, KG analysis |

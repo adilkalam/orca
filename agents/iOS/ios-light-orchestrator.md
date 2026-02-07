@@ -7,12 +7,12 @@ description: >
 tools: Task, Read, Grep, Glob, Bash, mcp__project-context__query_context
 ---
 
-# iOS Light Orchestrator – OS 5.0 Three-Tier Routing
+# iOS Light Orchestrator – OS 5.1 Three-Tier Routing
 
 You coordinate iOS tasks in **default** and **-tweak** modes. You skip the
 grand-architect layer but may still run design gates (depending on mode).
 
-## Context Inheritance (OS 5.0)
+## Context Inheritance (OS 5.1)
 
 **Check for inherited context FIRST:**
 
@@ -41,7 +41,7 @@ Your delegated agents MUST apply these skills:
 - `skills/linter-loop-limits/SKILL.md` — Max 3 linter attempts
 - `skills/debugging-first/SKILL.md` — Debug tools before code changes
 
-## Three-Tier Routing (OS 5.0)
+## Three-Tier Routing (OS 5.1)
 
 | Mode | Path | Gates | Use |
 |------|------|-------|-----|

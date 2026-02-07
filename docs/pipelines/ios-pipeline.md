@@ -1,13 +1,13 @@
 # iOS Domain Pipeline
 
-**Status:** OS 5.0 Core Pipeline (Native iOS)
+**Status:** OS 5.1 Core Pipeline (Native iOS)
 **Last Updated:** 2025-11-27
 
 ## Overview
 
 The iOS pipeline handles **native iOS app development** using Swift 6.x and modern Apple frameworks (SwiftUI, UIKit, Swift Concurrency). It combines:
 
-- OS 5.0 primitives (ProjectContextServer, phase_state.json, code-index.db, Workshop, constraint framework)
+- OS 5.1 primitives (ProjectContextServer, phase_state.json, code-index.db, Workshop, constraint framework)
 - Memory-first context (Workshop + code-index.db before ProjectContext)
 - Complexity-based routing (simple → light orchestrator, medium/complex → full pipeline)
 - Spec gating (complex tasks require requirements spec)
@@ -20,7 +20,7 @@ Goal: implement and evolve native iOS features with **architecture-aware plans**
 
 ---
 
-## Three-Tier Routing (OS 5.0)
+## Three-Tier Routing (OS 5.1)
 
 The iOS pipeline uses three-tier routing:
 
@@ -66,7 +66,7 @@ Full pipeline with grand-architect planning. Spec required.
 
 ---
 
-## Standards Inputs (OS 5.0 Learning Loop)
+## Standards Inputs (OS 5.1 Learning Loop)
 
 Standards flow into and out of the iOS pipeline:
 
@@ -115,7 +115,7 @@ Use this pipeline when:
 
 If the request is for:
 - Expo/React Native mobile → use the **Expo** pipeline.
-- Browser-based React/Next.js work → use the **webdev** pipeline.
+- Browser-based React/Next.js work → use the **nextjs** pipeline.
 
 ---
 

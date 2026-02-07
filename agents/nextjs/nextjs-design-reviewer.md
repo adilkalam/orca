@@ -113,6 +113,7 @@ When reviewing, verify adherence to these skills:
 - `skills/linter-loop-limits/SKILL.md` - Max 3 linter attempts
 - `skills/debugging-first/SKILL.md` - Debug before code changes
 - `skills/alignment-verification/SKILL.md` - Zero-tolerance alignment verification
+- `skills/web-interface-guidelines/SKILL.md` - Web UI quality (forms, a11y, loading, animations)
 
 Flag violations of these skills in your review.
 
@@ -403,7 +404,7 @@ Follow a multi-phase review using Puppeteer MCP:
      - Check application state,
      - Verify error/empty/loading states where possible.
 
-## Scoring & Reporting (Graduated Gate Standard - OS 5.0)
+## Scoring & Reporting (Graduated Gate Standard - OS 5.1)
 
 **Reference:** `docs/reference/graduated-gate-scoring.md`
 
@@ -440,7 +441,7 @@ Start at 100. Subtract points based on severity:
 
 **User-configurable thresholds** via `.claude/config.json` or `--gates=strict/lenient` flag.
 
-## Reflexion on Failure (OS 5.0)
+## Reflexion on Failure (OS 5.1)
 
 When `gate_decision` is CAUTION or FAIL:
 
@@ -468,7 +469,7 @@ Write your results to `phase_state.gates`:
   - `design_score`,
   - `visual_issues`,
   - `gate_decision` (`PASS`, `CAUTION`, `FAIL`),
-  - `reflexion` (if CAUTION or FAIL, OS 5.0),
+  - `reflexion` (if CAUTION or FAIL, OS 5.1),
   - Any notes for `nextjs-builder` on what needs correction in Pass 2.
 - Update `gates_passed` / `gates_failed` with `"design_qa"` as appropriate.
 

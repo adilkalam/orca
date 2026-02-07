@@ -1,14 +1,14 @@
 # Self-Improvement System
 
-**Version:** OS 5.0 | **Last Updated:** 2026-01-24
+**Version:** OS 5.1 | **Last Updated:** 2026-01-24
 
-OS 5.0 provides an agent self-improvement loop that enables agents to learn from execution history and improve their prompts over time.
+OS 5.1 provides an agent self-improvement loop that enables agents to learn from execution history and improve their prompts over time.
 
 ---
 
 ## System Overview
 
-OS 5.0 provides learning at three levels:
+OS 5.1 provides learning at three levels:
 
 | Level | Mechanism | Storage | Trigger |
 |-------|-----------|---------|---------|
@@ -20,7 +20,7 @@ Each level complements the others: agents learn local patterns, pipelines surfac
 
 ---
 
-## Unified Improvement Bus (OS 3.1)
+## Unified Improvement Bus
 
 While the levels above operate independently, the **Improvement Bus** unifies them into a single event stream with explicit routing.
 
@@ -52,7 +52,7 @@ Verification questions that repeatedly fail are persisted and injected as **mand
 
 ---
 
-## Agent-Level Learning (Introduced in v4.1)
+## Agent-Level Learning
 
 In addition to the centralized self-improvement loop, agents can now learn patterns locally via file-based knowledge persistence.
 
@@ -108,7 +108,7 @@ In addition to the centralized self-improvement loop, agents can now learn patte
 
 ### Agent Integration
 
-All 85 agents have Knowledge Loading sections:
+All 124 agents have Knowledge Loading sections:
 
 ```markdown
 ## Knowledge Loading
@@ -119,7 +119,7 @@ Before starting any task:
 3. Track which patterns you apply during this task
 ```
 
-Builder agents (15 total) also have Knowledge Persistence footers:
+Builder and writer agents (17 total) also have Knowledge Persistence footers:
 
 ```markdown
 ## Knowledge Persistence
@@ -194,6 +194,8 @@ workshop --workspace .claude/memory task_history add \
   --json '{"agents_used": ["ios-builder", "ios-verification"], "issues": [...]}'
 ```
 
+Task history can also be recorded via the MCP tool `mcp__project-context__save_task_history`, which provides the same functionality through the ProjectContext server.
+
 ### Outcome Schema
 
 ```json
@@ -236,11 +238,9 @@ Patterns are identified when the same issue type occurs 3+ times from the same a
 }
 ```
 
-### Analysis Script
+### Analysis
 
-```bash
-python3 scripts/analyze-patterns.py --workspace .claude/memory --days 30
-```
+Pattern analysis is handled inline by the `/self-improve` command, which scans Workshop task history, identifies recurring patterns, and generates improvement proposals.
 
 Output: `.claude/orchestration/temp/improvement-proposals.json`
 
@@ -272,13 +272,7 @@ Proposals follow a Pantheon-inspired schema:
 
 ## Applying Improvements
 
-Approved improvements are applied via:
-
-```bash
-python3 scripts/apply-improvement.py \
-  --proposals .claude/orchestration/temp/improvement-proposals.json \
-  --deploy
-```
+Approved improvements are applied via the `/self-improve` command, which processes pending proposals and updates agent definitions.
 
 This adds a "Learned Rules" section to agent definitions:
 
@@ -300,8 +294,7 @@ After improvements are applied:
 | Component | Purpose |
 |-----------|---------|
 | `/audit` | Triggers pattern analysis, shows proposals |
-| `scripts/analyze-patterns.py` | Query Workshop, identify patterns |
-| `scripts/apply-improvement.py` | Apply approved improvements |
+| `/self-improve` | Process improvement bus events, apply approved changes |
 
 ## Storage Locations
 
@@ -310,7 +303,7 @@ After improvements are applied:
 | Execution outcomes | Workshop `task_history` entries |
 | Identified patterns | Workshop `gotcha` entries (tagged `pattern`) |
 | Improvement proposals | `.claude/orchestration/temp/improvement-proposals.json` |
-| Applied changes | Agent YAML + Workshop `decision` entries |
+| Applied changes | Agent definitions (Markdown) + Workshop `decision` entries |
 | Impact metrics | Workshop `note` entries (tagged `metrics`) |
 
 ## Design Principles
@@ -441,7 +434,7 @@ Promoted rules go to a "Learned Rules" section:
 Soft learnings go to Workshop preferences:
 
 ```bash
-workshop --workspace .claude/memory preference "[/reflect] Prefer concise responses" --category code_style
+workshop --workspace .claude/memory note "[/reflect] Prefer concise responses #preference #code_style"
 ```
 
 ## Key Differences from Agent Self-Improvement
@@ -482,9 +475,9 @@ workshop --workspace .claude/memory preference "[/reflect] Prefer concise respon
 
 ---
 
-# Reflexion-Enhanced Gates (OS 5.0)
+# Reflexion-Enhanced Gates (OS 5.1)
 
-OS 5.0 introduces Reflexion-enhanced gates based on research by Shinn et al. (NeurIPS 2023). Gates now learn from failures through verbal reinforcement stored in episodic memory (Reflexion-style episodic memory).
+OS 5.1 introduces Reflexion-enhanced gates based on research by Shinn et al. (NeurIPS 2023). Gates now learn from failures through verbal reinforcement stored in episodic memory (Reflexion-style episodic memory).
 
 ## The Research
 
@@ -513,10 +506,10 @@ Future Runs: Load reflexions before gating
 
 ## Gate Integration
 
-All 8 gate agents now include:
+All 10 gate agents now include:
 
 ```markdown
-## Reflexion on Failure (OS 5.0)
+## Reflexion on Failure (OS 5.1)
 
 When `gate_decision` is CAUTION or FAIL:
 
@@ -542,9 +535,9 @@ workshop --workspace .claude/memory search "reflexion" -t {domain} --limit 5
 
 This ensures gates benefit from past failure learnings.
 
-These stored reflexions are later mined by `/audit` and `scripts/analyze-patterns.py` when generating improvement proposals, closing the loop between runtime failures and agent prompt updates.
+These stored reflexions are later mined by `/audit` and `/self-improve` when generating improvement proposals, closing the loop between runtime failures and agent prompt updates.
 
-### Improvement Bus Integration (OS 3.1)
+### Improvement Bus Integration
 
 In addition to Workshop storage, gates now emit improvement events:
 
@@ -564,13 +557,17 @@ This enables cross-layer propagation: reflexions can become agent patterns, work
 | ios-standards-enforcer | iOS |
 | ios-ui-reviewer | iOS |
 | expo-verification-agent | Expo |
+| expo-standards-enforcer | Expo |
+| shopify-theme-checker | Shopify |
+| shopify-ui-reviewer | Shopify |
+| django-react-standards-enforcer | Django+React |
 | os-dev-standards-enforcer | OS-Dev |
 
 ---
 
-# Chain of Verification (OS 5.0)
+# Chain of Verification (OS 5.1)
 
-OS 5.0 introduces Chain of Verification (CoVe) based on Meta AI research (Dhuliawala et al., 2023). Verification agents now use structured verification questions to catch errors before reporting (CoVe-style question-then-verify loop).
+OS 5.1 introduces Chain of Verification (CoVe) based on Meta AI research (Dhuliawala et al., 2023). Verification agents now use structured verification questions to catch errors before reporting (CoVe-style question-then-verify loop).
 
 ## The Research
 
@@ -597,10 +594,10 @@ Step 4: Determine Final Status (PASS/CAUTION/FAIL)
 
 ## Verification Agent Integration
 
-All 5 verification agents now include:
+All 6 verification agents now include:
 
 ```markdown
-## Chain of Verification Protocol (OS 5.0)
+## Chain of Verification Protocol (OS 5.1)
 
 Before finalizing verification status:
 
@@ -635,6 +632,7 @@ For each question, determine:
 | nextjs-verification-agent | Next.js |
 | ios-verification | iOS |
 | expo-verification-agent | Expo |
+| django-react-verification | Django+React |
 | os-dev-verification | OS-Dev |
 
 ## Benefits
@@ -652,7 +650,7 @@ The verification questions and table are part of the gate output and serve as st
 - Understanding why a verification passed or failed
 - Comparing verification thoroughness across runs
 
-## CoVe Persistence (OS 3.1)
+## CoVe Persistence
 
 Verification agents now persist their CoVe tables to `phase_state.gates.verification`:
 
@@ -690,6 +688,8 @@ Verification agents check for mandatory checks before generating questions:
 2. If exists, load active checks and include them as required questions
 3. These questions MUST appear in the CoVe table with explicit YES/NO answers
 ```
+
+**Current status:** Mandatory check loading is implemented in `nextjs-verification-agent`. Other verification agents (`ios-verification`, `expo-verification-agent`, `django-react-verification`, `os-dev-verification`) have CoVe protocols but do not yet load mandatory checks from the improvement bus. Extending this to all verification agents is a planned enhancement.
 
 This creates a cumulative verification system where past failures inform future checks.
 

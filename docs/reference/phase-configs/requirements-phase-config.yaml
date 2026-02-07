@@ -1,14 +1,45 @@
-# Requirements Pipeline Phase Configuration - OS 5.0
+# Requirements Pipeline Phase Configuration - OS 5.1
 
 pipeline:
   name: requirements
-  description: Requirements gathering lane for OS 5.0
-  version: "5.0"
+  description: Requirements gathering lane for OS 5.1
+  version: "5.1"
 
 context:
   provider: ProjectContextServer
   required: true
   query_on_start: true
+
+# Tier configurations
+tiers:
+  tweak:
+    phases: [setup, scope_questions, spec]
+    artifact: requirements-spec
+    stance: committed
+
+  default:
+    phases: [setup, discovery_questions, context_findings, detail_questions, spec]
+    artifact: requirements-spec
+    stance: committed
+
+  complex:
+    phases: [setup, discovery_questions, context_findings, detail_questions, risk_analysis, spec]
+    artifact: requirements-spec
+    stance: committed
+
+  explore:
+    phases: [setup, exploration, minimal_questions, brief_generation]
+    artifact: exploration-brief
+    stance: tentative
+    modes: [MAP, INVERT, PERSPECTIVES, EDGES, META, DEEP]
+    dual_save: true
+    cognition_path: .claude/cognition/
+
+  from_brief:
+    phases: [brief_validation, discovery_questions, context_findings, detail_questions, spec]
+    artifact: requirements-spec
+    stance: committed
+    input_required: exploration-brief
 
 phases:
   - name: setup
@@ -71,4 +102,62 @@ phases:
     constraints:
       scope: Documentation only
       integration: Log decision to code-index.db and update phase_state
+
+  # Explore tier phases
+  - name: exploration
+    agent: requirements-helper
+    description: Run full deepthink-style divergent exploration
+    dependencies:
+      - setup
+    context_required: true
+    tier: explore
+    outputs:
+      - exploration_analysis
+      - cognition_file
+    constraints:
+      scope: Divergent exploration, no commitment
+      modes: Run all relevant modes (MAP, INVERT, PERSPECTIVES, EDGES, META, DEEP)
+      self_check: Mandatory after each mode
+
+  - name: minimal_questions
+    agent: requirements-helper
+    description: Ask 2-3 targeted questions based on exploration findings
+    dependencies:
+      - exploration
+    context_required: true
+    tier: explore
+    outputs:
+      - exploration_questions
+      - exploration_answers
+    constraints:
+      scope: Validate key unknowns only
+      quality: 2-3 questions, informed by exploration
+
+  - name: brief_generation
+    agent: requirements-helper
+    description: Generate exploration brief with Go/No-Go criteria
+    dependencies:
+      - minimal_questions
+    context_required: true
+    tier: explore
+    outputs:
+      - exploration_brief
+      - updated_metadata
+    constraints:
+      scope: Tentative brief, not committed spec
+      required_sections: [Opportunity, Key Unknowns, Rough Shape, Risks, Go/No-Go Criteria]
+
+  # From-brief tier phases
+  - name: brief_validation
+    agent: requirements-helper
+    description: Validate and load exploration brief for conversion
+    dependencies: []
+    context_required: true
+    tier: from_brief
+    outputs:
+      - validated_brief
+      - brief_context
+    constraints:
+      scope: Read and validate brief structure
+      input: exploration-brief path required
 

@@ -390,7 +390,7 @@ $ORCA_OS_PATH/commands/
 | `/seo` | seo-research-specialist, seo-brief-strategist, seo-draft-writer, seo-optimizer |
 | `/kg` | kg-lead-agent, kg-query-subagent, kg-mechanism-subagent, kg-answer-writer |
 | `/shopify` | shopify-grand-architect, shopify-light-orchestrator, shopify-liquid-specialist, shopify-ui-reviewer |
-| `/orca-os-dev` | os-dev-architect, os-dev-builder, os-dev-standards-enforcer |
+| `/orca-os-dev` | os-dev-architect, os-dev-builder, os-dev-standards-enforcer, os-dev-verification |
 | `/orca-pipeline` | orca-pipeline-orchestrator, orca-pipeline-researcher, orca-pipeline-generator |
 | `/typography` | typography-orchestrator, glyph-editor, ttf-exporter, typography-advisor, typography-explorer-generator, path-guardian |
 

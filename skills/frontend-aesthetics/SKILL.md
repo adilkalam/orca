@@ -10,7 +10,7 @@ allowed-tools:
   - WebFetch
 metadata:
   category: "frontend-design"
-  source: "anthropic-frontend-design-plugin + OS 5.0 design-dna"
+  source: "anthropic-frontend-design-plugin + OS 5.1 design-dna"
 ---
 
 # Frontend Aesthetics – Global Design Skill
@@ -169,3 +169,53 @@ The goal is for UI to feel:
 - Designed, not templated.
 - Distinctive, but still aligned with the project's system.
 - Maintainable and understandable to other humans and agents.
+
+---
+
+## 6. Design Direction by Product Type
+
+These constraints give agents concrete starting points when making visual design
+decisions. When a project's design-dna exists, it overrides these defaults. When
+no design-dna exists, use these as a first approximation based on the product type.
+
+| Product Type | Recommended Style | Color Direction | Key Constraint |
+|---|---|---|---|
+| SaaS (General) | Glassmorphism + Flat Design | Trust blue + Accent contrast | Professional, scannable, prioritize minimalism |
+| Micro SaaS | Flat Design + Vibrant Blocks | Vibrant primary + White space | Bold CTAs, minimal onboarding steps |
+| E-commerce (General) | Vibrant Block-based | Brand primary + Success green | Card depth, clear hierarchy, conversion focus |
+| E-commerce Luxury | Liquid Glass + Glassmorphism | Premium dark/gold + Minimal accent | Aspiration, exclusivity, slow parallax (400-600ms) |
+| Healthcare App | Neumorphism + Accessible | Calm blue + Health green | WCAG AAA mandatory, 16px+ type, soft shadows |
+| Fintech Dashboard | Glassmorphism + Dark Mode | Dark tech + Vibrant accents | Security badges required, real-time data clarity |
+| Banking / Traditional Finance | Minimalism + Accessible | Navy + Trust blue + Gold | Security-first, smooth number animations |
+| Education Platform | Claymorphism + Micro-interactions | Playful colors + Clear hierarchy | Friendly, engaging, progress indicators |
+| Portfolio / Creative | Motion-Driven + Minimalism | Brand primary + Artistic freedom | Expressive, parallax OK, variable typography |
+| Government / Public | Accessible + Minimalism | Professional blue + High contrast | WCAG AAA, keyboard navigation, skip links |
+| Startup Landing | Motion-Driven + Vibrant Blocks | Bold primaries + Accent contrast | Scroll-triggered animations, video hero |
+| SaaS Dashboard | Data-Dense + Heat Map | Cool-to-hot gradients + Neutral grey | Real-time updates, hover tooltips, chart zoom |
+| B2B Enterprise | Trust & Authority + Minimal | Professional blue + Neutral grey | Case studies, ROI messaging, formal tone |
+| Restaurant / Food | Vibrant Blocks + Motion | Warm colors (orange, red, brown) | High-quality imagery mandatory, appetizing palette |
+| Real Estate | Glassmorphism + Minimalism | Trust blue + Gold + White | Map integration, virtual tours, professional |
+| Wellness / Mental Health | Neumorphism + Accessible | Calm pastels + Trust colors | Privacy-first, breathing animations, soft press |
+| News / Media | Minimalism + Flat Design | Brand + High contrast | Mobile-first reading, clear category navigation |
+| Legal Services | Trust & Authority + Minimal | Navy + Gold + White | Credential display, authoritative typography |
+| Developer Tool / IDE | Dark Mode + Minimalism | Dark syntax theme + Blue focus | Keyboard shortcuts, monospace, fast performance |
+| Non-profit / Charity | Accessible + Organic | Cause-related colors + Warm | Impact stories, donation transparency |
+
+### What to Avoid by Type
+
+| Product Type | Anti-Patterns |
+|---|---|
+| Healthcare | Bright neon, motion-heavy animations, AI purple/pink gradients |
+| Fintech / Banking | Light backgrounds without security indicators, playful design, unclear fees |
+| Government / Public | Ornate design, low contrast, motion effects, AI purple/pink gradients |
+| B2B Enterprise | Playful design, hidden features, AI purple/pink gradients |
+| Education (Children) | Dark modes, complex jargon, dense layouts |
+| Legal Services | Outdated design, hidden credentials, AI purple/pink gradients |
+| Luxury / Premium | Cheap visuals, fast animations, vibrant block-based layouts |
+| Senior Care / Elderly | Small text, complex navigation, AI purple/pink gradients |
+| Restaurant / Food | Low-quality imagery, outdated hours, text-heavy pages |
+| News / Media | Cluttered layout, slow loading, poor typography |
+| Portfolio / Creative | Corporate templates, generic layouts |
+| SaaS Dashboard | Ornate design, slow rendering, no filtering |
+| Non-profit | Greenwashing visuals, no impact data, hidden financials |
+| Developer Tool | Light mode default, slow performance, heavy chrome |

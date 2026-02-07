@@ -85,7 +85,7 @@ It runs a convergent decision pipeline automatically, producing:
   00-initial-request.md         # Your original request
   00-cognition-analysis.md      # (if single --flag used)
   00-problem-solve-analysis.md  # (if --problem-solve used - full pipeline output)
-  01-discovery-questions.md     # 5 high-level questions
+  01-discovery-questions.md     # 5 high-level yes/no questions
   02-discovery-answers.md       # Your answers
   03-context-findings.md        # Codebase analysis
   04-detail-questions.md        # 5 technical questions
@@ -93,6 +93,8 @@ It runs a convergent decision pipeline automatically, producing:
   06-requirements-spec.md       # Final blueprint
   metadata.json                 # Progress tracking
 ```
+
+Note: `--explore` mode creates different files: `00-exploration-analysis.md`, `01-exploration-questions.md`, `02-exploration-answers.md`, `06-exploration-brief.md`.
 
 ---
 
@@ -116,7 +118,7 @@ It runs a convergent decision pipeline automatically, producing:
    - Notes patterns/risks
    |
    v
-5. Detail Questions (5 technical)
+5. Detail Questions (5 technical yes/no)
    - Tied to specific code paths
    - Architecture decisions
    |

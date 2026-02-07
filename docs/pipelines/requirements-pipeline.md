@@ -1,20 +1,20 @@
 # Requirements Domain Pipeline
 
-**Status:** OS 5.0 Core Requirements Pipeline
+**Status:** OS 5.1 Core Requirements Pipeline
 **Last Updated:** 2025-11-27
 
 ## Overview
 
 The requirements pipeline turns fuzzy feature requests into **structured, code-aware specs** before any heavy implementation. It combines:
 
-- OS 5.0 primitives (ProjectContextServer, phase_state.json, code-index.db, Workshop)
+- OS 5.1 primitives (ProjectContextServer, phase_state.json, code-index.db, Workshop)
 - The Claude Requirements Builder workflow (00–06 docs)
 - Response Awareness tags for metacognitive tracking
 - **Three-tier planning depth** matching `/orca-*` execution tiers
 
 Output: a durable `06-requirements-spec.md` that upstreams into `/orca` domain pipelines.
 
-## Role in OS 5.0
+## Role in OS 5.1
 
 **The requirements pipeline is NOT a separate execution path.** It is:
 
@@ -33,24 +33,63 @@ Output: a durable `06-requirements-spec.md` that upstreams into `/orca` domain p
 - **Architects** (nextjs-architect, expo-architect-agent, ios-architect) read spec first
 - **Spec is authoritative** - constraints and acceptance criteria override analysis
 
-### Three-Tier Planning Depth (OS 5.0)
+### Four-Tier Planning Depth (OS 5.1)
 
-`/plan` supports three planning depths that align with `/orca-*` execution tiers:
+`/plan` supports four planning depths:
 
-| Flag | Planning Depth | Phases Used | Output |
-|------|----------------|-------------|--------|
-| `-tweak` | **Quick** | Skip discovery, 2-3 scope questions | Minimal spec |
-| (default) | **Standard** | Full 5+5 questions | Complete spec |
-| `-complex` | **Deep** | Full questions + risk analysis | Multi-phase spec |
+| Flag | Planning Depth | Phases Used | Output | Stance |
+|------|----------------|-------------|--------|--------|
+| `-tweak` | **Quick** | Skip discovery, 2-3 scope questions | Minimal spec | Committed |
+| (default) | **Standard** | Full 5+5 questions | Complete spec | Committed |
+| `-complex` | **Deep** | Full questions + risk analysis | Multi-phase spec | Committed |
+| `--explore` | **Exploratory** | Deepthink exploration + 2-3 questions | Exploration brief | Tentative |
 
-**Tier passthrough:** The spec's `tier` metadata tells `/orca-*` which execution depth to use:
-- `-tweak` spec → `-tweak` execution (light orchestrator, minimal gates)
-- Standard spec → Default execution (full pipeline)
-- `-complex` spec → `-complex` execution (extended gates, multi-phase)
+**Tier passthrough (committed tiers):** The spec's `tier` metadata tells `/orca-*` which execution depth to use:
+- `-tweak` spec -> `-tweak` execution (light orchestrator, minimal gates)
+- Standard spec -> Default execution (full pipeline)
+- `-complex` spec -> `-complex` execution (extended gates, multi-phase)
+
+**Explore tier (tentative):** Does NOT pass through to execution. User must explicitly convert via `--from-brief`:
+- `--explore` -> Exploration brief (tentative) -> User reviews Go/No-Go criteria
+- `/plan --from-brief <path>` -> Committed spec -> Then domain execution
 
 **Auto-detection:** If no flag is provided, `/plan` analyzes the task and recommends a tier. User can override.
 
-### Complexity Gating (OS 5.0)
+### Divergent vs Convergent Workflows
+
+```
+DIVERGENT (--explore)                    CONVERGENT (default/tweak/complex)
+-----------------------                  ----------------------------------
+/plan --explore "idea"                   /plan "feature"
+        |                                        |
+        v                                        v
+  Full deepthink exploration              Discovery questions (5)
+  (MAP, INVERT, PERSPECTIVES, etc.)               |
+        |                                        v
+        v                                 Context analysis
+  Minimal questions (2-3)                         |
+        |                                        v
+        v                                 Detail questions (5)
+  06-exploration-brief.md                         |
+  (TENTATIVE - not committed)                    v
+        |                                 06-requirements-spec.md
+        v                                 (COMMITTED)
+  User reviews Go/No-Go                           |
+        |                                        v
+       / \                               /orca-{domain} executes
+      /   \
+     v     v
+  Proceed  Abandon
+     |
+     v
+  /plan --from-brief <path>
+     |
+     v
+  06-requirements-spec.md
+  (now COMMITTED)
+```
+
+### Complexity Gating (OS 5.1)
 
 | Complexity | Spec Required | Behavior |
 |------------|---------------|----------|
@@ -106,7 +145,7 @@ Requirements Spec (06-*.md)      ← Phase 5
 [/orca] activates domain pipeline with spec
 ```
 
-Requirements are domain-agnostic; domain pipelines (webdev, expo, ios, data, seo)
+Requirements are domain-agnostic; domain pipelines (nextjs, expo, ios, data, seo)
 read the spec and map it into their own phases.
 
 ---
@@ -127,7 +166,7 @@ Tasks:
     - `id`, `started`, `lastUpdated`, `status`, `phase`, `progress`, `contextFiles`.
   - Update `.claude/requirements/.current-requirement` with folder name.
 - Call `ProjectContextServer.query_context`:
-  - `domain`: inferred from request (`webdev`, `expo`, etc.).
+  - `domain`: inferred from request (`nextjs`, `expo`, etc.).
   - `task`: user request.
   - `projectPath`: repo root.
 - Seed `.claude/orchestration/phase_state.json`:

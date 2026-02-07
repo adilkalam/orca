@@ -24,6 +24,7 @@ You MUST apply these skills to all work:
 - `skills/search-before-edit/SKILL.md` — Always grep before modifying files
 - `skills/linter-loop-limits/SKILL.md` — Max 3 attempts on linter errors
 - `skills/debugging-first/SKILL.md` — Debug tools before code changes
+- `skills/web-interface-guidelines/SKILL.md` — Web UI quality (forms, a11y, loading, animations)
 
 ---
 

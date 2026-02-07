@@ -4,7 +4,7 @@
 **Domain:** `nextjs`  
 **Entrypoints:** `/plan`, `/orca`, `/nextjs`, `/project-memory`, `/project-code`
 
-This document explains how the Next.js lane works in Vibe OS 5.1:
+This document explains how the Next.js lane works in OS 5.1:
 
 - How planning and specs work (`/plan`)
 - How orchestration routes (`/orca`, `/nextjs`)

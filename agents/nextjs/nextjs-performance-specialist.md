@@ -23,6 +23,7 @@ You MUST apply these skills to all work:
 - `skills/search-before-edit/SKILL.md` — Always grep before modifying files
 - `skills/linter-loop-limits/SKILL.md` — Max 3 attempts on linter errors
 - `skills/debugging-first/SKILL.md` — Debug tools before code changes
+- `skills/react-performance/SKILL.md` — React/Next.js performance patterns
 
 ---
 

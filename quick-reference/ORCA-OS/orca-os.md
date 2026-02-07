@@ -42,7 +42,7 @@ ORCA doesn't replace your judgment. It replaces the infrastructure you'd have to
 
 ## The Guides
 
-### 1. [Cognition](cognition-readme.md)
+### 1. [Cognition](../cognition.md)
 
 **Prosthetic thinking for LLMs.**
 
@@ -50,11 +50,11 @@ When to read: You want to think through problems systematically before building.
 
 Key concepts:
 - Substrate observation -- catching trained reflexes before they shape output
-- `/think` with flags (`--systems`, `--debug`, `--decide`, `--model`)
+- `/think` with flags (`--systems`, `--debug`, `--decide`, `--model`, and more)
 - Composed commands: `/deepthink`, `/problem-solve`, `/challenge`
 - Accept-Store-Echo pattern via cognition-mcp
 
-### 2. [Memory](memory-readme.md)
+### 2. [Memory](ORCA-memory.md)
 
 **Continuity across sessions.**
 
@@ -66,7 +66,7 @@ Key concepts:
 - ProjectContext MCP (bundles context for agents)
 - `/project-setup`, `/project-memory`
 
-### 3. [Orchestration](orchestration-readme.md)
+### 3. [Orchestration](../orchestration.md)
 
 **Multi-agent execution with quality.**
 
@@ -78,7 +78,7 @@ Key concepts:
 - Role separation (orchestrators/builders/gates)
 - Response Awareness annotations for visible assumptions
 
-### 4. [Learning](learning-readme.md)
+### 4. [Learning](ORCA-learning.md)
 
 **Improvement without weight updates.**
 
@@ -135,12 +135,12 @@ Key concepts:
 
 | Situation | Start Here |
 |-----------|------------|
-| "I'm confused about this problem" | [Cognition](cognition-readme.md) - `/deepthink` |
-| "Why did we choose X?" | [Memory](memory-readme.md) - `/project-memory why` |
-| "Build this feature" | [Orchestration](orchestration-readme.md) - `/plan` -> `/orca-*` |
-| "Quick fix" | [Orchestration](orchestration-readme.md) - `/{domain} -tweak` |
-| "Is this a good idea?" | [Cognition](cognition-readme.md) - `/challenge` |
-| "Same bug keeps happening" | [Learning](learning-readme.md) - `/reflect` |
+| "I'm confused about this problem" | [Cognition](../cognition.md) - `/deepthink` |
+| "Why did we choose X?" | [Memory](ORCA-memory.md) - `/project-memory why` or `workshop why "X"` |
+| "Build this feature" | [Orchestration](../orchestration.md) - `/plan` -> `/orca-*` |
+| "Quick fix" | [Orchestration](../orchestration.md) - `/{domain} -tweak` |
+| "Is this a good idea?" | [Cognition](../cognition.md) - `/challenge` |
+| "Same bug keeps happening" | [Learning](ORCA-learning.md) - `/reflect` |
 
 ---
 

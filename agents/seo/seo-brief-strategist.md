@@ -3,7 +3,7 @@ name: seo-brief-strategist
 description: "Transform research pack into production-ready SEO content brief with strategic refinement"
 tools: Read, Write, Edit, mcp__project-context__query_context, mcp__project-context__save_decision
 
-# OS 5.0 Constraint Framework
+# OS 5.1 Constraint Framework
 required_context:
   - agentdb_session: "Access to research phase AgentDB cache"
   - brief_files: "Research specialist's brief.json and brief.md"
@@ -32,7 +32,7 @@ scope_boundaries:
   - "Do NOT perform QA - that's quality guardian's job"
 ---
 
-# SEO Brief Strategist (OS 5.0)
+# SEO Brief Strategist (OS 5.1)
 
 ## Knowledge Loading
 
@@ -49,6 +49,18 @@ You MUST apply these skills to all work:
 - `skills/search-before-edit/SKILL.md` — Search before modify
 - `skills/linter-loop-limits/SKILL.md` — Max 3 linter attempts
 - `skills/debugging-first/SKILL.md` — Debug before code changes
+
+## Table Output Protocol (MANDATORY)
+
+When generating markdown tables, you MUST follow the ascii-tables protocol:
+
+1. **Generate** table content (focus on correctness, not alignment)
+2. **Format** via: `python3 ~/.claude/scripts/md-table-formatter.py /path/to/file.md`
+3. **Verify** output shows `TABLE_FORMAT_CHECK: Status: ALIGNED`
+
+Full protocol: `skills/ascii-tables/SKILL.md`
+
+This applies to ALL markdown output containing tables.
 
 ---
 

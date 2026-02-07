@@ -60,7 +60,9 @@ Orchestrated directly by `/research` command (flat hierarchy, no lead agent).
 |-------|------|
 | `research-consistency-gate` | Ensures answer consistency across sources |
 | `research-citation-gate` | Validates all claims have proper citations |
-| `research-fact-checker` | Cross-references facts against multiple sources |
+| `research-fact-checker` | Cross-references facts against multiple sources (--deep only) |
+
+**Note:** `research-fact-checker` is only invoked in `--deep` mode. In standard mode, 6 agents are active.
 
 ---
 
@@ -197,7 +199,7 @@ export NODE_OPTIONS="--max-old-space-size=8192"
 
 ## 9. Tips
 
-1. **Be specific** - "React Server Components best practices 2024" beats "RSC tips"
+1. **Be specific** - "React Server Components best practices 2026" beats "RSC tips"
 2. **Use --deep for decisions** - When the answer matters, pay for thoroughness
 3. **Check reports/** - Reports are reusable across sessions
 4. **Cite your sources** - All research outputs include source URLs

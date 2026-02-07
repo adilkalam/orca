@@ -77,6 +77,9 @@ You MUST apply these skills to all work:
 - `skills/linter-loop-limits/SKILL.md` - Max 3 attempts on linter errors
 - `skills/debugging-first/SKILL.md` - Debug tools before code changes
 - `skills/alignment-verification/SKILL.md` - Self-verify alignment claims before completion
+- `skills/web-interface-guidelines/SKILL.md` - Web UI quality (forms, a11y, loading, animations)
+- `skills/react-performance/SKILL.md` - React/Next.js performance patterns
+- `skills/stripe-integration/SKILL.md` - Payment integration patterns (when Stripe work detected)
 
 ---
 ## NO ROOT POLLUTION (MANDATORY)

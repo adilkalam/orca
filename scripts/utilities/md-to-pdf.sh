@@ -2,13 +2,27 @@
 set -euo pipefail
 
 # Convert a Markdown file to PDF using md-to-pdf with ORCA-OS defaults.
-# Usage: scripts/utilities/md-to-pdf.sh <input.md> [output.pdf]
+# Usage: scripts/utilities/md-to-pdf.sh [--serif|--sans] <input.md> [output.pdf]
+#   (no flag)  = Sharp Sans No. 2 headings + Tiempos Text body (default)
+#   --serif    = Financier
+#   --sans     = Sharp Sans No. 2
+
+STYLE="default"
+
+# Parse flags
+while [[ "${1:-}" == --* ]]; do
+  case "$1" in
+    --serif) STYLE="serif"; shift ;;
+    --sans)  STYLE="sans"; shift ;;
+    *) echo "Unknown flag: $1" >&2; exit 2 ;;
+  esac
+done
 
 IN="${1:-}"
 OUT_ARG="${2:-}"
 
 if [ -z "$IN" ]; then
-  echo "Usage: $0 <input.md> [output.pdf]" >&2
+  echo "Usage: $0 [--serif|--sans] <input.md> [output.pdf]" >&2
   exit 2
 fi
 
@@ -58,6 +72,30 @@ else
   echo "Install globally with: npm install -g md-to-pdf" >&2
   echo "or run via npx: npx md-to-pdf <input.md>" >&2
   exit 1
+fi
+
+# Resolve stylesheet based on style flag
+MD_TO_PDF_PKG="$(dirname "$(command -v md-to-pdf 2>/dev/null || echo "")")/../lib/node_modules/md-to-pdf"
+if [ ! -d "$MD_TO_PDF_PKG" ]; then
+  MD_TO_PDF_PKG="/opt/homebrew/lib/node_modules/md-to-pdf"
+fi
+
+case "$STYLE" in
+  serif)
+    CSS_SRC="$ROOT_DIR/config/md-to-pdf/markdown-serif.css"
+    echo "Style: serif (Financier)"
+    ;;
+  sans)
+    CSS_SRC="$ROOT_DIR/config/md-to-pdf/markdown-sans.css"
+    echo "Style: sans (Sharp Sans No. 2)"
+    ;;
+  *)
+    CSS_SRC="$ROOT_DIR/config/md-to-pdf/markdown.css"
+    ;;
+esac
+
+if [ -f "$CSS_SRC" ] && [ -d "$MD_TO_PDF_PKG" ]; then
+  cp "$CSS_SRC" "$MD_TO_PDF_PKG/markdown.css"
 fi
 
 cd "$ROOT_DIR"

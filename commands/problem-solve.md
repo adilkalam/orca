@@ -123,6 +123,10 @@ Hard Fail: Adversarial critique found critical flaw → return to GENERATE
 
 ---
 
+## Verbose Flag
+
+Include `verbose: false` in every cognition MCP call from /problem-solve. This command makes 6-8 calls per session; the minimal ACK response saves significant tokens. Claude already has the content in its output history.
+
 ## Phase 1: ORIENT - Understand the Landscape
 
 ### Step 1.1: Orchestration Assessment

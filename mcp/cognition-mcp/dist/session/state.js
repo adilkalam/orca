@@ -4,7 +4,7 @@
  * Stores entries exactly as received. No transformation.
  */
 export class SessionState {
-    constructor(id, title, tags) {
+    constructor(id, title, tags, projectPath) {
         this.id = id;
         const now = Date.now();
         this.metadata = {
@@ -14,6 +14,7 @@ export class SessionState {
             createdAt: now,
             lastAccessedAt: now,
             status: 'active',
+            ...(projectPath ? { projectPath } : {}),
         };
         this.stores = {
             thoughts: [],
@@ -275,7 +276,7 @@ export class SessionState {
      * Restore session from export data.
      */
     static fromExport(data) {
-        const session = new SessionState(data.metadata.id, data.metadata.title, data.metadata.tags);
+        const session = new SessionState(data.metadata.id, data.metadata.title, data.metadata.tags, data.metadata.projectPath);
         session.metadata = { ...data.metadata };
         session.stores = {
             thoughts: [...(data.stores.thoughts || [])],

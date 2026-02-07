@@ -29,6 +29,8 @@ When reviewing, verify adherence to these skills:
 - `skills/search-before-edit/SKILL.md` - Search before modify
 - `skills/linter-loop-limits/SKILL.md` - Max 3 linter attempts
 - `skills/debugging-first/SKILL.md` - Debug before code changes
+- `skills/web-interface-guidelines/SKILL.md` - Web UI quality (forms, a11y, loading, animations)
+- `skills/react-performance/SKILL.md` - React/Next.js performance patterns
 
 Flag violations of these skills in your review.
 
@@ -46,7 +48,7 @@ Before you run:
   - Files changed in corrective pass, when applicable,
 - ContextBundle:
   - `designSystem` / design-dna,
-  - **`relatedStandards` for frontend** - treat as enforceable rules, not suggestions (OS 5.0),
+  - **`relatedStandards` for frontend** - treat as enforceable rules, not suggestions (OS 5.1),
   - `projectState` for structural hints.
 - Global standards knowledge (via context7):
   - `os2-nextjs-standards` – Nextjs/front-end standards,
@@ -82,7 +84,7 @@ You SHOULD check at least:
    - No secrets or API keys added to client-side code,
    - Obvious unsafe patterns avoided (e.g., dangerous HTML injection without sanitization).
 
-## Scoring (Graduated Gate Standard - OS 5.0)
+## Scoring (Graduated Gate Standard - OS 5.1)
 
 **Reference:** `docs/reference/graduated-gate-scoring.md`
 
@@ -167,13 +169,13 @@ Write your results to `phase_state.gates`:
 - Update or create a `standards` entry with:
   - `standards_score`,
   - `violations`,
-  - `gate_decision` (`PASS`, `CAUTION`, `FAIL`),
+  - `gate_decision` (`PASS`, `WARN`, `ERROR`, `BLOCK`),
   - Any notes relevant for `nextjs-builder` in corrective passes.
 - Add `"standards"` to `gates_passed` or `gates_failed` depending on the decision.
 
 Your report should make it easy for `nextjs-builder` to run a targeted corrective pass and for orchestrators to understand the remaining risk if any violations remain after Pass 2.
 
-## Response Awareness Audit (OS 5.0)
+## Response Awareness Audit (OS 5.1)
 
 Scan modified files for RA tags and report:
 
@@ -187,8 +189,8 @@ Scan modified files for RA tags and report:
 **RA Assessment (instrumentation only):**
 - Count tags found: `ra_tags_found: N`
 - Identify resolved vs unresolved: `ra_tags_resolved: N, ra_tags_unresolved: N`
-- Unresolved `#COMPLETION_DRIVE` on critical paths (auth, data fetching, SEO) → CAUTION
-- Any `#POISON_PATH` left unaddressed → contribute to FAIL score
+- Unresolved `#COMPLETION_DRIVE` on critical paths (auth, data fetching, SEO) → WARN
+- Any `#POISON_PATH` left unaddressed → contribute to BLOCK score
 
 **Include in output (do NOT derive standalone “RA accuracy %” metrics):**
 ```yaml
@@ -200,9 +202,9 @@ ra_audit:
     - "#COMPLETION_DRIVE in PricingTable.tsx:28 - assumption about currency format"
 ```
 
-## Reflexion on Failure (OS 5.0)
+## Reflexion on Failure (OS 5.1)
 
-When `gate_decision` is CAUTION or FAIL:
+When `gate_decision` is WARN, ERROR, or BLOCK:
 
 1. Generate a reflexion explaining:
    - What specific issue(s) caused the failure
@@ -219,7 +221,7 @@ When `gate_decision` is CAUTION or FAIL:
 Example reflexion:
 > "This Next.js component failed standards because it used inline styles instead of Tailwind classes. The pattern was hardcoded color values (#fff, #000) instead of design tokens. Next time, grep for hardcoded hex values before approving."
 
-## Improvement Bus Emission (OS 3.1)
+## Improvement Bus Emission
 
 After storing the Workshop gotcha, also emit to the improvement bus:
 
@@ -238,9 +240,9 @@ This enables `/self-improve` to route reflexions to `nextjs-builder/patterns.jso
 Your gate output should include:
 - `standards_score` (0-100)
 - `violations` (array with severity, file, description)
-- `gate_decision` (PASS/CAUTION/FAIL)
-- **`ra_audit`** - RA tag scan summary (OS 5.0)
-- **`reflexion`** - verbal reflection on failure causes (OS 5.0, only if CAUTION/FAIL)
+- `gate_decision` (PASS/WARN/ERROR/BLOCK)
+- **`ra_audit`** - RA tag scan summary (OS 5.1)
+- **`reflexion`** - verbal reflection on failure causes (OS 5.1, only if WARN/ERROR/BLOCK)
 - **Tag violations to the standard they break** (if any) for audit traceability
 
 In CSS Architecture Refactor Mode, your report is consumed alongside

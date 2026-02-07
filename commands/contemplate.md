@@ -104,6 +104,8 @@ Note which apply:
 
 ## Phase 2: Call orchestration_suggest
 
+**Verbose flag**: Include `verbose: true` in the cognition MCP call. Since /contemplate is a single orchestration call, the echo IS the output.
+
 Call `mcp__cognition-mcp__cognition` with operation `orchestration_suggest`:
 
 ```typescript

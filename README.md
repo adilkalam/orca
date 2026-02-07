@@ -1,24 +1,16 @@
 ```
-      ___           ___           ___           ___                    ___           ___     
-     /  /\         /  /\         /  /\         /  /\                  /  /\         /  /\    
-    /  /::\       /  /::\       /  /:/        /  /::\                /  /::\       /  /:/_   
-   /  /:/\:\     /  /:/\:\     /  /:/        /  /:/\:\              /  /:/\:\     /  /:/ /\  
-  /  /:/  \:\   /  /:/~/:/    /  /:/  ___   /  /:/~/::\            /  /:/  \:\   /  /:/ /::\ 
- /__/:/ \__\:\ /__/:/ /:/___ /__/:/  /  /\ /__/:/ /:/\:\          /__/:/ \__\:\ /__/:/ /:/\:\
- \  \:\ /  /:/ \  \:\/:::::/ \  \:\ /  /:/ \  \:\/:/__\/          \  \:\ /  /:/ \  \:\/:/~/:/
-  \  \:\  /:/   \  \::/~~~~   \  \:\  /:/   \  \::/                \  \:\  /:/   \  \::/ /:/ 
-   \  \:\/:/     \  \:\        \  \:\/:/     \  \:\                 \  \:\/:/     \__\/ /:/  
-    \  \::/       \  \:\        \  \::/       \  \:\                 \  \::/        /__/:/   
-     \__\/         \__\/         \__\/         \__\/                  \__\/         \__\/    
-                                                                                        v5.1
-
+  ___  ____   ____    _      ___  ____
+ / _ \|  _ \ / ___|  / \    / _ \/ ___|
+| | | | |_) | |     / _ \  | | | \___ \
+| |_| |  _ <| |___ / ___ \ | |_| |___) |
+ \___/|_| \_\\____/_/   \_\ \___/|____/
+                                    v5.1
 ```
-**ORCA OS: ORCHESTRATED REASONING COGNITIVE ARCHITECTURE**
+> **[QUICK-START.md](QUICK-START.md)**
 
-Prosthetic Cognition for Claude Code
--> [QUICK-START.md](QUICK-START.md)
+**Prosthetic cognitive architecture for Claude Code**
 
----
+## The Trouble with AI
 
 Large Language Models (LLMs) are trained across millions of interactions to produce output that is quick rather than thorough, agreeable rather than honest, hedged rather than specific, and complete-sounding rather than candid about what they do not know. 
 

@@ -4,7 +4,7 @@
 **Domain:** `django-react`
 **Entrypoints:** `/plan`, `/orca`, `/django-react`, `/project-memory`, `/project-code`
 
-This document explains how the Django + React lane works in Vibe OS 5.1:
+This document explains how the Django + React lane works in OS 5.1:
 
 - How planning and specs work (`/plan`)
 - How orchestration routes (`/orca`, `/django-react`)
@@ -345,7 +345,7 @@ Result: Grand architect -> full pipeline -> all gates -> verification
 /django-react --audit "review API security"
 ```
 
-Result: Security specialist audit -> report (no code changes)
+Result: Focused audit using relevant specialists -> synthesized report (no code changes)
 
 ---
 
@@ -370,5 +370,4 @@ bunx openapi-ts schema.yaml -o src/api/
 
 ---
 
-_Last updated: 2025-12-15_
-_Version: 3.0.0_
+_Version: OS 5.1_

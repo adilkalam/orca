@@ -236,7 +236,7 @@ If file write or Workshop command fails:
 
 ## Response Awareness Integration
 
-This command uses Sequential Thinking MCP for deep analysis and assumption surfacing. When analysis reveals implementation uncertainties or competing approaches:
+When analysis reveals implementation uncertainties or competing approaches:
 
 - Use `#PATTERN_CONFLICT:` for competing valid approaches
 - Use `#POISON_PATH:` when framing limits exploration

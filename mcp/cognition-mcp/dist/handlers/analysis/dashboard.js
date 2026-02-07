@@ -6,6 +6,7 @@
  */
 import { validateOperationContent } from '../../schema.js';
 import { getSessionManager } from '../../session/manager.js';
+import { buildResponse } from '../shared.js';
 export async function handleVisualDashboard(args, session) {
     const manager = getSessionManager();
     // 1. VALIDATE structure (not content)
@@ -43,27 +44,7 @@ export async function handleVisualDashboard(args, session) {
     if (shouldComplete) {
         exportPath = await manager.completeSession(session);
     }
-    // 4. ECHO unchanged + context
-    const response = {
-        ...dashboardContent,
-        quality: args.quality,
-        status: shouldComplete ? 'exported' : 'stored',
-        sessionContext: {
-            sessionId: session.id,
-            entryCount: session.getCount('dashboard'),
-            totalEntries: session.getTotalCount(),
-            sessionDuration: session.getDuration(),
-            continuation: shouldComplete
-                ? null
-                : 'Continue with sessionId: ' + session.id,
-        },
-        ...(exportPath ? { exportPath } : {}),
-    };
-    return {
-        content: [{
-                type: 'text',
-                text: JSON.stringify(response),
-            }],
-    };
+    // 4. ECHO unchanged + context (respects verbose flag)
+    return buildResponse(dashboardContent, args, session, 'dashboard', shouldComplete ? 'exported' : 'stored', exportPath);
 }
 //# sourceMappingURL=dashboard.js.map

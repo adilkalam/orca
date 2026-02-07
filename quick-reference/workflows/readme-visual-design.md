@@ -1,7 +1,7 @@
 # Visual Design Spec — Quick Reference (OS 5.1)
 
 **Version:** OS 5.1
-**Last Updated:** 2025-12-05
+**Last Updated:** 2026-02-07
 
 Use this template to define clear, testable acceptance criteria for visual work. In OS 5.1, design QA is **automated** within pipelines via design-reviewer agents.
 
@@ -22,11 +22,6 @@ Use this template to define clear, testable acceptance criteria for visual work.
 - Screenshots: `.claude/orchestration/evidence/screenshots/`
 - Design QA reports: `.claude/orchestration/evidence/design-qa-*.md`
 - Gate scores: `.claude/orchestration/phase_state.json`
-
-**Deprecated (OS 2.2):**
--  `/visual-smoke` → Use pipeline automatic checks
--  `/visual-iterate` → Use pipeline iteration (gate <90 triggers fix)
--  `/design-review` → Use automatic design-reviewer agents
 
 ---
 
@@ -69,25 +64,9 @@ Use this template to define clear, testable acceptance criteria for visual work.
 
 ---
 
-## How To Use With Commands
+## Design QA in OS 5.1
 
-1) Quick check
-```
-/visual-smoke http://localhost:3000 label=home
-```
-Produces desktop/tablet/mobile screenshots + console log under `.orchestration/evidence/…`.
-
-2) Iterative polish (spec-driven)
-```
-/visual-iterate url=http://localhost:3000 spec_path=docs/design/home-spec.md max_iterations=5 label=home
-```
-Loop: navigate → screenshots → compare to spec → minimal edits → log → repeat.
-
-3) Final gate
-```
-/design-review http://localhost:3000
-```
-Generates screenshots and a structured findings summary.
+Design QA is handled automatically by domain pipelines (e.g., `/orca-nextjs`, `/orca-ios`). Use `/design-review` for standalone visual review.
 
 ---
 

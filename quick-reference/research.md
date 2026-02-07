@@ -46,9 +46,11 @@
 
 ## What Happens When You Run `/research`
 
-### Phase 1: Scoping
+**Note:** The internal pipeline has additional preparatory phases (Phase 0: folder creation, Phase 1: argument parsing, Phase 2: prompt size check) before the user-facing workflow below begins.
 
-The system clarifies your question:
+### Phase 1: Scoping (Optional)
+
+During subquestion planning, the system may optionally clarify your question:
 
 ```
 You: /research "Best vector databases for RAG"
@@ -63,7 +65,7 @@ You can answer or say "proceed with defaults" for a general survey.
 
 ### Phase 2: Research Plan
 
-The lead agent breaks your question into subquestions:
+The orchestrator breaks your question into subquestions:
 
 ```
 Research Plan:
@@ -75,10 +77,10 @@ Research Plan:
 
 ### Phase 3: Evidence Gathering
 
-Subagents search the web in parallel using WebSearch + Crawl4AI:
+Subagents search the web sequentially using WebSearch + Crawl4AI:
 
 ```
-[Parallel research in progress...]
+[Sequential research in progress...]
 - Searching: "vector database comparison 2024"
 - Searching: "pinecone vs weaviate vs qdrant benchmarks"
 - Scraping: official documentation sites
@@ -177,7 +179,9 @@ Special tags flag issues:
 - `#LOW_EVIDENCE` - Thin evidence for this claim
 - `#SOURCE_DISAGREEMENT` - Sources conflict
 - `#OUT_OF_DATE` - Evidence may be stale
-- `#RATE_LIMITED` - Search tools hit limits, coverage may be incomplete
+- `#RATE_LIMITED` - Search tools hit limits, coverage may be incomplete (used by writer agents)
+- `#TOOL_ERROR` - A tool call failed during evidence gathering
+- `#RETRY_EXHAUSTED` - Maximum retries reached for a search or scrape
 
 ---
 
@@ -217,13 +221,15 @@ Special tags flag issues:
 
 ## Where Reports Are Saved
 
-Research artifacts persist in `.claude/research/`:
+Research artifacts persist in per-session folders under `.claude/research/`:
 
 ```
 .claude/research/
- evidence/       ← Raw evidence notes from subagents
- reports/        ← Final research reports
- cache/          ← Cached search results (speeds up related queries)
+ YYYY-MM-DD-Topic-Slug/
+   evidence/       ← Raw evidence notes from subagents
+   synthesis.md    ← Synthesized findings
+   report.md       ← Final research report
+   temp/           ← Working files (cleaned up after completion)
 ```
 
 You can reference past research:

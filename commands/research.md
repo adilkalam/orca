@@ -1,5 +1,5 @@
 ---
-description: "OS 5.0 Research lane entrypoint for deep, cited research"
+description: "OS 5.1 Research lane entrypoint for deep, cited research"
 argument-hint: "[--deep] [--time N] <research question>"
 allowed-tools:
   - Task
@@ -219,6 +219,21 @@ Return the final report to user with:
 - Any RA tags from evidence (LOW_EVIDENCE, SOURCE_DISAGREEMENT, etc.)
 - **Full path to the research folder**: `$RESEARCH_DIR`
 - Contents: `$RESEARCH_DIR/report.md`, `$RESEARCH_DIR/synthesis.md`, `$RESEARCH_DIR/evidence/`
+
+### PDF Generation Offer
+
+After presenting results, ask:
+
+> Would you like a PDF version of the synthesis or full report?
+
+If user accepts, run:
+```bash
+bash ~/.claude/scripts/utilities/md-to-pdf.sh $RESEARCH_DIR/report.md
+```
+
+For synthesis PDF: `bash ~/.claude/scripts/utilities/md-to-pdf.sh $RESEARCH_DIR/synthesis.md`
+
+Supports `--serif` (Financier) and `--sans` (Calibre) flags. Default is Founders Grotesk.
 
 ---
 

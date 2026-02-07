@@ -1,8 +1,8 @@
 # Memory Systems
 
-**Version:** OS 5.0 | **Last Updated:** 2026-01-24
+**Version:** OS 5.1 | **Last Updated:** 2026-01-24
 
-OS 5.0 uses multiple memory systems to maintain context across sessions and provide relevant information to agents.
+OS 5.1 uses multiple memory systems to maintain context across sessions and provide relevant information to agents.
 
 ## Memory Architecture
 
@@ -56,7 +56,7 @@ workshop goal add "text"
 **Stores:**
 - Code file embeddings
 - Symbol definitions (functions, classes, types)
-- File relationships
+- File index and component registry
 
 **Commands:**
 ```bash
@@ -76,7 +76,7 @@ python3 ~/.claude/scripts/memory-search-unified.py "query" --mode all --top-k 10
 
 **Returns:** ContextBundle containing:
 - `relevantFiles` - files related to the task
-- `projectState` - structure, dependencies, config
+- `projectState` - structure summary, dependencies, component names
 - `pastDecisions` - from Workshop
 - `relatedStandards` - domain-specific standards
 - `similarTasks` - previous task history
@@ -96,6 +96,9 @@ mcp__project-context__query_context({
 - `save_decision` - record architectural decisions
 - `save_standard` - codify recurring rules
 - `save_task_history` - log task outcomes
+- `index_project` - index project files for semantic search
+- `reanalyze_project` - re-analyze project state
+- `recall` - retrieve archived content by ID
 
 ### Implementation Details
 
@@ -109,7 +112,7 @@ The ProjectContext MCP uses a hybrid approach for Workshop integration:
 
 ## Memory-First Pattern
 
-OS 5.0 checks fast, local memory before expensive queries:
+OS 5.1 checks fast, local memory before expensive queries:
 
 ```bash
 # Step 1: Check Workshop for relevant decisions/gotchas
@@ -256,7 +259,7 @@ ORCA-Mem manages context window efficiently by:
 |-----------|----------|---------|
 | PostToolUse Hook | `hooks/post-tool-use.sh` | Truncates large outputs, archives originals |
 | Session End Hook | `hooks/session-end.sh` | Captures session summary on exit |
-| Recall Tool | ProjectContextServer MCP | Retrieves archived content by session/timestamp |
+| Recall Tool | ProjectContextServer MCP | Retrieves archived content by archive ID |
 | Archive Cleanup | `scripts/archive-cleanup.sh` | Removes archives older than 7 days |
 
 **Configuration:**
@@ -286,7 +289,7 @@ Tool Output (>4000 chars)
     |         |
     v         v
  HEAD +    ~/.claude/archives/
- TAIL +    {session}/{timestamp}.txt
+ TAIL +    {YYYY-MM-DD}/{timestamp-random}.txt
  [archived]
 ```
 
@@ -295,15 +298,13 @@ Tool Output (>4000 chars)
 ```typescript
 // Retrieve archived content
 mcp__project-context__recall({
-  session_id: "abc123",        // Optional: specific session
-  timestamp: "2025-01-15T...", // Optional: specific archive
-  query: "database migration"  // Optional: search archives
+  id: "1705123456-abc123"  // Archive ID from truncation message
 })
 ```
 
 **Integration:**
 - PostToolUse hook runs after every tool call
-- Archives are keyed by session ID and timestamp
+- Archives are keyed by date directory and a unique timestamp-random ID (e.g., ~/.claude/archives/2026-02-07/1707312456-a8b3c9d1.txt)
 - ProjectContextServer provides `recall` tool for retrieval
 - Session end hook ensures summaries are captured
 

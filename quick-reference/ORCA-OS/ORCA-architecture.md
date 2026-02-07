@@ -9,18 +9,18 @@
 
 ORCA-OS is a Claude Code orchestration system that counteracts trained defaults -- the tendency toward quick, shallow, agreeable output that LLM training optimizes for casual users rather than agentic development workflows. The architecture provides structure that prevents bypassing the capability that already exists in the model.
 
-- **110 agents** across 11 public lanes + cross-cutting (122 total including internal lanes)
-- **33 commands** (12 lane orchestrators + utilities)
+- **124 agents** across 13 domains
+- **33 commands** (10 lane orchestrators + utilities)
 - **Project-scoped MCPs** to minimize token usage
 - **Dependency graph** for change impact tracking
 
-> **Scope Note:** This quick-reference covers public lanes. Internal lanes (kg, shopify) are documented in `docs/reference/os-dependency-graph.yaml`. For the reasoning behind this architecture, see `docs/concepts/why-orca-architecture.md`.
+> For the reasoning behind this architecture, see `docs/concepts/why-orca-architecture.md`.
 
 ---
 
 ## Lane Architecture
 
-### Active Lanes (11)
+### Active Lanes (13)
 
 | Lane | Command | Agents | MCPs |
 |------|---------|--------|------|
@@ -28,14 +28,15 @@ ORCA-OS is a Claude Code orchestration system that counteracts trained defaults 
 | Next.js | `/nextjs` | 15 | chrome-devtools, puppeteer |
 | Django-React | `/django-react` | 13 | (none) |
 | Expo | `/expo` | 12 | (none) |
-| Research | `/research` | 7 | crawl4ai |
-| SEO | `/seo` | 5 | ahrefs, crawl4ai |
-| Typography | `/typography` | 5 | (none) |
-| Data | (none) | 4 | (none) |
-| OS-Dev | `/orca-os-dev` | 6 | (none) |
-| Orca-Pipeline | `/orca-pipeline` | 5 | (none) |
+| Dev (cross-cutting) | - | 12 | - |
+| OS-Dev | `/orca-os-dev` | 11 | (none) |
 | Audit | `/audit` | 8 | cognition-mcp |
-| **Cross-cutting** | - | 11 | - |
+| Shopify | `/shopify` | 8 | puppeteer |
+| Research | `/research` | 7 | crawl4ai |
+| Typography | `/typography` | 6 | (none) |
+| SEO | `/seo` | 5 | ahrefs, crawl4ai |
+| KG | `/kg` | 4 | cognition-mcp |
+| Data | (none) | 4 | (none) |
 
 ---
 
@@ -50,7 +51,7 @@ All lane commands support:
 | **Complex** | `--complex` | Full pipeline with spec |
 
 ```
-/ios "task"           # Default: architect -> builder -> gates
+/ios "task"           # Default: light-orchestrator -> builder -> gates
 /ios -tweak "task"    # Tweak: builder only, you verify
 /ios --complex "task" # Complex: grand-architect -> full pipeline
 ```
@@ -59,7 +60,17 @@ All lane commands support:
 
 ## Pipeline Flow
 
-### Standard Pipeline (Default/Complex)
+### Default Pipeline
+
+```
+User Request
+    |
+    v
+[Light Orchestrator] -> [Builder] -> [Quality Gates] -> Done
+```
+Light orchestrator delegates to builder, then runs domain-specific gates (>=90 to pass).
+
+### Complex Pipeline (--complex flag)
 
 ```
 User Request
@@ -68,10 +79,10 @@ User Request
 [Context Query] - ProjectContext MCP (MANDATORY)
     |
     v
-[Team Confirm] - AskUserQuestion (complex only)
+[Team Confirm] - AskUserQuestion
     |
     v
-[Planning] - grand-architect or architect
+[Planning] - grand-architect
     |
     v
 [Implementation] - builder + specialists
@@ -144,18 +155,20 @@ See `quick-reference/llm-local.md` for setup.
 ### Source (ORCA-OS Repo)
 ```
 $ORCA_OS_PATH/
-  agents/             # 110 agent definitions (public)
+  agents/             # 124 agent definitions
     iOS/              # 19 agents
-    nextjs/           # 15 agents (nextjs-*)
+    nextjs/           # 15 agents
     django-react/     # 13 agents
     expo/             # 12 agents
+    dev/              # 12 agents (cross-cutting)
     os-dev/           # 11 agents (os-dev-* + orca-pipeline-*)
-    dev/              # 11 agents (cross-cutting)
-    research/         # 7 agents
-    seo/              # 5 agents
-    data/             # 4 agents
     audit/            # 8 agents
-    typography/       # 5 agents
+    shopify/          # 8 agents
+    research/         # 7 agents
+    typography/       # 6 agents
+    seo/              # 5 agents
+    kg/               # 4 agents
+    data/             # 4 agents
   commands/           # 33 command definitions
   docs/
     pipelines/        # Pipeline specs
@@ -273,7 +286,6 @@ Configure your projects in the hook files:
 
 | Hook | Trigger | Purpose |
 |------|---------|---------|
-| `git-tracking-guard.sh` | PreToolUse (Edit/Write) | Warns when editing untracked files |
 | `session-end.sh` | SessionEnd | Extracts learnings from JSONL transcripts via Ollama |
 
 ### Other Hooks
@@ -300,4 +312,4 @@ Configure your projects in the hook files:
 ---
 
 _Source of truth: `docs/reference/os-dependency-graph.yaml`_
-_Last sync: 2026-02-03_
+_Last sync: 2026-02-06_
