@@ -841,4 +841,4 @@ For full research context, see `/docs/concepts/llm-introspection-analysis.md`.
 
 ---
 
-_Version: OS 5.1 | Last updated: 2026-02-06_
+_Version: OS 5.2 | Last updated: 2026-02-06_

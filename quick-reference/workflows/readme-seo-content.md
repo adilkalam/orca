@@ -1,4 +1,4 @@
-# OS 5.1 SEO Lane Quick Reference
+# OS 5.2 SEO Lane Quick Reference
 
 **Lane:** SEO Content
 **Domain:** `seo`
@@ -114,4 +114,4 @@ Use for:
 
 ---
 
-_Version: OS 5.1_
+_Version: OS 5.2_

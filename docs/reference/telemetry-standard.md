@@ -1,8 +1,8 @@
-# Telemetry Standard (OS 5.1)
+# Telemetry Standard (OS 5.2)
 
 **Version:** 3.0.0 (spec document version; `index.json` uses data format version "2.5.0")
 **Status:** Active
-**Effective:** OS 5.1
+**Effective:** OS 5.2
 
 ---
 
@@ -318,4 +318,4 @@ Phase 2 (Intelligence) - Planned:
 
 ---
 
-*Part of OS 5.1*
+*Part of OS 5.2*

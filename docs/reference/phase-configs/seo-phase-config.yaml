@@ -1,10 +1,10 @@
-# SEO Pipeline Phase Configuration - OS 5.1
+# SEO Pipeline Phase Configuration - OS 5.2
 # SEO Content Creation and Optimization Workflow
 
 pipeline:
   name: seo
   description: SEO content pipeline with research, brief creation, drafting, and optimization
-  version: "5.1"
+  version: "5.2"
 
 # Context Integration
 context:
@@ -13,7 +13,7 @@ context:
   query_on_start: true
   memory_first: true
 
-# Three-Tier Routing (OS 5.1)
+# Three-Tier Routing (OS 5.2)
 complexity_tiers:
   default:
     description: Standard SEO content workflow

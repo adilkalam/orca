@@ -78,7 +78,7 @@ You SHOULD evaluate at least:
    - Are there obvious legacy patterns left in the refactored area that violate
      the stated refactor goals?
 
-## Scoring (Graduated Gate Standard - OS 5.1)
+## Scoring (Graduated Gate Standard - OS 5.2)
 
 **Reference:** `docs/reference/graduated-gate-scoring.md`
 

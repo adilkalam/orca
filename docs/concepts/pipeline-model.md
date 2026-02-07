@@ -1,8 +1,8 @@
 # Pipeline Model
 
-**Version:** OS 5.1 | **Last Updated:** 2026-01-24
+**Version:** OS 5.2 | **Last Updated:** 2026-01-24
 
-OS 5.1 uses a **multi-lane pipeline architecture** to handle different types of development work. Each "lane" is a domain-specific pipeline with its own agents, phases, and gates.
+OS 5.2 uses a **multi-lane pipeline architecture** to handle different types of development work. Each "lane" is a domain-specific pipeline with its own agents, phases, and gates.
 
 ## Core Concepts
 
@@ -58,7 +58,7 @@ Parse flags
 
 ### Agent Roles
 
-OS 5.1 enforces strict role separation:
+OS 5.2 enforces strict role separation:
 
 #### Orchestrators (Never Write Code)
 - **Commands**: `/orca`, `/ios`, `/nextjs`, etc.

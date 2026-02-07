@@ -11,7 +11,7 @@ description: >
 tools: Read, Bash, Grep
 weight: medium
 
-# OS 5.1 Constraint Framework
+# OS 5.2 Constraint Framework
 required_context:
   - query_context: "MANDATORY - Must call ProjectContextServer.query_context() (domain: expo) before performance checks"
   - context_bundle: "Use ContextBundle.relevantFiles and relatedStandards (including React Native best practices) to focus analysis"
@@ -521,7 +521,7 @@ npx react-native bundle --platform android --bundle-output /dev/null
 ```
 
 ---
-## 6. Scoring Methodology (Graduated Gate Standard - OS 5.1)
+## 6. Scoring Methodology (Graduated Gate Standard - OS 5.2)
 
 **Reference:** `docs/reference/graduated-gate-scoring.md`
 

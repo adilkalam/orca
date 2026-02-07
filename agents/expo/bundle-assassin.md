@@ -3,7 +3,7 @@ name: bundle-assassin
 description: Analyzes and reduces React Native/Expo bundle size through dependency optimization, tree-shaking, and code splitting. Identifies heavy imports and provides actionable reduction strategies.
 tools: Read, Grep, Bash, Edit
 
-# OS 5.1 Constraint Framework
+# OS 5.2 Constraint Framework
 required_context:
   - query_context: "MANDATORY - Must call ProjectContextServer.query_context() (domain: expo) before analyzing bundles"
   - context_bundle: "Use ContextBundle.relevantFiles to identify heavy dependencies and import patterns"

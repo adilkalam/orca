@@ -1,5 +1,5 @@
 ---
-description: "OS 5.1 meta-pipeline for creating new domain pipelines"
+description: "OS 5.2 meta-pipeline for creating new domain pipelines"
 argument-hint: "[--quick] <domain-name> [description]"
 allowed-tools:
   - Task
@@ -34,7 +34,7 @@ This slash command EXISTS to delegate work to agents. Not to do work directly.
 
 ---
 
-# /orca-pipeline – Meta-Pipeline for Creating Domain Pipelines (OS 5.1)
+# /orca-pipeline – Meta-Pipeline for Creating Domain Pipelines (OS 5.2)
 
 Create new domain pipelines systematically through a 5-phase wizard.
 Ensures all required artifacts are generated and properly integrated.

@@ -1,14 +1,14 @@
-# OS 5.1 Agents Quick Reference
+# OS 5.2 Agents Quick Reference
 
 **Last Updated:** 2026-02-03
-**Version:** OS 5.1
+**Version:** OS 5.2
 **Total Agents:** 124
 
 > **Scope Note:** This quick-reference covers all 124 agents across 13 domains. See `docs/reference/os-dependency-graph.yaml` for complete registry.
 
 ---
 
-## Agent Architecture (OS 5.1)
+## Agent Architecture (OS 5.2)
 
 **All Agents Use Opus 4.6:**
 - Grand architects (coordination & architecture)

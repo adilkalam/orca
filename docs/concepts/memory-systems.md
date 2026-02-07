@@ -1,8 +1,8 @@
 # Memory Systems
 
-**Version:** OS 5.1 | **Last Updated:** 2026-01-24
+**Version:** OS 5.2 | **Last Updated:** 2026-01-24
 
-OS 5.1 uses multiple memory systems to maintain context across sessions and provide relevant information to agents.
+OS 5.2 uses multiple memory systems to maintain context across sessions and provide relevant information to agents.
 
 ## Memory Architecture
 
@@ -112,7 +112,7 @@ The ProjectContext MCP uses a hybrid approach for Workshop integration:
 
 ## Memory-First Pattern
 
-OS 5.1 checks fast, local memory before expensive queries:
+OS 5.2 checks fast, local memory before expensive queries:
 
 ```bash
 # Step 1: Check Workshop for relevant decisions/gotchas

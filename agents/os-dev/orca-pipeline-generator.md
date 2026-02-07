@@ -33,7 +33,7 @@ Write({
 
 ---
 
-## Context Inheritance (OS 5.1)
+## Context Inheritance (OS 5.2)
 
 **Check for inherited context FIRST:**
 
@@ -117,7 +117,7 @@ files_failed: []
 
 ```markdown
 ---
-description: "OS 5.1 <domain> pipeline - <description>"
+description: "OS 5.2 <domain> pipeline - <description>"
 argument-hint: "[-tweak | --complex] <task-description>"
 allowed-tools:
   - Task
@@ -147,7 +147,7 @@ This slash command EXISTS to delegate work to agents. Not to do work directly.
 
 ---
 
-# /<domain> – <Description> (OS 5.1)
+# /<domain> – <Description> (OS 5.2)
 
 <Brief description of what this pipeline does>
 
@@ -233,7 +233,7 @@ tools: <comma-separated tool list>
 
 ---
 
-## Context Inheritance (OS 5.1)
+## Context Inheritance (OS 5.2)
 
 **Check for inherited context FIRST:**
 
@@ -307,7 +307,7 @@ If task fails 3 times, escalate to orchestrator.
 ```markdown
 # <Domain> Pipeline
 
-**Status:** OS 5.1 Domain Pipeline
+**Status:** OS 5.2 Domain Pipeline
 **Domain:** `<domain>`
 **Last Updated:** <date>
 

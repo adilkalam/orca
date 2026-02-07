@@ -134,7 +134,7 @@ if [ -f "$SESSION_SUMMARY" ]; then
 fi
 
 # ============================================================
-# TELEMETRY INITIALIZATION (OS 5.1)
+# TELEMETRY INITIALIZATION (OS 5.2)
 # ============================================================
 
 TELEMETRY_DIR=".claude/telemetry"
@@ -365,7 +365,7 @@ fi
 # Architecture reminder for this repo
 echo ""
 echo "═══════════════════════════════════════════════════════════"
-echo "OS 5.1 ARCHITECTURE - ALWAYS CONSIDER ALL LAYERS"
+echo "OS 5.2 ARCHITECTURE - ALWAYS CONSIDER ALL LAYERS"
 echo "═══════════════════════════════════════════════════════════"
 echo ""
 echo "When modifying orchestration behavior, you MUST update ALL affected layers:"

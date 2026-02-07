@@ -1,6 +1,6 @@
-# Natural Language Triggers and Tools (OS 5.1)
+# Natural Language Triggers and Tools (OS 5.2)
 
-**Version:** OS 5.1
+**Version:** OS 5.2
 **Last Updated:** 2026-01-19
 
 Say what you want; map to the right command.
@@ -123,4 +123,4 @@ Say what you want; map to the right command.
 
 ---
 
-_OS 5.1 simplifies workflows: `/plan` → `/orca` → `/audit` replaces 8+ fragmented commands_
+_OS 5.2 simplifies workflows: `/plan` → `/orca` → `/audit` replaces 8+ fragmented commands_

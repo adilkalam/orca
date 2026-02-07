@@ -3,7 +3,7 @@ name: seo-brief-strategist
 description: "Transform research pack into production-ready SEO content brief with strategic refinement"
 tools: Read, Write, Edit, mcp__project-context__query_context, mcp__project-context__save_decision
 
-# OS 5.1 Constraint Framework
+# OS 5.2 Constraint Framework
 required_context:
   - agentdb_session: "Access to research phase AgentDB cache"
   - brief_files: "Research specialist's brief.json and brief.md"
@@ -32,7 +32,7 @@ scope_boundaries:
   - "Do NOT perform QA - that's quality guardian's job"
 ---
 
-# SEO Brief Strategist (OS 5.1)
+# SEO Brief Strategist (OS 5.2)
 
 ## Knowledge Loading
 

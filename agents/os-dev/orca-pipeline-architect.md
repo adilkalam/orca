@@ -18,7 +18,7 @@ requirements and research findings.
 
 ---
 
-## Context Inheritance (OS 5.1)
+## Context Inheritance (OS 5.2)
 
 **Check for inherited context FIRST:**
 
@@ -208,7 +208,7 @@ blueprint:
         tools: Task, Read, Grep, Glob, Bash, AskUserQuestion
         weight: heavy
         required_sections:
-          - "Context Inheritance (OS 5.1)"
+          - "Context Inheritance (OS 5.2)"
           - "Knowledge Loading"
           - "Required Skills Awareness"
           - "Attempt Tracking"
@@ -218,7 +218,7 @@ blueprint:
         tools: Task, Read, Grep, Glob, Bash
         weight: medium
         required_sections:
-          - "Context Inheritance (OS 5.1)"
+          - "Context Inheritance (OS 5.2)"
           - "Knowledge Loading"
           - "Required Skills Awareness"
           - "Attempt Tracking"
@@ -229,7 +229,7 @@ blueprint:
         tools: Read, Write, Edit, Grep, Glob, Bash
         weight: heavy
         required_sections:
-          - "Context Inheritance (OS 5.1)"
+          - "Context Inheritance (OS 5.2)"
           - "Knowledge Loading"
           - "Required Skills"
           - "Attempt Tracking"
@@ -240,7 +240,7 @@ blueprint:
         tools: Read, Grep, Glob, Bash
         weight: medium
         required_sections:
-          - "Context Inheritance (OS 5.1)"
+          - "Context Inheritance (OS 5.2)"
           - "Validation Checklist"
       
       - name: <domain>-verification
@@ -248,7 +248,7 @@ blueprint:
         tools: Read, Grep, Glob, Bash
         weight: medium
         required_sections:
-          - "Context Inheritance (OS 5.1)"
+          - "Context Inheritance (OS 5.2)"
           - "Verification Checklist"
   
   specialists:  # Optional, based on requirements

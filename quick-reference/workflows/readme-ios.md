@@ -1,10 +1,10 @@
-# OS 5.1 iOS Lane Readme
+# OS 5.2 iOS Lane Readme
 
 **Lane:** iOS / Native Apple Platforms  
 **Domain:** `ios`  
 **Entrypoints:** `/plan`, `/orca`, `/ios`, `/project-memory`, `/project-code`
 
-This document explains how the iOS lane works in OS 5.1:
+This document explains how the iOS lane works in OS 5.2:
 
 - Planning & specs (`/plan`)
 - Orchestration (`/orca`, `/ios`)
@@ -76,7 +76,7 @@ File: `commands/ios.md`
   /ios "implement requirement <id>"              # With spec
   ```
 
-- **Routing Modes (OS 5.1):**
+- **Routing Modes (OS 5.2):**
 
   | Mode | Flag | Path | Gates |
   |------|------|------|-------|
@@ -253,7 +253,7 @@ promote standards and refine lane behavior over time.
 
 ## 8. Mental Model
 
-For iOS work in OS 5.1 (routing modes):
+For iOS work in OS 5.2 (routing modes):
 
 | Mode | Command | Path |
 |------|---------|------|

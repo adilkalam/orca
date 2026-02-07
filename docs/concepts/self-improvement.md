@@ -1,14 +1,14 @@
 # Self-Improvement System
 
-**Version:** OS 5.1 | **Last Updated:** 2026-01-24
+**Version:** OS 5.2 | **Last Updated:** 2026-01-24
 
-OS 5.1 provides an agent self-improvement loop that enables agents to learn from execution history and improve their prompts over time.
+OS 5.2 provides an agent self-improvement loop that enables agents to learn from execution history and improve their prompts over time.
 
 ---
 
 ## System Overview
 
-OS 5.1 provides learning at three levels:
+OS 5.2 provides learning at three levels:
 
 | Level | Mechanism | Storage | Trigger |
 |-------|-----------|---------|---------|
@@ -475,9 +475,9 @@ workshop --workspace .claude/memory note "[/reflect] Prefer concise responses #p
 
 ---
 
-# Reflexion-Enhanced Gates (OS 5.1)
+# Reflexion-Enhanced Gates (OS 5.2)
 
-OS 5.1 introduces Reflexion-enhanced gates based on research by Shinn et al. (NeurIPS 2023). Gates now learn from failures through verbal reinforcement stored in episodic memory (Reflexion-style episodic memory).
+OS 5.2 introduces Reflexion-enhanced gates based on research by Shinn et al. (NeurIPS 2023). Gates now learn from failures through verbal reinforcement stored in episodic memory (Reflexion-style episodic memory).
 
 ## The Research
 
@@ -509,7 +509,7 @@ Future Runs: Load reflexions before gating
 All 10 gate agents now include:
 
 ```markdown
-## Reflexion on Failure (OS 5.1)
+## Reflexion on Failure (OS 5.2)
 
 When `gate_decision` is CAUTION or FAIL:
 
@@ -565,9 +565,9 @@ This enables cross-layer propagation: reflexions can become agent patterns, work
 
 ---
 
-# Chain of Verification (OS 5.1)
+# Chain of Verification (OS 5.2)
 
-OS 5.1 introduces Chain of Verification (CoVe) based on Meta AI research (Dhuliawala et al., 2023). Verification agents now use structured verification questions to catch errors before reporting (CoVe-style question-then-verify loop).
+OS 5.2 introduces Chain of Verification (CoVe) based on Meta AI research (Dhuliawala et al., 2023). Verification agents now use structured verification questions to catch errors before reporting (CoVe-style question-then-verify loop).
 
 ## The Research
 
@@ -597,7 +597,7 @@ Step 4: Determine Final Status (PASS/CAUTION/FAIL)
 All 6 verification agents now include:
 
 ```markdown
-## Chain of Verification Protocol (OS 5.1)
+## Chain of Verification Protocol (OS 5.2)
 
 Before finalizing verification status:
 

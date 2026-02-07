@@ -4,7 +4,7 @@
 | | | | |_) | |     / _ \  | | | \___ \
 | |_| |  _ <| |___ / ___ \ | |_| |___) |
  \___/|_| \_\\____/_/   \_\ \___/|____/
-                                    v5.1
+                                    v5.2
 ```
 > **[QUICK-START.md](QUICK-START.md)**
 
@@ -529,4 +529,4 @@ Claude Desktop gives you a capable one-pass analysis from training data. ORCA gi
 
 ---
 
-**ORCA OS v5.1** -- [Documentation](DOCUMENTATION.md) -- [Quick Start](QUICK-START.md)
+**ORCA OS v5.2** -- [Documentation](DOCUMENTATION.md) -- [Quick Start](QUICK-START.md)

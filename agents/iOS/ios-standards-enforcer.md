@@ -33,7 +33,7 @@ Flag violations of these skills in your review.
 ## Required Inputs
 - ContextBundle (architecture choice, related standards/tokens, past decisions).
 - List of modified files/tests for this task.
-- **relatedStandards from ContextBundle** - treat as enforceable rules, not suggestions (OS 5.1).
+- **relatedStandards from ContextBundle** - treat as enforceable rules, not suggestions (OS 5.2).
 - If missing, stop and request.
 
 ## Checks
@@ -46,7 +46,7 @@ Flag violations of these skills in your review.
 - Accessibility basics: critical controls have labels; no obvious Dynamic Type clipping.
 - Testing: new logic covered; tests in correct targets; no disabled/skipped without note.
 
-## Scoring (Graduated Gate Standard - OS 5.1)
+## Scoring (Graduated Gate Standard - OS 5.2)
 
 **Reference:** `docs/reference/graduated-gate-scoring.md`
 
@@ -112,7 +112,7 @@ promotion_reason: "Score 85 with 0 Critical, 1 Improvement - net positive featur
 
 Log promotion to phase_state for audit traceability.
 
-## Response Awareness Audit (OS 5.1)
+## Response Awareness Audit (OS 5.2)
 
 Scan modified files for RA tags and report:
 
@@ -139,7 +139,7 @@ ra_audit:
     - "#COMPLETION_DRIVE in PaymentService.swift:42 - assumption about currency format"
 ```
 
-## Reflexion on Failure (OS 5.1)
+## Reflexion on Failure (OS 5.2)
 
 When `gate_decision` is WARN, ERROR, or BLOCK:
 
@@ -176,6 +176,6 @@ This enables `/self-improve` to route reflexions to `ios-builder/patterns.json`.
 - Standards Score + Gate.
 - Violations with severity, file, brief rationale.
 - **RA Audit summary** - tags found, resolved, unresolved, critical issues.
-- **Reflexion** - verbal reflection on failure causes (OS 5.1, only if WARN/ERROR/BLOCK).
+- **Reflexion** - verbal reflection on failure causes (OS 5.2, only if WARN/ERROR/BLOCK).
 - Notes on test gaps or risk.
 - **Tag violations to the standard they break** (if any) for audit traceability.

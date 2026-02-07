@@ -340,7 +340,7 @@ mv ~/.claude-backup-* ~/.claude
 
 ## Version
 
-ORCA-OS v5.1
+ORCA-OS v5.2
 
 ---
 

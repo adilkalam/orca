@@ -1,4 +1,4 @@
-# OS 5.1 OS-Dev Lane Readme
+# OS 5.2 OS-Dev Lane Readme
 
 **Lane:** OS / Tooling Configuration  
 **Domain:** `os-dev`  
@@ -6,7 +6,7 @@
 
 This readme explains the OS-Dev lane, which manages changes to:
 
-- OS 5.1 orchestration behavior
+- OS 5.2 orchestration behavior
 - Claude Code commands, agents, skills, MCPs, hooks
 - Memory integration behavior
 
@@ -20,7 +20,7 @@ application code:
 - Add/modify lanes and phase configs
 - Add or reconfigure MCPs
 - Add OS‑level skills or adjust their usage
-- Tweak hooks, scripts, and safety defaults for OS 5.1
+- Tweak hooks, scripts, and safety defaults for OS 5.2
 
 **Routing Modes:**
 

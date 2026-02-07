@@ -1,7 +1,7 @@
 {
   "name": "@vibe/project-context-server",
   "version": "2.1.0",
-  "description": "Mandatory context service for OS 5.1 - makes context amnesia structurally impossible",
+  "description": "Mandatory context service for OS 5.2 - makes context amnesia structurally impossible",
   "main": "dist/index.js",
   "type": "module",
   "scripts": {

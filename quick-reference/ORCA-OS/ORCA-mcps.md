@@ -1,11 +1,11 @@
-# OS 5.1 MCP Reference
+# OS 5.2 MCP Reference
 
 **Last Updated:** 2026-02-07
-**Version:** OS 5.1
+**Version:** OS 5.2
 
 ---
 
-## MCP Scoping Strategy (OS 5.1)
+## MCP Scoping Strategy (OS 5.2)
 
 MCPs are now project-scoped to reduce token bloat:
 
@@ -101,7 +101,7 @@ Mandatory context provider for all agents.
 - `reanalyze_project` - Re-analyze project after changes
 - `recall` - Retrieve full archived tool output by ID (ORCA-Mem)
 
-**Implementation (OS 5.1):**
+**Implementation (OS 5.2):**
 - **Reads:** SQLite direct access to `workshop.db` via `better-sqlite3`
 - **Writes:** Workshop CLI for schema migration compatibility
 - **Symlink:** Auto-creates `.workshop -> .claude/memory` on macOS/Linux

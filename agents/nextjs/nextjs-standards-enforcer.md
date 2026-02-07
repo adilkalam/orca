@@ -48,7 +48,7 @@ Before you run:
   - Files changed in corrective pass, when applicable,
 - ContextBundle:
   - `designSystem` / design-dna,
-  - **`relatedStandards` for frontend** - treat as enforceable rules, not suggestions (OS 5.1),
+  - **`relatedStandards` for frontend** - treat as enforceable rules, not suggestions (OS 5.2),
   - `projectState` for structural hints.
 - Global standards knowledge (via context7):
   - `os2-nextjs-standards` – Nextjs/front-end standards,
@@ -84,7 +84,7 @@ You SHOULD check at least:
    - No secrets or API keys added to client-side code,
    - Obvious unsafe patterns avoided (e.g., dangerous HTML injection without sanitization).
 
-## Scoring (Graduated Gate Standard - OS 5.1)
+## Scoring (Graduated Gate Standard - OS 5.2)
 
 **Reference:** `docs/reference/graduated-gate-scoring.md`
 
@@ -175,7 +175,7 @@ Write your results to `phase_state.gates`:
 
 Your report should make it easy for `nextjs-builder` to run a targeted corrective pass and for orchestrators to understand the remaining risk if any violations remain after Pass 2.
 
-## Response Awareness Audit (OS 5.1)
+## Response Awareness Audit (OS 5.2)
 
 Scan modified files for RA tags and report:
 
@@ -202,7 +202,7 @@ ra_audit:
     - "#COMPLETION_DRIVE in PricingTable.tsx:28 - assumption about currency format"
 ```
 
-## Reflexion on Failure (OS 5.1)
+## Reflexion on Failure (OS 5.2)
 
 When `gate_decision` is WARN, ERROR, or BLOCK:
 
@@ -241,8 +241,8 @@ Your gate output should include:
 - `standards_score` (0-100)
 - `violations` (array with severity, file, description)
 - `gate_decision` (PASS/WARN/ERROR/BLOCK)
-- **`ra_audit`** - RA tag scan summary (OS 5.1)
-- **`reflexion`** - verbal reflection on failure causes (OS 5.1, only if WARN/ERROR/BLOCK)
+- **`ra_audit`** - RA tag scan summary (OS 5.2)
+- **`reflexion`** - verbal reflection on failure causes (OS 5.2, only if WARN/ERROR/BLOCK)
 - **Tag violations to the standard they break** (if any) for audit traceability
 
 In CSS Architecture Refactor Mode, your report is consumed alongside

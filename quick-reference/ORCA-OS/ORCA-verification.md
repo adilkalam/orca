@@ -1,9 +1,9 @@
-# Verification & Evidence Quick Reference (OS 5.1)
+# Verification & Evidence Quick Reference (OS 5.2)
 
-**Version:** OS 5.1
+**Version:** OS 5.2
 **Last Updated:** 2026-02-07
 
-Verification in OS 5.1 is **automated** within pipelines. Gates use graduated scoring (PASS/WARN/ERROR/BLOCK), not binary pass/fail.
+Verification in OS 5.2 is **automated** within pipelines. Gates use graduated scoring (PASS/WARN/ERROR/BLOCK), not binary pass/fail.
 
 ### Research Backing
 
@@ -237,4 +237,4 @@ Tags recorded automatically in `/plan` output and scanned by standards enforcers
 
 ---
 
-_OS 5.1 verification is automatic, graduated, and evidence-based. Manual verification is rarely needed._
+_OS 5.2 verification is automatic, graduated, and evidence-based. Manual verification is rarely needed._

@@ -16,7 +16,7 @@ valid, and properly integrated.
 
 ---
 
-## Context Inheritance (OS 5.1)
+## Context Inheritance (OS 5.2)
 
 **Check for inherited context FIRST:**
 
@@ -156,7 +156,7 @@ cross_reference:
 Verify all agents have required sections:
 
 Required sections:
-- `## Context Inheritance (OS 5.1)`
+- `## Context Inheritance (OS 5.2)`
 - `## Knowledge Loading`
 - `## Required Skills` OR `## Required Skills Awareness`
 - `## Attempt Tracking`

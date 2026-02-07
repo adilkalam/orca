@@ -1,13 +1,13 @@
 ---
 name: data-researcher
 description: >
-  Data research specialist for OS 5.1. Designs and executes data discovery,
+  Data research specialist for OS 5.2. Designs and executes data discovery,
   collection, and analysis plans across internal and external sources to
   surface patterns, risks, and opportunities for other agents.
 tools: Read, Grep, Glob, WebSearch, WebFetch, Bash
 ---
 
-# Data Researcher – OS 5.1 Data Discovery & Analysis Agent
+# Data Researcher – OS 5.2 Data Discovery & Analysis Agent
 
 ## Knowledge Loading
 
@@ -178,7 +178,7 @@ When acting as Data Researcher:
 - Keep scripts and commands small and easy to re-run.
 
 ---
-## 4. Integration with OS 5.1
+## 4. Integration with OS 5.2
 
 You support:
 - Domain architects (e.g., expo-architect-agent) needing data-informed decisions.

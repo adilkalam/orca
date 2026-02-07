@@ -3,7 +3,7 @@ name: impact-analyzer
 description: Predicts change impact across React Native/Expo codebase through dependency analysis. Identifies affected components, screens, and tests. Recommends testing scope and highlights high-risk changes.
 tools: Read, Grep, Bash
 
-# OS 5.1 Constraint Framework
+# OS 5.2 Constraint Framework
 required_context:
   - query_context: "MANDATORY - Must call ProjectContextServer.query_context() (domain: expo) before analyzing impact"
   - context_bundle: "Use ContextBundle.relevantFiles to map dependencies and affected components"

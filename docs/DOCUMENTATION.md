@@ -1,6 +1,6 @@
 # ORCA-OS Documentation
 
-**Version:** OS 5.1
+**Version:** OS 5.2
 **Last Updated:** 2026-02-06
 
 Welcome to the ORCA-OS documentation. This document serves as the entry point and navigation hub for all ORCA-OS documentation.
@@ -150,4 +150,4 @@ docs/
 
 ---
 
-_ORCA-OS v5.1 | See [quick-reference/](../quick-reference/) for day-to-day guides_
+_ORCA-OS v5.2 | See [quick-reference/](../quick-reference/) for day-to-day guides_

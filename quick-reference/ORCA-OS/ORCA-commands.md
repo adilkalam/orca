@@ -1,8 +1,8 @@
-# OS 5.1 Commands Quick Reference
+# OS 5.2 Commands Quick Reference
 
 **Last Updated:** 2026-02-03
-**Version:** OS 5.1
-**Total Commands:** 33
+**Version:** OS 5.2
+**Total Commands:** 34
 
 ---
 
@@ -264,7 +264,7 @@ Systematically attacks proposals using cognition-mcp.
 
 ---
 
-## Utility Commands (13)
+## Utility Commands (14)
 
 ### `/enhance` - Prompt Enhancement
 ```bash
@@ -278,6 +278,18 @@ Systematically attacks proposals using cognition-mcp.
 /root-cause "Build errors on CI"
 ```
 **Persistence:** Creates `.claude/cognition/YYYYMMDD-HHMM-<slug>.md` + Workshop entry
+
+### `/design` - Creative Design Thinking
+```bash
+/design "Create a brutalist poster for a tech conference"
+/design "Design a parametric vase in OpenSCAD with organic curves"
+/design "Illustrator logo: geometric animal mark for a coffee brand"
+```
+Multi-phase creative design exploration for visual/3D work. Scaffolds: FRAME (parse brief, constraints, success criteria) -> EXPLORE (3-5 design directions) -> DEVELOP (executable concepts with tool operations) -> EVALUATE (structured crit against brief criteria) -> ITERATE (lessons, loop back).
+**MCP:** cognition-mcp
+**Integration:** Bridges thinking to Photoshop, Illustrator, OpenSCAD tool execution
+**Persistence:** Appends to daily log `.claude/cognition/YYYYMMDD-daily.md` + Workshop entry
+**Related:** `/think --creative` (non-design creative thinking), `/design-review` (UI audit)
 
 ### `/design-dna` - Design System Management
 ```bash

@@ -1,6 +1,6 @@
 # Unified Improvement Bus
 
-**Version:** OS 5.1 | **Last Updated:** 2026-01-24
+**Version:** OS 5.2 | **Last Updated:** 2026-01-24
 
 The Improvement Bus unifies all self-improvement mechanisms into a single event stream with explicit routing to appropriate sinks.
 
@@ -8,7 +8,7 @@ The Improvement Bus unifies all self-improvement mechanisms into a single event 
 
 ## The Problem
 
-OS 5.1 has multiple improvement loops that each work independently. Individual agents already persist patterns and reflexions, but without a unified bus these improvements stay siloed:
+OS 5.2 has multiple improvement loops that each work independently. Individual agents already persist patterns and reflexions, but without a unified bus these improvements stay siloed:
 
 | Loop | Output | Storage | Consumption |
 |------|--------|---------|-------------|

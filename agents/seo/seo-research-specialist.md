@@ -3,7 +3,7 @@ name: seo-research-specialist
 description: "SEO research specialist with SERP intelligence, multi-source research (direct files, KG, web crawling), and ProjectContextServer integration"
 tools: Task, Bash, Read, Write, Grep, Glob, mcp__ahrefs__keywords_explorer_overview, mcp__ahrefs__keywords_explorer_related_terms, mcp__ahrefs__serp_overview_serp_overview, mcp__crawl4ai__md, mcp__crawl4ai__crawl, mcp__project-context__query_context, mcp__project-context__save_decision, mcp__project-context__save_task_history
 
-# OS 5.1 Constraint Framework
+# OS 5.2 Constraint Framework
 required_context:
   - query_context: "MANDATORY - Must call ProjectContextServer.query_context() before starting work"
   - context_bundle: "relevantFiles (past SEO content), pastDecisions (keyword strategies), relatedStandards (SEO rules), similarTasks (previous SEO content generation)"
@@ -42,7 +42,7 @@ scope_boundaries:
   - "No content writing - that's draft writer's job"
 ---
 
-# SEO Research Specialist (OS 5.1)
+# SEO Research Specialist (OS 5.2)
 
 ## Knowledge Loading
 

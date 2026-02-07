@@ -1,4 +1,4 @@
-# ORCA-OS v5.1 Systems Analysis
+# ORCA-OS v5.2 Systems Analysis
 
 **Generated:** 2026-02-07
 **Source of Truth:** `docs/reference/os-dependency-graph.yaml`
@@ -38,7 +38,7 @@ User entry points invoked via `/command`.
 
 ### Three-Tier Routing
 
-All lane commands support three execution modes. This is the central routing mechanism of OS 5.1.
+All lane commands support three execution modes. This is the central routing mechanism of OS 5.2.
 
 | Mode | Flag | Path | Gates | Use Case |
 |------|------|------|-------|----------|
@@ -150,7 +150,7 @@ One phase config per lane: ios, nextjs, django-react, expo, research, seo, data,
 ```yaml
 pipeline:
   name: "{lane}-pipeline"
-  version: "5.1"
+  version: "5.2"
 
 complexity_tiers:
   default:
@@ -319,7 +319,7 @@ Three-layer memory system feeding into ProjectContext MCP.
 | code-index.db | .claude/memory/code-index.db | `python3 ~/.claude/scripts/code-index.py <cmd>` |
 | project-meta | MCP cache | ProjectContext MCP auto-detection |
 
-### ProjectContext Implementation (OS 5.1)
+### ProjectContext Implementation (OS 5.2)
 
 The MCP uses a hybrid approach:
 - **Reads:** Direct SQLite queries via `better-sqlite3` (reliable, no CLI parsing)
@@ -415,7 +415,7 @@ Templates live at `quick-reference/thinking-models/*.md`.
 
 ## Verification System
 
-OS 5.1 uses graduated gate scoring, not binary pass/fail.
+OS 5.2 uses graduated gate scoring, not binary pass/fail.
 
 ### Graduated Gate Labels
 
@@ -492,7 +492,7 @@ Gate agents check RA status from implementation phases and factor unresolved ass
 
 ## Self-Improvement System
 
-OS 5.1 provides learning at three levels, unified by the Improvement Bus.
+OS 5.2 provides learning at three levels, unified by the Improvement Bus.
 
 ### Three Levels
 
@@ -700,4 +700,4 @@ Cognitive analysis persists as files on disk. When the context window compacts, 
 ---
 
 _Source of truth: `docs/reference/os-dependency-graph.yaml`_
-_Version: OS 5.1 | Generated: 2026-02-07_
+_Version: OS 5.2 | Generated: 2026-02-07_

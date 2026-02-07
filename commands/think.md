@@ -69,7 +69,7 @@ EXAMPLES:
   /think --model inversion How could this migration fail?
   /think --decide Microservices vs monolith
   /think --systems How do these components interact?
-  /think --creative How could we gamify this feature?
+  /think --creative How could we restructure this blog post?
   /think --causal Why are users dropping off at checkout?
   /think --spatial --visual How should this UI be laid out?
   /think --decide --challenge Should we rewrite or refactor?
@@ -549,17 +549,73 @@ Make additional calls, incrementing thoughtNumber:
   }
 }
 
-// For --creative (creative_thinking)
+// For --creative (3-step creative flow)
+//
+// PRINCIPLE: Creative thinking is not about generating more ideas. It's about
+// escaping the gravity well of trained defaults. Name the default, then
+// deliberately move away from it. The interesting territory is NOT at the edges
+// of absurdity -- it's in the space between "obvious default" and "obviously
+// weird", where principled but non-obvious solutions live.
+//
+// For DESIGN work (visual/3D with Photoshop, Illustrator, OpenSCAD), use
+// /design instead. --creative is for: blog restructuring, workaround ideation,
+// reframing problems, finding non-obvious solutions.
+
+// Step 1: Name the trained default (thought call)
+{
+  operation: "thought",
+  sessionTitle: "Creative: <the challenge>",
+  sessionTags: ["creative", "think"],
+  content: {
+    thought: "Before generating ideas, I need to identify the gravity well -- what's the obvious, trained-default answer to this challenge?",
+    defaultGravity: {
+      trainedDefault: "<the obvious approach -- what comes to mind first>",
+      whyItsDefault: "<why this feels like the 'right' answer>",
+      assumedConstraints: ["<constraint that might not actually be required>", "<another assumed constraint>"],
+      whatIfNot: "<what opens up if we deliberately don't do the default?>"
+    },
+    constraintRelaxation: "<what if [biggest assumed constraint] wasn't a constraint?>",
+    thoughtNumber: 1,
+    totalThoughts: 3,
+    nextThoughtNeeded: true
+  }
+}
+
+// Step 2: Creative exploration past defaults (creative_thinking call)
+// IMPORTANT: The first 3 ideas that come to mind are probably trained defaults.
+// Push past them. Mark each idea as obvious or non-obvious.
 {
   operation: "creative_thinking",
   sessionId: "<sessionId>",
   content: {
-    prompt: "<the creative challenge>",
-    techniques: ["<technique 1: e.g. brainstorming, lateral thinking>"],
+    prompt: "<the creative challenge> -- given that the default approach is [default from step 1], explore alternatives",
+    techniques: ["inversion", "analogy_transfer", "constraint_removal", "SCAMPER", "perspective_shift"],
     ideas: [
-      { idea: "<idea description>", potential: "<why this could work>", challenges: ["<challenge 1>"] }
+      { idea: "<idea 1>", potential: "<why this could work>", challenges: ["<challenge>"], marker: "<obvious | non-obvious> because <reason>" },
+      { idea: "<idea 2>", potential: "<why>", challenges: ["<challenge>"], marker: "<obvious | non-obvious> because <reason>" },
+      { idea: "<idea 3>", potential: "<why>", challenges: ["<challenge>"], marker: "<obvious | non-obvious> because <reason>" },
+      { idea: "<idea 4 -- push past the first 3>", potential: "<why>", challenges: ["<challenge>"], marker: "<obvious | non-obvious> because <reason>" },
+      { idea: "<idea 5>", potential: "<why>", challenges: ["<challenge>"], marker: "<obvious | non-obvious> because <reason>" }
     ],
-    synthesis: "<combining ideas into solution>",
+    synthesis: "<which ideas are genuinely non-default and why>",
+    nextThoughtNeeded: true
+  }
+}
+
+// Step 3: Review for genuineness (thought call)
+{
+  operation: "thought",
+  sessionId: "<sessionId>",
+  content: {
+    thought: "Reviewing the creative output for genuineness...",
+    review: {
+      genuinelyNonDefault: ["<ideas that are actually non-obvious>"],
+      mostSurprising: "<the most unexpected idea and why it's interesting>",
+      expertTest: "<what version of this would a domain expert find interesting, not just correct?>",
+      interestingTerritory: "<the principled-but-non-obvious space between default and absurd>"
+    },
+    thoughtNumber: 3,
+    totalThoughts: 3,
     nextThoughtNeeded: false
   }
 }
@@ -795,6 +851,28 @@ Based on this analysis:
 
 **If ready to implement:**
 → /plan "[implementation task]"
+
+**If this needs design-level creative exploration:**
+→ /design "[design brief]"
+```
+
+### --creative Output Format
+
+When `--creative` is used, present results in this structure instead of the generic format:
+
+```
+## Creative Thinking: [Topic]
+
+### Default Gravity
+The obvious approach: [what trained defaults suggest]
+Assumed constraints: [constraints that might not be real]
+
+### Exploration
+[Creative ideas with non-obvious marker]
+
+### Synthesis
+Most interesting non-default: [idea]
+Why it's interesting: [reason]
 ```
 
 ---

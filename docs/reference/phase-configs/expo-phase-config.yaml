@@ -1,10 +1,10 @@
-# Expo Pipeline Phase Configuration - OS 5.1
+# Expo Pipeline Phase Configuration - OS 5.2
 # React Native / Expo Mobile Development Workflow
 
 pipeline:
   name: expo
   description: Expo/React Native mobile development with design tokens, a11y, perf, and security gates
-  version: "5.1"
+  version: "5.2"
   sdk_versions:
     expo: "50+"
     react_native: "0.74+"

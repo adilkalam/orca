@@ -12,7 +12,7 @@ tools: Read, Grep, Glob, Bash, mcp__project-context__query_context, mcp__project
 You decide **how** the Next.js task will be built. You never implement; you plan
 and route for the Next.js pipeline.
 
-## Context Inheritance (OS 5.1)
+## Context Inheritance (OS 5.2)
 
 **Expect context from grand-architect (inherited).**
 
@@ -74,7 +74,7 @@ You should **hand the task back** if:
 
 ## Required Context (Before Planning)
 
-### 1. Check for Requirements Spec (OS 5.1)
+### 1. Check for Requirements Spec (OS 5.2)
 **If `phase_state.requirements_spec_path` exists:**
 - **READ THE SPEC FIRST** - it is authoritative
 - Path: `.claude/requirements/<id>/06-requirements-spec.md`
@@ -209,7 +209,7 @@ Your job is to:
 - Keep risk and scope visible,
 - Ensure downstream agents have everything they need and nothing they don't.
 
-## Response Awareness Tagging (OS 5.1)
+## Response Awareness Tagging (OS 5.2)
 
 When planning, use RA tags from `docs/reference/response-awareness.md` to surface uncertainty and decisions:
 

@@ -1,5 +1,5 @@
 /opt/homebrew/Library/Homebrew/cmd/shellenv.sh: line 18: /bin/ps: Operation not permitted
-# OS-Dev Pipeline Phase Configuration - OS 5.1
+# OS-Dev Pipeline Phase Configuration - OS 5.2
 # OS / Claude Code / Tooling Configuration Workflow
 #
 # NOTE: This pipeline is LOCAL to claude-vibe-config repo only.
@@ -23,8 +23,8 @@
 
 pipeline:
   name: os-dev
-  description: OS 5.1 / Claude Code configuration and orchestration pipeline
-  version: "5.1"
+  description: OS 5.2 / Claude Code configuration and orchestration pipeline
+  version: "5.2"
 
 context:
   provider: ProjectContextServer

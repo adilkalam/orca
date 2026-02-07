@@ -2,10 +2,10 @@
 # Source of truth for artifact relationships
 # Used by /orca-os-dev to trace impacts and sync documentation
 #
-# Version: 5.1
-# Last Updated: 2026-02-06
+# Version: 5.2
+# Last Updated: 2026-02-07
 
-version: "5.1"
+version: "5.2"
 
 # =============================================================================
 # ARTIFACT TYPE DEFINITIONS
@@ -466,7 +466,7 @@ mcps:
       tools: [cognition]
       operations: [thought, mental_model, list_mental_models, debug, decide, meta, systems, audit, reasoning_stats, session_info, session_export, session_import]  # 41 operations total - representative subset shown; see docs/concepts/cognition-mcp.md for full list
       pattern: "accept-store-echo (MCP stores and echoes, never generates)"
-      used_by: [/think, /challenge, /audit]
+      used_by: [/think, /challenge, /audit, /design]
     - name: sequential-thinking
       description: "Extended reasoning"
       tools: [sequentialthinking]
@@ -593,7 +593,7 @@ cognition_persistence:
     lightweight:
       pattern: "YYYYMMDD-daily.md"
       description: "Daily log with appended entries"
-      commands: [think, contemplate]
+      commands: [think, contemplate, design]
   integration:
     workshop: "All entries also written to Workshop with -t [command] -t cognition"
     discovery: "workshop search cognition OR workshop why '<topic>'"
@@ -819,6 +819,12 @@ commands:
       - design-system-architect
       - design-dna-guardian
 
+  - name: design
+    type: utility
+    mcps: [cognition-mcp]
+    description: "Creative design thinking for visual/3D work with Photoshop, Illustrator, OpenSCAD"
+    agents_called: []
+
   - name: design-review
     type: utility
     agents_called:
@@ -881,7 +887,7 @@ commands:
 # =============================================================================
 counts:
   total_agents: 124
-  total_commands: 33
+  total_commands: 34
   agents_by_domain:
     ios: 19
     nextjs: 15             # agents/nextjs/ (nextjs-* agents only)

@@ -12,7 +12,7 @@ allowed-tools:
   - Glob
 ---
 
-# /root-cause – Multi-Lane Root Cause Analysis (OS 5.1)
+# /root-cause – Multi-Lane Root Cause Analysis (OS 5.2)
 
 Use this command when **something is failing** and you want to understand
 *why* before you change anything:
@@ -107,7 +107,7 @@ Use the ContextBundle to identify:
   - Expo (React Native/Expo)
   - Shopify (Liquid/theme files)
   - Data / SEO (if mostly content/analysis)
-  - OS-Dev (if failure is coming from OS 5.1 tooling itself)
+  - OS-Dev (if failure is coming from OS 5.2 tooling itself)
 
 ### 1.3 Confirm Domain with User
 
@@ -249,7 +249,7 @@ For other domains:
 - SEO:
   - `seo-brief-strategist`, `seo-quality-guardian` for content/SEO issues.
 - OS-Dev:
-  - OS-Dev agents (`os-dev-architect`, `os-dev-builder`, `os-dev-standards-enforcer`) **in diagnostic mode** to analyze whether OS 5.1 config or hooks are causing failures.
+  - OS-Dev agents (`os-dev-architect`, `os-dev-builder`, `os-dev-standards-enforcer`) **in diagnostic mode** to analyze whether OS 5.2 config or hooks are causing failures.
 
 ---
 

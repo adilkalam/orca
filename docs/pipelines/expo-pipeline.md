@@ -1,13 +1,13 @@
 # Expo / React Native Domain Pipeline
 
-**Status:** OS 5.1 Core Pipeline (ExpoPipeline)
+**Status:** OS 5.2 Core Pipeline (ExpoPipeline)
 **Last Updated:** 2025-11-27
 
 ## Overview
 
 The Expo pipeline handles **React Native mobile development** for projects using Expo SDK 50+ / React Native 0.74+ with TypeScript. It combines:
 
-- OS 5.1 primitives (ProjectContextServer, phase_state.json, code-index.db, Workshop, constraint framework)
+- OS 5.2 primitives (ProjectContextServer, phase_state.json, code-index.db, Workshop, constraint framework)
 - Memory-first context (Workshop + code-index.db before ProjectContext)
 - Complexity-based routing (simple → light orchestrator, medium/complex → full pipeline)
 - Spec gating (complex tasks require requirements spec)
@@ -33,7 +33,7 @@ use the **iOS** pipeline.
 
 ---
 
-## Three-Tier Routing (OS 5.1)
+## Three-Tier Routing (OS 5.2)
 
 The Expo pipeline uses three-tier routing:
 
@@ -79,7 +79,7 @@ Full pipeline with grand-orchestrator planning. Spec required.
 
 ---
 
-## Standards Inputs (OS 5.1 Learning Loop)
+## Standards Inputs (OS 5.2 Learning Loop)
 
 Standards flow into and out of the Expo pipeline:
 
@@ -634,7 +634,7 @@ Decision Point:
 
 **Agents:**
 - `expo-architect-agent` (Expo pipeline architect)
-- `/orca` + OS 5.1 constraint framework
+- `/orca` + OS 5.2 constraint framework
 
 **Tasks:**
 1. Restate the request in clear, concrete terms (feature, bugfix, refactor).
