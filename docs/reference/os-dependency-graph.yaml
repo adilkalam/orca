@@ -500,9 +500,10 @@ mcps:
       description: "Keyword research and SERP intelligence (npx-based)"
       lanes: [seo]
     - name: adb-mcp
-      description: "Adobe Photoshop/Premiere AI control via MCP"
+      description: "Adobe Photoshop/Illustrator AI control via MCP"
       lanes: []  # Project-specific, no dedicated lane yet
       requires_manual_start: true  # Requires proxy server + UXP plugin
+      installer_optional: true  # Available as optional in dist/install.sh
     - name: blender-mcp
       description: "Blender 3D modeling integration via socket addon"
       lanes: []  # Experimental, no dedicated lane
@@ -576,6 +577,10 @@ skills:
     consumers:
       - shopify-grand-architect
       - shopify-js-specialist
+  - name: adobe-execution
+    path: skills/adobe-execution/SKILL.md
+    description: "Measure-place-verify guardrails for Adobe Photoshop and Illustrator MCP work"
+    consumers: []  # Global skill, applies when Adobe MCPs are active
   # Removed: react-patterns (consolidated into react-performance)
 
 # =============================================================================
@@ -825,6 +830,13 @@ commands:
     description: "Creative design thinking for visual/3D work with Photoshop, Illustrator, OpenSCAD"
     agents_called: []
 
+  - name: illustrate
+    type: utility
+    mcps: [adobe-photoshop, adobe-illustrator]
+    description: "Measured Adobe execution with mandatory self-review"
+    agents_called: []
+    skills: [adobe-execution]
+
   - name: design-review
     type: utility
     agents_called:
@@ -887,7 +899,7 @@ commands:
 # =============================================================================
 counts:
   total_agents: 124
-  total_commands: 34
+  total_commands: 35
   agents_by_domain:
     ios: 19
     nextjs: 15             # agents/nextjs/ (nextjs-* agents only)

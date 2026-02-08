@@ -1,8 +1,8 @@
 # OS 5.2 Commands Quick Reference
 
-**Last Updated:** 2026-02-03
+**Last Updated:** 2026-02-07
 **Version:** OS 5.2
-**Total Commands:** 34
+**Total Commands:** 35
 
 ---
 
@@ -264,7 +264,7 @@ Systematically attacks proposals using cognition-mcp.
 
 ---
 
-## Utility Commands (14)
+## Utility Commands (15)
 
 ### `/enhance` - Prompt Enhancement
 ```bash
@@ -289,7 +289,19 @@ Multi-phase creative design exploration for visual/3D work. Scaffolds: FRAME (pa
 **MCP:** cognition-mcp
 **Integration:** Bridges thinking to Photoshop, Illustrator, OpenSCAD tool execution
 **Persistence:** Appends to daily log `.claude/cognition/YYYYMMDD-daily.md` + Workshop entry
-**Related:** `/think --creative` (non-design creative thinking), `/design-review` (UI audit)
+**Related:** `/think --creative` (non-design creative thinking), `/design-review` (UI audit), `/illustrate` (measured execution)
+
+### `/illustrate` - Measured Adobe Execution
+```bash
+/illustrate "Create a poster with title, subtitle, and body text"
+/illustrate "Add a logo in the top-right corner with the company name below it"
+/illustrate "Layout a business card: name, title, email, phone, logo"
+```
+Measured execution in Photoshop/Illustrator with mandatory self-review. Phases: SURVEY (read canvas, existing layers) -> PLAN (spatial budget, proportional positions) -> EXECUTE (create with verify-after-place loop) -> REVIEW (visual self-review via get_document_image) -> CORRECT (fix issues).
+**MCP:** adobe-photoshop, adobe-illustrator
+**Skill:** adobe-execution (always-on guardrails)
+**Integration:** Works standalone or with `/design` output (toolOperations from DEVELOP phase)
+**Related:** `/design` (cognitive design thinking), `/design-review` (UI audit)
 
 ### `/design-dna` - Design System Management
 ```bash
@@ -409,4 +421,4 @@ $ORCA_OS_PATH/commands/
 ---
 
 _Source of truth: `docs/reference/os-dependency-graph.yaml`_
-_Last sync: 2026-02-03_
+_Last sync: 2026-02-07_

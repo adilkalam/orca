@@ -414,6 +414,89 @@ install_mcp_dependencies() {
     fi
 }
 
+# Install Adobe Creative Cloud MCPs (optional)
+install_adobe_mcps() {
+    section "Installing Adobe Creative Cloud MCPs"
+
+    local adb_mcp_dir="$CLAUDE_DIR/mcp/adb-mcp"
+
+    # Check for uv (required for Adobe MCPs)
+    if ! command_exists uv; then
+        warn "uv package manager not found (required for Adobe MCPs)"
+        info "Install with: curl -LsSf https://astral.sh/uv/install.sh | sh"
+        warn "Skipping Adobe MCP installation"
+        ADOBE_INSTALL_FAILED=1
+        return
+    fi
+
+    # Clone adb-mcp if not already present
+    if [ -d "$adb_mcp_dir" ]; then
+        info "adb-mcp already installed, updating..."
+        cd "$adb_mcp_dir"
+        git pull --quiet 2>/dev/null || warn "Could not update adb-mcp (not a git repo or offline)"
+        cd - > /dev/null
+    else
+        if command_exists git; then
+            info "Cloning adb-mcp from GitHub..."
+            git clone --quiet https://github.com/mikechambers/adb-mcp "$adb_mcp_dir" 2>/dev/null
+            if [ $? -ne 0 ]; then
+                error "Failed to clone adb-mcp"
+                warn "Skipping Adobe MCP installation"
+                ADOBE_INSTALL_FAILED=1
+                return
+            fi
+        else
+            error "git not found - cannot clone adb-mcp"
+            warn "Skipping Adobe MCP installation"
+            ADOBE_INSTALL_FAILED=1
+            return
+        fi
+    fi
+
+    # Generate run scripts with correct paths
+    local mcp_dir="$adb_mcp_dir/mcp"
+    local uv_path=$(which uv)
+
+    # Photoshop run script
+    cat > "$mcp_dir/run-ps-mcp.sh" << RUNSCRIPT
+#!/bin/bash
+cd "$mcp_dir"
+exec "$uv_path" run \\
+  --no-project \\
+  --with fonttools \\
+  --with python-socketio \\
+  --with "mcp[cli]" \\
+  --with requests \\
+  --with "websocket-client>=1.8.0" \\
+  --with "pillow>=11.2.1" \\
+  --with "numpy>=2.2.6" \\
+  python -c "import sys; sys.path.insert(0, '.'); from importlib.util import spec_from_file_location, module_from_spec; spec = spec_from_file_location('ps_mcp', 'ps-mcp.py'); mod = module_from_spec(spec); spec.loader.exec_module(mod); mod.mcp.run()"
+RUNSCRIPT
+    chmod +x "$mcp_dir/run-ps-mcp.sh"
+
+    # Illustrator run script
+    cat > "$mcp_dir/run-ai-mcp.sh" << RUNSCRIPT
+#!/bin/bash
+cd "$mcp_dir"
+exec "$uv_path" run \\
+  --no-project \\
+  --with fonttools \\
+  --with python-socketio \\
+  --with "mcp[cli]" \\
+  --with requests \\
+  --with "websocket-client>=1.8.0" \\
+  --with "pillow>=11.2.1" \\
+  --with "numpy>=2.2.6" \\
+  python -c "import sys; sys.path.insert(0, '.'); from importlib.util import spec_from_file_location, module_from_spec; spec = spec_from_file_location('ai_mcp', 'ai-mcp.py'); mod = module_from_spec(spec); spec.loader.exec_module(mod); mod.mcp.run()"
+RUNSCRIPT
+    chmod +x "$mcp_dir/run-ai-mcp.sh"
+
+    success "Adobe Photoshop MCP ready"
+    success "Adobe Illustrator MCP ready"
+    info "Requires: Adobe apps with UXP plugins + Node proxy server"
+    info "See: https://github.com/mikechambers/adb-mcp for setup details"
+}
+
 # Configure MCP servers in ~/.claude.json
 configure_mcp_servers() {
     section "Configuring MCP servers"
@@ -439,6 +522,7 @@ configure_mcp_servers() {
     local install_playwright="n"
     local install_puppeteer="n"
     local install_devtools="n"
+    local install_adobe="n"
 
     if [ -t 0 ]; then
         echo ""
@@ -448,6 +532,18 @@ configure_mcp_servers() {
         read -p "    Install Puppeteer (browser automation)? [y/N]: " install_puppeteer
         read -p "    Install Chrome DevTools (debugging)? [y/N]: " install_devtools
         echo ""
+        echo -e "    ${YELLOW}Optional MCP servers (creative tools):${NC}"
+        read -p "    Install Adobe Creative Cloud MCPs (Photoshop + Illustrator)? [y/N]: " install_adobe
+        echo ""
+    fi
+
+    # Install Adobe MCPs if requested (must happen before JSON config)
+    ADOBE_INSTALL_FAILED=0
+    if echo "$install_adobe" | grep -qi '^y'; then
+        install_adobe_mcps
+        if [ $ADOBE_INSTALL_FAILED -eq 1 ]; then
+            install_adobe="n"
+        fi
     fi
 
     # Add MCP server configurations using python for JSON manipulation
@@ -542,6 +638,21 @@ if "${install_devtools}".lower() in ['y', 'yes']:
         "env": {}
     }
 
+if "${install_adobe}".lower() in ['y', 'yes']:
+    adb_mcp_dir = f"{claude_dir}/mcp/adb-mcp/mcp"
+    optional_servers["adobe-photoshop"] = {
+        "type": "stdio",
+        "command": f"{adb_mcp_dir}/run-ps-mcp.sh",
+        "args": [],
+        "env": {}
+    }
+    optional_servers["adobe-illustrator"] = {
+        "type": "stdio",
+        "command": f"{adb_mcp_dir}/run-ai-mcp.sh",
+        "args": [],
+        "env": {}
+    }
+
 # Add optional servers
 for name, config_val in optional_servers.items():
     if name not in config['mcpServers']:
@@ -616,6 +727,11 @@ print_completion() {
     echo -e "  ${BOLD}Required for /research, /seo, /orca-pipeline:${NC}"
     echo "     - Crawl4AI (install separately)"
     echo "     - Guide: https://docs.crawl4ai.com/core/installation/"
+    echo ""
+    echo -e "  ${BOLD}Optional creative tools:${NC}"
+    echo "     - Adobe Photoshop + Illustrator MCPs (available during install)"
+    echo "     - Requires: uv, Adobe apps, UXP plugins, adb-proxy-socket"
+    echo "     - Guide: https://github.com/mikechambers/adb-mcp"
     echo ""
     echo -e "  ${BOLD}Memory systems:${NC}"
     echo "     - Workshop: ~/.claude/memory/workshop.db"

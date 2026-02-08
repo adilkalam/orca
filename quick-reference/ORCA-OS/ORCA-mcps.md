@@ -247,7 +247,7 @@ Keyword research and SERP intelligence for the SEO content pipeline. npx-based M
 
 ### adb-mcp (Adobe Creative Suite)
 
-AI control of Adobe Photoshop and Premiere via MCP protocol. Python-based MCP server communicates through a Node proxy to UXP plugins.
+AI control of Adobe Photoshop and Illustrator via MCP protocol. Python-based MCP server communicates through a Node proxy to UXP plugins.
 
 ```json
 "adobe-photoshop": {
@@ -266,17 +266,19 @@ AI control of Adobe Photoshop and Premiere via MCP protocol. Python-based MCP se
 
 **Note:** Each Adobe app has its own MCP server entry. The shell scripts handle `uv` environment setup. See `docs/reference/adobe-mcp-setup.md` for full configuration details.
 
+**Installer:** Available as an optional MCP during `dist/install.sh`. The installer clones the adb-mcp repo, generates run scripts with correct paths, and configures `~/.claude.json`.
+
 **Architecture:** AI <-> MCP Server (Python/stdio) <-> Proxy Server (Node/WebSocket) <-> Adobe Plugin <-> Adobe App
 
 **Requires:**
-- Adobe Photoshop 26.0+ or Adobe Premiere Beta 25.3+
+- Adobe Photoshop 26.0+ or Adobe Illustrator 29.0+
 - Adobe UXP Developer Tool (via Creative Cloud)
 - Node proxy server running (`adb-proxy-socket`)
 - UXP plugin loaded in target Adobe app
 
 **Tools (Photoshop):** Document management, layer operations, selections, filters, effects, text, shapes, colors, transforms, blend modes, masks, smart objects, batch operations
 
-**Tools (Premiere):** Project management, sequences, clips, transitions, effects, audio
+**Tools (Illustrator):** execute_extend_script, get_documents, get_active_document_info, export_png, open_file
 
 **Source:** [github.com/mikechambers/adb-mcp](https://github.com/mikechambers/adb-mcp)
 **Used by:** (project-specific configuration)
