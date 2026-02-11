@@ -46,8 +46,8 @@ Orchestrated directly by `/research` command (flat hierarchy, no lead agent).
 ### Search & Crawl
 | Agent | Role |
 |-------|------|
-| `research-web-search-subagent` | Executes web searches via WebSearch + WebFetch |
-| `research-site-crawler-subagent` | Maps and reads key pages via WebSearch/WebFetch |
+| `research-web-search-subagent` | Executes web searches via WebSearch + Crawl4AI |
+| `research-site-crawler-subagent` | Deep crawls specific sites via Crawl4AI |
 
 ### Writing
 | Agent | Role |
@@ -114,15 +114,73 @@ Research artifacts are saved to:
 
 ---
 
-## 6. Dependencies
+## 6. MCP Dependencies
 
+- **Crawl4AI MCP** - `mcp__crawl4ai__md` (single-page markdown), `mcp__crawl4ai__crawl` (batch URL crawl) for web content extraction
 - **WebSearch** - Built-in tool for web discovery (used by subagents)
-- **WebFetch** - Built-in tool for reading key URLs (use sparingly; prefer targeted pages)
-- **(Optional)** **puppeteer** (MCP) - Screenshots / JS-heavy pages when WebFetch is insufficient
 
 ---
 
-## 7. Memory Management
+## 7. Crawl4AI Server Setup (REQUIRED)
+
+**Crawl4AI requires a manual server start before running /research.**
+
+### Start the Server
+
+```bash
+# Start Crawl4AI server (in a separate terminal)
+crawl-server
+
+# Or manually:
+cd ~/.crawl4ai-server/repo/deploy/docker
+~/.crawl4ai-server/bin/python server.py
+```
+
+The server runs on `http://localhost:11235` by default.
+
+### Verify Server Running
+
+```bash
+curl http://localhost:11235/health
+```
+
+### Claude Config
+
+Your `~/.claude.json` should have (SSE mode):
+
+```json
+{
+  "mcpServers": {
+    "crawl4ai": {
+      "type": "sse",
+      "url": "http://localhost:11235/mcp/sse"
+    }
+  }
+}
+```
+
+### Available Tools
+
+| Tool | Purpose |
+|------|---------|
+| `mcp__crawl4ai__md` | Single page markdown extraction (params: `url`, `f`, `q`) |
+| `mcp__crawl4ai__crawl` | Batch URL crawling (params: `urls` array) |
+| `mcp__crawl4ai__html` | Preprocessed HTML extraction |
+| `mcp__crawl4ai__screenshot` | Full-page PNG screenshot |
+| `mcp__crawl4ai__pdf` | PDF generation from URL |
+| `mcp__crawl4ai__execute_js` | Execute JS snippets on page |
+
+### If /research Fails
+
+1. Check server is running: `curl http://localhost:11235/health`
+2. Restart server: `crawl-server`
+3. Check port isn't blocked: `lsof -i :11235`
+
+**Common Error:** "Connection refused" = server not running. Start it first.
+
+---
+
+## 8. Memory Management
 
 Deep research can exhaust Claude Code's Node.js heap (~4GB default).
 
@@ -139,7 +197,7 @@ export NODE_OPTIONS="--max-old-space-size=8192"
 
 ---
 
-## 8. Tips
+## 9. Tips
 
 1. **Be specific** - "React Server Components best practices 2026" beats "RSC tips"
 2. **Use --deep for decisions** - When the answer matters, pay for thoroughness

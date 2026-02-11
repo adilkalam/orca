@@ -157,6 +157,7 @@ claude
 - **sequential-thinking** - Multi-step reasoning
 - **cognition-mcp** - 40 reasoning operations
 - **project-context** - Project memory and semantic search
+- **crawl4ai** - Web scraping & research (Python-based, auto-configured)
 
 ### Optional (User Prompted)
 

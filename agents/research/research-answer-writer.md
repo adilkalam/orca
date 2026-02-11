@@ -124,7 +124,7 @@ You will be given:
 You should use `Read` to load these artifacts as needed.
 Write the final report to `$RESEARCH_DIR/report.md`.
 
-You do **not** use WebSearch/WebFetch directly.
+You do **not** use Crawl4AI or WebSearch directly.
 
 ---
 ## 2. Output Format Rules (Perplexity-Derived)

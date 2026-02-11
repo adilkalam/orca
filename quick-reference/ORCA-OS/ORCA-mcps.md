@@ -22,8 +22,8 @@ Heavy MCPs defined in project `.mcp.json` + enabled via `enabledMcpjsonServers`:
 | Project | MCPs |
 |---------|------|
 | `/peptidefox-ios` | XcodeBuildMCP |
-| `/obsidian-peptides` | chrome-devtools, puppeteer |
-| `/peptidefox` | chrome-devtools, puppeteer |
+| `/obsidian-peptides` | chrome-devtools, puppeteer, crawl4ai |
+| `/peptidefox` | chrome-devtools, puppeteer, crawl4ai |
 
 ---
 
@@ -202,6 +202,49 @@ Browser automation and visual testing. Simpler and more lightweight than Playwri
 **Used by:** nextjs-design-reviewer
 **Projects:** /obsidian-peptides, /peptidefox
 
+### crawl4ai (Research)
+
+Web content extraction for research. Connects to local Crawl4AI server via SSE.
+
+```json
+{
+  "crawl4ai": {
+    "type": "sse",
+    "url": "http://localhost:11235/mcp/sse"
+  }
+}
+```
+
+**Requires manual server start:**
+```bash
+crawl-server  # alias for ~/.crawl4ai-server/bin/python server.py
+```
+
+**Used by:** research-* agents, seo-* agents
+**Projects:** Project-scoped (configured in project `.mcp.json` + `enabledMcpjsonServers`)
+
+### ahrefs (SEO)
+
+Keyword research and SERP intelligence for the SEO content pipeline. npx-based MCP that launches externally (not from the `mcp/` directory).
+
+```json
+{
+  "ahrefs": {
+    "type": "stdio",
+    "command": "npx",
+    "args": ["-y", "ahrefs-mcp"]
+  }
+}
+```
+
+**Tools:**
+- `keywords_explorer_overview` - Keyword volume, difficulty, CPC, traffic potential
+- `keywords_explorer_related_terms` - LSI keywords, "also rank for" terms
+- `serp_overview_serp_overview` - Top 10 SERP results, features, PAA
+
+**Used by:** seo-research-specialist, seo-optimizer
+**Projects:** Project-scoped (configured in project `.mcp.json` + `enabledMcpjsonServers`)
+
 ### adb-mcp (Adobe Creative Suite)
 
 AI control of Adobe Photoshop and Illustrator via MCP protocol. Python-based MCP server communicates through a Node proxy to UXP plugins.
@@ -277,8 +320,8 @@ OpenSCAD 3D rendering capabilities for AI assistants. Provides tools for single 
 | Next.js | chrome-devtools, puppeteer |
 | Django-React | (none) |
 | Expo | (none) |
-| Research | (none) |
-| SEO | (none) |
+| Research | crawl4ai |
+| SEO | ahrefs, crawl4ai |
 | Data | (none) |
 | Audit | cognition-mcp |
 | Typography | (none) |

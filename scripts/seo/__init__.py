@@ -9,7 +9,7 @@ Content optimization using NLP analysis:
 - Schema generation
 
 Provider abstraction for SERP data:
-- WebSearch/WebFetch (current)
+- Ahrefs (current)
 - DataForSEO (future)
 """
 

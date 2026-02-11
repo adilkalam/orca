@@ -42,10 +42,10 @@ The optimizer runs a multi-stage analysis:
 Input (draft or URL)
     |
     v
-1. Discover SERP results (WebSearch)
+1. Fetch SERP data (Ahrefs MCP)
     |
     v
-2. Fetch competitor content (WebFetch)
+2. Fetch competitor content (Crawl4AI)
     |
     v
 3. TF-IDF semantic analysis (scikit-learn)
@@ -100,10 +100,10 @@ Generates consumer-focused schema (not medical):
 
 ---
 
-## 7. Dependencies
+## 7. MCP Dependencies
 
-- **WebSearch** - SERP discovery (top competitors)
-- **WebFetch** - Competitor page reading (top 3–5)
+- **Ahrefs MCP** - SERP data and keyword intelligence
+- **Crawl4AI MCP** - Competitor page content extraction
 
 ---
 

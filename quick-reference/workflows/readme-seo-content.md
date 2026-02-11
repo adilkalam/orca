@@ -88,9 +88,9 @@ Use for:
 
 ---
 
-## 5. Dependencies
+## 5. MCP Dependencies
 
-- **WebSearch/WebFetch** - SERP discovery and source reading
+- **Ahrefs MCP** - `mcp__ahrefs__*` for keyword research and SERP data
 - **ProjectContext MCP** - For saving SEO decisions and standards
 
 ---

@@ -48,7 +48,7 @@ Perform the following checks:
    - Verify that the report's **Limitations / Uncertainties** section mentions
      the most important RA issues.
 4. **Tool Limits**
-   - If `tool_status.*` indicates tools were `error` or `unavailable`,
+   - If `tool_status.crawl4ai` or other tools show `error` or `unavailable`,
      ensure the report explicitly calls this out as a limitation.
 
 ---
@@ -83,3 +83,4 @@ Start at 100. Subtract points based on severity:
 
 Summarize issues and recommended fixes in a short Markdown report that the
 lead agent or writer can act on.
+

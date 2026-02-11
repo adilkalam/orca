@@ -185,7 +185,7 @@ specialist_triggers:
 
 ---
 
-## Layer 5: MCPs (8)
+## Layer 5: MCPs (10)
 
 Model Context Protocol integrations. Project-scoped by default to minimize token bloat.
 
@@ -200,7 +200,7 @@ Always available in `~/.claude.json`:
 | sequential-thinking | Extended multi-step reasoning | `sequentialthinking` |
 | context7 | Library documentation (disabled by default) | `resolve-library-id`, `get-library-docs` |
 
-### Project-Scoped MCPs (4)
+### Project-Scoped MCPs (6)
 
 Defined in project `.mcp.json`, enabled via `enabledMcpjsonServers` in `~/.claude.json`:
 
@@ -209,6 +209,8 @@ Defined in project `.mcp.json`, enabled via `enabledMcpjsonServers` in `~/.claud
 | XcodeBuildMCP | iOS | stdio/npx |
 | chrome-devtools | Next.js | stdio/npx |
 | puppeteer | Next.js | stdio/node |
+| crawl4ai | Research, SEO | SSE (requires manual server start) |
+| ahrefs | SEO | stdio/npx |
 | adb-mcp | (project-specific) | stdio (requires UXP plugin + proxy) |
 
 Additionally, openscad-mcp exists as an experimental integration with no dedicated lane.
@@ -219,6 +221,8 @@ Additionally, openscad-mcp exists as an experimental integration with no dedicat
 |------|---------------|
 | iOS | XcodeBuildMCP |
 | Next.js | chrome-devtools, puppeteer |
+| SEO | ahrefs, crawl4ai |
+| Research | crawl4ai |
 | Audit | cognition-mcp (global) |
 | All others | (none beyond globals) |
 

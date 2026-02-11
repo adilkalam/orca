@@ -66,6 +66,7 @@ All `/orca-*` lane commands support three execution modes:
 /seo --with-optimize "target keyword"
 ```
 **Agents:** seo-research-specialist, seo-brief-strategist, seo-draft-writer, seo-quality-guardian, seo-optimizer
+**MCP:** ahrefs, crawl4ai
 
 ### `/research` - Deep Research Lane
 ```bash
@@ -73,6 +74,7 @@ All `/orca-*` lane commands support three execution modes:
 /research --deep "Complete mechanism analysis"
 ```
 **Agents:** research-web-search-subagent, research-site-crawler-subagent, research-answer-writer, research-fact-checker
+**MCP:** crawl4ai
 
 ### `/typography` - Typography/Font Management Lane
 ```bash

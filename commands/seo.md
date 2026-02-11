@@ -170,12 +170,12 @@ await AskUserQuestion({
 ## Proposed SEO Pipeline Team
 
 **Phase 1: Research (seo-research-specialist)**
-- SERP discovery via WebSearch
+- SERP analysis via Ahrefs MCP
 - Direct file research in /obsidian-peptides/docs/research (PRIMARY)
 - Direct file research in /obsidian-peptides/data/peptides (PRIMARY)
 - KG deep reading (SUPPLEMENTARY - can miss things)
-- Competitor reading (top 3-5 SERP results via WebFetch)
-- Gap research (authoritative external sources via WebFetch)
+- crawl4ai competitor scraping (top 3-5 SERP results)
+- crawl4ai gap research (external authoritative sources)
 - External research paper loading
 - Brief generation
 
@@ -286,7 +286,7 @@ agentdb.set('session', session);
 ```typescript
 await Task({
   subagent_type: "seo-research-specialist",
-  description: "SEO research with SERP + direct files + KG + web",
+  description: "SEO research with SERP + direct files + KG + crawl4ai",
   prompt: `
 You are the seo-research-specialist (OS 5.2).
 
@@ -300,9 +300,10 @@ AgentDB session: ${SESSION_ID}
 
 ## Your Tasks (Research Hierarchy)
 
-### 1. SERP Discovery (WebSearch)
-   - Identify top 5–10 organic competitors for the keyword
-   - Capture intent cues and common questions (PAA-like queries from SERP snippets)
+### 1. SERP Analysis (Ahrefs MCP)
+   - keywords-explorer-overview
+   - keywords-explorer-related-terms
+   - serp-overview-serp-overview
    - Create: outputs/seo/${SLUG}-serp.json
 
 ### 2. Direct File Research (PRIMARY - Before KG)
@@ -327,20 +328,20 @@ AgentDB session: ${SESSION_ID}
    - Merge with direct file research (KG supplements, doesn't replace)
    - Create: report.json, brief.json, brief.md
 
-### 4. Web Research (GAPS + COMPETITORS)
+### 4. Web Research via crawl4ai (GAPS + COMPETITORS)
    a) Scrape Top SERP Competitors
-      - Use WebFetch on top 3-5 SERP URLs
+      - Use mcp__crawl4ai__md on top 3-5 SERP URLs
       - Analyze competitor content structure
       - Create: outputs/seo/${SLUG}-competitor-analysis.json
 
    b) Fill Research Gaps
       - Identify gaps from merged research
-      - Use WebFetch on authoritative sources
+      - Use mcp__crawl4ai__crawl on authoritative sources
       - Cache citations for draft writer
 
 ### 5. External Research Loading
    - Load from: ${RESEARCH_INDEX_PATH}
-   - Merge with web findings
+   - Merge with crawl4ai findings
 
 ### 6. Context Integration
    - Merge all research sources
@@ -355,9 +356,9 @@ Save these keys for downstream agents:
 - serp_features
 - direct_research_files (from /obsidian-peptides/)
 - merged_research (direct + KG)
-- competitor_content (web fetched)
+- competitor_content (crawl4ai scraped)
 - competitor_analysis
-- gap_research (web external)
+- gap_research (crawl4ai external)
 - complete_research (all sources merged)
 - research_papers
 - keyword_strategy
@@ -671,7 +672,7 @@ ${NEW_STANDARDS_CREATED}
 - Skip SERP analysis (required for targeting)
 - Skip direct file research (PRIMARY source - check before KG)
 - Rely solely on KG (KG can miss things - use direct files first)
-- Skip competitor analysis (required for competitive insights)
+- Skip crawl4ai competitor analysis (required for competitive insights)
 - Skip clarity gates (required for quality)
 - Auto-publish content (human review required)
 - Rewrite content in QA phase (flag only)
@@ -691,6 +692,7 @@ ${NEW_STANDARDS_CREATED}
 **Scripts:**
 - scripts/seo_auto_pipeline.py
 - scripts/seo_kg_deep_reader.py
+- scripts/seo_serp_bridge.py
 - scripts/seo_clarity_gates.py
 
 **Default Paths (project-specific):**

@@ -77,7 +77,7 @@ Research Plan:
 
 ### Phase 3: Evidence Gathering
 
-Subagents search the web sequentially using WebSearch + WebFetch:
+Subagents search the web sequentially using WebSearch + Crawl4AI:
 
 ```
 [Sequential research in progress...]
@@ -243,10 +243,10 @@ You can reference past research:
 
 ### Tool errors
 
-If a tool encounters errors or is unavailable:
+If Crawl4AI encounters errors or is unavailable:
 - The report will note which areas have reduced coverage
-- Narrow scope or reduce the number of sources and rerun
-- WebFetch/WebSearch fallbacks are used where possible
+- Check that the Crawl4AI server is running locally
+- WebFetch is used as fallback
 
 ### Report seems incomplete
 

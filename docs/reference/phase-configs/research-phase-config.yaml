@@ -1,11 +1,11 @@
 # Research Pipeline Phase Configuration - OS 5.2
-# Multi-agent deep research workflow (WebSearch/WebFetch + memory + writers)
+# Multi-agent deep research workflow (Crawl4AI + memory + writers)
 
 pipeline:
   name: research
   description: >
-    Multi-agent research pipeline using WebSearch/WebFetch, memory systems,
-    and writer/citation agents to produce cited, structured research reports.
+    Multi-agent research pipeline using Crawl4AI MCP, memory systems, and
+    writer/citation agents to produce cited, structured research reports.
   version: "5.2"
 
 # Context Integration
@@ -24,7 +24,7 @@ complexity_tiers:
     gates_required: false
     examples:
       - "When was Swift 6 released?"
-      - "What's the difference between WebSearch and WebFetch?"
+      - "What is the default depth limit for Crawl4AI crawl?"
 
   medium:
     description: Multi-part questions requiring several sources and synthesis
@@ -37,7 +37,7 @@ complexity_tiers:
 
   deep:
     description: >
-      Long-horizon, deep research (many subquestions, multiple evidence loops,
+      Long-horizon, deep research (many subquestions, multiple Crawl4AI passes,
       strict gates, and long-form report output).
     routing: full-pipeline          # Uses research-lead-agent
     spec_required: recommended      # Optionally gated by /plan in future
@@ -81,16 +81,16 @@ phases:
     outputs:
       - subquestions
       - plan_strategy
-      - extraction_strategy
+      - crawl4ai_strategy
       - fallback_strategy
       - evaluation_criteria
 
-  # Phase 2: Evidence Gathering (Web-first)
+  # Phase 2: Evidence Gathering (Crawl4AI-first)
   - name: evidence_gathering
     agent: research-lead-agent
     description: >
-      Coordinate subagents to gather evidence for each subquestion using
-      WebSearch/WebFetch, with memory fallbacks when needed.
+      Coordinate Crawl4AI-powered subagents to gather evidence for each
+      subquestion, with WebSearch/memory fallbacks when needed.
     dependencies:
       - research_plan
       - memory_context
@@ -218,8 +218,8 @@ phase_state:
     - user_intent
     - research_scope
     - timeframe
-    - tool_status           # e.g. { webfetch: "ok" | "error" | "unavailable" }
-    - tool_error_events     # array of structured tool error events
+    - tool_status           # e.g. { crawl4ai: "ok" | "error" | "unavailable" }
+    - tool_error_events     # array of structured Crawl4AI/WebSearch error events
 
   # Research-specific workflow control (OS 3.0)
   research:
@@ -269,12 +269,12 @@ phase_state:
       fields:
         - subquestions
         - plan_strategy
-        - extraction_strategy
+        - crawl4ai_strategy
         - fallback_strategy
         - evaluation_criteria
 
     evidence_gathering:
-      description: "Evidence collected from WebSearch/WebFetch and fallbacks."
+      description: "Evidence collected from Crawl4AI and fallbacks."
       fields:
         - evidence_artifacts
         - sources_summary

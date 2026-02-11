@@ -212,7 +212,7 @@ Orchestrated directly by `/research` command (no lead agent).
 | `research-citation-gate` | Citation quality |
 | `research-consistency-gate` | Logical consistency |
 
-**MCP Requirements:** (none)
+**MCP Requirements:** crawl4ai
 
 ---
 
@@ -226,7 +226,7 @@ Orchestrated directly by `/research` command (no lead agent).
 | `seo-quality-guardian` | SEO content quality assurance |
 | `seo-optimizer` | Content optimization against SERP competitors |
 
-**MCP Requirements:** (none)
+**MCP Requirements:** ahrefs, crawl4ai
 
 ---
 

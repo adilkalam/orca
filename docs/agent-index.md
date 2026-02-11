@@ -158,8 +158,8 @@
 | research-consistency-gate      | Consistency and quality gate for the Research lane. ... | 86    | 2026-01-30   |
 | research-deep-writer           | Deep research report writer for the Research lane. P... | 234   | 2026-01-30   |
 | research-fact-checker          | Optional fact-checking gate for the Research lane. V... | 147   | 2026-01-30   |
-| research-site-crawler-subagent | Site mapping and targeted crawling specialist....       | 163   | 2026-02-03   |
-| research-web-search-subagent   | Web search specialist using WebSearch + WebFetch wit... | 206   | 2026-02-03   |
+| research-site-crawler-subagent | Crawl4AI-first site mapping and crawling specialist.... | 163   | 2026-02-03   |
+| research-web-search-subagent   | Web search specialist using WebSearch + Crawl4AI wit... | 206   | 2026-02-03   |
 
 ## Seo
 
@@ -194,3 +194,4 @@
 | typography-advisor            | Light read-only agent for font selection and pairing... | 265   | 2026-02-03   |
 | typography-explorer-generator | Generates interactive typography exploration tools f... | 470   | 2026-02-03   |
 | typography-orchestrator       | Light orchestrator for typography pipeline. Routes t... | 354   | 2026-02-03   |
+

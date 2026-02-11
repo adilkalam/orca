@@ -123,11 +123,11 @@ Evidence is older than the requested time window or clearly stale.
 ```
 
 #### `#TOOL_ERROR`
-Tools (WebFetch/WebSearch/browser automation) encountered errors or were unavailable and
+Tools (especially Crawl4AI MCP) encountered errors or were unavailable and
 could not explore as widely as desired.
 
 ```
-#TOOL_ERROR: WebFetch unavailable while exploring vendor docs
+#TOOL_ERROR: Crawl4AI server unavailable while exploring vendor docs
 ```
 
 #### `#RATE_LIMITED`

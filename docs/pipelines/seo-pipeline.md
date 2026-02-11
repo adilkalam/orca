@@ -86,21 +86,21 @@ Artifacts:
 **Agent:** `seo-research-specialist`
 
 Research Sources (in priority order):
-1. **SERP Discovery** (WebSearch) - Top competitors, "People also ask", intent clues
+1. **SERP Intelligence** (Ahrefs MCP) - Keyword data, search intent, SERP features
 2. **Direct File Research** (PRIMARY) - Before checking KG:
    - `/obsidian-peptides/docs/research/` - Curated research documents
    - `/obsidian-peptides/data/peptides/` - Peptide-specific data files
 3. **Knowledge Graph** (SUPPLEMENTARY) - Can miss things, supplements direct files
-4. **Web Research** (WebFetch):
-   - Read and analyze top 3-5 SERP competitor pages
+4. **Web Research** (crawl4ai MCP):
+   - Top 3-5 SERP competitor pages scraped and analyzed
    - Gap research from authoritative external sources
 5. **External Research Papers** - E-E-A-T citations from research index
 
 Tasks:
-- Use WebSearch to identify top SERP competitors, intent cues, and common questions
+- Perform SERP analysis via Ahrefs MCP
 - Search direct research files in obsidian-peptides (PRIMARY source)
 - Supplement with knowledge graph analysis (KG can miss things)
-- Fetch and analyze top SERP competitors via WebFetch (3–5 pages)
+- Scrape and analyze top SERP competitors via crawl4ai
 - Fill research gaps with authoritative external sources
 - Identify:
   - Primary/secondary keywords

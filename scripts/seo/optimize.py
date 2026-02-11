@@ -54,6 +54,7 @@ class SERPDataProvider(Protocol):
     """Abstract interface for SERP data providers.
     
     Implementations:
+    - AhrefsProvider (current, via MCP)
     - DataForSEOProvider (future)
     """
     
@@ -64,6 +65,22 @@ class SERPDataProvider(Protocol):
     def get_serp_results(self, keyword: str, limit: int = 10, country: str = "us") -> list[SERPResult]:
         """Get organic SERP results for keyword."""
         ...
+
+
+class AhrefsProvider:
+    """Ahrefs SERP data provider.
+    
+    Note: This is used via MCP in the agent, not directly in Python.
+    The agent calls mcp__ahrefs__* tools and passes results to this script.
+    """
+    
+    def get_keyword_data(self, keyword: str, country: str = "us") -> KeywordData:
+        # Implemented via MCP in agent - this is a stub for interface compliance
+        raise NotImplementedError("Use mcp__ahrefs__keywords_explorer_overview in agent")
+    
+    def get_serp_results(self, keyword: str, limit: int = 10, country: str = "us") -> list[SERPResult]:
+        # Implemented via MCP in agent
+        raise NotImplementedError("Use mcp__ahrefs__serp_overview_serp_overview in agent")
 
 
 class DataForSEOProvider:

@@ -31,9 +31,9 @@ ORCA-OS is a Claude Code orchestration system that counteracts trained defaults 
 | Dev (cross-cutting) | - | 12 | - |
 | OS-Dev | `/orca-os-dev` | 11 | (none) |
 | Audit | `/audit` | 8 | cognition-mcp |
-| Research | `/research` | 7 | (none) |
+| Research | `/research` | 7 | crawl4ai |
 | Typography | `/typography` | 6 | (none) |
-| SEO | `/seo` | 5 | (none) |
+| SEO | `/seo` | 5 | ahrefs, crawl4ai |
 | Data | (none) | 4 | (none) |
 
 ---
