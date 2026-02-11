@@ -1,7 +1,7 @@
 ---
 description: "Clone a website's UI into an OS 5.2 project using SAME.dev-style web analysis and structured specs"
 argument-hint: "<url_or_image_path> [clone_mode]"
-allowed-tools: ["Task", "Read", "Write", "Edit", "Bash", "AskUserQuestion", "WebFetch", "mcp__project-context__query_context", "mcp__project-context__save_decision"]
+allowed-tools: ["Task", "Read", "Write", "Edit", "Bash", "AskUserQuestion", "WebSearch", "WebFetch", "mcp__project-context__query_context", "mcp__project-context__save_decision"]
 ---
 
 # /clone-website – SAME.dev‑style Website Cloner (Spec‑First)
@@ -66,11 +66,11 @@ Use `AskUserQuestion` for this Q&A and wait for confirmation before moving on.
 
 ---
 
-## 3. Web Analysis (SAME.dev Web Scrape Pattern)
+## 3. Web Analysis (SAME.dev Web Read Pattern)
 
 Use a web analysis tool in the SAME.dev style:
-- Prefer Crawl4AI MCP (`mcp__crawl4ai__md` for single pages or `mcp__crawl4ai__crawl` for multi-page) if available.
-- If none exist, fall back to `WebFetch` + manual HTML/DOM analysis.
+- Use `WebFetch` for reading key pages and manual HTML/DOM analysis.
+- Use `WebSearch` to discover related pages (pricing, docs, blog) when needed.
 
 When invoking tools:
 - Say “I’ll visit {url}…” or “I’ll read {url}…”, **never** “I’ll scrape…”.

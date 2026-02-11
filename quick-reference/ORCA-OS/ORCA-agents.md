@@ -1,10 +1,10 @@
 # OS 5.2 Agents Quick Reference
 
-**Last Updated:** 2026-02-03
+**Last Updated:** 2026-02-09
 **Version:** OS 5.2
-**Total Agents:** 124
+**Total Agents:** 112
 
-> **Scope Note:** This quick-reference covers all 124 agents across 13 domains. See `docs/reference/os-dependency-graph.yaml` for complete registry.
+> **Scope Note:** This quick-reference covers all 112 agents across 11 domains. See `docs/reference/os-dependency-graph.yaml` for complete registry.
 
 ---
 
@@ -34,13 +34,11 @@
 | Dev (cross-cutting) | 12 | `agents/dev/` |
 | OS-Dev | 11 | `agents/os-dev/` |
 | Audit | 8 | `agents/audit/` |
-| Shopify | 8 | `agents/shopify/` |
 | Research | 7 | `agents/research/` |
 | Typography | 6 | `agents/typography/` |
 | SEO | 5 | `agents/seo/` |
-| KG | 4 | `agents/kg/` |
 | Data | 4 | `agents/data/` |
-| **TOTAL** | **124** | |
+| **TOTAL** | **112** | |
 
 ---
 
@@ -214,7 +212,7 @@ Orchestrated directly by `/research` command (no lead agent).
 | `research-citation-gate` | Citation quality |
 | `research-consistency-gate` | Logical consistency |
 
-**MCP Requirements:** crawl4ai
+**MCP Requirements:** (none)
 
 ---
 
@@ -228,7 +226,7 @@ Orchestrated directly by `/research` command (no lead agent).
 | `seo-quality-guardian` | SEO content quality assurance |
 | `seo-optimizer` | Content optimization against SERP competitors |
 
-**MCP Requirements:** ahrefs, crawl4ai
+**MCP Requirements:** (none)
 
 ---
 
@@ -316,43 +314,6 @@ Meta-pipeline for creating new domain pipelines. 5-phase wizard: Interview → R
 
 ---
 
-## Shopify Pipeline (8 Agents)
-
-### Orchestration
-| Agent | Purpose |
-|-------|---------|
-| `shopify-grand-architect` | Shopify lane coordination and planning |
-| `shopify-light-orchestrator` | Default/tweak mode coordination |
-
-### Implementation
-| Agent | Purpose |
-|-------|---------|
-| `shopify-liquid-specialist` | Liquid templating, objects, filters, logic |
-| `shopify-section-builder` | Section development, schema, blocks |
-| `shopify-js-specialist` | JavaScript for Shopify themes |
-| `shopify-css-specialist` | CSS and design tokens for Shopify themes |
-
-### Gates
-| Agent | Purpose |
-|-------|---------|
-| `shopify-theme-checker` | Theme quality and linting |
-| `shopify-ui-reviewer` | Visual validation via Puppeteer |
-
----
-
-## KG Pipeline (4 Agents)
-
-Knowledge-graph-augmented research agents for OBDN research.
-
-| Agent | Purpose |
-|-------|---------|
-| `kg-lead-agent` | Lead researcher, planning and coordination |
-| `kg-query-subagent` | KG query specialist |
-| `kg-mechanism-subagent` | Mechanism path mapping |
-| `kg-answer-writer` | KG-grounded answer writing |
-
----
-
 ## Audit Pipeline (8 Agents)
 
 Specialist agents for due-diligence audits. Run in parallel via `/audit` command.
@@ -426,11 +387,9 @@ Located in `agents/dev/`. These agents work across multiple pipelines:
   dev/              # 12 agents (cross-cutting)
   os-dev/           # 11 agents (os-dev-* + orca-pipeline-*)
   audit/            # 8 agents
-  shopify/          # 8 agents
   research/         # 7 agents
   typography/       # 6 agents
   seo/              # 5 agents
-  kg/               # 4 agents
   data/             # 4 agents
 ```
 
@@ -461,4 +420,4 @@ $ORCA_OS_PATH/agents/
 ---
 
 _Source of truth: `docs/reference/os-dependency-graph.yaml`_
-_Last sync: 2026-02-06_
+_Last sync: 2026-02-09_

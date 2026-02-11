@@ -37,7 +37,7 @@ Telemetry tracks pipeline execution for debugging and performance analysis.
 
 ## What Triggers It
 
-Telemetry is emitted by orchestrator commands (`/nextjs`, `/ios`, `/expo`, `/django-react`, `/orca-os-dev`, `/shopify`):
+Telemetry is emitted by orchestrator commands (`/nextjs`, `/ios`, `/expo`, `/django-react`, `/orca-os-dev`):
 
 ```bash
 # At pipeline start

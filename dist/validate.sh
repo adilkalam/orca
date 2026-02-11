@@ -133,7 +133,7 @@ try:
 
     servers = config.get('mcpServers', {})
     core = ['context7', 'sequential-thinking', 'project-context', 'cognition-mcp']
-    optional = ['crawl4ai', 'playwright', 'puppeteer', 'chrome-devtools', 'XcodeBuildMCP']
+    optional = ['playwright', 'puppeteer', 'chrome-devtools', 'XcodeBuildMCP']
 
     print("  Core MCP servers:")
     for server in core:
@@ -205,10 +205,6 @@ else
     echo -e "    ${RED}[ERROR]${NC} dist/index.js missing - MCP not built"
     ERRORS=$((ERRORS + 1))
 fi
-
-# Crawl4AI - user installs separately
-echo "  Crawl4AI MCP (required for /research, /seo, /orca-pipeline)..."
-echo -e "    ${YELLOW}[INFO]${NC} Install separately: https://docs.crawl4ai.com/core/installation/"
 
 echo ""
 echo "Checking documentation..."

@@ -7,12 +7,12 @@
 
 ## Executive Summary
 
-ORCA-OS is a Claude Code configuration system that deploys to `~/.claude`. It consists of **9 architectural layers** working together to provide domain-specific AI-assisted development pipelines. Each layer exists to counteract a specific trained default: specialized agents prevent drift toward generic output, phase configs prevent skipping planning and verification, memory systems compensate for no persistent context, quality gates prevent premature completion, and the cognition system enables substrate-level observation of reasoning. The architecture matches the complexity of the problem it solves -- development orchestration across 13 domains with enforced quality.
+ORCA-OS is a Claude Code configuration system that deploys to `~/.claude`. It consists of **9 architectural layers** working together to provide domain-specific AI-assisted development pipelines. Each layer exists to counteract a specific trained default: specialized agents prevent drift toward generic output, phase configs prevent skipping planning and verification, memory systems compensate for no persistent context, quality gates prevent premature completion, and the cognition system enables substrate-level observation of reasoning. The architecture matches the complexity of the problem it solves -- development orchestration across 11 domains with enforced quality.
 
 | Layer | Count | Purpose |
 |-------|-------|---------|
 | Commands | 33 | User entry points |
-| Agents | 124 | Workers across 13 domains |
+| Agents | 112 | Workers across 11 domains |
 | Pipelines | 14 | Workflow documentation |
 | Phase Configs | 12 | Machine-readable definitions |
 | MCPs | 10 | Tool integrations (4 global + 6 project-scoped) |
@@ -31,7 +31,7 @@ User entry points invoked via `/command`.
 
 | Category | Count | Commands |
 |----------|-------|----------|
-| Lane Orchestrators | 12 | `/ios`, `/nextjs`, `/django-react`, `/expo`, `/research`, `/seo`, `/kg`, `/shopify`, `/typography`, `/orca-os-dev`, `/orca`, `/orca-pipeline` |
+| Lane Orchestrators | 10 | `/ios`, `/nextjs`, `/django-react`, `/expo`, `/research`, `/seo`, `/typography`, `/orca-os-dev`, `/orca`, `/orca-pipeline` |
 | Planning & Audit | 2 | `/plan`, `/audit` |
 | Reasoning | 6 | `/think`, `/contemplate`, `/challenge`, `/ultra-think`, `/deepthink`, `/problem-solve` |
 | Utility | 13 | `/enhance`, `/root-cause`, `/design-dna`, `/design-review`, `/clone-website`, `/session-save`, `/session-resume`, `/project-memory`, `/project-code`, `/reflect`, `/self-improve`, `/memory-search`, `/project-setup` |
@@ -52,7 +52,7 @@ Complex mode requires a requirements spec (created by `/plan`). If one does not 
 
 ---
 
-## Layer 2: Agents (124)
+## Layer 2: Agents (112)
 
 Workers organized by domain with strict role boundaries.
 
@@ -68,15 +68,13 @@ Workers organized by domain with strict role boundaries.
 | OS-Dev | 6 | `agents/os-dev/` | os-dev-grand-architect, os-dev-builder, os-dev-standards-enforcer |
 | Orca-Pipeline | 5 | `agents/os-dev/` | orca-pipeline-orchestrator, orca-pipeline-researcher, orca-pipeline-generator |
 | Audit | 8 | `agents/audit/` | audit-structure-specialist, audit-security-specialist, audit-architecture-specialist |
-| Shopify | 8 | `agents/shopify/` | shopify-grand-architect, shopify-liquid-specialist, shopify-ui-reviewer |
 | Research | 7 | `agents/research/` | research-web-search-subagent, research-answer-writer, research-fact-checker |
 | Typography | 6 | `agents/typography/` | typography-orchestrator, glyph-editor, ttf-exporter, path-guardian |
 | SEO | 5 | `agents/seo/` | seo-research-specialist, seo-brief-strategist, seo-draft-writer, seo-optimizer |
-| KG | 4 | `agents/kg/` | kg-lead-agent, kg-query-subagent, kg-mechanism-subagent, kg-answer-writer |
 | Data | 4 | `agents/data/` | data-researcher, python-analytics-expert, competitive-analyst |
-| **TOTAL** | **124** | **14 dirs** | |
+| **TOTAL** | **112** | **12 dirs** | |
 
-Note: OS-Dev (6) and Orca-Pipeline (5) share the `agents/os-dev/` directory, totaling 11 agents there. Shopify agents exist in the source repo but are excluded from deployment (project-specific).
+Note: OS-Dev (6) and Orca-Pipeline (5) share the `agents/os-dev/` directory, totaling 11 agents there.
 
 ### Agent Hierarchy
 
@@ -187,7 +185,7 @@ specialist_triggers:
 
 ---
 
-## Layer 5: MCPs (10)
+## Layer 5: MCPs (8)
 
 Model Context Protocol integrations. Project-scoped by default to minimize token bloat.
 
@@ -202,7 +200,7 @@ Always available in `~/.claude.json`:
 | sequential-thinking | Extended multi-step reasoning | `sequentialthinking` |
 | context7 | Library documentation (disabled by default) | `resolve-library-id`, `get-library-docs` |
 
-### Project-Scoped MCPs (6)
+### Project-Scoped MCPs (4)
 
 Defined in project `.mcp.json`, enabled via `enabledMcpjsonServers` in `~/.claude.json`:
 
@@ -210,12 +208,10 @@ Defined in project `.mcp.json`, enabled via `enabledMcpjsonServers` in `~/.claud
 |-----|-------|------|
 | XcodeBuildMCP | iOS | stdio/npx |
 | chrome-devtools | Next.js | stdio/npx |
-| puppeteer | Next.js, Shopify | stdio/node |
-| crawl4ai | Research, SEO | SSE (requires manual server start) |
-| ahrefs | SEO | stdio/npx |
+| puppeteer | Next.js | stdio/node |
 | adb-mcp | (project-specific) | stdio (requires UXP plugin + proxy) |
 
-Additionally, blender-mcp and openscad-mcp exist as experimental integrations with no dedicated lanes.
+Additionally, openscad-mcp exists as an experimental integration with no dedicated lane.
 
 ### Lane-MCP Matrix
 
@@ -223,10 +219,6 @@ Additionally, blender-mcp and openscad-mcp exist as experimental integrations wi
 |------|---------------|
 | iOS | XcodeBuildMCP |
 | Next.js | chrome-devtools, puppeteer |
-| SEO | ahrefs, crawl4ai |
-| Research | crawl4ai |
-| Shopify | puppeteer |
-| KG | cognition-mcp (global) |
 | Audit | cognition-mcp (global) |
 | All others | (none beyond globals) |
 
@@ -255,13 +247,12 @@ Referenced by ALL agents in "Required Skills" section:
 | ios-knowledge-skill | iOS |
 | ios-testing-skill | iOS |
 | nextjs-knowledge-skill | Next.js |
-| web-interface-guidelines | Next.js, Django-React, Shopify |
+| web-interface-guidelines | Next.js, Django-React |
 | react-performance | Next.js, Django-React |
 | design-dna-skill | Design |
 | design-qa-skill | Design |
 | frontend-aesthetics | Frontend |
 | os-dev-knowledge-skill | OS-Dev |
-| shopify-app-development | Shopify |
 | stripe-integration | Next.js, Django-React |
 | security-basics | Cross-cutting |
 | testing-strategy | Cross-cutting |
@@ -446,7 +437,7 @@ Every pipeline follows:
 - **Reflexion** (Shinn et al., NeurIPS 2023): Gate failures generate verbal reflections stored in Workshop, feeding future runs. Achieves 88% pass@1 vs 67% baseline.
 - **Chain of Verification (CoVe)** (Dhuliawala et al., Meta AI 2023): Verification agents generate 3-5 questions and answer them independently, doubling factual precision. CoVe tables are mandatory in all verification output.
 
-### Gate Agents (10)
+### Gate Agents (8)
 
 | Gate | Domain | Type |
 |------|--------|------|
@@ -455,13 +446,11 @@ Every pipeline follows:
 | ios-standards-enforcer | iOS | Standards |
 | ios-ui-reviewer | iOS | Design |
 | expo-standards-enforcer | Expo | Standards |
-| shopify-theme-checker | Shopify | Standards |
-| shopify-ui-reviewer | Shopify | Design |
 | django-react-standards-enforcer | Django-React | Standards |
 | os-dev-standards-enforcer | OS-Dev | Standards |
 | design-dna-guardian | iOS | Design system |
 
-All 10 gate agents implement Reflexion-on-failure and emit to the Improvement Bus.
+All 8 gate agents implement Reflexion-on-failure and emit to the Improvement Bus.
 
 ---
 
@@ -657,7 +646,7 @@ Cognitive analysis persists as files on disk. When the context window compacts, 
 4. **Graduated scoring**: >=90 PASS, 80-89 WARN, 70-79 ERROR, <70 BLOCK
 5. **Context mandatory**: All agents call ProjectContext MCP first
 6. **State preserved**: phase_state.json enables resumption across sessions
-7. **All Opus 4.6**: Default model across all 124 agents, never specified
+7. **All Opus 4.6**: Default model across all 112 agents, never specified
 8. **Three-tier routing**: -tweak (fast) / default (fast+gates) / --complex (full pipeline)
 9. **User approval required**: Agents never auto-modify; improvements need explicit approval
 

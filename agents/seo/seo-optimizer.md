@@ -1,7 +1,7 @@
 ---
 name: seo-optimizer
 description: "Analyzes content against SERP competitors using NLP, generates optimization reports and consumer-focused schema markup"
-tools: Read, Write, Bash, mcp__crawl4ai__md, mcp__ahrefs__keywords_explorer_overview, mcp__ahrefs__serp_overview_serp_overview
+tools: Read, Write, Bash, WebSearch, WebFetch
 
 # OS 5.2 Constraint Framework
 required_context:
@@ -16,8 +16,8 @@ forbidden_operations:
   - generate_without_analysis: "Must complete analysis before generating recommendations"
 
 verification_required:
-  - serp_data_fetched: "Ahrefs SERP data retrieved"
-  - competitors_crawled: "At least 3 competitor pages scraped"
+  - serp_data_fetched: "SERP competitor URLs captured via WebSearch"
+  - competitors_crawled: "At least 3 competitor pages read"
   - tfidf_analysis_complete: "TF-IDF analysis executed"
   - entity_extraction_done: "Entity coverage computed"
   - schema_generated: "Article/FAQ schema created"
@@ -125,11 +125,8 @@ if (inputs.mode === 'draft') {
 ### URL Mode
 ```typescript
 if (inputs.mode === 'url') {
-  // Use Crawl4AI to fetch the live page
-  const pageContent = await mcp__crawl4ai__md({
-    url: inputs.source,
-    output_format: 'markdown'
-  });
+  // Use WebFetch to read the live page
+  const pageContent = await WebFetch({ url: inputs.source });
   
   const slug = urlToSlug(inputs.source);
   const outputDir = `./seo-optimization`;
@@ -139,35 +136,16 @@ if (inputs.mode === 'url') {
 
 ---
 
-## Phase 3: Fetch SERP Data (Ahrefs MCP)
+## Phase 3: Discover SERP Competitors (WebSearch)
 
-### 3.1 Keyword Overview
+### 3.1 SERP Results
 ```typescript
-const keywordData = await mcp__ahrefs__keywords_explorer_overview({
-  keyword: inputs.keyword,
-  country: 'us'
-});
+const serpResults = await WebSearch({ query: inputs.keyword });
 
-const serpContext = {
-  keyword: inputs.keyword,
-  volume: keywordData.volume,
-  difficulty: keywordData.keyword_difficulty,
-  cpc: keywordData.cpc
-};
-```
-
-### 3.2 SERP Results
-```typescript
-const serpResults = await mcp__ahrefs__serp_overview_serp_overview({
-  keyword: inputs.keyword,
-  country: 'us',
-  limit: inputs.competitors + 2
-});
-
-const competitorUrls = serpResults.organic_results
+const competitorUrls = serpResults.results
   .slice(0, inputs.competitors)
   .map(r => ({
-    url: r.url,
+    url: r.url || r.link,
     title: r.title,
     position: r.position
   }));
@@ -175,24 +153,21 @@ const competitorUrls = serpResults.organic_results
 
 ---
 
-## Phase 4: Fetch Competitor Content (Crawl4AI)
+## Phase 4: Fetch Competitor Content (WebFetch)
 
 ```typescript
 const competitorContent = [];
 
 for (const competitor of competitorUrls) {
   try {
-    const content = await mcp__crawl4ai__md({
-      url: competitor.url,
-      output_format: 'markdown'
-    });
+    const content = await WebFetch({ url: competitor.url });
     
     competitorContent.push({
       url: competitor.url,
       title: competitor.title,
       position: competitor.position,
-      content: content.markdown,
-      wordCount: countWords(content.markdown)
+      content: content,
+      wordCount: countWords(content)
     });
     
   } catch (error) {

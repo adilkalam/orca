@@ -331,11 +331,6 @@ install_orca_files() {
     cp "$ORCA_ROOT/mcp/cognition-mcp/tsconfig.json" "$CLAUDE_DIR/mcp/cognition-mcp/" 2>/dev/null || true
     success "Cognition MCP installed"
 
-    # Crawl4AI uses Docker - no local files needed
-    info "Crawl4AI MCP will use Docker (no local install needed)"
-    mkdir -p "$CLAUDE_DIR/mcp/crawl4ai-crawls"
-    success "Crawl4AI output directory created"
-
     # Copy root files
     info "Installing configuration files..."
     cp "$ORCA_ROOT/CLAUDE.md" "$CLAUDE_DIR/CLAUDE.md" 2>/dev/null || true
@@ -400,12 +395,6 @@ install_mcp_dependencies() {
     else
         warn "Cognition MCP package.json not found - skipping"
     fi
-
-    # Crawl4AI required for /research, /seo, /orca-pipeline
-    echo ""
-    warn "Crawl4AI required for: /research, /seo, /orca-pipeline"
-    info "Install separately: https://docs.crawl4ai.com/core/installation/"
-    info "Then add to ~/.claude.json mcpServers (see docs/mcp-setup.md)"
 
     if [ $mcp_errors -gt 0 ]; then
         echo ""
@@ -592,9 +581,6 @@ core_servers = {
     }
 }
 
-# Note: Crawl4AI is optional - users install separately
-# See: https://docs.crawl4ai.com/core/installation/
-
 # Add core servers
 for name, config_val in core_servers.items():
     if name not in config['mcpServers']:
@@ -723,10 +709,6 @@ print_completion() {
     echo "     - project-context (memory & semantic search)"
     echo "     - cognition-mcp (40 reasoning operations)"
     echo "     - sequential-thinking (multi-step reasoning)"
-    echo ""
-    echo -e "  ${BOLD}Required for /research, /seo, /orca-pipeline:${NC}"
-    echo "     - Crawl4AI (install separately)"
-    echo "     - Guide: https://docs.crawl4ai.com/core/installation/"
     echo ""
     echo -e "  ${BOLD}Optional creative tools:${NC}"
     echo "     - Adobe Photoshop + Illustrator MCPs (available during install)"

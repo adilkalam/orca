@@ -1,8 +1,8 @@
 # OS 5.2 Commands Quick Reference
 
-**Last Updated:** 2026-02-07
+**Last Updated:** 2026-02-09
 **Version:** OS 5.2
-**Total Commands:** 35
+**Total Commands:** 33
 
 ---
 
@@ -18,7 +18,7 @@ All `/orca-*` lane commands support three execution modes:
 
 ---
 
-## Lane Orchestrator Commands (12)
+## Lane Orchestrator Commands (10)
 
 ### `/ios` - iOS Lane
 ```bash
@@ -66,23 +66,6 @@ All `/orca-*` lane commands support three execution modes:
 /seo --with-optimize "target keyword"
 ```
 **Agents:** seo-research-specialist, seo-brief-strategist, seo-draft-writer, seo-quality-guardian, seo-optimizer
-**MCP:** ahrefs, crawl4ai
-
-### `/kg` - Knowledge Graph Research Lane
-```bash
-/kg "mTOR pathway mechanisms"
-```
-**Agents:** kg-lead-agent, kg-query-subagent, kg-mechanism-subagent, kg-answer-writer
-**MCP:** cognition-mcp
-
-### `/shopify` - Shopify Theme Development Lane
-```bash
-/shopify "fix header spacing"            # Default: light + gates
-/shopify -tweak "try new colors"         # Tweak: no gates
-/shopify --complex "redesign collection" # Complex: full pipeline
-```
-**Agents:** shopify-grand-architect, shopify-light-orchestrator, shopify-css-specialist, shopify-js-specialist, shopify-liquid-specialist, shopify-section-builder, shopify-theme-checker, shopify-ui-reviewer
-**MCP:** puppeteer
 
 ### `/research` - Deep Research Lane
 ```bash
@@ -90,7 +73,6 @@ All `/orca-*` lane commands support three execution modes:
 /research --deep "Complete mechanism analysis"
 ```
 **Agents:** research-web-search-subagent, research-site-crawler-subagent, research-answer-writer, research-fact-checker
-**MCP:** crawl4ai
 
 ### `/typography` - Typography/Font Management Lane
 ```bash
@@ -204,10 +186,11 @@ Recommends which /think operations to use.
 ```bash
 /deepthink "Why does user retention drop after day 3?"
 /deepthink --light "Quick question about caching"
-/deepthink --full "Major architectural exploration"
+/deepthink --rigorous "Major architectural exploration"
 ```
-Depth-first exploration with route-based modes (MAP, INVERT, PERSPECTIVES, EDGES, META, DEEP).
-**Modes:** --light (quick), (default), --full (thorough)
+Depth-first exploration with constraint chain (default) and route-based modes (MAP, INVERT, PERSPECTIVES, EDGES, META, DEEP).
+**Modes:** --light (quick, no constraints), (default with constraint chain), --rigorous (constraint chain + full pre-mortem per mode)
+**Constraint Chain:** After each mode, generates constraints (FORWARD, FORBIDDEN, QUESTION) that must be addressed (RESOLVED, ACKNOWLEDGED, DEFERRED) before finishing. Hard block if unresolved. DEFERRED items shown in final output.
 **Enhanced Modes:** MAP (systems + causal), INVERT (pre-mortem + reflexion), PERSPECTIVES (collaborative + steelmanning), EDGES (creative + analogical), DEEP (self-consistency via 3 parallel chains)
 **External Verification:** 6-question self-check including external-facing critique (64.5% blind spot reversal)
 **MCP:** cognition-mcp, sequential-thinking
@@ -371,6 +354,17 @@ Guided wizard for project structure decisions. Detects project type (ios, nextjs
 
 ---
 
+## Skills (Always-On Knowledge)
+
+Skills are passive knowledge that shape Claude's responses when relevant context is detected. They do not require commands to activate.
+
+### `adobe-execution`
+Measure-place-verify guardrails for Adobe Photoshop and Illustrator MCP work. Prevents blind placement, text fragmentation, coordinate confusion. Forces visual self-review.
+**Activates when:** Adobe Photoshop or Illustrator MCP tools are called
+**Location:** `~/.claude/skills/adobe-execution/SKILL.md`
+
+---
+
 ## Command Architecture
 
 ### Role Boundaries
@@ -412,8 +406,6 @@ $ORCA_OS_PATH/commands/
 | `/expo` | expo-grand-orchestrator, expo-builder-agent, expo-verification-agent |
 | `/research` | research-web-search-subagent, research-site-crawler-subagent, research-answer-writer |
 | `/seo` | seo-research-specialist, seo-brief-strategist, seo-draft-writer, seo-optimizer |
-| `/kg` | kg-lead-agent, kg-query-subagent, kg-mechanism-subagent, kg-answer-writer |
-| `/shopify` | shopify-grand-architect, shopify-light-orchestrator, shopify-liquid-specialist, shopify-ui-reviewer |
 | `/orca-os-dev` | os-dev-architect, os-dev-builder, os-dev-standards-enforcer, os-dev-verification |
 | `/orca-pipeline` | orca-pipeline-orchestrator, orca-pipeline-researcher, orca-pipeline-generator |
 | `/typography` | typography-orchestrator, glyph-editor, ttf-exporter, typography-advisor, typography-explorer-generator, path-guardian |
@@ -421,4 +413,4 @@ $ORCA_OS_PATH/commands/
 ---
 
 _Source of truth: `docs/reference/os-dependency-graph.yaml`_
-_Last sync: 2026-02-07_
+_Last sync: 2026-02-09_

@@ -1,0 +1,1 @@
+/Users/adilkalam/ORCA-OS/commands/deepthink.md

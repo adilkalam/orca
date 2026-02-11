@@ -24,6 +24,32 @@ allowed-tools:
 
 ---
 
+## MCP SERVER CONFIGURATION (READ BEFORE ANY MCP WORK)
+
+`~/.claude.json` is the canonical source for all per-project MCP state. Read it FIRST.
+
+```
+~/.claude.json -> projects -> {path} -> mcpServers         # project-scoped MCPs
+~/.claude.json -> projects -> {path} -> disabledMcpServers  # global MCPs turned OFF for this project
+```
+
+**Configuration layers (in precedence order):**
+
+| Layer | Location | Scope | Managed by |
+|---|---|---|---|
+| 1. User/Global | `claude mcp add -s user` | All projects unless disabled | `claude mcp` CLI |
+| 2. Project | `~/.claude.json` -> projects -> mcpServers | Single project | `claude mcp add -s project` or UI |
+| 3. .mcp.json | `{project_root}/.mcp.json` | Git-committed, shared | Manual edit |
+| 4. Enablement | `{project}/.claude/settings.local.json` | Controls Layer 3 activation | Manual edit |
+
+Layer 3 (.mcp.json) servers require `enableAllProjectMcpServers: true` or `enabledMcpjsonServers: [...]` in Layer 4.
+
+**CLI commands:** `claude mcp list` (all active + scope), `claude mcp get <name>` (full details).
+
+**MCP source code lives in `mcp/` in this repo.** Custom servers (project-context, cognition-mcp) are built here and deployed to `~/.claude/mcp/`. npm-based servers (sequential-thinking, context7) are fetched on-demand via npx. See CLAUDE.md "MCP Server Configuration" for full install location table.
+
+---
+
 ## MANDATORY COMPLETE UPDATE PROTOCOL
 
 **ANY change to ORCA-OS MUST update ALL related files together:**

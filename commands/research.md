@@ -19,7 +19,7 @@ You are the orchestrator. You spawn all subagents directly - there is no lead ag
 Claude Code does not support nested subagent spawning, so YOU must do all delegation.
 
 **Your subagents:**
-- `research-web-search-subagent` - WebSearch + Crawl4AI for web queries
+- `research-web-search-subagent` - WebSearch + WebFetch for web queries
 - `research-site-crawler-subagent` - Deep crawling of specific domains
 - `research-answer-writer` - Standard research reports
 - `research-deep-writer` - Long-form deep research

@@ -19,7 +19,7 @@ It combines:
 
 - OS 5.2 primitives (`phase_state.json`, Workshop, code-index.db, ProjectContext).
 - A dedicated **Research lane** with `/research` as entrypoint.
-- Crawl4AI MCP for web crawling and content extraction.
+- WebSearch/WebFetch for web discovery and source reading.
 - Direct orchestration from `/research` command (flat agent hierarchy).
 - Writer and gate agents modeled after Perplexity and Anthropic research
   systems.
@@ -79,8 +79,8 @@ Key top-level fields:
 - `mode`: `"standard"` or `"deep"`.
 - `complexity_tier`: `"simple" | "medium" | "deep"`.
 - `current_phase`: current phase name.
-- `tool_status`: map of tool health (`crawl4ai`, `web_search`, etc.).
-- `tool_error_events`: list of Crawl4AI/WebSearch error events.
+- `tool_status`: map of tool health (`web_fetch`, `web_search`, etc.).
+- `tool_error_events`: list of structured tool error events.
 
 Each phase writes a structured entry under `phase_state.phases.<name>`:
 
@@ -131,10 +131,10 @@ spawned directly by `/research` (flat hierarchy).
 
 Core agents for this lane (all spawned directly by `/research`):
 
-- `research-web-search-subagent` – WebSearch + Crawl4AI for web search and
-  content extraction, producing Evidence Notes.
-- `research-site-crawler-subagent` – Crawl4AI crawl specialist for deep
-  coverage of specific domains.
+- `research-web-search-subagent` – WebSearch + WebFetch for web search and
+  content reading, producing Evidence Notes.
+- `research-site-crawler-subagent` – Site mapping + targeted crawling for deep
+  coverage of specific domains (WebSearch/WebFetch + Bash helpers as needed).
 - `research-answer-writer` – Perplexity-style answer writer (standard mode).
 - `research-deep-writer` – long-form academic writer (deep mode).
 - `research-citation-gate` – citation insertion and audit.
@@ -156,23 +156,22 @@ for quantitative analysis or competitive mapping when needed.
 
 ---
 
-## Crawl4AI & Fallback Strategy
+## Tooling & Fallback Strategy
 
-The Research lane uses **WebSearch + Crawl4AI**:
+The Research lane uses **WebSearch + WebFetch**:
 
 - Preferred tools:
   - `WebSearch` for open web queries and discovery.
-  - `mcp__crawl4ai__md` for extracting markdown from specific URLs.
-  - `mcp__crawl4ai__crawl` for batch URL crawling.
-- Fallbacks when Crawl4AI is unavailable:
-  - `WebFetch` for content retrieval.
+  - `WebFetch` for reading key URLs (target the most relevant pages first).
+  - `Bash` + `curl` for downloading pages to disk when you need persistence.
+- Fallbacks when tools are unavailable:
   - Memory-only synthesis (Workshop + code-index.db + prior reports).
 
 Tool errors are treated as **first-class signals**, not random failures:
 
 - Subagents record `#TOOL_ERROR` and `#CONTEXT_DEGRADED` RA tags when
   tool failures affect coverage.
-- `tool_status.crawl4ai` and `tool_error_events[]` capture details in
+- `tool_status.*` and `tool_error_events[]` capture details in
   `phase_state`.
 - Writers and gates must surface these limitations explicitly in the final
   report (Methodology and Limitations sections).
@@ -187,7 +186,7 @@ Research-specific RA tags include:
 - `#SOURCE_DISAGREEMENT` – credible sources conflict.
 - `#SUSPECT_SOURCE` – low-credibility or heavily biased sources.
 - `#OUT_OF_DATE` – evidence older than the requested time window.
-- `#TOOL_ERROR` – Crawl4AI or other tools encountered errors.
+- `#TOOL_ERROR` – A tool encountered errors or was unavailable.
 - `#CONTEXT_DEGRADED` – had to operate with partial context or memory only.
 - `#SCOPE_EXCEEDED` – query demands more time/budget than available.
 
@@ -240,7 +239,7 @@ On completion, `/research`:
   - `domain: "research"`.
   - `task`: original question.
   - `outcome`: `success`, `partial`, or `failure`.
-  - `learnings`: notable patterns (e.g., common RA issues, Crawl4AI usage).
+  - `learnings`: notable patterns (e.g., common RA issues, tool limitations).
 - Future research tasks can query this history via Workshop and ProjectContext,
   allowing the lane to:
   - Reuse prior research artifacts.

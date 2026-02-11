@@ -1,6 +1,6 @@
 ---
-description: Depth-first exploration with route-based modes and mandatory self-check
-argument-hint: [--light|--full] <problem or question to explore>
+description: Depth-first exploration with constraint chain and mandatory self-check
+argument-hint: [--light|--rigorous] <problem or question to explore>
 ---
 
 # /deepthink - Depth-First Exploration
@@ -18,12 +18,12 @@ Display this reference and stop:
 ```
 /deepthink - Depth-First Exploration
 
-Divergent exploration with route-based modes and mandatory self-check.
+Divergent exploration with constraint chain (default) and mandatory self-check.
 
 USAGE:
   /deepthink <problem or question>
-  /deepthink --light <problem>     (quick: 1 mode, brief harvest)
-  /deepthink --full <problem>      (thorough: all modes available, strict gates)
+  /deepthink --light <problem>     (quick: 1 mode, no constraints)
+  /deepthink --rigorous <problem>  (full pre-mortem after each mode + constraints)
   /deepthink --help
 
 MODES (selected based on need):
@@ -32,7 +32,13 @@ MODES (selected based on need):
   PERSPECTIVES - Stuck in one viewpoint (collaborative_reasoning, socratic_method)
   EDGES        - Need options, analogies (creative_thinking, analogical_reasoning)
   META         - Feeling too comfortable (substrate observation)
-  DEEP         - One question needs focus (sequential thought chain)
+  DEEP         - One question needs focus (3-chain self-consistency)
+
+CONSTRAINT CHAIN (default behavior):
+  - After each mode: generate constraints (FORWARD, FORBIDDEN, QUESTION)
+  - Before next mode: respond to all constraints (RESOLVED, ACKNOWLEDGED, DEFERRED)
+  - Cannot finish until ALL constraints have responses (hard block)
+  - DEFERRED constraints listed in final output
 
 VALID OUTPUTS:
   - "I'm more confused now but in useful ways"
@@ -43,7 +49,7 @@ VALID OUTPUTS:
 EXAMPLES:
   /deepthink Why does user retention drop after day 3?
   /deepthink --light Quick question about caching strategy
-  /deepthink --full What are the deep implications of adopting microservices?
+  /deepthink --rigorous What are the deep implications of adopting microservices?
 
 RELATED:
   /problem-solve  - Convergent 8-step decision pipeline (for decisions)
@@ -56,11 +62,16 @@ RELATED:
 
 **Parse $ARGUMENTS for intensity level**:
 
-| Flag | Intensity | Description |
-|------|-----------|-------------|
-| --light | Quick | ORIENT + 1 mode + brief HARVEST |
-| (none) | Standard | Full ORIENT + 2-3 modes + depth gates + HARVEST |
-| --full | Thorough | Extended ORIENT + all modes available + strict gates + META encouraged |
+| Flag | Intensity | Constraints | Description |
+|------|-----------|-------------|-------------|
+| --light | Quick | NO | ORIENT + 1 mode + brief HARVEST (escape hatch) |
+| (none) | Standard | YES | Full ORIENT + 2-3 modes + constraint chain + depth gates + HARVEST |
+| --rigorous | Thorough | YES + pre-mortem | Extended ORIENT + constraint chain + full pre-mortem after each mode + META encouraged |
+
+**Constraint Chain** (default and --rigorous only):
+- After each mode: generate constraints that bind subsequent exploration
+- Before proceeding: respond to all prior constraints
+- Cannot finish until ALL constraints have responses
 
 **Extract question/problem**: Everything after the flag (or entire $ARGUMENTS if no flag)
 
@@ -370,42 +381,67 @@ Call `mcp__cognition-mcp__cognition`:
 ### DEEP Mode (Intensive Focus) - Enhanced: Self-Consistency via Multiple Chains
 **When:** One question needs serious attention
 
-**Step 1:** Run sequential thinking chain with first framing:
+**Step 1:** Run thinking chain with analytical framing:
 
-Call `mcp__sequential-thinking__sequentialthinking`:
+Call `mcp__cognition-mcp__cognition`:
 
 ```typescript
 {
-  thought: "Chain 1 (Framing: analytical): <deep thinking on the focused question>",
-  thoughtNumber: 1,
-  totalThoughts: 5,
-  nextThoughtNeeded: true
+  operation: "thought",
+  sessionId: "<sessionId>",
+  content: {
+    thought: "Chain 1 (Framing: analytical): <deep thinking on the focused question>",
+    framing: "analytical",
+    chainNumber: 1,
+    totalChains: 3,
+    thoughtNumber: 1,
+    totalThoughts: 5,
+    nextThoughtNeeded: true
+  }
+}
+```
+
+Continue for 5 thoughts (incrementing thoughtNumber), then note conclusion.
+
+**Step 2:** Run chain with intuitive/holistic framing:
+
+```typescript
+{
+  operation: "thought",
+  sessionId: "<sessionId>",
+  content: {
+    thought: "Chain 2 (Framing: intuitive/holistic): <same question, different lens>",
+    framing: "intuitive",
+    chainNumber: 2,
+    totalChains: 3,
+    thoughtNumber: 1,
+    totalThoughts: 5,
+    nextThoughtNeeded: true
+  }
 }
 ```
 
 Continue for 5 thoughts, then note conclusion.
 
-**Step 2:** Run chain with different starting framing:
+**Step 3:** Run chain with adversarial/skeptical framing:
 
 ```typescript
 {
-  thought: "Chain 2 (Framing: intuitive/holistic): <same question, different lens>",
-  thoughtNumber: 1,
-  totalThoughts: 5,
-  nextThoughtNeeded: true
+  operation: "thought",
+  sessionId: "<sessionId>",
+  content: {
+    thought: "Chain 3 (Framing: adversarial/skeptical): <same question, challenge assumptions>",
+    framing: "adversarial",
+    chainNumber: 3,
+    totalChains: 3,
+    thoughtNumber: 1,
+    totalThoughts: 5,
+    nextThoughtNeeded: true
+  }
 }
 ```
 
-**Step 3:** Run chain with third framing:
-
-```typescript
-{
-  thought: "Chain 3 (Framing: adversarial/skeptical): <same question, challenge assumptions>",
-  thoughtNumber: 1,
-  totalThoughts: 5,
-  nextThoughtNeeded: true
-}
-```
+Continue for 5 thoughts, then note conclusion.
 
 **Step 4:** Compare conclusions across chains:
 
@@ -491,25 +527,145 @@ mcp__cognition-mcp__cognition({
 
 ---
 
+## Phase 4.5: CONSTRAINT CHAIN (Default and --rigorous only)
+
+**SKIP THIS PHASE if --light flag is set.**
+
+After the 6-question self-check, generate constraints that bind subsequent exploration. These constraints create the forcing function for genuine depth.
+
+### Step 1: Generate Constraints (End of Each Mode)
+
+Based on self-check findings, identify what MUST happen next. Use global IDs: C1, C2, C3... across entire session.
+
+**Constraint Types:**
+
+| Type | Meaning | When to Use |
+|------|---------|-------------|
+| FORWARD | Must explore this next | Gap in understanding, causal chain to trace |
+| FORBIDDEN | Cannot conclude this yet | Claim requires evidence not yet obtained |
+| QUESTION | Unknown that remains open | Critical question surfaced during exploration |
+
+**Output Constraint Table:**
+
+```markdown
+## Constraints Generated
+
+| ID | Type | Constraint |
+|----|------|------------|
+| C1 | FORWARD | Must trace causal chain from X to Y |
+| C2 | FORBIDDEN | Cannot conclude API is bottleneck without profiling |
+| C3 | QUESTION | What happens under concurrent access? |
+```
+
+**Minimum Constraints:**
+- Default mode: At least 2 constraints per mode
+- Rigorous mode: At least 3 constraints per mode
+
+### Step 2: Respond to Prior Constraints (Start of Each Mode After First)
+
+Before executing the next mode, respond to ALL constraints from previous modes.
+
+**Response Types:**
+
+| Response | Meaning | When to Use |
+|----------|---------|-------------|
+| RESOLVED | Addressed this constraint | Constraint was explored/answered in this mode |
+| ACKNOWLEDGED | Aware of this limitation | For FORBIDDEN - confirming awareness, avoiding the claim |
+| DEFERRED | Explicitly punting | Cannot answer now, will surface in final output |
+
+**Output Response Table:**
+
+```markdown
+## Constraints Addressed
+
+| ID | Response | How Addressed |
+|----|----------|---------------|
+| C1 | RESOLVED | Traced chain in section above |
+| C2 | ACKNOWLEDGED | Avoided bottleneck claims, focused on flow |
+| C3 | DEFERRED | Requires testing, deferred to implementation |
+```
+
+### Step 3: --rigorous Mode Additional Step
+
+**ONLY if --rigorous flag is set:** After generating constraints, run a full pre-mortem on the mode's output.
+
+```typescript
+mcp__cognition-mcp__cognition({
+  operation: "mental_model",
+  sessionId: "<sessionId>",
+  content: {
+    modelName: "pre-mortem",
+    problem: "This mode's output: [summary of what was produced]",
+    setup: "This analysis was wrong or missed something critical. What happened?",
+    steps: [
+      "<failure mode 1: how this output could mislead>",
+      "<failure mode 2: what was overlooked>",
+      "<failure mode 3: what assumption is hiding>"
+    ],
+    rootCauses: [
+      { failure: "<failure>", cause: "<root cause>", preventable: true }
+    ],
+    conclusion: "<which failure modes require additional constraints>"
+  }
+})
+```
+
+**Pre-mortem findings generate additional constraints:**
+- Each non-trivial failure mode becomes a FORWARD or QUESTION constraint
+- Add to the constraint table with next available ID
+
+---
+
 ## Phase 5: DEPTH GATE & ROUTING
 
-Based on mode execution and self-check, determine next action:
+Based on mode execution, self-check, and constraint status, determine next action.
+
+### Constraint Blocking (Default and --rigorous only)
+
+**HARD BLOCK if attempting to finish with unresolved constraints:**
+
+Before proceeding to HARVEST, verify ALL constraints have responses:
+1. Collect all constraint IDs generated (C1, C2, C3...)
+2. Collect all constraint IDs addressed (from response tables)
+3. If any ID is missing from responses: **BLOCK**
+
+**Block Output:**
+```
+CONSTRAINT BLOCK: Cannot proceed to HARVEST.
+
+Missing responses for: C2, C5, C7
+
+You must address these constraints before finishing:
+- C2: [constraint text]
+- C5: [constraint text]
+- C7: [constraint text]
+
+Options:
+1. Run another mode to RESOLVE these constraints
+2. ACKNOWLEDGE limitations (for FORBIDDEN constraints)
+3. Explicitly DEFER with justification
+```
+
+### Depth Gate
 
 | Depth Gate Result | Action |
 |------------------|--------|
-| PASS (genuine insight) | Route to next needed mode OR proceed to HARVEST |
+| PASS (genuine insight) + constraints resolved | Route to next needed mode OR proceed to HARVEST |
+| PASS but constraints unresolved | Route to next mode (cannot finish yet) |
 | FAIL (shallow/predictable) | Go deeper in current mode or try different angle |
 
 **Routing Logic:**
-- If --light: After 1 mode, proceed to HARVEST
-- If standard: After 2-3 modes with passing depth gates, proceed to HARVEST
-- If --full: Continue until genuine uncertainty/surprise achieved, META encouraged
+- If --light: After 1 mode, proceed to HARVEST (no constraint check)
+- If standard: After 2-3 modes with passing depth gates AND all constraints addressed, proceed to HARVEST
+- If --rigorous: Continue until genuine uncertainty/surprise achieved + all constraints addressed, META encouraged
 
 ---
 
 ## Phase 6: HARVEST
 
 Gather what emerged from exploration.
+
+**Before HARVEST (default and --rigorous only):** Verify all constraints are addressed. If any constraint lacks a response, you cannot proceed (see Phase 5 blocking).
 
 Call `mcp__cognition-mcp__cognition`:
 
@@ -525,12 +681,17 @@ Call `mcp__cognition-mcp__cognition`:
       constraintsFound: ["<constraint I didn't know existed>"],
       assumptionsExposed: ["<assumption I was making>"],
       nextSteps: ["<what to explore next>"],
-      surprises: ["<what genuinely surprised me>"]
+      surprises: ["<what genuinely surprised me>"],
+      deferredConstraints: ["<C3: What happens under concurrent access?>"]
     },
     honestAssessment: "<did this exploration produce genuine insight or just text?>"
   }
 }
 ```
+
+**DEFERRED Constraints (default and --rigorous only):**
+
+Collect ALL constraints marked DEFERRED and include in harvest. These are explicitly punted items the user should know about.
 
 ---
 
@@ -548,9 +709,27 @@ Call `mcp__cognition-mcp__cognition`:
 [Key findings]
 **Depth Check:** [Did this reveal something non-obvious?]
 
+#### Constraints Generated
+| ID | Type | Constraint |
+|----|------|------------|
+| C1 | FORWARD | [Must explore X] |
+| C2 | QUESTION | [What about Y?] |
+
 ### Mode: [MODE 2] (if applicable)
+
+#### Constraints Addressed
+| ID | Response | How Addressed |
+|----|----------|---------------|
+| C1 | RESOLVED | [Explored in section above] |
+| C2 | DEFERRED | [Requires testing] |
+
 [Key findings]
 **Depth Check:** [Honest assessment]
+
+#### Constraints Generated
+| ID | Type | Constraint |
+|----|------|------------|
+| C3 | FORBIDDEN | [Cannot claim Z without evidence] |
 
 ## Harvest
 
@@ -570,6 +749,10 @@ Call `mcp__cognition-mcp__cognition`:
 
 ### What Surprised Me
 - [Genuine surprise]
+
+### Deferred Constraints (items explicitly punted)
+- C2: [What about Y?] - Requires testing
+- [Any other DEFERRED constraints]
 
 ## Honest Assessment
 [Did this produce genuine insight or just generate text?]

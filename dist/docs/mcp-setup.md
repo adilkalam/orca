@@ -12,7 +12,6 @@ The installer automatically configures these MCP servers in `~/.claude.json`:
 | sequential-thinking | Multi-step reasoning with revision | `@modelcontextprotocol/server-sequential-thinking` (npx) |
 | cognition-mcp | Structured notepad for reasoning (38 operations) | Custom (bundled) |
 | project-context | Project memory and semantic search | Custom (bundled) |
-| crawl4ai | Web scraping and research | Custom (bundled, Python) |
 
 **Optional (prompted during install):**
 
@@ -129,34 +128,6 @@ ORCA's custom memory and context system.
 
 **Usage:**
 Automatically invoked by orchestrators to load project context before any work.
-
----
-
-### Crawl4AI (Web Scraping)
-
-Python-based web crawling and scraping with no rate limits. Automatically installed with ORCA-OS.
-
-**Tools:**
-- `scrape` - Fetch a single URL, returns markdown + links
-- `crawl` - Breadth-first crawl up to max_depth from seed URL
-- `crawl_site` - Full site crawl with persistence to disk
-- `crawl_sitemap` - Crawl URLs from sitemap.xml
-
-**Features:**
-- Markdown conversion of web pages
-- Link extraction
-- Multi-page crawling with depth control
-- Same-domain filtering
-- Output persistence (JSON manifests, markdown files)
-
-**Requirements (auto-installed):**
-- Python 3.10+
-- Playwright Chromium browser
-
-**Technical Details:**
-- Location: `~/.claude/mcp/crawl4ai-mcp-server/`
-- Uses Python virtual environment (`.venv`)
-- Based on [crawl4ai-mcp-server](https://github.com/uysalsadi/crawl4ai-mcp-server)
 
 ---
 

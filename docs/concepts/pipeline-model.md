@@ -177,17 +177,16 @@ This is a Claude Code platform constraint: each Task invocation creates an
 isolated execution context without inheriting the parent's MCP connections.
 
 **Workaround:** Subagents that need MCP functionality should call the MCP
-server's REST API directly using `Bash` with `curl`. For example, the research
-pipeline's crawler subagent uses:
+functionality via an explicit local HTTP service directly using `Bash` with
+`curl`, and persist outputs to disk for later `Read`. This avoids relying on
+MCP tool propagation.
 
 ```bash
-curl -s "http://localhost:11235/md?url=<target>" | head -c 50000
+curl -s "http://localhost:<port>/<endpoint>" | head -c 50000
 ```
 
-instead of `mcp__crawl4ai__md`. This pattern -- Bash/curl to localhost -- is the
-canonical workaround for any subagent that needs MCP data.
-
-**Canonical example:** `agents/research/research-site-crawler-subagent.md`
+This pattern -- Bash/curl to localhost -- is the canonical workaround for any
+subagent that needs data from a local service.
 
 ## See Also
 

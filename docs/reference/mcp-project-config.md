@@ -130,10 +130,10 @@ Verify with `/mcp` command - all enabled MCPs should show as connected.
 ```
 ~/my-project/
 ├── .mcp.json
-│   └── defines: my-mcp, my-local-mcp, crawl4ai
+│   └── defines: my-mcp, my-local-mcp, puppeteer
 └── .claude/
     └── settings.local.json
-        └── enabledMcpjsonServers: ["my-mcp", "my-local-mcp", "crawl4ai"]
+        └── enabledMcpjsonServers: ["my-mcp", "my-local-mcp", "puppeteer"]
 ```
 
 ---

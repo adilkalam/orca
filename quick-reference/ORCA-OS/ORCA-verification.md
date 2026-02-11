@@ -32,8 +32,6 @@ Every pipeline follows this three-stage verification sequence:
 | OS-Dev | `os-dev-standards-enforcer` | N/A | `os-dev-verification` | After standards gate |
 | Django+React | `django-react-standards-enforcer` (Phase 6) | N/A | `django-react-verification` (Phase 8) | Phase 8 |
 
-**Note:** Shopify uses `shopify-theme-checker` for linting but does not have a dedicated verification agent.
-
 ---
 
 ## Graduated Gate Scoring

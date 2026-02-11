@@ -9,7 +9,7 @@
 
 ORCA-OS is a Claude Code orchestration system that counteracts trained defaults -- the tendency toward quick, shallow, agreeable output that LLM training optimizes for casual users rather than agentic development workflows. The architecture provides structure that prevents bypassing the capability that already exists in the model.
 
-- **124 agents** across 13 domains
+- **112 agents** across 11 domains
 - **33 commands** (10 lane orchestrators + utilities)
 - **Project-scoped MCPs** to minimize token usage
 - **Dependency graph** for change impact tracking
@@ -20,7 +20,7 @@ ORCA-OS is a Claude Code orchestration system that counteracts trained defaults 
 
 ## Lane Architecture
 
-### Active Lanes (13)
+### Active Lanes (11)
 
 | Lane | Command | Agents | MCPs |
 |------|---------|--------|------|
@@ -31,11 +31,9 @@ ORCA-OS is a Claude Code orchestration system that counteracts trained defaults 
 | Dev (cross-cutting) | - | 12 | - |
 | OS-Dev | `/orca-os-dev` | 11 | (none) |
 | Audit | `/audit` | 8 | cognition-mcp |
-| Shopify | `/shopify` | 8 | puppeteer |
-| Research | `/research` | 7 | crawl4ai |
+| Research | `/research` | 7 | (none) |
 | Typography | `/typography` | 6 | (none) |
-| SEO | `/seo` | 5 | ahrefs, crawl4ai |
-| KG | `/kg` | 4 | cognition-mcp |
+| SEO | `/seo` | 5 | (none) |
 | Data | (none) | 4 | (none) |
 
 ---
@@ -155,7 +153,7 @@ See `quick-reference/llm-local.md` for setup.
 ### Source (ORCA-OS Repo)
 ```
 $ORCA_OS_PATH/
-  agents/             # 124 agent definitions
+  agents/             # 112 agent definitions
     iOS/              # 19 agents
     nextjs/           # 15 agents
     django-react/     # 13 agents
@@ -163,11 +161,9 @@ $ORCA_OS_PATH/
     dev/              # 12 agents (cross-cutting)
     os-dev/           # 11 agents (os-dev-* + orca-pipeline-*)
     audit/            # 8 agents
-    shopify/          # 8 agents
     research/         # 7 agents
     typography/       # 6 agents
     seo/              # 5 agents
-    kg/               # 4 agents
     data/             # 4 agents
   commands/           # 33 command definitions
   docs/

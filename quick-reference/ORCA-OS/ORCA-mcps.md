@@ -22,8 +22,8 @@ Heavy MCPs defined in project `.mcp.json` + enabled via `enabledMcpjsonServers`:
 | Project | MCPs |
 |---------|------|
 | `/peptidefox-ios` | XcodeBuildMCP |
-| `/obsidian-peptides` | chrome-devtools, puppeteer, crawl4ai |
-| `/peptidefox` | chrome-devtools, puppeteer, crawl4ai |
+| `/obsidian-peptides` | chrome-devtools, puppeteer |
+| `/peptidefox` | chrome-devtools, puppeteer |
 
 ---
 
@@ -202,49 +202,6 @@ Browser automation and visual testing. Simpler and more lightweight than Playwri
 **Used by:** nextjs-design-reviewer
 **Projects:** /obsidian-peptides, /peptidefox
 
-### crawl4ai (Research)
-
-Web content extraction for research. Connects to local Crawl4AI server via SSE.
-
-```json
-{
-  "crawl4ai": {
-    "type": "sse",
-    "url": "http://localhost:11235/mcp/sse"
-  }
-}
-```
-
-**Requires manual server start:**
-```bash
-crawl-server  # alias for ~/.crawl4ai-server/bin/python server.py
-```
-
-**Used by:** research-* agents, seo-* agents
-**Projects:** Project-scoped (configured in project `.mcp.json` + `enabledMcpjsonServers`)
-
-### ahrefs (SEO)
-
-Keyword research and SERP intelligence for the SEO content pipeline. npx-based MCP that launches externally (not from the `mcp/` directory).
-
-```json
-{
-  "ahrefs": {
-    "type": "stdio",
-    "command": "npx",
-    "args": ["-y", "ahrefs-mcp"]
-  }
-}
-```
-
-**Tools:**
-- `keywords_explorer_overview` - Keyword volume, difficulty, CPC, traffic potential
-- `keywords_explorer_related_terms` - LSI keywords, "also rank for" terms
-- `serp_overview_serp_overview` - Top 10 SERP results, features, PAA
-
-**Used by:** seo-research-specialist, seo-optimizer
-**Projects:** Project-scoped (configured in project `.mcp.json` + `enabledMcpjsonServers`)
-
 ### adb-mcp (Adobe Creative Suite)
 
 AI control of Adobe Photoshop and Illustrator via MCP protocol. Python-based MCP server communicates through a Node proxy to UXP plugins.
@@ -284,30 +241,6 @@ AI control of Adobe Photoshop and Illustrator via MCP protocol. Python-based MCP
 **Used by:** (project-specific configuration)
 **Projects:** (project-specific configuration)
 
-### blender-mcp (3D Modeling - Experimental)
-
-Blender integration through MCP, allowing AI-assisted 3D modeling, scene creation, and manipulation. Connects to Blender via a socket-based addon.
-
-```json
-{
-  "blender": {
-    "type": "stdio",
-    "command": "uvx",
-    "args": ["blender-mcp"]
-  }
-}
-```
-
-**Requires:**
-- Blender 3.0+ with BlenderMCP addon installed and connected
-- `uv` package manager
-
-**Capabilities:** Scene inspection, object creation/manipulation, material control, code execution, Poly Haven assets, Hyper3D model generation
-
-**Source:** [github.com/ahujasid/blender-mcp](https://github.com/ahujasid/blender-mcp)
-**Status:** Experimental (project-scoped, no dedicated lane)
-**Location:** `mcp/blender-mcp/`
-
 ### openscad-mcp (3D Rendering - Experimental)
 
 OpenSCAD 3D rendering capabilities for AI assistants. Provides tools for single and multi-view rendering of OpenSCAD models.
@@ -344,10 +277,8 @@ OpenSCAD 3D rendering capabilities for AI assistants. Provides tools for single 
 | Next.js | chrome-devtools, puppeteer |
 | Django-React | (none) |
 | Expo | (none) |
-| Research | crawl4ai |
-| SEO | ahrefs, crawl4ai |
-| KG | cognition-mcp |
-| Shopify | puppeteer |
+| Research | (none) |
+| SEO | (none) |
 | Data | (none) |
 | Audit | cognition-mcp |
 | Typography | (none) |
@@ -410,4 +341,4 @@ Check `enabledMcpjsonServers` in `~/.claude.json` for your project path.
 
 _Source of truth: `docs/reference/os-dependency-graph.yaml`_
 _MCP scoping: `docs/reference/mcp-scoping-strategy.md`_
-_Last sync: 2026-02-07_
+_Last sync: 2026-02-09_

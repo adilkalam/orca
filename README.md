@@ -235,7 +235,7 @@ Thoughts stay where the reasoning engine put them.
 
 ### Making defaults visible
 
-Most metacognition tools work at the LLM process level: "Did I reason well? Let me check my answer." ORCA works earlier: **"What are my defaults doing to this response *before* reasoning engages?"**
+Most metacognition tools work at the LLM process level: "Did I reason well? Let me check my answer." ORCA's cognition works earlier: **"What are my defaults doing to this response *before* reasoning engages?"**
 
 The difference matters. Process-level reflection happens after the defaults have already shaped the output. Default observation catches the pattern while it's operating.
 
@@ -499,7 +499,7 @@ Claude Desktop gives you a capable one-pass analysis from training data. ORCA gi
 | **project-context** | Memory across sessions. Decisions, gotchas, preferences. Semantic code search. Context bundles per task. |
 | **sequential-thinking** | Multi-step reasoning with revision and backtracking. |
 | **context7** | Up-to-date library documentation instead of stale training data. |
-| **Verification MCPs** | Domain-specific proof. XcodeBuildMCP for iOS builds, Puppeteer for screenshots, Crawl4AI for research. |
+| **Verification MCPs** | Domain-specific proof. XcodeBuildMCP for iOS builds, Puppeteer for screenshots. |
 
 ---
 
