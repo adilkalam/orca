@@ -22,15 +22,25 @@ Parse $ARGUMENTS for flags and route accordingly:
 ### --optimize Mode (Content Optimization)
 
 ```bash
-# Pre-publish: analyze a draft file
+# Pre-publish: analyze a draft file (with explicit keyword)
 /seo --optimize draft /path/to/draft.md --keyword "target keyword"
 
-# Post-publish: analyze a live URL
+# Post-publish: analyze a live URL (with explicit keyword)
 /seo --optimize url https://example.com/article --keyword "target keyword"
 
 # With competitor count
 /seo --optimize draft /path/to/file.md --keyword "keyword" --competitors 7
+
+# Auto-discover keyword (NEW - runs keyword discovery when --keyword omitted)
+/seo --optimize url https://example.com/article
+/seo --optimize draft /path/to/draft.md
 ```
+
+When `--keyword` is not provided, the optimizer automatically discovers the best keyword:
+1. Extracts topics from article content (spaCy entities)
+2. Expands topics via Ahrefs matching-terms
+3. Scores candidates by volume, difficulty, and relevance
+4. Presents recommendation and asks user to confirm before proceeding
 
 **If --optimize flag detected:**
 
@@ -39,19 +49,19 @@ if (args.includes('--optimize')) {
   // Parse sub-mode and arguments
   const mode = args.includes('draft') ? 'draft' : 'url';
   const source = extractSource(args);  // file path or URL
-  const keyword = extractFlag(args, '--keyword');
+  const keyword = extractFlag(args, '--keyword');  // optional - auto-discovered if missing
   const competitors = extractFlag(args, '--competitors') || 5;
 
   // Route to seo-optimizer agent
   await Task({
     subagent_type: "seo-optimizer",
-    description: `Optimize ${mode === 'draft' ? 'draft file' : 'live URL'} for keyword: ${keyword}`,
+    description: `Optimize ${mode === 'draft' ? 'draft file' : 'live URL'}${keyword ? ` for keyword: ${keyword}` : ' (auto-discover keyword)'}`,
     prompt: `
 Analyze content for SEO optimization.
 
 Mode: ${mode}
 Source: ${source}
-Keyword: ${keyword}
+Keyword: ${keyword || '(auto-discover)'}
 Competitors: ${competitors}
 
 Follow your agent spec at ~/.claude/agents/seo/seo-optimizer.md

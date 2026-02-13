@@ -62,6 +62,10 @@ All `/orca-*` lane commands support three execution modes:
 /seo --optimize draft /path/to/draft.md --keyword "target keyword"
 /seo --optimize url https://example.com/article --keyword "target keyword"
 
+# Auto-discover keyword (omit --keyword to trigger discovery)
+/seo --optimize url https://example.com/article
+/seo --optimize draft /path/to/draft.md
+
 # Combined: create content then optimize
 /seo --with-optimize "target keyword"
 ```

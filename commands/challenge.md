@@ -9,6 +9,17 @@ argument-hint: [--quick|--deep] <proposal to challenge>
 
 **Arguments**: $ARGUMENTS
 
+## Adversarial Baseline (Built-In)
+
+This command is self-contained. Every non-help run must include:
+
+1. Pre-mortem causal analysis
+2. Assumption audit (confidence + impact if wrong)
+3. Edge-case storm (boundary and hostile scenarios)
+4. Failure mode catalog (component, failure, blast radius, detection)
+5. Counter-argument stress test
+6. Final GO / CONDITIONAL GO / NO GO verdict
+
 ---
 
 ## If --help or empty arguments
@@ -28,16 +39,17 @@ USAGE:
   /challenge --help
 
 MODES:
-  (default)   Full analysis using causal_analysis + structured_argumentation + decide
-  --quick     Single causal_analysis pass with top risks only
+  (default)   Full analysis with causal + assumption/edge/failure checks + argumentation + decide
+  --quick     Rapid causal pass + assumption/edge scan + top risks
   --deep      Full analysis + simulation + ethical considerations
 
 OPERATIONS USED:
   1. causal_analysis  - Map causes, effects, and causal chains of failure
-  2. structured_argumentation - Build counter-arguments with evidence
-  3. simulation       - (deep mode) Run failure scenarios
-  4. ethical_analysis - (deep mode) Stakeholder impact analysis
-  5. decide           - Final GO/NO GO verdict with reasoning
+  2. thought          - Assumptions, edge cases, and failure mode catalog
+  3. structured_argumentation - Build counter-arguments with evidence
+  4. simulation       - (deep mode) Run failure scenarios
+  5. ethical_analysis - (deep mode) Stakeholder impact analysis
+  6. decide           - Final GO/NO GO verdict with reasoning
 
 EXAMPLES:
   /challenge Use microservices instead of monolith
@@ -51,7 +63,7 @@ OUTPUT: Structured analysis with persisted session + verdict.
 
 ## Verbose Flag
 
-Include `verbose: false` in every cognition MCP call from /challenge. This command makes 4-5 calls per session; the minimal ACK response saves tokens.
+Include `verbose: false` in every cognition MCP call from /challenge. This command makes 5-6 calls per session (default), 6-8 calls in deep mode; the minimal ACK response saves tokens.
 
 ## Parse Arguments
 
@@ -66,7 +78,7 @@ Extract mode and proposal from $ARGUMENTS:
 
 ## Quick Mode (--quick)
 
-Single causal analysis pass for rapid risk identification.
+Rapid causal pass with minimal assumption and edge-case coverage.
 
 ### Process
 
@@ -102,6 +114,30 @@ mcp__cognition-mcp__cognition
   }
 ```
 
+2. Add rapid assumption + edge-case scan:
+
+```
+mcp__cognition-mcp__cognition
+  operation: "thought"
+  sessionId: "[from step 1]"
+  content: {
+    thought: "Quick adversarial scan for [proposal]",
+    assumptions: [
+      { assumption: "[assumption 1]", confidence: "high|medium|low", ifWrong: "[what breaks]" },
+      { assumption: "[assumption 2]", confidence: "high|medium|low", ifWrong: "[what breaks]" },
+      { assumption: "[assumption 3]", confidence: "high|medium|low", ifWrong: "[what breaks]" }
+    ],
+    edgeCases: [
+      "[boundary or hostile scenario 1]",
+      "[boundary or hostile scenario 2]",
+      "[boundary or hostile scenario 3]",
+      "[boundary or hostile scenario 4]",
+      "[boundary or hostile scenario 5]"
+    ],
+    nextThoughtNeeded: false
+  }
+```
+
 ### Output Format
 
 ```markdown
@@ -127,6 +163,16 @@ mcp__cognition-mcp__cognition
 1. [intervention 1]
 2. [intervention 2]
 
+**Assumptions to Validate First:**
+1. [assumption] (confidence: H/M/L) -> If wrong: [impact]
+2. [assumption] (confidence: H/M/L) -> If wrong: [impact]
+3. [assumption] (confidence: H/M/L) -> If wrong: [impact]
+
+**Top Edge Triggers:**
+- [edge case 1]
+- [edge case 2]
+- [edge case 3]
+
 **Quick Verdict:** [Proceed with caution / Needs more analysis / Red flags present]
 
 *Analysis persisted to session. Run `/challenge --deep` for full analysis.*
@@ -136,7 +182,7 @@ mcp__cognition-mcp__cognition
 
 ## Default Mode (no flags)
 
-Full analysis using three cognition operations in sequence.
+Full analysis using four cognition operations in sequence.
 
 ### Process
 
@@ -162,6 +208,41 @@ mcp__cognition-mcp__cognition
       { sequence: ["[start]", "[middle]", "[end]"], probability: 0.0-1.0 }
     ],
     interventions: ["[intervention 1]", "[intervention 2]", "[intervention 3]"],
+    nextThoughtNeeded: true
+  }
+```
+
+**Step 1.5: Assumption Audit + Edge Cases + Failure Mode Catalog**
+
+```
+mcp__cognition-mcp__cognition
+  operation: "thought"
+  sessionId: "[from step 1]"
+  content: {
+    thought: "Adversarial expansion for [proposal]: assumptions, edges, and component failure modes",
+    assumptions: [
+      { assumption: "[assumption 1]", confidence: "high|medium|low", ifWrong: "[impact]" },
+      { assumption: "[assumption 2]", confidence: "high|medium|low", ifWrong: "[impact]" },
+      { assumption: "[assumption 3]", confidence: "high|medium|low", ifWrong: "[impact]" },
+      { assumption: "[assumption 4]", confidence: "high|medium|low", ifWrong: "[impact]" }
+    ],
+    edgeCases: [
+      "[edge case 1]",
+      "[edge case 2]",
+      "[edge case 3]",
+      "[edge case 4]",
+      "[edge case 5]",
+      "[edge case 6]",
+      "[edge case 7]",
+      "[edge case 8]",
+      "[edge case 9]",
+      "[edge case 10]"
+    ],
+    failureModes: [
+      { component: "[component 1]", howItFails: "[failure mode]", blastRadius: "contained|cascading", detection: "[monitoring/signal]" },
+      { component: "[component 2]", howItFails: "[failure mode]", blastRadius: "contained|cascading", detection: "[monitoring/signal]" },
+      { component: "[component 3]", howItFails: "[failure mode]", blastRadius: "contained|cascading", detection: "[monitoring/signal]" }
+    ],
     nextThoughtNeeded: true
   }
 ```
@@ -257,6 +338,32 @@ mcp__cognition-mcp__cognition
 
 ---
 
+### Phase 1.5: Assumptions, Edge Cases, and Failure Modes
+
+**Assumptions (confidence + impact):**
+| Assumption | Confidence | If Wrong |
+|------------|------------|----------|
+| [assumption] | [H/M/L] | [impact] |
+
+**Edge Cases (minimum 10):**
+- [edge case 1]
+- [edge case 2]
+- [edge case 3]
+- [edge case 4]
+- [edge case 5]
+- [edge case 6]
+- [edge case 7]
+- [edge case 8]
+- [edge case 9]
+- [edge case 10]
+
+**Failure Mode Catalog:**
+| Component | How It Fails | Blast Radius | Detection |
+|-----------|--------------|--------------|-----------|
+| [component] | [failure mode] | [contained/cascading] | [signal] |
+
+---
+
 ### Phase 2: Structured Counter-Arguments
 
 **Claim:** This proposal should NOT be implemented because...
@@ -322,7 +429,7 @@ Full analysis PLUS simulation and ethical analysis.
 
 ### Process
 
-1. Run all steps from Default Mode (causal_analysis, structured_argumentation, decide)
+1. Run all steps from Default Mode (`causal_analysis` -> `thought` for assumptions/edges/failure modes -> `structured_argumentation` -> `decide`)
 2. Before final decision, add:
 
 **Step 2.5: Simulation** - Run failure scenarios

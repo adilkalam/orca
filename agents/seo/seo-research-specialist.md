@@ -1,7 +1,7 @@
 ---
 name: seo-research-specialist
 description: "SEO research specialist with SERP intelligence, multi-source research (direct files, KG, web crawling), and ProjectContextServer integration"
-tools: Task, Bash, Read, Write, Grep, Glob, mcp__ahrefs__keywords_explorer_overview, mcp__ahrefs__keywords_explorer_related_terms, mcp__ahrefs__serp_overview_serp_overview, mcp__crawl4ai__md, mcp__crawl4ai__crawl, mcp__project-context__query_context, mcp__project-context__save_decision, mcp__project-context__save_task_history
+tools: Task, Bash, Read, Write, Grep, Glob, mcp__ahrefs__keywords_explorer_overview, mcp__ahrefs__keywords_explorer_related_terms, mcp__ahrefs__keywords_explorer_matching_terms, mcp__ahrefs__keywords_explorer_volume_history, mcp__ahrefs__site_explorer_organic_competitors, mcp__ahrefs__serp_overview_serp_overview, mcp__ahrefs__rank_tracker_overview, mcp__crawl4ai__md, mcp__crawl4ai__crawl, mcp__project-context__query_context, mcp__project-context__save_decision, mcp__project-context__save_task_history
 
 # OS 5.2 Constraint Framework
 required_context:
@@ -141,6 +141,67 @@ const related = await mcp__ahrefs__keywords_explorer_related_terms({
 agentdb.set('related_keywords', related);
 ```
 
+### Step 2.5: Matching Terms (Expanded Keywords)
+
+```typescript
+// Get matching terms for the same keyword
+const matching = await mcp__ahrefs__keywords_explorer_matching_terms({
+  select: "keyword,volume,difficulty",
+  country: "us",
+  keywords: KEYWORD,
+  limit: 50,
+  mode: "phrase"
+});
+
+// Merge related-terms and matching-terms into unified expanded_keywords
+const expandedKeywords = deduplicateKeywords([
+  ...related.keywords,
+  ...matching.keywords
+]);
+
+agentdb.set('expanded_keywords', expandedKeywords);
+```
+
+### Step 2.6: Volume History (Trend Analysis)
+
+```typescript
+// Fetch 12-month volume history for target keyword
+const volumeHistory = await mcp__ahrefs__keywords_explorer_volume_history({
+  country: "us",
+  keyword: KEYWORD
+});
+
+// Calculate trend: up (>30% MoM increase), down (<-30%), stable
+function calculateVolumeTrend(history) {
+  const months = history.data || [];
+  if (months.length < 2) return { trend: 'stable', seasonalOpportunity: false };
+
+  const recent = months[months.length - 1].volume;
+  const previous = months[months.length - 2].volume;
+  const momChange = ((recent - previous) / previous) * 100;
+
+  let trend = 'stable';
+  if (momChange > 30) trend = 'up';
+  else if (momChange < -30) trend = 'down';
+
+  // Flag seasonal opportunity if 30%+ MoM increase detected
+  const seasonalOpportunity = momChange >= 30;
+
+  return { trend, momChange, seasonalOpportunity };
+}
+
+const trendAnalysis = calculateVolumeTrend(volumeHistory);
+
+// Cache raw data and computed trend
+agentdb.set('volume_history', volumeHistory);
+agentdb.set('volume_trend', trendAnalysis);
+
+// Log seasonal opportunity if detected
+if (trendAnalysis.seasonalOpportunity) {
+  console.log(`SEASONAL OPPORTUNITY: ${KEYWORD} shows ${trendAnalysis.momChange.toFixed(1)}% MoM increase`);
+}
+```
+
 ### Step 3: SERP Overview for PAA
 
 ```typescript
@@ -167,6 +228,36 @@ python3 scripts/seo_serp_bridge.py \
 ```
 
 **File created:** `outputs/seo/${SLUG}-serp.json`
+
+### Step 4.5: Organic Competitors Discovery
+
+```typescript
+// Auto-discover competitors for target keyword domain
+// Uses site_explorer_organic_competitors to find competing domains
+const organicCompetitors = await mcp__ahrefs__site_explorer_organic_competitors({
+  select: "domain,organic_traffic,common_keywords,competitors_count",
+  target: TARGET_DOMAIN, // e.g., "example.com"
+  country: "us",
+  limit: 20
+});
+
+// Merge with any manually-provided competitor list (AUGMENT, not replace)
+const manualCompetitors = userInput.competitors || [];
+const discoveredCompetitors = organicCompetitors.competitors.map(c => c.domain);
+
+const allCompetitors = deduplicateList([
+  ...manualCompetitors,
+  ...discoveredCompetitors
+]);
+
+// Cache the merged competitor list
+agentdb.set('discovered_competitors', {
+  manual: manualCompetitors,
+  auto_discovered: discoveredCompetitors,
+  merged: allCompetitors,
+  competitor_details: organicCompetitors.competitors
+});
+```
 
 ## Phase 3: Direct File Research (PRIMARY SOURCE)
 
@@ -443,13 +534,205 @@ writeFile(`outputs/seo/${SLUG}-brief.md`, enhancedBrief);
   "agentdb_cache": {
     "context_bundle": "cached",
     "serp_data": "cached",
+    "expanded_keywords": "cached",
+    "volume_history": "cached",
+    "volume_trend": "cached",
+    "discovered_competitors": "cached",
     "direct_files": "cached",
     "kg_extracts": "cached",
     "competitor_content": "cached",
     "gap_research": "cached",
     "complete_research": "cached",
-    "research_papers": "cached"
+    "research_papers": "cached",
+    "rank_tracker_data": "cached (opt-in only)",
+    "ranking_history": "cached (opt-in only)"
   }
+}
+```
+
+## Phase 10: Rank Tracking (Opt-in)
+
+**Purpose:** Track actual ranking performance to validate optimization recommendations.
+
+#PATH_DECISION: Rank tracking is OPT-IN ONLY - no automatic tracking.
+
+### Opt-in Mechanism
+
+Rank tracking is activated via:
+- `--track-rankings` flag in command invocation
+- `rank_tracking: true` in input configuration
+- Previously tracked URL (stored in AgentDB)
+
+```typescript
+// Check for opt-in
+const trackingEnabled =
+  inputs.trackRankings ||                              // CLI flag
+  inputs.rank_tracking === true ||                     // Config option
+  agentdb.get('tracking_enabled_for_url')?.[inputs.url];  // Previously tracked
+
+if (!trackingEnabled) {
+  console.log('Rank tracking skipped (opt-in required)');
+  // Skip to next phase
+  return;
+}
+```
+
+### Step 1: Fetch Current Rankings
+
+```typescript
+// #PATH_DECISION: Only track if explicitly requested
+if (trackingEnabled) {
+  const rankings = await mcp__ahrefs__rank_tracker_overview({
+    target: inputs.url || inputs.domain,
+    mode: 'subdomains'
+  });
+
+  // Cache current ranking snapshot
+  agentdb.set('rank_tracker_data', {
+    timestamp: new Date().toISOString(),
+    target: inputs.url || inputs.domain,
+    rankings: rankings.data,
+    keywords_tracked: rankings.total_keywords,
+    avg_position: rankings.average_position
+  });
+
+  console.log(`Rank tracking: ${rankings.total_keywords} keywords tracked, avg position: ${rankings.average_position}`);
+}
+```
+
+### Step 2: Compare with Historical Rankings
+
+```typescript
+// Retrieve previous ranking data for comparison
+const previousRankings = agentdb.get('ranking_history') || [];
+
+if (previousRankings.length > 0) {
+  const latestPrevious = previousRankings[previousRankings.length - 1];
+  const currentData = agentdb.get('rank_tracker_data');
+
+  // Calculate ranking changes
+  const rankingChanges = {
+    timestamp: new Date().toISOString(),
+    comparison_period: {
+      from: latestPrevious.timestamp,
+      to: currentData.timestamp
+    },
+    position_change: currentData.avg_position - latestPrevious.avg_position,
+    keywords_gained: currentData.keywords_tracked - latestPrevious.keywords_tracked,
+    improved: [],
+    declined: [],
+    stable: []
+  };
+
+  // Compare individual keyword rankings
+  for (const current of currentData.rankings) {
+    const previous = latestPrevious.rankings.find(p => p.keyword === current.keyword);
+    if (previous) {
+      const change = previous.position - current.position;  // Positive = improved
+      if (change > 0) {
+        rankingChanges.improved.push({ keyword: current.keyword, change, new_position: current.position });
+      } else if (change < 0) {
+        rankingChanges.declined.push({ keyword: current.keyword, change, new_position: current.position });
+      } else {
+        rankingChanges.stable.push({ keyword: current.keyword, position: current.position });
+      }
+    }
+  }
+
+  // Log ranking changes for optimization correlation
+  console.log(`\n--- Ranking Changes Since ${latestPrevious.timestamp} ---`);
+  console.log(`Improved: ${rankingChanges.improved.length} keywords`);
+  console.log(`Declined: ${rankingChanges.declined.length} keywords`);
+  console.log(`Stable: ${rankingChanges.stable.length} keywords`);
+  console.log(`Avg position change: ${rankingChanges.position_change > 0 ? '+' : ''}${rankingChanges.position_change.toFixed(1)}`);
+
+  // Cache ranking changes for future optimization reports
+  agentdb.set('ranking_changes', rankingChanges);
+}
+```
+
+### Step 3: Update Ranking History
+
+```typescript
+// Append current rankings to history (rolling 12-month window)
+const rankingHistory = agentdb.get('ranking_history') || [];
+
+rankingHistory.push({
+  timestamp: new Date().toISOString(),
+  target: inputs.url || inputs.domain,
+  rankings: agentdb.get('rank_tracker_data').rankings,
+  avg_position: agentdb.get('rank_tracker_data').avg_position,
+  keywords_tracked: agentdb.get('rank_tracker_data').keywords_tracked
+});
+
+// Keep only last 12 months of data
+const twelveMonthsAgo = new Date();
+twelveMonthsAgo.setMonth(twelveMonthsAgo.getMonth() - 12);
+
+const filteredHistory = rankingHistory.filter(
+  entry => new Date(entry.timestamp) > twelveMonthsAgo
+);
+
+agentdb.set('ranking_history', filteredHistory);
+
+// Mark URL as tracked for future opt-in detection
+const trackedUrls = agentdb.get('tracking_enabled_for_url') || {};
+trackedUrls[inputs.url || inputs.domain] = true;
+agentdb.set('tracking_enabled_for_url', trackedUrls);
+```
+
+### Step 4: Correlate with Optimization Scores
+
+```typescript
+// #COMPLETION_DRIVE: Correlation analysis surfaces in future optimization reports
+// This data helps validate whether optimization recommendations improve rankings
+
+const correlationData = {
+  timestamp: new Date().toISOString(),
+  optimization_score: agentdb.get('complete_research')?.optimization_score,
+  current_avg_position: agentdb.get('rank_tracker_data')?.avg_position,
+  ranking_trend: calculateRankingTrend(agentdb.get('ranking_history'))
+};
+
+// Store for trend analysis
+const correlationHistory = agentdb.get('optimization_ranking_correlation') || [];
+correlationHistory.push(correlationData);
+agentdb.set('optimization_ranking_correlation', correlationHistory);
+
+function calculateRankingTrend(history) {
+  if (history.length < 2) return 'insufficient_data';
+
+  const recent = history.slice(-3);  // Last 3 snapshots
+  const positionChanges = [];
+
+  for (let i = 1; i < recent.length; i++) {
+    positionChanges.push(recent[i-1].avg_position - recent[i].avg_position);
+  }
+
+  const avgChange = positionChanges.reduce((a, b) => a + b, 0) / positionChanges.length;
+
+  if (avgChange > 2) return 'improving';
+  if (avgChange < -2) return 'declining';
+  return 'stable';
+}
+```
+
+### Rank Tracking Output
+
+When rank tracking is enabled, the following is added to the research output:
+
+```typescript
+if (trackingEnabled) {
+  const rankTrackingSection = {
+    enabled: true,
+    current_snapshot: agentdb.get('rank_tracker_data'),
+    changes_since_last: agentdb.get('ranking_changes'),
+    historical_trend: calculateRankingTrend(agentdb.get('ranking_history')),
+    correlation_with_optimization: agentdb.get('optimization_ranking_correlation')?.slice(-5)
+  };
+
+  // Append to research report
+  enhancedBrief.rank_tracking = rankTrackingSection;
 }
 ```
 
@@ -474,6 +757,10 @@ writeFile(`outputs/seo/${SLUG}-brief.md`, enhancedBrief);
 -  `context_bundle` - ProjectContextServer response
 -  `serp_overview` - Ahrefs keyword data
 -  `related_keywords` - LSI keywords
+-  `expanded_keywords` - Merged related-terms + matching-terms (unified keyword list)
+-  `volume_history` - 12-month volume history data
+-  `volume_trend` - Computed trend (up/down/stable) with seasonal opportunity flag
+-  `discovered_competitors` - Auto-discovered + manual competitors merged
 -  `serp_features` - SERP feature analysis
 -  `direct_research_files` - From /obsidian-peptides/docs/research
 -  `merged_research` - Direct files + KG combined
@@ -483,6 +770,11 @@ writeFile(`outputs/seo/${SLUG}-brief.md`, enhancedBrief);
 -  `complete_research` - All sources merged
 -  `research_papers` - External citations
 -  `keyword_strategy` - Targeting decision
+-  `rank_tracker_data` - Current ranking snapshot (opt-in only)
+-  `ranking_history` - Historical ranking data for trend analysis (opt-in only)
+-  `ranking_changes` - Position changes since last snapshot (opt-in only)
+-  `tracking_enabled_for_url` - Map of URLs with tracking enabled
+-  `optimization_ranking_correlation` - Optimization score vs ranking correlation data
 
 ### Context Used
 -  Past SEO strategies informed keyword selection
@@ -526,4 +818,5 @@ writeFile(`outputs/seo/${SLUG}-brief.md`, enhancedBrief);
 9. Brief files generated
 10. AgentDB cache populated
 11. Decision logged to code-index.db
-12. Phase state updated 
+12. Phase state updated
+13. Rank tracking completed (if opt-in enabled) 
