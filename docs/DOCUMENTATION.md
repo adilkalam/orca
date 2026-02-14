@@ -1,7 +1,7 @@
 # ORCA-OS Documentation
 
-**Version:** OS 5.2
-**Last Updated:** 2026-02-06
+**Version:** OS 6.0
+**Last Updated:** 2026-02-13
 
 Welcome to the ORCA-OS documentation. This document serves as the entry point and navigation hub for all ORCA-OS documentation.
 
@@ -77,7 +77,7 @@ Technical specifications and standards:
 | [Graduated Gate Scoring](reference/graduated-gate-scoring.md) | Gate thresholds and scoring methodology |
 | [MCP Project Config](reference/mcp-project-config.md) | Project-scoped MCP configuration |
 | [MCP Scoping Strategy](reference/mcp-scoping-strategy.md) | How MCPs are scoped to projects |
-| [Telemetry Standard](reference/telemetry-standard.md) | Logging and telemetry conventions |
+| [Telemetry Standard](reference/telemetry-standard.md) | Logging and telemetry conventions (deprecated -- use orca-record) |
 | [OS Dependency Graph](reference/os-dependency-graph.yaml) | Source of truth for all agents, commands, and pipelines |
 
 ---
@@ -86,8 +86,8 @@ Technical specifications and standards:
 
 For day-to-day usage, see the quick-reference guides:
 
-- **[ORCA Commands](../quick-reference/ORCA-OS/ORCA-commands.md)** - All 31 commands
-- **[ORCA Agents](../quick-reference/ORCA-OS/ORCA-agents.md)** - All 124 agents
+- **[ORCA Commands](../quick-reference/ORCA-OS/ORCA-commands.md)** - All 33 commands
+- **[ORCA Agents](../quick-reference/ORCA-OS/ORCA-agents.md)** - All 112 agents
 - **[ORCA Architecture](../quick-reference/ORCA-OS/ORCA-architecture.md)** - System architecture overview
 - **[ORCA MCPs](../quick-reference/ORCA-OS/ORCA-mcps.md)** - MCP server reference
 - **[ORCA Verification](../quick-reference/ORCA-OS/ORCA-verification.md)** - Verification patterns
@@ -105,12 +105,15 @@ For day-to-day usage, see the quick-reference guides:
 - [Data Workflow](../quick-reference/workflows/readme-data.md)
 - [Audit Workflow](../quick-reference/workflows/readme-audit.md)
 - [OS-Dev Workflow](../quick-reference/workflows/readme-os-dev.md)
+- [SEO Optimizer Workflow](../quick-reference/workflows/readme-seo-optimizer.md)
+- [Visual Design Workflow](../quick-reference/workflows/readme-visual-design.md)
+- [Orca Pipeline Workflow](../quick-reference/workflows/readme-orca-pipeline.md)
 
 ---
 
 ## Agent Roster
 
-See [agent-index.md](agent-index.md) for the complete agent inventory. 124 agents across 13 domains:
+See [agent-index.md](agent-index.md) for the complete agent inventory. 112 agents across 11 domains:
 
 | Domain | Count | Directory |
 |--------|-------|-----------|
@@ -121,11 +124,9 @@ See [agent-index.md](agent-index.md) for the complete agent inventory. 124 agent
 | Dev (cross-domain) | 12 | `agents/dev/` |
 | OS-Dev | 11 | `agents/os-dev/` |
 | Audit | 8 | `agents/audit/` |
-| Shopify | 8 | `agents/shopify/` |
 | Research | 7 | `agents/research/` |
 | Typography | 6 | `agents/typography/` |
 | SEO | 5 | `agents/seo/` |
-| KG | 4 | `agents/kg/` |
 | Data | 4 | `agents/data/` |
 
 ---
@@ -150,4 +151,4 @@ docs/
 
 ---
 
-_ORCA-OS v5.2 | See [quick-reference/](../quick-reference/) for day-to-day guides_
+_ORCA-OS v6.0 | See [quick-reference/](../quick-reference/) for day-to-day guides_

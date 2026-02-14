@@ -1,10 +1,10 @@
-# Data Pipeline Phase Configuration - OS 5.2
+# Data Pipeline Phase Configuration - OS 6.0
 # Data Analytics and Research Workflow
 
 pipeline:
   name: data
   description: Data analytics pipeline for research, analysis, and visualization
-  version: "5.2"
+  version: "6.0"
 
 # Context Integration
 context:
@@ -20,7 +20,7 @@ agents:
   - data-researcher            # Data discovery and collection
   - research-specialist        # Cross-domain research synthesis
 
-# Three-Tier Routing (OS 5.2)
+# Three-Tier Routing (OS 6.0)
 complexity_tiers:
   default:
     description: Standard data analysis workflow

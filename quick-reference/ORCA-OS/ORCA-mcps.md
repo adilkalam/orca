@@ -1,11 +1,11 @@
-# OS 5.2 MCP Reference
+# OS 6.0 MCP Reference
 
-**Last Updated:** 2026-02-07
-**Version:** OS 5.2
+**Last Updated:** 2026-02-13
+**Version:** OS 6.0
 
 ---
 
-## MCP Scoping Strategy (OS 5.2)
+## MCP Scoping Strategy (OS 6.0)
 
 MCPs are now project-scoped to reduce token bloat:
 
@@ -53,7 +53,7 @@ MCP stores:   { thought: "X" }
 MCP returns:  { thought: "X" }  <- UNCHANGED
 ```
 
-**Operations (41 total):**
+**Operations (48 total):**
 
 | Category | Operations |
 |----------|------------|
@@ -67,6 +67,7 @@ MCP returns:  { thought: "X" }  <- UNCHANGED
 | **Audit (1)** | `audit` |
 | **Session (3)** | `session_info`, `session_export`, `session_import` |
 | **Stats (1)** | `reasoning_stats` |
+| **Recording (7)** | `recording_status`, `recording_query`, `recording_checkpoint`, `recording_compare`, `recording_quality`, `recording_explain`, `recording_rewind` |
 
 **Sequential Flow:**
 - Claude makes MULTIPLE calls to build reasoning chains
@@ -75,6 +76,22 @@ MCP returns:  { thought: "X" }  <- UNCHANGED
 
 **Capstone Pattern:**
 Structured operations complete sequential thinking with substantive content - they are NOT standalone operations.
+
+**Recording Operations (cognitive fusion with orca-record):**
+
+The recording extension connects cognition-mcp to the orca-record recording layer, enabling queries that combine code changes with reasoning context.
+
+| Operation | Purpose |
+|-----------|---------|
+| `recording_status` | Current session recording state (IDLE/ACTIVE/ACTIVE_COMMITTED/ENDED) |
+| `recording_query` | Query sessions by date range, files touched, quality metrics |
+| `recording_checkpoint` | Get checkpoint details including code state and cognitive context |
+| `recording_compare` | Diff two checkpoints: code changes and reasoning chain changes |
+| `recording_quality` | Session quality analytics: gate results, rewind rates, error patterns |
+| `recording_explain` | Human-readable narrative of what happened, why, and how well |
+| `recording_rewind` | Trigger rewind to a specific checkpoint (restores code + cognitive state) |
+
+These operations read from `.orca/recording.db` (per-project SQLite) and cross-reference with cognition-mcp session data.
 
 **Full documentation:** See `quick-reference/cognition.md`
 
@@ -101,7 +118,7 @@ Mandatory context provider for all agents.
 - `reanalyze_project` - Re-analyze project after changes
 - `recall` - Retrieve full archived tool output by ID (ORCA-Mem)
 
-**Implementation (OS 5.2):**
+**Implementation (OS 6.0):**
 - **Reads:** SQLite direct access to `workshop.db` via `better-sqlite3`
 - **Writes:** Workshop CLI for schema migration compatibility
 - **Symlink:** Auto-creates `.workshop -> .claude/memory` on macOS/Linux
@@ -384,4 +401,4 @@ Check `enabledMcpjsonServers` in `~/.claude.json` for your project path.
 
 _Source of truth: `docs/reference/os-dependency-graph.yaml`_
 _MCP scoping: `docs/reference/mcp-scoping-strategy.md`_
-_Last sync: 2026-02-09_
+_Last sync: 2026-02-13_

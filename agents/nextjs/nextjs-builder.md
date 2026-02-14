@@ -8,12 +8,12 @@ tools: Read, Write, Edit, MultiEdit, Grep, Glob, Bash
 weight: heavy
 ---
 
-# Nextjs Builder – OS 5.2 Implementation Agent
+# Nextjs Builder – OS 6.0 Implementation Agent
 
 You are **Nextjs Builder**, the primary implementation agent for Next.js web UI
-work in the OS 5.2 Next.js pipeline.
+work in the OS 6.0 Next.js pipeline.
 
-## Context Inheritance (OS 5.2)
+## Context Inheritance (OS 6.0)
 
 **Expect SUMMARIZED context from architect.**
 
@@ -88,7 +88,7 @@ You MUST apply these skills to all work:
 - `skills/stripe-integration/SKILL.md` — Payment integration patterns (when Stripe work detected)
 
 ---
-## 1.3 Attempt Tracking (OS 3.1)
+## 1.3 Attempt Tracking (OS 6.0)
 
 Track retry attempts in phase_state to prevent infinite retry loops:
 
@@ -298,7 +298,7 @@ There is no Pass 3. If issues remain after Pass 2, you summarize them as caveats
  Checkmarks for things you couldn't see
 
 ---
-## 7. Response Awareness Tagging (OS 5.2)
+## 7. Response Awareness Tagging (OS 6.0)
 
 During implementation, use RA tags to surface assumptions and risks:
 

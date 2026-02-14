@@ -10,9 +10,9 @@ The installer automatically configures these MCP servers in `~/.claude.json`:
 |------------|---------|---------|
 | context7 | Up-to-date library documentation | `@upstash/context7-mcp` (npx) |
 | sequential-thinking | Multi-step reasoning with revision | `@modelcontextprotocol/server-sequential-thinking` (npx) |
-| cognition-mcp | Structured notepad for reasoning (38 operations) | Custom (bundled) |
+| cognition-mcp | Structured notepad for reasoning (48 operations) | Custom (bundled) |
 | project-context | Project memory and semantic search | Custom (bundled) |
-| crawl4ai | Web scraping and research | Custom (bundled, Python) |
+| crawl4ai | Web content extraction and research | Docker SSE (`localhost:11235`) |
 
 **Optional (prompted during install):**
 
@@ -62,7 +62,7 @@ Enables multi-step reasoning with the ability to revise, branch, and backtrack.
 
 ### Cognition MCP (Structured Reasoning)
 
-A structured notepad for Claude's reasoning using the Accept-Store-Echo pattern. Provides 38 reasoning operations.
+A structured notepad for Claude's reasoning using the Accept-Store-Echo pattern. Provides 48 reasoning operations.
 
 **Core Pattern:**
 - **ACCEPT**: Claude provides structured thoughts
@@ -74,41 +74,67 @@ The MCP is a mirror - it never generates, suggests, enhances, or transforms cont
 **Tools:**
 - `cognition` - Single tool with multiple operations
 
-**Operations (38 total):**
+**Operations (48 total):**
 
-Core:
+Core (7):
 - `thought` - Sequential thinking steps with branching/revision
 - `mental_model` - Apply mental models (first-principles, inversion, etc.)
+- `list_mental_models` - List available mental models
 - `debug` - Structured debugging approaches
 - `decide` - Decision framework with options and criteria
 - `meta` - Metacognitive monitoring and adjustments
 - `systems` - Systems thinking maps
+
+Extended Core (4):
 - `creative_thinking` - Brainstorming and ideation
 - `visual_reasoning` - Spatial/diagram thinking
+- `checkpoint` - Save reasoning checkpoints
+- `scientific_method` - Hypothesis-experiment-conclusion cycles
 
-Collaborative:
+Collaborative (3):
 - `collaborative_reasoning` - Multiple perspectives
 - `socratic_method` - Question assumptions
 - `structured_argumentation` - Formal arguments
 
-Analysis:
+Analysis (11):
 - `research`, `analogical_reasoning`, `causal_analysis`, `statistical_reasoning`
 - `simulation`, `optimization`, `ethical_analysis`, `visual_dashboard`
 - `pdr_reasoning`, `custom_framework`, `code_execution`
 
-Patterns:
+Patterns (5):
 - `tree_of_thought` - Branching exploration
 - `beam_search` - Parallel path exploration
 - `mcts` - Monte Carlo tree search
 - `graph_of_thought` - Non-linear connections
 - `orchestration_suggest` - Meta-pattern recommendation
 
-Strategic:
+Strategic (2):
 - `ooda_loop` - Observe-Orient-Decide-Act cycles
 - `ulysses_protocol` - Pre-commitment mechanisms
 
-Session:
+Notebook (4):
+- `notebook_create` - Create reasoning notebooks
+- `notebook_add_cell` - Add cells to notebooks
+- `notebook_run_cell` - Execute notebook cells
+- `notebook_export` - Export notebooks to various formats
+
+Audit (1):
+- `audit` - Structured codebase audit with findings and scoring
+
+Session (3):
 - `session_info`, `session_export`, `session_import`
+
+Stats (1):
+- `reasoning_stats` - Session analytics (operation frequency, reflex distribution, etc.)
+
+Recording (7):
+- `recording_status` - Current session recording state
+- `recording_query` - Query sessions by date range, files touched, quality metrics
+- `recording_checkpoint` - Get checkpoint details including code state and cognitive context
+- `recording_compare` - Diff two checkpoints: code changes and reasoning chain changes
+- `recording_quality` - Session quality analytics: gate results, rewind rates, error patterns
+- `recording_explain` - Human-readable narrative of what happened, why, and how well
+- `recording_rewind` - Trigger rewind to a specific checkpoint (restores code + cognitive state)
 
 **Usage:**
 Used by `/think` command for persistent thought tracking.
@@ -132,31 +158,39 @@ Automatically invoked by orchestrators to load project context before any work.
 
 ---
 
-### Crawl4AI (Web Scraping)
+### Crawl4AI (Web Content Extraction)
 
-Python-based web crawling and scraping with no rate limits. Automatically installed with ORCA-OS.
+Docker-based web content extraction via SSE. Connects to a local Crawl4AI server running in Docker at `localhost:11235`.
+
+**Configuration:**
+```json
+{
+  "crawl4ai": {
+    "type": "sse",
+    "url": "http://localhost:11235/mcp/sse"
+  }
+}
+```
 
 **Tools:**
-- `scrape` - Fetch a single URL, returns markdown + links
-- `crawl` - Breadth-first crawl up to max_depth from seed URL
-- `crawl_site` - Full site crawl with persistence to disk
-- `crawl_sitemap` - Crawl URLs from sitemap.xml
+- `md` - Extract page content as clean markdown
+- `html` - Get raw HTML content
+- `screenshot` - Capture page screenshots
+- `pdf` - Export page as PDF
+- `execute_js` - Run JavaScript on the page
+- `crawl` - Multi-page crawling with depth control
+- `ask` - Ask questions about page content
 
-**Features:**
-- Markdown conversion of web pages
-- Link extraction
-- Multi-page crawling with depth control
-- Same-domain filtering
-- Output persistence (JSON manifests, markdown files)
-
-**Requirements (auto-installed):**
-- Python 3.10+
-- Playwright Chromium browser
+**Requirements:**
+- Docker installed and running
+- Crawl4AI Docker container started
 
 **Technical Details:**
-- Location: `~/.claude/mcp/crawl4ai-mcp-server/`
-- Uses Python virtual environment (`.venv`)
-- Based on [crawl4ai-mcp-server](https://github.com/uysalsadi/crawl4ai-mcp-server)
+- Type: SSE (Server-Sent Events), not stdio
+- Endpoint: `http://localhost:11235/mcp/sse`
+- Installed via Docker, not pip or npm
+- Project-scoped: configured in project `.mcp.json` + enabled via `enabledMcpjsonServers`
+- See `mcp/crawl4ai/` in ORCA-OS for configuration reference
 
 ---
 

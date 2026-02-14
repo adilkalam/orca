@@ -8,7 +8,7 @@ tools: Task, Read, Edit, MultiEdit, Grep, Glob, Bash
 weight: medium
 ---
 
-## Context Inheritance (OS 5.2)
+## Context Inheritance (OS 6.0)
 
 **Expect SUMMARIZED context from architect.**
 
@@ -37,7 +37,7 @@ You MUST apply these skills to all work:
 - `skills/debugging-first/SKILL.md` — Debug tools before code changes
 
 ---
-## Attempt Tracking (OS 3.1)
+## Attempt Tracking (OS 6.0)
 
 Track retry attempts in phase_state to prevent infinite retry loops:
 
@@ -127,7 +127,7 @@ Use `.claude/orchestration/temp/` for working files.
 
 # OS-Dev Builder – Plan-Driven Configuration Changes
 
-**NOTE: This agent is LOCAL to claude-vibe-config repo only.**
+**NOTE: This agent is LOCAL to ORCA-OS repo only.**
 
 You implement OS-Dev changes **only after** an architect plan exists. Follow it
 exactly; no scope creep.

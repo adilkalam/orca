@@ -1,23 +1,22 @@
 #!/usr/bin/env bash
 # hooks/post-tool-use.sh
 # ORCA-Mem: Truncate large tool outputs, archive full version
-# Phase 1: Truncation + Archive
-# Phase 2: Auto-Discovery + Event Capture
+# Also detects discovery mode (used by other systems)
+#
+# Event capture is handled by orca-record (recording layer).
+# This hook only handles: truncation + archive, discovery mode detection.
 
 set -uo pipefail
 
-# === PHASE 1: TRUNCATION CONFIG ===
+# === TRUNCATION CONFIG ===
 THRESHOLD=4000
 HEAD_SIZE=1500
 TAIL_SIZE=500
 ARCHIVE_BASE="${HOME}/.claude/archives"
 ARCHIVE_DIR="${ARCHIVE_BASE}/$(date +%Y-%m-%d)"
 
-# === PHASE 2: AUTO-DISCOVERY CONFIG ===
+# === DISCOVERY MODE CONFIG ===
 DISCOVERY_MODE_FILE="${HOME}/.claude/temp/discovery-mode"
-TOOL_HISTORY_FILE="${HOME}/.claude/temp/tool-history"
-EVENT_BUFFER="${HOME}/.claude/temp/event-buffer.jsonl"
-PENDING_TITLES="${HOME}/.claude/temp/pending-titles.jsonl"
 
 # Ensure directories exist
 mkdir -p "$ARCHIVE_DIR" "${HOME}/.claude/temp" 2>/dev/null || true
@@ -30,7 +29,7 @@ TOOL_TYPE=$(echo "$HOOK_INPUT" | jq -r '.tool_name // "unknown"' 2>/dev/null || 
 OUTPUT=$(echo "$HOOK_INPUT" | jq -r '.tool_response // empty' 2>/dev/null || echo "")
 LENGTH=${#OUTPUT}
 
-# === PHASE 2: AUTO-DISCOVERY DETECTION ===
+# === DISCOVERY MODE DETECTION ===
 
 # PATH 1: MCP Trigger Detection
 if [[ "$TOOL_TYPE" == mcp__cognition* ]] || [[ "$TOOL_TYPE" == mcp__sequential* ]]; then
@@ -38,12 +37,15 @@ if [[ "$TOOL_TYPE" == mcp__cognition* ]] || [[ "$TOOL_TYPE" == mcp__sequential* 
 fi
 
 # PATH 2: Behavioral Detection (Read:Edit ratio)
+# Uses a lightweight in-memory approach via the discovery mode file
+# Note: detailed tool tracking is now handled by orca-record
+TOOL_HISTORY_FILE="${HOME}/.claude/temp/tool-history-discovery"
 echo "$TOOL_TYPE" >> "$TOOL_HISTORY_FILE" 2>/dev/null || true
 if [ -f "$TOOL_HISTORY_FILE" ]; then
   RECENT=$(tail -10 "$TOOL_HISTORY_FILE" 2>/dev/null || echo "")
   READ_COUNT=$(echo "$RECENT" | grep -c "Read\|Grep\|Glob" 2>/dev/null || echo "0")
   EDIT_COUNT=$(echo "$RECENT" | grep -c "Edit\|Write" 2>/dev/null || echo "0")
-  
+
   # Ensure counts are valid integers
   [[ "$READ_COUNT" =~ ^[0-9]+$ ]] || READ_COUNT=0
   [[ "$EDIT_COUNT" =~ ^[0-9]+$ ]] || EDIT_COUNT=0
@@ -59,38 +61,7 @@ if [ -f "$TOOL_HISTORY_FILE" ]; then
   fi
 fi
 
-# D1 FALLBACK: Always log titles (first 200 chars)
-TITLE=$(echo "$OUTPUT" | head -c 200 | tr '\n' ' ' | tr '"' "'" 2>/dev/null || echo "")
-echo "{\"ts\":\"$(date -Iseconds)\",\"tool\":\"$TOOL_TYPE\",\"title\":\"$TITLE\"}" >> "$PENDING_TITLES" 2>/dev/null || true
-
-# CAPTURE SIGNIFICANT EVENTS (if discovery mode or significant event)
-SIGNIFICANT=false
-EVENT_TYPE="observation"
-case "$TOOL_TYPE" in
-  Edit|Write|MultiEdit)
-    SIGNIFICANT=true
-    EVENT_TYPE="file_change"
-    ;;
-  Bash)
-    if echo "$OUTPUT" | grep -qi "error\|failed\|exception" 2>/dev/null; then
-      SIGNIFICANT=true
-      EVENT_TYPE="error"
-    fi
-    ;;
-  mcp__project-context__save_decision)
-    SIGNIFICANT=true
-    EVENT_TYPE="decision"
-    ;;
-esac
-
-if [ "$SIGNIFICANT" = true ] || [ -f "$DISCOVERY_MODE_FILE" ]; then
-  CONTENT=$(echo "$OUTPUT" | head -c 2000 | tr '"' "'" | tr '\n' ' ' 2>/dev/null || echo "")
-  # Escape for JSON safely
-  ESCAPED_CONTENT=$(printf '%s' "$CONTENT" | sed 's/\\/\\\\/g' | sed 's/"/\\"/g' 2>/dev/null || echo "$CONTENT")
-  echo "{\"ts\":\"$(date -Iseconds)\",\"tool\":\"$TOOL_TYPE\",\"type\":\"${EVENT_TYPE}\",\"content\":\"${ESCAPED_CONTENT}\"}" >> "$EVENT_BUFFER" 2>/dev/null || true
-fi
-
-# === PHASE 1: TRUNCATION ===
+# === TRUNCATION ===
 
 DISCOVERY_ACTIVE=""
 if [ -f "$DISCOVERY_MODE_FILE" ]; then

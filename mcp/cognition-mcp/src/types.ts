@@ -59,7 +59,15 @@ export type OperationType =
   | 'session_export'
   | 'session_import'
   // Stats
-  | 'reasoning_stats';
+  | 'reasoning_stats'
+  // Recording operations (Phase 4: Cognitive Fusion)
+  | 'recording_status'
+  | 'recording_query'
+  | 'recording_checkpoint'
+  | 'recording_compare'
+  | 'recording_quality'
+  | 'recording_explain'
+  | 'recording_rewind';
 
 // ============================================================================
 // CONTENT STRUCTURES (Claude provides ALL of this)

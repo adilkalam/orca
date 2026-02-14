@@ -8,11 +8,11 @@ ORCA-OS transforms Claude Code from a coding assistant into a sophisticated mult
 
 ## What's Inside
 
-- **111 Specialized Agents** across 11 domains (Next.js, iOS, Expo, Django-React, Research, SEO, Data, Audit, OS-Dev, Orca-Pipeline, Typography)
-- **31 Slash Commands** for orchestration, planning, thinking, and design review
+- **112 Specialized Agents** across 11 domains (Next.js, iOS, Expo, Django-React, Research, SEO, Data, Audit, OS-Dev, Orca-Pipeline, Typography)
+- **33 Slash Commands** for orchestration, planning, thinking, and design review
 - **Persistent Memory** via Workshop and project-context MCP
 - **Self-Improvement System** that learns rules from your interactions
-- **40 Reasoning Operations** via cognition-mcp
+- **48 Reasoning Operations** via cognition-mcp
 
 
 ---
@@ -85,7 +85,7 @@ claude
 ### Thinking & Reasoning
 | Command | Description |
 |---------|-------------|
-| `/think` | Sequential thinking with 40 cognition operations |
+| `/think` | Sequential thinking with 48 cognition operations |
 | `/contemplate` | Reasoning strategy advisor - recommends which /think ops to use |
 | `/deepthink` | Depth-first exploration with route-based modes |
 | `/problem-solve` | Convergent 8-step decision pipeline with phase gates |
@@ -139,7 +139,7 @@ claude
 | Next.js | 15 | Web development with React, TypeScript, CSS, design systems |
 | Django-React | 13 | Full-stack Django + React TypeScript |
 | Expo | 12 | React Native mobile development |
-| Dev (shared) | 11 | Cross-cutting specialists (a11y, performance, security, design) |
+| Dev (shared) | 12 | Cross-cutting specialists (a11y, performance, security, design) |
 | OS-Dev | 11 | ORCA-OS development and maintenance |
 | Audit | 8 | Due diligence code auditing |
 | Research | 7 | Deep research with citations and fact-checking |
@@ -155,7 +155,7 @@ claude
 
 - **context7** - Up-to-date library documentation
 - **sequential-thinking** - Multi-step reasoning
-- **cognition-mcp** - 40 reasoning operations
+- **cognition-mcp** - 48 reasoning operations
 - **project-context** - Project memory and semantic search
 - **crawl4ai** - Web scraping & research (Python-based, auto-configured)
 
@@ -172,7 +172,7 @@ claude
 
 ```
 ~/.claude/
-├── agents/           # 111 specialized agents
+├── agents/           # 112 specialized agents
 │   ├── iOS/          # iOS specialists
 │   ├── nextjs/       # Next.js web development
 │   ├── django-react/ # Django + React specialists
@@ -184,7 +184,7 @@ claude
 │   ├── typography/   # Font and type specialists
 │   ├── seo/          # SEO agents
 │   └── data/         # Analytics agents
-├── commands/         # 31 slash commands
+├── commands/         # 33 slash commands
 ├── skills/           # Reusable behavior patterns
 ├── hooks/            # Session lifecycle hooks
 ├── scripts/          # Utility scripts
@@ -340,7 +340,7 @@ mv ~/.claude-backup-* ~/.claude
 
 ## Version
 
-ORCA-OS v5.2
+ORCA-OS v6.0
 
 ---
 

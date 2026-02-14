@@ -1,7 +1,7 @@
 # SEO Domain Pipeline
 
-**Status:** OS 5.2 Pipeline (SEOPipeline)
-**Last Updated:** 2026-01-04
+**Status:** OS 6.0 Pipeline (SEOPipeline)
+**Last Updated:** 2026-02-13
 
 ## Overview
 
@@ -11,7 +11,7 @@ The SEO pipeline turns a target keyword + project context into:
 - A structured QA report with explicit gates.
 
 It combines:
-- OS 5.2 primitives (ProjectContextServer, `phase_state.json`, code-index.db, Workshop)
+- OS 6.0 primitives (ProjectContextServer, `phase_state.json`, code-index.db, Workshop)
 - Memory-first context (Workshop + code-index.db before ProjectContext)
 - SEO agents:
   - `seo-research-specialist` (lead)
@@ -24,7 +24,7 @@ It combines:
 - `/seo` command - preferred entry point
 - `/orca` with SEO-detected task - routes to seo-research-specialist
 
-The detailed configuration lives in `docs/reference/phase-configs/seo-phases.yaml`.
+The detailed configuration lives in `docs/reference/phase-configs/seo-phase-config.yaml`.
 
 **Note:** The SEO pipeline is specialist-based (no grand-architect). The `/seo` command or `/orca` delegates to `seo-research-specialist` to lead the workflow.
 
@@ -108,7 +108,7 @@ Tasks:
   - Competitor content structure and gaps
   - Unique angles vs competition
 
-Outputs (see `seo-phases.yaml` for exact files):
+Outputs (see `seo-phase-config.yaml` for exact files):
 - SERP summary (`serp.json`, `serp-summary.md`)
 - Competitor analysis (`competitor-analysis.json`)
 - Research report / JSON for downstream phases
@@ -174,7 +174,7 @@ Tasks:
   - Critical / high / medium priority action items.
   - Files modified and artifacts created.
 
-Gates (see `seo-phases.yaml` for thresholds):
+Gates (see `seo-phase-config.yaml` for thresholds):
 - Clarity gate (score threshold).
 - Keyword density gate (min/max).
 - Word count gate (minimum).

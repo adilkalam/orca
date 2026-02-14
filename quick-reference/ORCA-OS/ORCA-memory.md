@@ -212,7 +212,7 @@ When you start Claude Code, `session-start.sh` runs automatically:
 1. **Loads active task context** (if saved via `/session-save`) - outputs directly to STDOUT
 2. Loads previous session summary (if less than 24h old)
 3. Loads Workshop summary (recent decisions, gotchas)
-4. Initializes telemetry and code-index
+4. Initializes code-index (telemetry deprecated -- replaced by orca-record recording layer)
 5. Outputs architecture reminders
 6. Writes session metadata to `.claude/orchestration/temp/session-context.md`
 7. Makes context available to all subsequent work
@@ -359,4 +359,4 @@ Both systems feed agents through ProjectContext, so every task starts with both 
 
 ---
 
-_Version: OS 5.2 | Memory is continuity, made persistent._
+_Version: OS 6.0 | Memory is continuity, made persistent._

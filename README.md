@@ -4,7 +4,7 @@
 | | | | |_) | |     / _ \  | | | \___ \
 | |_| |  _ <| |___ / ___ \ | |_| |___) |
  \___/|_| \_\\____/_/   \_\ \___/|____/
-                                    v5.2
+                                    v6.0
 ```
 > **[QUICK-START.md](QUICK-START.md)**
 
@@ -261,9 +261,9 @@ The mechanism: force Claude to articulate what it *would* have said (the default
 
 This changes both sides of the interaction. Claude produces output shaped by evidence rather than defaults. And you develop the habit of asking "what's the default here?" before accepting any response.
 
-### The 40 operations
+### The 48 operations
 
-Beyond default observation, the cognition-mcp provides 40 structured reasoning operations that Claude can execute but doesn't reach for unprompted. Read the [full guide on cognition](quick-reference/cognition.md).
+Beyond default observation, the cognition-mcp provides 48 structured reasoning operations that Claude can execute but doesn't reach for unprompted. Read the [full guide on cognition](quick-reference/cognition.md).
 
 | Category | Example |
 |----------|---------|
@@ -274,7 +274,7 @@ Beyond default observation, the cognition-mcp provides 40 structured reasoning o
 | **Creative** | "What if we treated onboarding like a game tutorial instead of a form?" |
 | **Meta** | "Am I anchored on the first solution I thought of? What am I not considering?" |
 
-You don't need to know what those 40 reasoning operations are—`/deepthink` selects approaches based on the problem, runs them, saves the output as files and `/problem-solve` runs an 8-step convergent pipeline when you need a decision, while `/challenge` stress-tests the result before you act on it.
+You don't need to know what those 48 reasoning operations are—`/deepthink` selects approaches based on the problem, runs them, saves the output as files and `/problem-solve` runs an 8-step convergent pipeline when you need a decision, while `/challenge` stress-tests the result before you act on it.
 
 ```
 /deepthink (explore)
@@ -377,7 +377,7 @@ Multi-agent orchestration pipelines are a lens, not a source. It focuses whateve
 
 Send a vague prompt into a pipeline and you get a focused version of vague. Send a detailed spec and you get the thing you actually wanted.
 
-111 agents across 11 domains (iOS, Next.js, Django-React, Expo, Research, SEO, Data, Audit, and more). Role separation is strict: orchestrators coordinate and never write code, specialists implement scoped tasks, gates validate and never fix.
+112 agents across 11 domains (iOS, Next.js, Django-React, Expo, Research, SEO, Data, Audit, and more). Role separation is strict: orchestrators coordinate and never write code, specialists implement scoped tasks, gates validate and never fix.
 
 The agents are effective because of what they know -- extracted from studying market leaders and others:
 
@@ -495,7 +495,7 @@ Claude Desktop gives you a capable one-pass analysis from training data. ORCA gi
 
 | Component | What it enables |
 |-----------|----------------|
-| **cognition-mcp** | 40 structured reasoning operations. Accept-store-echo: the MCP stores thinking, never generates it. |
+| **cognition-mcp** | 48 structured reasoning operations. Accept-store-echo: the MCP stores thinking, never generates it. |
 | **project-context** | Memory across sessions. Decisions, gotchas, preferences. Semantic code search. Context bundles per task. |
 | **sequential-thinking** | Multi-step reasoning with revision and backtracking. |
 | **context7** | Up-to-date library documentation instead of stale training data. |
@@ -529,4 +529,4 @@ Claude Desktop gives you a capable one-pass analysis from training data. ORCA gi
 
 ---
 
-**ORCA OS v5.2** -- [Documentation](DOCUMENTATION.md) -- [Quick Start](QUICK-START.md)
+**ORCA OS v6.0** -- [Documentation](DOCUMENTATION.md) -- [Quick Start](QUICK-START.md)

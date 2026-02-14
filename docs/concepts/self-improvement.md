@@ -1,14 +1,14 @@
 # Self-Improvement System
 
-**Version:** OS 5.2 | **Last Updated:** 2026-01-24
+**Version:** OS 6.0 | **Last Updated:** 2026-01-24
 
-OS 5.2 provides an agent self-improvement loop that enables agents to learn from execution history and improve their prompts over time.
+OS 6.0 provides an agent self-improvement loop that enables agents to learn from execution history and improve their prompts over time.
 
 ---
 
 ## System Overview
 
-OS 5.2 provides learning at three levels:
+OS 6.0 provides learning at three levels:
 
 | Level | Mechanism | Storage | Trigger |
 |-------|-----------|---------|---------|
@@ -108,7 +108,7 @@ In addition to the centralized self-improvement loop, agents can now learn patte
 
 ### Agent Integration
 
-All 124 agents have Knowledge Loading sections:
+All agents have Knowledge Loading sections:
 
 ```markdown
 ## Knowledge Loading
@@ -475,9 +475,9 @@ workshop --workspace .claude/memory note "[/reflect] Prefer concise responses #p
 
 ---
 
-# Reflexion-Enhanced Gates (OS 5.2)
+# Reflexion-Enhanced Gates (OS 6.0)
 
-OS 5.2 introduces Reflexion-enhanced gates based on research by Shinn et al. (NeurIPS 2023). Gates now learn from failures through verbal reinforcement stored in episodic memory (Reflexion-style episodic memory).
+OS 6.0 introduces Reflexion-enhanced gates based on research by Shinn et al. (NeurIPS 2023). Gates now learn from failures through verbal reinforcement stored in episodic memory (Reflexion-style episodic memory).
 
 ## The Research
 
@@ -509,7 +509,7 @@ Future Runs: Load reflexions before gating
 All 10 gate agents now include:
 
 ```markdown
-## Reflexion on Failure (OS 5.2)
+## Reflexion on Failure (OS 6.0)
 
 When `gate_decision` is CAUTION or FAIL:
 
@@ -558,16 +558,14 @@ This enables cross-layer propagation: reflexions can become agent patterns, work
 | ios-ui-reviewer | iOS |
 | expo-verification-agent | Expo |
 | expo-standards-enforcer | Expo |
-| shopify-theme-checker | Shopify |
-| shopify-ui-reviewer | Shopify |
 | django-react-standards-enforcer | Django+React |
 | os-dev-standards-enforcer | OS-Dev |
 
 ---
 
-# Chain of Verification (OS 5.2)
+# Chain of Verification (OS 6.0)
 
-OS 5.2 introduces Chain of Verification (CoVe) based on Meta AI research (Dhuliawala et al., 2023). Verification agents now use structured verification questions to catch errors before reporting (CoVe-style question-then-verify loop).
+OS 6.0 introduces Chain of Verification (CoVe) based on Meta AI research (Dhuliawala et al., 2023). Verification agents now use structured verification questions to catch errors before reporting (CoVe-style question-then-verify loop).
 
 ## The Research
 
@@ -597,7 +595,7 @@ Step 4: Determine Final Status (PASS/CAUTION/FAIL)
 All 6 verification agents now include:
 
 ```markdown
-## Chain of Verification Protocol (OS 5.2)
+## Chain of Verification Protocol (OS 6.0)
 
 Before finalizing verification status:
 

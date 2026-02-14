@@ -67,6 +67,7 @@ class CognitionServer {
                     '\n  Analysis: tree_of_thought, causal_analysis, orchestration_suggest' +
                     '\n  Strategic: ooda_loop, ulysses_protocol, checkpoint' +
                     '\n  Session: session_info, session_export, session_import, reasoning_stats' +
+                    '\n  Recording: recording_status, recording_query, recording_checkpoint, recording_compare, recording_quality, recording_explain, recording_rewind' +
                     '\n  (Additional: beam_search, mcts, graph_of_thought, research, statistical_reasoning, simulation, optimization, ethical_analysis, visual_dashboard, visual_reasoning, pdr_reasoning, custom_framework, code_execution, notebook_*)',
                 inputSchema: {
                     type: 'object',
@@ -115,6 +116,13 @@ class CognitionServer {
                                 'session_export',
                                 'session_import',
                                 'reasoning_stats',
+                                'recording_status',
+                                'recording_query',
+                                'recording_checkpoint',
+                                'recording_compare',
+                                'recording_quality',
+                                'recording_explain',
+                                'recording_rewind',
                             ],
                             description: 'The operation to perform',
                         },

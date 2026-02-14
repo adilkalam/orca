@@ -1,3 +1,11 @@
+---
+name: adversarial-analysis
+description: >
+  Six-phase framework for stress-testing proposals before commitment.
+  Covers pre-mortem, assumption audit, edge case storm, counter-arguments,
+  failure mode catalog, and synthesis with GO/NO-GO verdicts.
+---
+
 # Adversarial Analysis
 
 RULE: Before implementing any significant proposal, systematically attack it to find weaknesses.

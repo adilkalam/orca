@@ -1,55 +1,36 @@
 #!/usr/bin/env bash
 # hooks/session-end.sh
-# ORCA-Mem: Save session events to Workshop at session end
-# Writes structured session summary for next-session loading (FR-2.2)
-# No external API dependencies - just local storage
+# Session end: save summary to Workshop + write session summary file
+# Recording layer (orca-record) handles detailed event capture.
+# This hook handles only Workshop memory and session summary persistence.
 # LOCAL ONLY - no API calls, no network requests
 
 set -o pipefail
 
-EVENT_BUFFER="${HOME}/.claude/temp/event-buffer.jsonl"
-DISCOVERY_MODE_FILE="${HOME}/.claude/temp/discovery-mode"
-TOOL_HISTORY_FILE="${HOME}/.claude/temp/tool-history"
-PENDING_TITLES="${HOME}/.claude/temp/pending-titles.jsonl"
 WORKSHOP_DIR=".claude/memory"
+ROOT_DIR="$(git rev-parse --show-toplevel 2>/dev/null || pwd)"
+RECORDING_DB="$ROOT_DIR/.orca/recording.db"
 
-# Check if there are events to process
-if [ ! -f "$EVENT_BUFFER" ] || [ ! -s "$EVENT_BUFFER" ]; then
-  echo "SessionEnd: No events to save"
-  rm -f "$DISCOVERY_MODE_FILE" "$TOOL_HISTORY_FILE" "$PENDING_TITLES" 2>/dev/null || true
-  exit 0
+# ============================================================
+# WORKSHOP NOTE (session memory)
+# ============================================================
+
+NOTE_CONTENT="Session ended at $(date -u +%Y-%m-%dT%H:%M:%SZ)."
+
+# If recording database exists, pull summary from it
+if [ -f "$RECORDING_DB" ] && command -v sqlite3 >/dev/null 2>&1; then
+  ACTIVE_SESSION=$(sqlite3 "$RECORDING_DB" \
+    "SELECT id FROM sessions WHERE state IN ('ACTIVE','ACTIVE_COMMITTED') ORDER BY started_at DESC LIMIT 1;" 2>/dev/null || echo "")
+  if [ -n "$ACTIVE_SESSION" ]; then
+    STEP_COUNT=$(sqlite3 "$RECORDING_DB" \
+      "SELECT step_count FROM sessions WHERE id='$ACTIVE_SESSION';" 2>/dev/null || echo "0")
+    FILES_TOUCHED=$(sqlite3 "$RECORDING_DB" \
+      "SELECT files_touched_json FROM sessions WHERE id='$ACTIVE_SESSION';" 2>/dev/null || echo "[]")
+    NOTE_CONTENT="Session $ACTIVE_SESSION: $STEP_COUNT steps. Files: $FILES_TOUCHED"
+  fi
 fi
 
-EVENT_COUNT=$(wc -l < "$EVENT_BUFFER" 2>/dev/null | tr -d ' ') || EVENT_COUNT=0
-echo "SessionEnd: Saving $EVENT_COUNT events..."
-
-# Build summary from events (no LLM, just structured extraction)
-SUMMARY=""
-TOOLS_USED=""
-FILES_CHANGED=""
-ERRORS=""
-
-while IFS= read -r line; do
-  TOOL=$(echo "$line" | grep -o '"tool":"[^"]*"' | sed 's/"tool":"//;s/"$//' 2>/dev/null || echo "")
-  TYPE=$(echo "$line" | grep -o '"type":"[^"]*"' | sed 's/"type":"//;s/"$//' 2>/dev/null || echo "")
-
-  [ -n "$TOOL" ] && TOOLS_USED="$TOOLS_USED $TOOL"
-
-  if [ "$TYPE" = "file_change" ]; then
-    FILES_CHANGED="$FILES_CHANGED $TOOL"
-  elif [ "$TYPE" = "error" ]; then
-    ERRORS="$ERRORS [error detected]"
-  fi
-done < "$EVENT_BUFFER"
-
-# Deduplicate tools
-UNIQUE_TOOLS=$(echo "$TOOLS_USED" | tr ' ' '\n' | sort -u | tr '\n' ' ' | xargs)
-
-# Create note content
-NOTE_CONTENT="Session events ($EVENT_COUNT total). Tools: $UNIQUE_TOOLS"
-[ -n "$ERRORS" ] && NOTE_CONTENT="$NOTE_CONTENT | Errors detected"
-
-# Save to workshop
+# Save to Workshop
 if command -v workshop >/dev/null 2>&1; then
   workshop --workspace "$WORKSHOP_DIR" note "$NOTE_CONTENT" -t session -t auto 2>/dev/null || true
   echo "SessionEnd: Saved to Workshop"
@@ -58,35 +39,24 @@ else
 fi
 
 # ============================================================
-# BUILD STRUCTURED SESSION SUMMARY (FR-2.2)
+# BUILD STRUCTURED SESSION SUMMARY
 # ============================================================
-# Writes a structured summary for next-session loading (FR-2.3)
+# Writes a minimal summary for next-session loading
 # All LOCAL -- no API calls
 
-ROOT_DIR="$(git rev-parse --show-toplevel 2>/dev/null || pwd)"
 SUMMARY_FILE="$ROOT_DIR/.claude/orchestration/temp/session-summary.md"
 mkdir -p "$(dirname "$SUMMARY_FILE")" 2>/dev/null || true
 
 {
   echo "# Session Summary"
   echo "**Date**: $(date -u +%Y-%m-%dT%H:%M:%SZ)"
-  echo "**Events**: $EVENT_COUNT"
-  echo "**Tools**: $UNIQUE_TOOLS"
   echo ""
 
-  # Files changed
-  if [ -n "$FILES_CHANGED" ]; then
-    echo "## Files Changed"
-    echo "$FILES_CHANGED" | tr ' ' '\n' | sort -u | while read -r f; do
-      [ -n "$f" ] && echo "- $f"
-    done
-    echo ""
-  fi
-
-  # Errors
-  if [ -n "$ERRORS" ]; then
-    echo "## Errors Encountered"
-    echo "$ERRORS"
+  # Pull from recording database if available
+  if [ -f "$RECORDING_DB" ] && command -v sqlite3 >/dev/null 2>&1 && [ -n "${ACTIVE_SESSION:-}" ]; then
+    echo "**Recording Session**: $ACTIVE_SESSION"
+    echo "**Steps**: ${STEP_COUNT:-0}"
+    echo "**Files**: ${FILES_TOUCHED:-[]}"
     echo ""
   fi
 
@@ -101,8 +71,11 @@ mkdir -p "$(dirname "$SUMMARY_FILE")" 2>/dev/null || true
 
 echo "SessionEnd: Session summary written to $SUMMARY_FILE"
 
-# Cleanup temp files (but NOT session-summary.md -- needed by next session-start)
-rm -f "$EVENT_BUFFER" "$DISCOVERY_MODE_FILE" "$TOOL_HISTORY_FILE" "$PENDING_TITLES" 2>/dev/null || true
+# Cleanup legacy temp files if they still exist
+rm -f "${HOME}/.claude/temp/event-buffer.jsonl" \
+      "${HOME}/.claude/temp/discovery-mode" \
+      "${HOME}/.claude/temp/tool-history" \
+      "${HOME}/.claude/temp/pending-titles.jsonl" 2>/dev/null || true
 
 echo "SessionEnd: Complete"
 exit 0

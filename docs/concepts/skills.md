@@ -1,6 +1,6 @@
 # Skills
 
-**Version:** OS 5.2 | **Last Updated:** 2026-02-07 | **Total:** 34 skills (36 directories, 2 empty/consolidated)
+**Version:** OS 6.0 | **Last Updated:** 2026-02-13 | **Total:** See quick-reference for current count
 
 Skills are reusable knowledge packages that provide domain expertise to agents.
 
@@ -17,7 +17,7 @@ Skills load into agent context when relevant, providing:
 
 ## Skill Structure
 
-36 skill directories, 34 with standard SKILL.md layout (2 are empty/consolidated):
+Skill directories with standard SKILL.md layout:
 
 ```
 skills/
@@ -49,7 +49,6 @@ skills/
   search-before-edit/SKILL.md
   security-basics/SKILL.md
   ship-learn-next/SKILL.md
-  shopify-app-development/SKILL.md
   stripe-integration/SKILL.md
   tapestry/SKILL.md
   testing-strategy/SKILL.md
@@ -97,7 +96,7 @@ When loaded, skill content appears in agent context alongside:
 
 ### Universal Skills
 
-These skills are referenced by ALL 124 agents via "Required Skills" sections. They were not designed from theory -- they were extracted from analysis of 8 competitor system prompts totaling ~3,800 lines of instructions:
+These skills are referenced by all agents via "Required Skills" sections. They were not designed from theory -- they were extracted from analysis of 8 competitor system prompts totaling ~3,800 lines of instructions:
 
 | Skill | Purpose | Key Rules |
 |-------|---------|-----------|
@@ -149,12 +148,11 @@ Other competitor patterns not yet extracted into skills: Perplexity's report str
 - `testing-strategy` - Testing strategies for unit, integration, and E2E tests (test pyramid, mocking, coverage)
 - `web-interface-guidelines` - Web UI quality rules for interactions, forms, loading, animations, accessibility (adapted from Vercel)
 - `stripe-integration` - Stripe payment integration patterns (checkout sessions, subscriptions, webhooks, idempotency)
-- `shopify-app-development` - Shopify app development patterns (GraphQL Admin API, checkout extensions, OAuth, billing)
 
 ### Domain Knowledge Skills
 - `ios-knowledge-skill` - iOS/Swift patterns and conventions
 - `nextjs-knowledge-skill` - Next.js patterns and conventions
-- `os-dev-knowledge-skill` - OS 5.2 configuration knowledge (LOCAL)
+- `os-dev-knowledge-skill` - OS 6.0 configuration knowledge (LOCAL)
 
 ### Content/Writing Skills
 - `elements-of-style` - Classic writing guide by William Strunk Jr. (1918) for clarity, conciseness, and grammar
@@ -225,7 +223,7 @@ Skills inform agents; agents do work.
 
 ## Skill Wiring to Agents
 
-All 124 agents now have explicit skill references in their definitions:
+All 112 agents now have explicit skill references in their definitions:
 
 ```markdown
 ## Required Skills

@@ -1,5 +1,5 @@
 ---
-description: "OS 5.2 orchestrator entrypoint for OS / Claude Code configuration tasks (LOCAL to this repo)"
+description: "OS 6.0 orchestrator entrypoint for OS / Claude Code configuration tasks (LOCAL to this repo)"
 argument-hint: "[-tweak] <task description or requirement ID>"
 allowed-tools:
   - Task
@@ -67,13 +67,13 @@ Layer 3 (.mcp.json) servers require `enableAllProjectMcpServers: true` or `enabl
 **THEN deploy ALL together:**
 ```bash
 # Note: $ORCA_OS_PATH should be set to your ORCA-OS installation path
-rsync -av --exclude='*archive*' --exclude='*deprecated*' --exclude='shopify*' --exclude='liquid-quick' $ORCA_OS_PATH/agents/ ~/.claude/agents/
-rsync -av --exclude='*archive*' --exclude='*deprecated*' --exclude='shopify*' --exclude='liquid-quick' $ORCA_OS_PATH/commands/ ~/.claude/commands/
-rsync -av --exclude='*archive*' --exclude='*deprecated*' --exclude='shopify*' --exclude='liquid-quick' $ORCA_OS_PATH/docs/ ~/.claude/docs/
-rsync -av --exclude='*archive*' --exclude='*deprecated*' --exclude='shopify*' --exclude='liquid-quick' $ORCA_OS_PATH/quick-reference/ ~/.claude/quick-reference/
-rsync -av --exclude='*archive*' --exclude='*deprecated*' --exclude='shopify*' --exclude='liquid-quick' $ORCA_OS_PATH/scripts/ ~/.claude/scripts/
-rsync -av --exclude='*archive*' --exclude='*deprecated*' --exclude='shopify*' --exclude='liquid-quick' $ORCA_OS_PATH/hooks/ ~/.claude/hooks/
-rsync -av --exclude='*archive*' --exclude='*deprecated*' --exclude='shopify*' --exclude='liquid-quick' $ORCA_OS_PATH/skills/ ~/.claude/skills/
+rsync -av --exclude='*archive*' --exclude='*deprecated*' $ORCA_OS_PATH/agents/ ~/.claude/agents/
+rsync -av --exclude='*archive*' --exclude='*deprecated*' $ORCA_OS_PATH/commands/ ~/.claude/commands/
+rsync -av --exclude='*archive*' --exclude='*deprecated*' $ORCA_OS_PATH/docs/ ~/.claude/docs/
+rsync -av --exclude='*archive*' --exclude='*deprecated*' $ORCA_OS_PATH/quick-reference/ ~/.claude/quick-reference/
+rsync -av --exclude='*archive*' --exclude='*deprecated*' $ORCA_OS_PATH/scripts/ ~/.claude/scripts/
+rsync -av --exclude='*archive*' --exclude='*deprecated*' $ORCA_OS_PATH/hooks/ ~/.claude/hooks/
+rsync -av --exclude='*archive*' --exclude='*deprecated*' $ORCA_OS_PATH/skills/ ~/.claude/skills/
 ```
 
 **Show deployment confirmation table BEFORE saying done.**
@@ -103,12 +103,12 @@ Even `-tweak` delegates to a builder. It skips gates, not agents.
 
 ---
 
-# /orca-os-dev – OS / Tooling Orchestrator (OS 5.2)
+# /orca-os-dev – OS / Tooling Orchestrator (OS 6.0)
 
 Use this command when the task is clearly OS / Claude Code / tooling
-configuration work for **Vibe OS 5.2**, not application code.
+configuration work for **Vibe OS 6.0**, not application code.
 
-**IMPORTANT: This command is LOCAL to claude-vibe-config repo only.**
+**IMPORTANT: This command is LOCAL to ORCA-OS repo only.**
 It is NOT deployed to `~/.claude` global config. Use `/orca-os-dev` only
 when working in this repository to modify the OS itself.
 
@@ -123,8 +123,8 @@ when working in this repository to modify the OS itself.
 Examples:
 
 - Adjust lane/phase config behavior (Next.js, iOS, etc.)
-- Add or update commands/agents/skills used by OS 5.2
-- Configure MCP servers and integrate them into OS 5.2 lanes
+- Add or update commands/agents/skills used by OS 6.0
+- Configure MCP servers and integrate them into OS 6.0 lanes
 - Change how memory and context are used by `/plan` / `/orca` / `/audit`
 
 **Key Resources:**
@@ -180,7 +180,12 @@ No flag → Default path (light + design gates)
 
 ---
 
-## 0.1 Telemetry (OS 5.2) - MUST EXECUTE
+## 0.1 Telemetry (OS 6.0) - DEPRECATED
+
+> **DEPRECATED:** This telemetry system is superseded by `orca-record` (recording layer).
+> The recording layer automatically captures all session events via Claude Code hooks.
+> These manual telemetry emit commands are kept for backward compatibility but are
+> no longer required. New pipelines should not add telemetry emit calls.
 
 **Reference:** `docs/reference/telemetry-standard.md`
 
@@ -471,7 +476,7 @@ Working with `os-dev-grand-architect`:
    python3 ~/.claude/scripts/memory-search-unified.py "$TASK_SUMMARY" --mode all --top-k 10 || true
    ```
 
-2. Load relevant reflexions from past gate failures (OS 5.2):
+2. Load relevant reflexions from past gate failures (OS 6.0):
 
    ```bash
    workshop --workspace .claude/memory search "reflexion" -t os-dev --limit 5 2>/dev/null || true
@@ -651,13 +656,13 @@ accepts residual risk):
    ```bash
    # SACRED LAW: Deploy to subdirectories, NEVER to root, NEVER with --delete
    # Note: $ORCA_OS_PATH should be set to your ORCA-OS installation path
-   rsync -av --exclude='*archive*' --exclude='*deprecated*' --exclude='shopify*' --exclude='liquid-quick' $ORCA_OS_PATH/commands/ ~/.claude/commands/
-   rsync -av --exclude='*archive*' --exclude='*deprecated*' --exclude='shopify*' --exclude='liquid-quick' $ORCA_OS_PATH/agents/ ~/.claude/agents/
-   rsync -av --exclude='*archive*' --exclude='*deprecated*' --exclude='shopify*' --exclude='liquid-quick' $ORCA_OS_PATH/docs/ ~/.claude/docs/
-   rsync -av --exclude='*archive*' --exclude='*deprecated*' --exclude='shopify*' --exclude='liquid-quick' $ORCA_OS_PATH/quick-reference/ ~/.claude/quick-reference/
-   rsync -av --exclude='*archive*' --exclude='*deprecated*' --exclude='shopify*' --exclude='liquid-quick' $ORCA_OS_PATH/scripts/ ~/.claude/scripts/
-   rsync -av --exclude='*archive*' --exclude='*deprecated*' --exclude='shopify*' --exclude='liquid-quick' $ORCA_OS_PATH/hooks/ ~/.claude/hooks/
-   rsync -av --exclude='*archive*' --exclude='*deprecated*' --exclude='shopify*' --exclude='liquid-quick' $ORCA_OS_PATH/skills/ ~/.claude/skills/
+   rsync -av --exclude='*archive*' --exclude='*deprecated*' $ORCA_OS_PATH/commands/ ~/.claude/commands/
+   rsync -av --exclude='*archive*' --exclude='*deprecated*' $ORCA_OS_PATH/agents/ ~/.claude/agents/
+   rsync -av --exclude='*archive*' --exclude='*deprecated*' $ORCA_OS_PATH/docs/ ~/.claude/docs/
+   rsync -av --exclude='*archive*' --exclude='*deprecated*' $ORCA_OS_PATH/quick-reference/ ~/.claude/quick-reference/
+   rsync -av --exclude='*archive*' --exclude='*deprecated*' $ORCA_OS_PATH/scripts/ ~/.claude/scripts/
+   rsync -av --exclude='*archive*' --exclude='*deprecated*' $ORCA_OS_PATH/hooks/ ~/.claude/hooks/
+   rsync -av --exclude='*archive*' --exclude='*deprecated*' $ORCA_OS_PATH/skills/ ~/.claude/skills/
    ```
 
 2. **SHOW DEPLOYMENT PROOF (MANDATORY)**:

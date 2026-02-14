@@ -1,4 +1,4 @@
-# Research Pipeline Phase Configuration - OS 5.2
+# Research Pipeline Phase Configuration - OS 6.0
 # Multi-agent deep research workflow (Crawl4AI + memory + writers)
 
 pipeline:
@@ -6,7 +6,7 @@ pipeline:
   description: >
     Multi-agent research pipeline using Crawl4AI MCP, memory systems, and
     writer/citation agents to produce cited, structured research reports.
-  version: "5.2"
+  version: "6.0"
 
 # Context Integration
 context:
@@ -28,7 +28,7 @@ complexity_tiers:
 
   medium:
     description: Multi-part questions requiring several sources and synthesis
-    routing: full-pipeline          # Uses research-lead-agent
+    routing: full-pipeline          # Uses research-command  # /research command handles orchestration directly (no lead agent)
     spec_required: false
     gates_required: true
     examples:
@@ -39,7 +39,7 @@ complexity_tiers:
     description: >
       Long-horizon, deep research (many subquestions, multiple Crawl4AI passes,
       strict gates, and long-form report output).
-    routing: full-pipeline          # Uses research-lead-agent
+    routing: full-pipeline          # Uses research-command  # /research command handles orchestration directly (no lead agent)
     spec_required: recommended      # Optionally gated by /plan in future
     gates_required: true
     examples:
@@ -50,7 +50,7 @@ complexity_tiers:
 phases:
   # Phase 0: Scoping & Complexity Classification
   - name: scoping
-    agent: research-lead-agent
+    agent: research-command  # /research command handles orchestration directly (no lead agent)
     description: Clarify intent, depth, timeframe, and classify complexity.
     context_required: false
     outputs:
@@ -63,7 +63,7 @@ phases:
 
   # Phase 0.5: Memory-First Context
   - name: memory_context
-    agent: research-lead-agent
+    agent: research-command  # /research command handles orchestration directly (no lead agent)
     description: Memory-first search for prior research, decisions, and specs.
     context_required: false
     outputs:
@@ -73,7 +73,7 @@ phases:
 
   # Phase 1: Research Plan
   - name: research_plan
-    agent: research-lead-agent
+    agent: research-command  # /research command handles orchestration directly (no lead agent)
     description: Decompose into subquestions and decide tools/agents per aspect.
     dependencies:
       - scoping
@@ -87,7 +87,7 @@ phases:
 
   # Phase 2: Evidence Gathering (Crawl4AI-first)
   - name: evidence_gathering
-    agent: research-lead-agent
+    agent: research-command  # /research command handles orchestration directly (no lead agent)
     description: >
       Coordinate Crawl4AI-powered subagents to gather evidence for each
       subquestion, with WebSearch/memory fallbacks when needed.
@@ -103,7 +103,7 @@ phases:
 
   # Phase 3: Synthesis – Pass 1
   - name: synthesis_pass1
-    agent: research-lead-agent
+    agent: research-command  # /research command handles orchestration directly (no lead agent)
     description: Synthesize evidence into outline and preliminary conclusions.
     dependencies:
       - evidence_gathering
@@ -116,7 +116,7 @@ phases:
 
   # Phase 3.5: Gap Analysis (Iterative Loop)
   - name: gap_analysis
-    agent: research-lead-agent
+    agent: research-command  # /research command handles orchestration directly (no lead agent)
     description: Evaluate coverage and decide whether to loop for more evidence.
     dependencies:
       - synthesis_pass1
@@ -182,7 +182,7 @@ phases:
 
   # Phase 7: Completion & Learning
   - name: completion
-    agent: research-lead-agent
+    agent: research-command  # /research command handles orchestration directly (no lead agent)
     description: Finalize report, record history, and surface limitations.
     dependencies:
       - consistency_gate
@@ -221,7 +221,7 @@ phase_state:
     - tool_status           # e.g. { crawl4ai: "ok" | "error" | "unavailable" }
     - tool_error_events     # array of structured Crawl4AI/WebSearch error events
 
-  # Research-specific workflow control (OS 3.0)
+  # Research-specific workflow control (OS 6.0)
   research:
     time_budget:
       total_minutes: number | null    # null = unlimited

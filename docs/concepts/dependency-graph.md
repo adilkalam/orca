@@ -1,6 +1,6 @@
 # Dependency Graph
 
-**Version:** OS 5.2 | **Last Updated:** 2026-01-24
+**Version:** OS 6.0 | **Last Updated:** 2026-01-24
 
 The dependency graph is the source of truth for ORCA-OS artifact relationships. It ensures documentation stays synchronized when lanes, agents, commands, or MCPs are added or modified.
 
@@ -11,7 +11,7 @@ The dependency graph is the source of truth for ORCA-OS artifact relationships. 
 ## Problem Solved
 
 Without the dependency graph, documentation drifts from actual state:
-- Agent counts become inaccurate (e.g., "100 agents" when there are 124)
+- Agent counts become inaccurate (e.g., counts not matching actual files)
 - New commands aren't documented
 - MCP configurations are inconsistent
 - Lane documentation misses recent additions

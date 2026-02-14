@@ -540,13 +540,13 @@
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">/**
  * Code Search Implementation
  *
- * Queries vibe.db for code context using hybrid search:
+ * Queries code-index.db for code context using hybrid search:
  * - Semantic search (embeddings) - 40%
  * - Symbol search (function/class names) - 35%
  * - Full-text search - 25%
  *
  * This replaces the old in-memory keyword search with
- * vibe.db's indexed code_chunks and symbols tables.
+ * code-index.db's indexed code_chunks and symbols tables.
  */
 &nbsp;
 import { execSync, spawn } from 'child_process';
@@ -554,18 +554,18 @@ import { join } from 'path';
 import { existsSync } from 'fs';
 import type { FileContext } from './types.js';
 &nbsp;
-// Path to vibe-sync.py
-const <span class="cstat-no" title="statement not covered" >VIBE_SYNC_PATH = join(</span>
+// Path to code-index.py
+const <span class="cstat-no" title="statement not covered" >CODE_INDEX_PATH = join(</span>
   process.env.HOME || '',
   '.claude',
   'scripts',
-  'vibe-sync.py'
+  'code-index.py'
 );
 &nbsp;
 /**
- * Search result from vibe.db
+ * Search result from code-index.db
  */
-interface VibeSearchResult {
+interface CodeSearchResult {
   file_path: string;
   name?: string;
   parent_name?: string;
@@ -575,48 +575,48 @@ interface VibeSearchResult {
 }
 &nbsp;
 /**
- * Code search that queries vibe.db's code_chunks and symbols
+ * Code search that queries code-index.db's code_chunks and symbols
  */
 export class CodeSearch {
   private projectPath: string;
-  private vibeDbPath: string;
+  private codeIndexDbPath: string;
 &nbsp;
 <span class="fstat-no" title="function not covered" >  constructor(p</span>rojectPath: string) {
 <span class="cstat-no" title="statement not covered" >    this.projectPath = projectPath;</span>
-<span class="cstat-no" title="statement not covered" >    this.vibeDbPath = join(projectPath, '.claude', 'memory', 'vibe.db');</span>
+<span class="cstat-no" title="statement not covered" >    this.codeIndexDbPath = join(projectPath, '.claude', 'memory', 'code-index.db');</span>
   }
 &nbsp;
   /**
-   * Check if vibe.db exists for this project
+   * Check if code-index.db exists for this project
    */
-<span class="fstat-no" title="function not covered" >  hasVibeDb(): boolean {</span>
-<span class="cstat-no" title="statement not covered" >    return existsSync(this.vibeDbPath);</span>
+<span class="fstat-no" title="function not covered" >  hasCodeIndex(): boolean {</span>
+<span class="cstat-no" title="statement not covered" >    return existsSync(this.codeIndexDbPath);</span>
   }
 &nbsp;
   /**
-   * Initialize vibe.db if it doesn't exist
+   * Initialize code-index.db if it doesn't exist
    */
-  async <span class="fstat-no" title="function not covered" >ensureVibeDb(): Promise&lt;boolean&gt; {</span>
-<span class="cstat-no" title="statement not covered" >    if (this.hasVibeDb()) {</span>
+  async <span class="fstat-no" title="function not covered" >ensureCodeIndex(): Promise&lt;boolean&gt; {</span>
+<span class="cstat-no" title="statement not covered" >    if (this.hasCodeIndex()) {</span>
 <span class="cstat-no" title="statement not covered" >      return true;</span>
     }
 &nbsp;
-    // Try to initialize vibe.db
+    // Try to initialize code-index.db
 <span class="cstat-no" title="statement not covered" >    try {</span>
-<span class="cstat-no" title="statement not covered" >      execSync(`python3 "${VIBE_SYNC_PATH}" init`, {</span>
+<span class="cstat-no" title="statement not covered" >      execSync(`python3 "${CODE_INDEX_PATH}" init`, {</span>
         cwd: this.projectPath,
         encoding: 'utf8',
         stdio: ['pipe', 'pipe', 'pipe'],
       });
-<span class="cstat-no" title="statement not covered" >      return this.hasVibeDb();</span>
+<span class="cstat-no" title="statement not covered" >      return this.hasCodeIndex();</span>
     } catch (error) {
-<span class="cstat-no" title="statement not covered" >      console.error('Failed to initialize vibe.db:', error);</span>
+<span class="cstat-no" title="statement not covered" >      console.error('Failed to initialize code-index.db:', error);</span>
 <span class="cstat-no" title="statement not covered" >      return false;</span>
     }
   }
 &nbsp;
   /**
-   * Hybrid search using vibe.db
+   * Hybrid search using code-index.db
    *
    * Combines semantic, symbol, and full-text search with weighted scoring
    */
@@ -624,15 +624,15 @@ export class CodeSearch {
     query: string,
     maxResults: number = <span class="branch-0 cbranch-no" title="branch not covered" >10</span>
   ): Promise&lt;FileContext[]&gt; {
-<span class="cstat-no" title="statement not covered" >    if (!this.hasVibeDb()) {</span>
-<span class="cstat-no" title="statement not covered" >      console.error('vibe.db not found, skipping code search');</span>
+<span class="cstat-no" title="statement not covered" >    if (!this.hasCodeIndex()) {</span>
+<span class="cstat-no" title="statement not covered" >      console.error('code-index.db not found, skipping code search');</span>
 <span class="cstat-no" title="statement not covered" >      return [];</span>
     }
 &nbsp;
 <span class="cstat-no" title="statement not covered" >    try {</span>
-      // Use vibe-sync.py hsearch command
+      // Use code-index.py hsearch command
       const <span class="cstat-no" title="statement not covered" >output = execSync(</span>
-        `python3 "${VIBE_SYNC_PATH}" hsearch "${query.replace(/"/g, '\\"')}" --limit ${maxResults * 2}`,
+        `python3 "${CODE_INDEX_PATH}" hsearch "${query.replace(/"/g, '\\"')}" --limit ${maxResults * 2}`,
         {
           cwd: this.projectPath,
           encoding: 'utf8',
@@ -654,13 +654,13 @@ export class CodeSearch {
     symbolName: string,
     maxResults: number = <span class="branch-0 cbranch-no" title="branch not covered" >10</span>
   ): Promise&lt;FileContext[]&gt; {
-<span class="cstat-no" title="statement not covered" >    if (!this.hasVibeDb()) {</span>
+<span class="cstat-no" title="statement not covered" >    if (!this.hasCodeIndex()) {</span>
 <span class="cstat-no" title="statement not covered" >      return [];</span>
     }
 &nbsp;
 <span class="cstat-no" title="statement not covered" >    try {</span>
       const <span class="cstat-no" title="statement not covered" >output = execSync(</span>
-        `python3 "${VIBE_SYNC_PATH}" symbol "${symbolName.replace(/"/g, '\\"')}" --limit ${maxResults}`,
+        `python3 "${CODE_INDEX_PATH}" symbol "${symbolName.replace(/"/g, '\\"')}" --limit ${maxResults}`,
         {
           cwd: this.projectPath,
           encoding: 'utf8',
@@ -689,10 +689,10 @@ export class CodeSearch {
 <span class="cstat-no" title="statement not covered" >        return [];</span>
       }
 &nbsp;
-      const results: VibeSearchResult[] = <span class="cstat-no" title="statement not covered" >JSON.parse(jsonMatch[0]);</span>
+      const results: CodeSearchResult[] = <span class="cstat-no" title="statement not covered" >JSON.parse(jsonMatch[0]);</span>
 &nbsp;
       // Deduplicate by file path (keep highest score)
-      const fileMap = <span class="cstat-no" title="statement not covered" >new Map&lt;string, VibeSearchResult&gt;();</span>
+      const fileMap = <span class="cstat-no" title="statement not covered" >new Map&lt;string, CodeSearchResult&gt;();</span>
 <span class="cstat-no" title="statement not covered" >      for (const result of results) {</span>
         const existing = <span class="cstat-no" title="statement not covered" >fileMap.get(result.file_path);</span>
 <span class="cstat-no" title="statement not covered" >        if (!existing || result.score &gt; existing.score) {</span>
@@ -781,7 +781,7 @@ export function <span class="fstat-no" title="function not covered" >createCodeS
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2026-01-24T18:26:31.438Z
+                at 2026-02-14T02:16:58.755Z
             </div>
         <script src="prettify.js"></script>
         <script>

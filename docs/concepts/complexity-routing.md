@@ -1,8 +1,8 @@
 # Complexity Routing - Three-Tier Structure
 
-**Version:** OS 5.2 | **Last Updated:** 2026-01-24
+**Version:** OS 6.0 | **Last Updated:** 2026-01-24
 
-OS 5.2 uses **three-tier routing** to optimize for speed while maintaining quality gates.
+OS 6.0 uses **three-tier routing** to optimize for speed while maintaining quality gates.
 
 ## Three-Tier Routing Table
 
@@ -185,7 +185,6 @@ Handle default and tweak modes:
 | Next.js | `nextjs-light-orchestrator` | `nextjs-standards-enforcer`, `nextjs-design-reviewer` |
 | Expo | `expo-light-orchestrator` | `design-token-guardian`, `expo-aesthetics-specialist` |
 | Django-React | `django-react-light-orchestrator` | `django-react-standards-enforcer` |
-| Shopify | `shopify-light-orchestrator` | `shopify-theme-checker` |
 | OS-Dev | `os-dev-light-orchestrator` | `os-dev-standards-enforcer` |
 
 Light orchestrators:

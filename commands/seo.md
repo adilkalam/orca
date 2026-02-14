@@ -1,9 +1,9 @@
 ---
-description: "SEO content pipeline orchestration with OS 5.2 project context and quality gates"
+description: "SEO content pipeline orchestration with OS 6.0 project context and quality gates"
 allowed-tools: ["Task", "Read", "Write", "Bash", "AskUserQuestion", "TodoWrite", "mcp__project-context__query_context", "mcp__project-context__save_decision"]
 ---
 
-# /seo – SEO Content Pipeline Orchestrator (OS 5.2)
+# /seo – SEO Content Pipeline Orchestrator (OS 6.0)
 
 **Elite SEO orchestration** that produces 3,000+ word sophisticated content with natural clarity—matching manually-crafted gold standards through deep knowledge graph integration, external research citations, and automated clarity quality gates.
 
@@ -174,7 +174,7 @@ await AskUserQuestion({
 
 ### 1.2 Propose Agent Team
 
-**Based on seo-phases.yaml configuration:**
+**Based on seo-phase-config.yaml configuration:**
 
 ```markdown
 ## Proposed SEO Pipeline Team
@@ -298,7 +298,7 @@ await Task({
   subagent_type: "seo-research-specialist",
   description: "SEO research with SERP + direct files + KG + crawl4ai",
   prompt: `
-You are the seo-research-specialist (OS 5.2).
+You are the seo-research-specialist (OS 6.0).
 
 ## Your Mission
 Perform deep SEO research for keyword: "${KEYWORD}"
@@ -332,7 +332,6 @@ AgentDB session: ${SESSION_ID}
    c) Cache direct research findings in AgentDB
 
 ### 3. Knowledge Graph (SUPPLEMENTARY)
-   - Run: scripts/seo_auto_pipeline.py
    - KG path: ${KG_PATH}
    - Focus terms: ${FOCUS_TERMS}
    - Merge with direct file research (KG supplements, doesn't replace)
@@ -390,7 +389,7 @@ await Task({
   subagent_type: "seo-brief-strategist",
   description: "Strategic brief enhancement",
   prompt: `
-You are the seo-brief-strategist (OS 5.2).
+You are the seo-brief-strategist (OS 6.0).
 
 ## Your Mission
 Refine the research brief with strategic guidance and project context.
@@ -430,7 +429,7 @@ await Task({
   subagent_type: "seo-draft-writer",
   description: "Sophisticated content writing with v4 clarity",
   prompt: `
-You are the seo-draft-writer (OS 5.2).
+You are the seo-draft-writer (OS 6.0).
 
 ## Your Mission
 Write sophisticated, clear long-form content matching v4 gold-standard quality.
@@ -481,7 +480,7 @@ await Task({
   subagent_type: "seo-quality-guardian",
   description: "Comprehensive QA with clarity gates",
   prompt: `
-You are the seo-quality-guardian (OS 5.2).
+You are the seo-quality-guardian (OS 6.0).
 
 ## Your Mission
 Perform comprehensive quality review before human hand-off.
@@ -493,7 +492,7 @@ Files to audit:
 - outputs/seo/${SLUG}-draft.md
 
 ## MANDATORY Quality Gates
-1. **Clarity Gate** - Run scripts/seo_clarity_gates.py
+1. **Clarity Gate** - Evaluate content clarity score
    - Threshold: 70+
    - Blocks if failed: No (but flags TODOs)
 
@@ -697,13 +696,8 @@ ${NEW_STANDARDS_CREATED}
 
 ## Configuration
 
-**Pipeline Config:** docs/reference/phase-configs/seo-phases.yaml
+**Pipeline Config:** docs/reference/phase-configs/seo-phase-config.yaml
 **Agents:** agents/seo-*.md
-**Scripts:**
-- scripts/seo_auto_pipeline.py
-- scripts/seo_kg_deep_reader.py
-- scripts/seo_serp_bridge.py
-- scripts/seo_clarity_gates.py
 
 **Default Paths (project-specific):**
 - Research index: `docs/research/index.json`

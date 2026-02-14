@@ -1,10 +1,10 @@
-# SEO Pipeline Phase Configuration - OS 5.2
+# SEO Pipeline Phase Configuration - OS 6.0
 # SEO Content Creation and Optimization Workflow
 
 pipeline:
   name: seo
   description: SEO content pipeline with research, brief creation, drafting, and optimization
-  version: "5.2"
+  version: "6.0"
 
 # Context Integration
 context:
@@ -13,12 +13,12 @@ context:
   query_on_start: true
   memory_first: true
 
-# Three-Tier Routing (OS 5.2)
+# Three-Tier Routing (OS 6.0)
 complexity_tiers:
   default:
     description: Standard SEO content workflow
     flag: "(none)"
-    routing: seo-light-orchestrator
+    routing: seo-command  # /seo command handles orchestration directly (no light orchestrator agent)
     mode: default
     spec_required: false
     gates_required: true
@@ -32,7 +32,7 @@ complexity_tiers:
   tweak:
     description: Quick SEO fixes without gates
     flag: "-tweak"
-    routing: seo-light-orchestrator
+    routing: seo-command  # /seo command handles orchestration directly (no light orchestrator agent)
     mode: tweak
     spec_required: false
     gates_required: false

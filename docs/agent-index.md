@@ -1,7 +1,7 @@
 # ORCA-OS Agent Index
 
-**Total Agents:** 124
-**Categories:** 13
+**Total Agents:** 112
+**Categories:** 11
 **Generated:** 2026-02-04 12:48
 
 ---
@@ -23,10 +23,10 @@
 
 | Agent Name              | Function                                                | Lines | Last Updated |
 |-------------------------|---------------------------------------------------------|-------|--------------|
-| competitive-analyst     | Competitive analysis specialist for OS 5.2. Performs... | 158   | 2026-01-30   |
-| data-researcher         | Data research specialist for OS 5.2. Designs and exe... | 197   | 2026-01-30   |
+| competitive-analyst     | Competitive analysis specialist for OS 6.0. Performs... | 158   | 2026-01-30   |
+| data-researcher         | Data research specialist for OS 6.0. Designs and exe... | 197   | 2026-01-30   |
 | python-analytics-expert | Python data analytics and engineering specialist for... | 214   | 2026-01-30   |
-| research-specialist     | Cross-domain research specialist for OS 5.2. Gathers... | 218   | 2026-01-30   |
+| research-specialist     | Cross-domain research specialist for OS 6.0. Gathers... | 218   | 2026-01-30   |
 
 ## Dev
 
@@ -70,12 +70,12 @@
 | api-guardian               | Validates API contracts and detects breaking changes... | 547   | 2026-01-30   |
 | bundle-assassin            | Analyzes and reduces React Native/Expo bundle size t... | 519   | 2026-01-30   |
 | expo-aesthetics-specialist | Expo/React Native aesthetics and visual quality revi... | 598   | 2026-01-30   |
-| expo-architect-agent       | OS 5.2 Expo/React Native lane architect. Uses Projec... | 490   | 2026-01-30   |
+| expo-architect-agent       | OS 6.0 Expo/React Native lane architect. Uses Projec... | 490   | 2026-01-30   |
 | expo-builder-agent         | Expo/React Native implementation specialist for OS 5... | 907   | 2026-01-30   |
 | expo-grand-orchestrator    | Tier-S meta-orchestrator for the Expo/React Native l... | 829   | 2026-01-30   |
 | expo-light-orchestrator    | Light orchestrator for Expo/React Native tasks (defa... | 275   | 2026-01-30   |
 | expo-standards-enforcer    | Standards gate for Expo/React Native. Audits recent ... | 206   | 2026-01-30   |
-| expo-verification-agent    | Expo/React Native verification agent for OS 5.2. Run... | 592   | 2026-01-30   |
+| expo-verification-agent    | Expo/React Native verification agent for OS 6.0. Run... | 592   | 2026-01-30   |
 | impact-analyzer            | Predicts change impact across React Native/Expo code... | 527   | 2026-01-30   |
 | refactor-surgeon           | Performs safe, targeted refactoring for React Native... | 389   | 2026-01-30   |
 | test-generator             | Generates comprehensive tests for React Native/Expo ... | 354   | 2026-01-30   |
@@ -104,14 +104,6 @@
 | ios-uikit-specialist         | iOS UIKit implementation specialist. Builds complex ... | 79    | 2026-01-30   |
 | ios-verification             | Build/test/visual gate. Runs xcodebuild for target s... | 355   | 2026-01-30   |
 
-## Kg
-
-| Agent Name            | Function                                                | Lines | Last Updated |
-|-----------------------|---------------------------------------------------------|-------|--------------|
-| kg-answer-writer      | KG-grounded answer writer for OBDN research. Produce... | 322   | 2026-01-30   |
-| kg-lead-agent         | Lead researcher for OBDN KG-augmented research. Plan... | 251   | 2026-01-30   |
-| kg-mechanism-subagent | Specialized mechanism path mapper for OBDN research.... | 275   | 2026-01-30   |
-| kg-query-subagent     | KG query specialist for OBDN research. Runs kg-query... | 293   | 2026-01-30   |
 
 ## Nextjs
 
@@ -171,18 +163,6 @@
 | seo-quality-guardian    | Comprehensive SEO quality review with clarity gates,... | 682   | 2026-01-30   |
 | seo-research-specialist | SEO research specialist with SERP intelligence, mult... | 517   | 2026-01-30   |
 
-## Shopify
-
-| Agent Name                 | Function                                                | Lines | Last Updated |
-|----------------------------|---------------------------------------------------------|-------|--------------|
-| shopify-css-specialist     | CSS and design token specialist for Shopify themes. ... | 236   | 2026-01-18   |
-| shopify-grand-architect    | Tier-S orchestrator for the Shopify lane. Detects Sh... | 249   | 2026-01-18   |
-| shopify-js-specialist      | JavaScript specialist for Shopify themes. Expert in ... | 320   | 2026-01-18   |
-| shopify-light-orchestrator | Light orchestrator for Shopify tasks (default path).... | 176   | 2026-01-18   |
-| shopify-liquid-specialist  | Liquid templating expert. Handles template logic, ob... | 222   | 2026-01-18   |
-| shopify-section-builder    | Section development specialist. Creates and modifies... | 306   | 2026-01-18   |
-| shopify-theme-checker      | Theme quality and linting specialist. Runs Shopify T... | 334   | 2026-01-18   |
-| shopify-ui-reviewer        | Visual validation for Shopify themes using Puppeteer... | 371   | 2026-01-18   |
 
 ## Typography
 

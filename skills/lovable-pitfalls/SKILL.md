@@ -1,3 +1,11 @@
+---
+name: lovable-pitfalls
+description: >
+  Catalog of critical mistakes to avoid: re-reading context files, writing
+  without reading, sequential tool calls, premature coding, overengineering,
+  scope creep, and monolithic files.
+---
+
 # Common Pitfalls to Avoid
 
 Critical mistakes that waste time and produce poor results. Extracted from Lovable and other production systems.

@@ -1,8 +1,8 @@
-# OS 5.2 Commands Quick Reference
+# OS 6.0 Commands Quick Reference
 
-**Last Updated:** 2026-02-09
-**Version:** OS 5.2
-**Total Commands:** 33
+**Last Updated:** 2026-02-13
+**Version:** OS 6.0
+**Total Commands:** 35 (+ orca-record CLI with 16 subcommands)
 
 ---
 
@@ -18,7 +18,7 @@ All `/orca-*` lane commands support three execution modes:
 
 ---
 
-## Lane Orchestrator Commands (10)
+## Lane Orchestrator Commands (12)
 
 ### `/ios` - iOS Lane
 ```bash
@@ -98,6 +98,7 @@ All `/orca-*` lane commands support three execution modes:
 **Agents:** typography-orchestrator, glyph-editor, ttf-exporter, typography-advisor, typography-explorer-generator, path-guardian
 **Workflows:** glyph editing (fontTools), TTF export (Epson LabelWorks), font selection/pairing, explorer generation
 
+
 ### `/orca-os-dev` - OS Development Lane
 ```bash
 /orca-os-dev "add new specialist agent"
@@ -166,7 +167,7 @@ Creates: `.claude/requirements/<id>/06-requirements-spec.md`
 **NEW: --deep flag:** Extended thinking mode (8-12+ thoughts with review/synthesis checkpoints, branching enabled)
 **MCP:** cognition-mcp
 **Meta Modes:** Standard (process-level) + Substrate Observation (V1-V6 reflection insights)
-**Templates:** `quick-reference/mental-models/*.md`
+**Templates:** `quick-reference/thinking-models/*.md`
 **Persistence:** Appends to daily log `.claude/cognition/YYYYMMDD-daily.md` + Workshop entry
 **Handoff Guidance:** Includes "Next Steps" section with contextual command recommendations
 
@@ -360,6 +361,50 @@ Guided wizard for project structure decisions. Detects project type (ios, nextjs
 
 ---
 
+## Recording Layer (orca-record CLI)
+
+`orca-record` is a Bun-compiled binary that handles session recording, git-backed checkpoints, and rewind. It runs automatically via Claude Code hooks. Deployed to `~/.claude/bin/orca-record`.
+
+### Hook Commands (invoked automatically)
+
+| Command | Hook | Purpose |
+|---------|------|---------|
+| `orca-record prompt-submit` | UserPromptSubmit (async) | Snapshot git status, start/continue session |
+| `orca-record stop` | Stop | Wait for transcript flush, copy transcript, diff files, create checkpoint |
+| `orca-record pre-task` | PreToolUse[Task] | Capture pre-task file state for subagent checkpoints |
+| `orca-record post-task` | PostToolUse[Task] | Diff against pre-task state, create task checkpoint |
+| `orca-record post-todo` | PostToolUse[TodoWrite] | Incremental checkpoint within subagent context |
+
+### Git Hook Commands (installed per-project)
+
+| Command | Git Hook | Purpose |
+|---------|----------|---------|
+| `orca-record prepare-commit-msg` | prepare-commit-msg | Inject `ORCA-Checkpoint` trailer into commit message |
+| `orca-record post-commit` | post-commit | Condense shadow branch to `orca/checkpoints/v1` orphan branch |
+
+### User Commands
+
+| Command | Purpose |
+|---------|---------|
+| `orca-record status` | Show current session recording state (IDLE/ACTIVE/ACTIVE_COMMITTED/ENDED) |
+| `orca-record version` | Show CLI version |
+| `orca-record checkpoints` | List all checkpoints in current session with timestamps and file changes |
+| `orca-record rewind <id>` | Restore code and cognitive state to a specific checkpoint |
+| `orca-record condense` | Manually trigger shadow branch condensation |
+| `orca-record install-hooks` | Install orca-record git hooks in current project |
+| `orca-record uninstall-hooks` | Remove orca-record git hooks from current project |
+| `orca-record link <commit>` | Show bidirectional commit-to-checkpoint linking |
+| `orca-record history` | Query session history from recording database |
+
+### Storage
+
+- **Database:** `.orca/recording.db` (per-project SQLite, gitignored)
+- **Shadow branches:** `orca/<HEAD[:7]>-<wt[:6]>` (temporary, per-session)
+- **Orphan branch:** `orca/checkpoints/v1` (permanent checkpoint storage)
+- **Session state:** `.git/orca-sessions/<session-id>.json`
+
+---
+
 ## Skills (Always-On Knowledge)
 
 Skills are passive knowledge that shape Claude's responses when relevant context is detected. They do not require commands to activate.
@@ -419,4 +464,4 @@ $ORCA_OS_PATH/commands/
 ---
 
 _Source of truth: `docs/reference/os-dependency-graph.yaml`_
-_Last sync: 2026-02-09_
+_Last sync: 2026-02-13_

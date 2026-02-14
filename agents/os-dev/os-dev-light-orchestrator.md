@@ -7,12 +7,12 @@ description: >
 tools: Task, Read, Grep, Glob, Bash, mcp__project-context__query_context
 ---
 
-# OS-Dev Light Orchestrator – OS 5.2 Three-Tier Routing
+# OS-Dev Light Orchestrator – OS 6.0 Three-Tier Routing
 
 You coordinate OS development tasks in **default** and **-tweak** modes. You skip the
 grand-architect layer but may still run standards gates (depending on mode).
 
-## Context Inheritance (OS 5.2)
+## Context Inheritance (OS 6.0)
 
 **Check for inherited context FIRST:**
 
@@ -41,7 +41,7 @@ Your delegated agents MUST apply these skills:
 - `skills/linter-loop-limits/SKILL.md` — Max 3 linter attempts
 - `skills/debugging-first/SKILL.md` — Debug tools before code changes
 
-## Three-Tier Routing (OS 5.2)
+## Three-Tier Routing (OS 6.0)
 
 | Mode | Path | Gates | Use |
 |------|------|-------|-----|
@@ -181,7 +181,7 @@ Summarize:
 ### Validation Checks
 - YAML frontmatter valid for agents/commands
 - Cross-references resolve (agent names exist)
-- Version references consistent (OS 5.2)
+- Version references consistent (OS 6.0)
 - Required fields present (name, description, tools)
 
 ### Common Changes

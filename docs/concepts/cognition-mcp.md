@@ -3,7 +3,7 @@
 **MCP Server:** `cognition-mcp`
 **Command:** `/think [--flag] <prompt>`, `/audit`
 **Pattern:** Accept-Store-Echo
-**Total Operations:** 41 (38 reasoning + 1 audit + 1 utility + 1 stats)
+**Total Operations:** 48 (38 reasoning + 1 audit + 1 utility + 1 stats + 7 recording)
 **Location:** `mcp/cognition-mcp/`
 
 ---
@@ -110,7 +110,7 @@ Content schemas are organized into three tiers based on how much structure they 
 
 ### Tool Description Trim (v2)
 
-The tool description now organizes operations by frequency of use rather than listing all 41 operations equally. Frequently-used operations are shown prominently; rarely-used operations are listed in a parenthetical "(Additional: ...)" section. All operations remain callable -- only the description text was changed, not the enum.
+The tool description now organizes operations by frequency of use rather than listing all 48 operations equally. Frequently-used operations are shown prominently; rarely-used operations are listed in a parenthetical "(Additional: ...)" section. All operations remain callable -- only the description text was changed, not the enum.
 
 **Trimmed from prominent display** (usage count 2 or below): `beam_search`, `mcts`, `graph_of_thought`, `research`, `statistical_reasoning`, `simulation`, `optimization`, `ethical_analysis`, `visual_dashboard`, `visual_reasoning`, `pdr_reasoning`, `custom_framework`, `code_execution`, `notebook_*`.
 
@@ -832,6 +832,59 @@ For full research context, see `/docs/concepts/llm-introspection-analysis.md`.
 
 (34 of 41 graded; `list_mental_models`, `notebook_*`, `reasoning_stats` not individually scored)
 
+## Recording Layer Extension
+
+Cognition-mcp includes 7 recording operations that connect it to the `orca-record` recording layer. This enables **cognitive fusion** -- combining reasoning chains with code change history.
+
+### Recording Operations
+
+| Operation | Purpose |
+|-----------|---------|
+| `recording_status` | Current session recording state (IDLE/ACTIVE/ACTIVE_COMMITTED/ENDED) |
+| `recording_query` | Query sessions by date range, files touched, quality metrics |
+| `recording_checkpoint` | Get checkpoint details including code state and cognitive context |
+| `recording_compare` | Diff two checkpoints: code changes and reasoning chain changes |
+| `recording_quality` | Session quality analytics: gate results, rewind rates, error patterns |
+| `recording_explain` | Human-readable narrative of what happened, why, and how well |
+| `recording_rewind` | Trigger rewind to a specific checkpoint (restores code + cognitive state) |
+
+### Cognitive Fusion
+
+The key differentiator of the ORCA recording layer is cognitive fusion -- the ability to link **what changed** (code) with **why it changed** (reasoning):
+
+```
+cognition-mcp session
+  |-- thought chain (reasoning steps)
+  |-- constraint chain (active constraints)
+  |-- quality metrics (gate results)
+  |
+  +-- linked to -->  orca-record checkpoint
+                       |-- code snapshot (git tree object)
+                       |-- file diffs (modified/new/deleted)
+                       |-- transcript segment (redacted)
+```
+
+**Data Flow:**
+1. When cognition-mcp stores a thought/decision/constraint, it tags it with the current recording session ID
+2. When orca-record creates a checkpoint, it includes a cognition-mcp session export
+3. Cross-reference queries: "this reasoning chain led to these code changes" and "these code changes were informed by this reasoning"
+
+### Recording Database
+
+Recording data is stored in `.orca/recording.db` (per-project SQLite, separate from cognition-mcp's JSONL stores for performance). The database contains:
+
+- **sessions** -- session lifecycle, state machine, file tracking
+- **checkpoints** -- per-turn snapshots with cognitive context
+- **events** -- all hook events (full recording, filter at query time)
+- **transcripts** -- redacted session transcripts
+- **condensed** -- permanent checkpoints linked to git commits
+
+### Supersedes Telemetry
+
+The recording layer supersedes the `.claude/telemetry/` system. Telemetry scripts (`telemetry-emit.sh`, `telemetry-viewer.sh`, `telemetry-cleanup.sh`) are deprecated but remain functional for backward compatibility with existing pipeline commands.
+
+---
+
 ## See Also
 
 - [Pipeline Model](pipeline-model.md) - How cognition integrates with pipelines
@@ -841,4 +894,4 @@ For full research context, see `/docs/concepts/llm-introspection-analysis.md`.
 
 ---
 
-_Version: OS 5.2 | Last updated: 2026-02-06_
+_Version: OS 6.0 | Last updated: 2026-02-13_

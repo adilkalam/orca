@@ -1,4 +1,4 @@
-# Audit Pipeline Phase Configuration - OS 5.2
+# Audit Pipeline Phase Configuration - OS 6.0
 # Standalone Due Diligence Codebase Auditing
 #
 # NOTE: This is NOT an /orca pipeline. /audit is a standalone diagnostic
@@ -13,7 +13,7 @@
 pipeline:
   name: audit
   description: Multi-agent due diligence auditing with parallel specialist execution
-  version: 1.0
+  version: "6.0"
   type: standalone  # Not an /orca pipeline
 
 command:

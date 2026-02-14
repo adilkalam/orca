@@ -12,7 +12,7 @@ Search across all memory systems in one command.
 
 1. **Workshop** (decisions, notes, gotchas, learnings)
 2. **code-index.db** (code chunks, symbols, functions, classes)
-3. **Research Index** (if `.claude/scripts/research-sync.py` exists - markdown research docs with semantic search)
+3. **Research Index** (if project has a research-sync script - markdown research docs with semantic search)
 
 ## Execution
 
@@ -34,10 +34,13 @@ python3 ~/.claude/scripts/code-index.py hsearch "$QUERY" --limit 10 2>/dev/null 
 
 ### Step 4: Search Research Index (if exists)
 
-If `.claude/scripts/research-sync.py` exists in the project, also search research chunks:
+If the project has a research-sync script (e.g., `.claude/scripts/research-sync.py`), also search research chunks:
 
 ```bash
-python3 .claude/scripts/research-sync.py search "$QUERY" --limit 10 2>/dev/null || true
+# Only run if research-sync script exists in the project
+if [ -f .claude/scripts/research-sync.py ]; then
+  python3 .claude/scripts/research-sync.py search "$QUERY" --limit 10 2>/dev/null || true
+fi
 ```
 
 ### Step 5: Present Unified Results

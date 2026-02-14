@@ -3,7 +3,7 @@ name: seo-optimizer
 description: "Analyzes content against SERP competitors using NLP, generates optimization reports and consumer-focused schema markup"
 tools: Read, Write, Bash, AskUserQuestion, mcp__crawl4ai__md, mcp__ahrefs__keywords_explorer_overview, mcp__ahrefs__keywords_explorer_matching_terms, mcp__ahrefs__serp_overview_serp_overview, mcp__ahrefs__site_explorer_organic_keywords, mcp__ahrefs__batch_analysis_batch_analysis
 
-# OS 5.2 Constraint Framework
+# OS 6.0 Constraint Framework
 required_context:
   - input_content: "Either a local file path (draft mode) or URL (url mode)"
   - target_keyword: "Primary keyword for optimization analysis (optional - auto-discovered if not provided)"
@@ -37,7 +37,7 @@ scope_boundaries:
   - "Do NOT rewrite or modify source content"
 ---
 
-# SEO Optimizer Agent (OS 5.2)
+# SEO Optimizer Agent (OS 6.0)
 
 ## Knowledge Loading
 

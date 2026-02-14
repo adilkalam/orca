@@ -1,16 +1,16 @@
 # OS-Dev Domain Pipeline
 
-**Status:** OS 5.2 Core Pipeline
+**Status:** OS 6.0 Core Pipeline
 **Domain:** `os-dev`
-**Last Updated:** 2025-11-27
+**Last Updated:** 2026-02-13
 
 ## Overview
 
 The OS-Dev pipeline handles **Claude Code / Vibe OS configuration work**:
 
-- OS 2.x orchestration behavior (lanes, phase configs, gates)
+- OS 6.0 orchestration behavior (lanes, phase configs, gates)
 - Claude Code commands, agents, skills, hooks, and MCP integration
-- Memory and context integration behavior for OS 2.x
+- Memory and context integration behavior for OS 6.0
 
 Use this lane when you want to change **how the system itself behaves**, not a user project.
 
@@ -19,7 +19,7 @@ Use this lane when you want to change **how the system itself behaves**, not a u
 Examples:
 
 - Add a new orchestration lane (e.g. backend or infra lane)
-- Configure or replace an MCP for all OS 2.x lanes
+- Configure or replace an MCP for all OS 6.0 lanes
 - Adjust default models/tiers or RA behavior for lanes
 - Tighten or relax safety constraints for commands/agents
 

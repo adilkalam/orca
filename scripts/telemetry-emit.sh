@@ -1,4 +1,11 @@
 #!/bin/bash
+# DEPRECATED: This telemetry system is superseded by orca-record (recording layer).
+# The recording layer provides full session recording, git-backed checkpoints,
+# secret redaction, and cognitive fusion via cognition-mcp.
+# See: docs/reference/telemetry-standard.md for migration notes.
+# This script remains functional for backward compatibility with existing
+# pipeline commands that still reference telemetry-emit.sh.
+#
 # ORCA OS Telemetry Emit Script
 # Handles trace creation with proper index.json updates
 #

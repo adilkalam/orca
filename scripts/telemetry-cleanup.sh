@@ -1,4 +1,8 @@
 #!/bin/bash
+# DEPRECATED: This telemetry system is superseded by orca-record (recording layer).
+# Recording data is managed in .orca/recording.db per project.
+# This script remains functional for cleaning up legacy telemetry data.
+#
 # ORCA OS Telemetry Cleanup Script
 # Enforces retention policy: sessions=7 days, metrics=30 days
 #

@@ -1,3 +1,11 @@
+---
+name: search-before-edit
+description: >
+  Mandatory discipline requiring grep/search before any file modification.
+  Prevents breaking existing patterns by ensuring all usages, imports, and
+  dependencies are understood before edits are applied.
+---
+
 # Search Before Edit
 
 MANDATORY: Always search/grep before modifying ANY file. This prevents breaking existing patterns and ensures changes fit the codebase.

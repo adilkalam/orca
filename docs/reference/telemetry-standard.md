@@ -1,8 +1,21 @@
-# Telemetry Standard (OS 5.2)
+# Telemetry Standard (OS 6.0)
 
 **Version:** 3.0.0 (spec document version; `index.json` uses data format version "2.5.0")
-**Status:** Active
-**Effective:** OS 5.2
+**Status:** Deprecated -- superseded by orca-record recording layer
+**Effective:** OS 6.0
+
+---
+
+> **DEPRECATION NOTICE:** This telemetry system is superseded by the `orca-record` recording layer.
+> The recording layer provides full session recording, git-backed checkpoints, secret redaction,
+> and cognitive fusion via cognition-mcp. It captures all hook events automatically without
+> requiring orchestrators to manually emit telemetry.
+>
+> **Migration:** Existing pipeline commands still reference `telemetry-emit.sh` and the scripts
+> remain functional. New features should use `orca-record` instead. The recording database
+> (`.orca/recording.db`) replaces `.claude/telemetry/` per-project storage.
+>
+> **New commands:** `orca-record status`, `orca-record history`, `orca-record checkpoints`
 
 ---
 
@@ -318,4 +331,4 @@ Phase 2 (Intelligence) - Planned:
 
 ---
 
-*Part of OS 5.2*
+*Part of OS 6.0*

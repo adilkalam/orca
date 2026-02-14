@@ -77,7 +77,6 @@ basename $(git rev-parse --show-toplevel)
 - Check for package.json (Next.js, React, etc.)
 - Check for Podfile/Package.swift (iOS)
 - Check for app.json/expo (Expo)
-- Check for theme.liquid (Shopify)
 
 **Check for active tasks:**
 - Modified files

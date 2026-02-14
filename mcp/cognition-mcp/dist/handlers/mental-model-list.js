@@ -32,7 +32,7 @@ function parseFrontmatter(content) {
  */
 function loadMentalModels(tagFilter) {
     // Path to mental models directory
-    const modelsDir = path.join(process.cwd(), 'quick-reference', 'mental-models');
+    const modelsDir = path.join(process.cwd(), 'quick-reference', 'thinking-models');
     if (!fs.existsSync(modelsDir)) {
         return [];
     }

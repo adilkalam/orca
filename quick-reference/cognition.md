@@ -271,9 +271,9 @@ When you have a clear direction but need depth:
 
 ---
 
-## The 41 Operations
+## The 48 Operations
 
-Beyond the commands above, the cognition-mcp provides 41 structured reasoning operations: tree of thought, beam search, MCTS, pre-mortem, systems mapping, causal analysis, structured argumentation, and more.
+Beyond the commands above, the cognition-mcp provides 48 structured reasoning operations: tree of thought, beam search, MCTS, pre-mortem, systems mapping, causal analysis, structured argumentation, recording operations, and more.
 
 | Category | Examples | What they produce |
 |----------|----------|-------------------|
@@ -283,6 +283,7 @@ Beyond the commands above, the cognition-mcp provides 41 structured reasoning op
 | **Decision** | Decision frameworks, trade-off matrices, optimization | Weighted evaluation of options |
 | **Creative** | Creative thinking, analogical reasoning, simulation | Lateral approaches and what-if exploration |
 | **Meta** | Metacognitive observation, checkpoints, OODA loops | Awareness of the reasoning process itself |
+| **Recording** | Status, query, checkpoint, compare, quality, explain, rewind | Session recording and cognitive fusion with orca-record |
 
 You don't need to know what any of these are. `/deepthink` selects approaches based on the problem, runs them, saves the output. `/problem-solve` runs the convergent pipeline. `/challenge` stress-tests the result.
 
@@ -394,7 +395,7 @@ The handoff: Your cognition session produces insights and decisions. `/plan` tra
 
 ## See Also
 
-- `docs/concepts/cognition-mcp.md` - Full reference for all 41 operations
+- `docs/concepts/cognition-mcp.md` - Full reference for all 48 operations
 - `docs/concepts/llm-introspection-analysis.md` - Dual Process model and confabulation research
 - `commands/think.md` - Complete /think specification
 - `commands/problem-solve.md` - Full 8-step pipeline
@@ -402,4 +403,4 @@ The handoff: Your cognition session produces insights and decisions. `/plan` tra
 
 ---
 
-_Version: OS 5.2 | Cognition is thinking, made visible._
+_Version: OS 6.0 | Cognition is thinking, made visible._

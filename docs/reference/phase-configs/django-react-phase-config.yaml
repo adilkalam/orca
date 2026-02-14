@@ -1,10 +1,10 @@
-# Django-React Pipeline Phase Configuration - OS 5.2
+# Django-React Pipeline Phase Configuration - OS 6.0
 # Full-stack Django + React TypeScript Development Workflow
 
 pipeline:
   name: django-react
   description: Full-stack development pipeline with Django backend (DRF) and React TypeScript frontend
-  version: "5.2"
+  version: "6.0"
   stacks:
     backend:
       framework: Django 4.2+
@@ -15,7 +15,7 @@ pipeline:
       language: TypeScript
       package_manager: bun
 
-# Phase State Schema (OS 3.1)
+# Phase State Schema (OS 6.0)
 phase_state:
   # Top-level fields
   domain: django-react
@@ -25,14 +25,14 @@ phase_state:
   current_phase: string
   memory_summary: string | null           # Hits from memory-first search
 
-  # Mode Tracking (OS 3.1)
+  # Mode Tracking (OS 6.0)
   current_mode: planning | execution      # NEW: Explicit mode tracking
   mode_history:                           # NEW: Track mode transitions
     - mode: string
       timestamp: string
       reason: string
 
-  # Attempt Tracking (OS 3.1)
+  # Attempt Tracking (OS 6.0)
   current_phase_attempts: 0               # NEW: Track retry attempts
   max_attempts: 3                         # NEW: Hard limit per spec
 
@@ -47,7 +47,7 @@ phase_state:
     implementation_pass2: object | null   # Only if gate failed
     verification: object
 
-# Three-Tier Routing (OS 3.0)
+# Three-Tier Routing (OS 6.0)
 # Default now runs gates. -tweak skips gates. --complex forces full pipeline.
 complexity_tiers:
   default:
@@ -167,7 +167,7 @@ phases:
       - backend_files_modified
       - migrations_created
       - tests_added
-      - ra_events          # OS 3.0: RA tags added during implementation
+      - ra_events          # RA tags added during implementation
     constraints:
       scope: Edit-not-rewrite, minimal diffs
       quality: PEP8, type hints, DRF best practices
@@ -192,7 +192,7 @@ phases:
       - frontend_files_modified
       - components_created
       - tests_added
-      - ra_events          # OS 3.0: RA tags added during implementation
+      - ra_events          # RA tags added during implementation
     constraints:
       scope: Edit-not-rewrite, minimal diffs
       quality: TypeScript strict, React best practices
@@ -215,7 +215,7 @@ phases:
       - frontend_standards_score
       - violations
       - gate_decision
-      - ra_audit           # OS 3.0: RA tag scan results
+      - ra_audit           # RA tag scan results
     quality_gates:
       backend_standards:
         threshold: 90

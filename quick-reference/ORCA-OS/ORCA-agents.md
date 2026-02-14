@@ -1,20 +1,21 @@
-# OS 5.2 Agents Quick Reference
+# OS 6.0 Agents Quick Reference
 
-**Last Updated:** 2026-02-09
-**Version:** OS 5.2
+**Last Updated:** 2026-02-13
+**Version:** OS 6.0
 **Total Agents:** 112
 
 > **Scope Note:** This quick-reference covers all 112 agents across 11 domains. See `docs/reference/os-dependency-graph.yaml` for complete registry.
 
 ---
 
-## Agent Architecture (OS 5.2)
+## Agent Architecture (OS 6.0)
 
 **All Agents Use Opus 4.6:**
 - Grand architects (coordination & architecture)
 - Builders (implementation)
 - Specialists (domain-specific work)
 - Gates (verification & enforcement)
+- **Exception:** Verification agents may use Haiku for mechanical build/test checks
 
 **Role Boundaries:**
 - Orchestrators NEVER write code (coordinate via Task tool only)
@@ -38,7 +39,7 @@
 | Typography | 6 | `agents/typography/` |
 | SEO | 5 | `agents/seo/` |
 | Data | 4 | `agents/data/` |
-| **TOTAL** | **112** | |
+| **TOTAL** | **124** | |
 
 ---
 
@@ -267,21 +268,25 @@ Font library management for glyph editing, TTF export, font selection, and explo
 
 ---
 
-## OS-Dev Pipeline (6 Agents)
 
-### Orchestration
+
+## OS-Dev + Orca-Pipeline (11 Agents)
+
+Located in `agents/os-dev/`. Includes both OS-Dev (6) and Orca-Pipeline (5) agents.
+
+### OS-Dev Orchestration
 | Agent | Purpose |
 |-------|---------|
 | `os-dev-grand-architect` | OS architecture planning and coordination |
 | `os-dev-architect` | Implementation planning |
 | `os-dev-light-orchestrator` | Default/tweak mode coordination |
 
-### Implementation
+### OS-Dev Implementation
 | Agent | Purpose |
 |-------|---------|
 | `os-dev-builder` | Agent/command development |
 
-### Gates
+### OS-Dev Gates
 | Agent | Purpose |
 |-------|---------|
 | `os-dev-standards-enforcer` | OS standards validation |
@@ -420,4 +425,4 @@ $ORCA_OS_PATH/agents/
 ---
 
 _Source of truth: `docs/reference/os-dependency-graph.yaml`_
-_Last sync: 2026-02-09_
+_Last sync: 2026-02-13_

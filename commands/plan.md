@@ -1,5 +1,5 @@
 ---
-description: "Unified OS 5.2 planner -- requirements + RA blueprint (no implementation)"
+description: "Unified OS 6.0 planner -- requirements + RA blueprint (no implementation)"
 argument-hint: "<task> [--problem-solve] [--explore] [--complex] [--tweak] [--debug] [--visual] [--systems] [--model] [--creative] [--causal] [--decide] [--from-brief [path]]"
 allowed-tools:
   ["Task (model: opus only)", "Read", "Write", "Edit", "Glob", "Grep",
@@ -12,7 +12,7 @@ allowed-tools:
 Use this command to produce a **blueprint-quality requirements spec** for a task
 before running any domain lane (`/nextjs`, `/ios`, `/expo`, etc.).
 It combines:
-- The OS 5.2 **requirements pipeline** (requirements folder + docs),
+- The OS 6.0 **requirements pipeline** (requirements folder + docs),
 - **Response Awareness** tagging (RA tags as per `docs/concepts/response-awareness.md`),
 - **Cognition analysis** (optional) for deeper problem understanding,
 - ProjectContextServer for context-aware analysis.

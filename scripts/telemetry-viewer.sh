@@ -1,4 +1,8 @@
 #!/usr/bin/env bash
+# DEPRECATED: This telemetry system is superseded by orca-record (recording layer).
+# Use `orca-record history` and `orca-record status` for session inspection.
+# This script remains functional for viewing legacy telemetry traces.
+#
 # telemetry-viewer.sh - Human-readable trace viewer
 # Usage: telemetry-viewer.sh [trace-id]
 #        telemetry-viewer.sh --recent

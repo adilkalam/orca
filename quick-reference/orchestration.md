@@ -316,9 +316,7 @@ If you interrupt a session, orchestrators read this and resume from the appropri
 | Next.js | `/nextjs` | `nextjs-grand-architect` | `nextjs-light-orchestrator` |
 | Expo | `/expo` | `expo-grand-orchestrator` | `expo-light-orchestrator` |
 | Django+React | `/django-react` | `django-react-grand-architect` | `django-react-light-orchestrator` |
-| Shopify | `/shopify` | `shopify-grand-architect` | `shopify-light-orchestrator` |
 | Research | `/research` | - | - |
-| KG | `/kg-research` | - | - |
 | Typography | `/typography` | - | `typography-orchestrator` |
 | Audit | `/audit` | - | - |
 | OS-Dev | `/orca-os-dev` | `os-dev-grand-architect` | `os-dev-light-orchestrator` |
@@ -400,4 +398,4 @@ This is why the four systems (cognition, memory, orchestration, learning) work t
 
 ---
 
-_Version: OS 5.2 | Orchestration is execution, made reliable._
+_Version: OS 6.0 | Orchestration is execution, made reliable._

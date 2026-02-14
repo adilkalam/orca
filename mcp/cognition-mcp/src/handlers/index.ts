@@ -53,6 +53,14 @@ import { handleNotebookRunCell } from './notebook/run-cell.js';
 import { handleNotebookExport } from './notebook/export.js';
 // Stats handler
 import { handleReasoningStats } from './stats.js';
+// Recording handlers (Phase 4: Cognitive Fusion)
+import { handleRecordingStatus } from './recording/recording-status.js';
+import { handleRecordingQuery } from './recording/recording-query.js';
+import { handleRecordingCheckpoint } from './recording/recording-checkpoint.js';
+import { handleRecordingCompare } from './recording/recording-compare.js';
+import { handleRecordingQuality } from './recording/recording-quality.js';
+import { handleRecordingExplain } from './recording/recording-explain.js';
+import { handleRecordingRewind } from './recording/recording-rewind.js';
 
 type OperationHandler = (
   args: CognitionRequest,
@@ -109,6 +117,14 @@ const handlers: Record<OperationType, OperationHandler> = {
   session_import: handleSessionImport,
   // Stats
   reasoning_stats: handleReasoningStats,
+  // Recording operations (Phase 4: Cognitive Fusion)
+  recording_status: handleRecordingStatus,
+  recording_query: handleRecordingQuery,
+  recording_checkpoint: handleRecordingCheckpoint,
+  recording_compare: handleRecordingCompare,
+  recording_quality: handleRecordingQuality,
+  recording_explain: handleRecordingExplain,
+  recording_rewind: handleRecordingRewind,
 };
 
 /**
@@ -193,4 +209,12 @@ export {
   handleSessionImport,
   // Stats
   handleReasoningStats,
+  // Recording handlers (Phase 4: Cognitive Fusion)
+  handleRecordingStatus,
+  handleRecordingQuery,
+  handleRecordingCheckpoint,
+  handleRecordingCompare,
+  handleRecordingQuality,
+  handleRecordingExplain,
+  handleRecordingRewind,
 };

@@ -1,4 +1,4 @@
-# OS 5.2 Research Lane Quick Reference
+# OS 6.0 Research Lane Quick Reference
 
 **Lane:** Research
 **Domain:** `research`
@@ -207,4 +207,4 @@ export NODE_OPTIONS="--max-old-space-size=8192"
 
 ---
 
-_Version: OS 5.2_
+_Version: OS 6.0_

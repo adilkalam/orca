@@ -1,4 +1,4 @@
-# OS 5.2 OS-Dev Lane Readme
+# OS 6.0 OS-Dev Lane Readme
 
 **Lane:** OS / Tooling Configuration  
 **Domain:** `os-dev`  
@@ -6,7 +6,7 @@
 
 This readme explains the OS-Dev lane, which manages changes to:
 
-- OS 5.2 orchestration behavior
+- OS 6.0 orchestration behavior
 - Claude Code commands, agents, skills, MCPs, hooks
 - Memory integration behavior
 
@@ -20,7 +20,7 @@ application code:
 - Add/modify lanes and phase configs
 - Add or reconfigure MCPs
 - Add OS‑level skills or adjust their usage
-- Tweak hooks, scripts, and safety defaults for OS 5.2
+- Tweak hooks, scripts, and safety defaults for OS 6.0
 
 **Routing Modes:**
 
@@ -53,14 +53,22 @@ OS-Dev writes into `.claude/orchestration/phase_state.json` with
 
 ## 3. Agents & Standards
 
-Agents (6 total):
+Agents (11 total -- 6 OS-Dev + 5 Orca-Pipeline):
 
+OS-Dev:
 - `agents/os-dev/os-dev-grand-architect.md`
 - `agents/os-dev/os-dev-architect.md`
 - `agents/os-dev/os-dev-builder.md`
 - `agents/os-dev/os-dev-light-orchestrator.md`
 - `agents/os-dev/os-dev-standards-enforcer.md`
 - `agents/os-dev/os-dev-verification.md`
+
+Orca-Pipeline:
+- `agents/os-dev/orca-pipeline-orchestrator.md`
+- `agents/os-dev/orca-pipeline-researcher.md`
+- `agents/os-dev/orca-pipeline-architect.md`
+- `agents/os-dev/orca-pipeline-generator.md`
+- `agents/os-dev/orca-pipeline-validator.md`
 
 Standards:
 
@@ -80,6 +88,19 @@ Skill:
   `/project-code`) as other lanes, but focused on OS/Claude config.
 - RA tags and standards are exported via ProjectContext so future
   OS-Dev tasks can see past incidents and rules.
+
+## 5. Recording Layer (orca-record)
+
+The recording layer is managed as part of the OS-Dev lane:
+
+- Source: `mcp/orca-record/` (Bun TypeScript, compiled binary)
+- Deploy: `~/.claude/bin/orca-record`
+- Build: `cd mcp/orca-record && bun run build`
+- Database: `.orca/recording.db` (per-project SQLite, gitignored)
+
+See `quick-reference/ORCA-OS/ORCA-commands.md` for the full orca-record command reference.
+
+---
 
 For concrete usage, see:
 

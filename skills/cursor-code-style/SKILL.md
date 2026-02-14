@@ -1,3 +1,11 @@
+---
+name: cursor-code-style
+description: >
+  Rules for consistent, high-quality code style covering variable naming,
+  control flow, comments, function design, and error handling. Extracted
+  from Cursor Agent prompt patterns.
+---
+
 # Cursor Code Style
 
 Rules extracted from Cursor Agent prompt for consistent, high-quality code.

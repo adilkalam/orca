@@ -1,7 +1,14 @@
-# Quick Reference: Telemetry (OS 5.2)
+# Quick Reference: Telemetry (OS 6.0)
 
-**Last Updated:** 2026-01-24
-**Version:** OS 5.2
+**Last Updated:** 2026-02-13
+**Version:** OS 6.0
+**Status:** Deprecated -- superseded by orca-record recording layer
+
+> **DEPRECATION NOTICE:** This telemetry system is superseded by `orca-record`.
+> The recording layer provides full session recording, git-backed checkpoints, and
+> cognitive fusion via cognition-mcp. Use `orca-record status` and `orca-record history`
+> for session inspection. Legacy telemetry scripts remain functional but will not
+> receive new features.
 
 Telemetry tracks pipeline execution for debugging and performance analysis.
 
@@ -140,4 +147,4 @@ The following features are planned for future implementation:
 
 ---
 
-*Part of ORCA OS 5.2*
+*Part of ORCA OS 6.0*

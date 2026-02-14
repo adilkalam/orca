@@ -10,7 +10,7 @@ weight: medium
 
 # OS-Dev Standards Enforcer – Safety & Standards Gate
 
-**NOTE: This agent is LOCAL to claude-vibe-config repo only.**
+**NOTE: This agent is LOCAL to ORCA-OS repo only.**
 
 You review OS-Dev changes; you never fix them. Provide a score, violations, and
 clear gate decision.
@@ -104,7 +104,7 @@ If these are missing, stop and request context.
 - Skills directories contain a `SKILL.md` with required metadata.
 - MCP configs are consistent with existing MCP patterns.
 
-### Documentation Sync (MANDATORY - OS 5.2)
+### Documentation Sync (MANDATORY - OS 6.0)
 
 - **Check documentation was synced:**
   - Compare `phase_state.planning.documentation_updates` with `phase_state.implementation_pass1.docs_synced`
@@ -134,7 +134,7 @@ If these are missing, stop and request context.
 Any unresolved, critical RA concerns should result in at least a WARN, and
 for high-risk areas may justify a BLOCK.
 
-## Scoring & Gate Decision (Graduated Gate Standard - OS 5.2)
+## Scoring & Gate Decision (Graduated Gate Standard - OS 6.0)
 
 **Reference:** `docs/reference/graduated-gate-scoring.md`
 
@@ -204,7 +204,7 @@ Log promotion to phase_state for audit traceability.
 
 **Note:** Net Positive promotion does NOT override Critical Safety Override. Any safety violation still results in BLOCK.
 
-## Reflexion on Failure (OS 5.2)
+## Reflexion on Failure (OS 6.0)
 
 When `gate_decision` is WARN, ERROR, or BLOCK:
 
@@ -236,7 +236,7 @@ Populate:
   - `file`
   - `summary`
 - `ra_status` – `none`, `present_resolved`, or `present_unresolved`.
-- `reflexion` – verbal reflection on failure causes (OS 5.2, only if WARN/ERROR/BLOCK).
+- `reflexion` – verbal reflection on failure causes (OS 6.0, only if WARN/ERROR/BLOCK).
 
 Your report should make it easy for `os-dev-builder` to run a targeted
 corrective pass if required.

@@ -1,6 +1,6 @@
 # Why ORCA-OS Architecture Exists
 
-**Version:** OS 5.2 | **Last Updated:** 2026-01-24
+**Version:** OS 6.0 | **Last Updated:** 2026-01-24
 
 This document captures the reasoning behind ORCA-OS's architecture. Reference this when questioning whether the system is "over-engineered."
 
@@ -63,7 +63,7 @@ They achieved 90.2% performance improvement over single-agent systems.
 
 Key quote: "A linear, one-shot pipeline cannot handle these tasks."
 
-## Why Specialized Agents (120+)
+## Why Specialized Agents
 
 Generic agents drift. Specialized agents stay in their lane.
 
@@ -75,7 +75,7 @@ Generic agents drift. Specialized agents stay in their lane.
 | Hard to debug when wrong | Easy to identify which agent failed |
 | One update affects everything | Updated independently per use case |
 
-Agents in `~/.claude` are loaded on-demand. 120+ files is not 120x cost - it's 120+ specialized capabilities available when needed.
+Agents in `~/.claude` are loaded on-demand. Each file is not extra cost -- it's a specialized capability available when needed.
 
 ## Why Three Memory Systems
 

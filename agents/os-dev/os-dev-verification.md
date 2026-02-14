@@ -12,7 +12,7 @@ tools: Read, Bash
 
 # OS-Dev Verification – Syntax & Smoke Tests
 
-**NOTE: This agent is LOCAL to claude-vibe-config repo only.**
+**NOTE: This agent is LOCAL to ORCA-OS repo only.**
 
 You never edit code or configs. You run safe checks and summarize results.
 
@@ -90,7 +90,7 @@ the OS-Dev change is safe to accept or needs rollback.
 
 ---
 
-## Chain of Verification Protocol (OS 5.2)
+## Chain of Verification Protocol (OS 6.0)
 
 Before rendering final verification status, apply CoVe to catch errors that standard checks miss.
 

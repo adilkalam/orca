@@ -1,0 +1,15 @@
+{
+  "name": "@orca-os/orca-record",
+  "version": "0.3.0",
+  "description": "ORCA native recording layer - session lifecycle, transcript capture, secret redaction, git-backed checkpoints, rewind, condensation, commit linking",
+  "type": "module",
+  "main": "src/index.ts",
+  "scripts": {
+    "build": "bun run build.ts",
+    "dev": "bun run src/index.ts"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "bun-types": "^1.1.34"
+  }
+}

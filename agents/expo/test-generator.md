@@ -3,7 +3,7 @@ name: test-generator
 description: Generates comprehensive tests for React Native/Expo components, hooks, and utilities. Creates unit tests with @testing-library/react-native, integration tests, snapshot tests, and edge case coverage automatically.
 tools: Read, Grep, Write, Edit
 
-# OS 5.2 Constraint Framework
+# OS 6.0 Constraint Framework
 required_context:
   - query_context: "MANDATORY - Must call ProjectContextServer.query_context() (domain: expo) before generating tests"
   - context_bundle: "Use ContextBundle.relevantFiles to understand component structure and dependencies"

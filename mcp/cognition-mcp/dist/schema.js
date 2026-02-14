@@ -784,6 +784,34 @@ export const ReasoningStatsContentSchema = z.object({
     }).optional(),
 });
 // ============================================================================
+// RECORDING OPERATIONS (Phase 4: Cognitive Fusion)
+// ============================================================================
+export const RecordingStatusContentSchema = z.object({}).optional();
+export const RecordingQueryContentSchema = z.object({
+    date_from: z.string().optional(),
+    date_to: z.string().optional(),
+    files: z.array(z.string()).optional(),
+    min_checkpoints: z.number().optional(),
+    state: z.enum(['IDLE', 'ACTIVE', 'ACTIVE_COMMITTED', 'ENDED']).optional(),
+    limit: z.number().optional().default(20),
+});
+export const RecordingCheckpointContentSchema = z.object({
+    checkpoint_id: z.string(),
+});
+export const RecordingCompareContentSchema = z.object({
+    checkpoint_id_a: z.string(),
+    checkpoint_id_b: z.string(),
+});
+export const RecordingQualityContentSchema = z.object({
+    session_id: z.string().optional(),
+});
+export const RecordingExplainContentSchema = z.object({
+    session_id: z.string(),
+});
+export const RecordingRewindContentSchema = z.object({
+    checkpoint_id: z.string(),
+});
+// ============================================================================
 // MAIN INPUT SCHEMA
 // ============================================================================
 export const CognitionInputSchema = z.object({
@@ -839,6 +867,14 @@ export const CognitionInputSchema = z.object({
         'session_import',
         // Stats
         'reasoning_stats',
+        // Recording operations (Phase 4: Cognitive Fusion)
+        'recording_status',
+        'recording_query',
+        'recording_checkpoint',
+        'recording_compare',
+        'recording_quality',
+        'recording_explain',
+        'recording_rewind',
     ]),
     // Content - Claude provides ALL of this
     // Using loose object to allow any content structure
@@ -914,6 +950,14 @@ export function validateOperationContent(operation, content) {
         audit: AuditContentSchema,
         // Stats
         reasoning_stats: ReasoningStatsContentSchema,
+        // Recording operations (Phase 4: Cognitive Fusion)
+        recording_query: RecordingQueryContentSchema,
+        recording_checkpoint: RecordingCheckpointContentSchema,
+        recording_compare: RecordingCompareContentSchema,
+        recording_quality: RecordingQualityContentSchema,
+        recording_explain: RecordingExplainContentSchema,
+        recording_rewind: RecordingRewindContentSchema,
+        // recording_status has no required content fields (handled without schema)
     };
     const schema = schemas[operation];
     if (!schema) {

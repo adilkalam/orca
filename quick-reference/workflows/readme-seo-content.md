@@ -1,4 +1,4 @@
-# OS 5.2 SEO Lane Quick Reference
+# OS 6.0 SEO Lane Quick Reference
 
 **Lane:** SEO Content
 **Domain:** `seo`
@@ -15,7 +15,7 @@ Use for:
 - Content optimization
 - Quality review of existing content
 
-**Not for:** Technical SEO (site speed, schema markup) - use Next.js or Shopify lanes.
+**Not for:** Technical SEO (site speed, schema markup) - use the appropriate development lane.
 
 ---
 
@@ -114,4 +114,4 @@ Use for:
 
 ---
 
-_Version: OS 5.2_
+_Version: OS 6.0_

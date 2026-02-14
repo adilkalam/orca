@@ -1,3 +1,11 @@
+---
+name: debugging-first
+description: >
+  Enforces an evidence-first approach to bug investigation. Requires agents
+  to gather debugging evidence (console logs, network requests, application
+  state) before examining or modifying source code.
+---
+
 # Debugging First
 
 RULE: Use debugging tools BEFORE examining or modifying code when investigating issues.

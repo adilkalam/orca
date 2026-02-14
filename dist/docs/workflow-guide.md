@@ -60,6 +60,11 @@ Run the appropriate domain command:
 | Django + React | `/django-react <task>` |
 | Research | `/research <question>` |
 | SEO Content | `/seo <topic>` |
+| Due Diligence Audit | `/audit <scope>` |
+| Typography | `/typography <task>` |
+| OS Development | `/orca-os-dev <task>` |
+| Pipeline Creation | `/orca-pipeline <domain>` |
+| General Orchestrator | `/orca <task>` |
 
 ### Complexity Flags
 
@@ -308,17 +313,65 @@ Use complex mode for full architect involvement:
 
 ## Command Quick Reference
 
+### Domain Orchestrators
+
 | Command | Purpose |
 |---------|---------|
-| `/project-memory` | Manage persistent memory |
-| `/think` | Structured reasoning (38 operations) |
-| `/challenge` | Adversarial analysis |
-| `/plan` | Create implementation plan |
-| `/ios` | iOS development |
-| `/expo` | React Native/Expo |
-| `/nextjs` | Next.js frontend |
-| `/django-react` | Django + React fullstack |
-| `/research` | Deep research |
+| `/ios` | iOS (Swift/SwiftUI) development |
+| `/nextjs` | Next.js frontend development |
+| `/expo` | Expo/React Native development |
+| `/django-react` | Django + React full-stack development |
+| `/research` | Deep, cited research |
 | `/seo` | SEO content pipeline |
-| `/reflect` | Learn from session |
-| `/audit` | Review completed work |
+| `/audit` | Multi-agent due diligence auditing |
+| `/typography` | Typography pipeline (glyph editing, TTF export, font tools) |
+| `/orca-os-dev` | OS/Claude Code configuration development |
+| `/orca-pipeline` | Meta-pipeline for creating new domain pipelines |
+| `/orca` | General orchestrator (coordinates pipelines, never writes code) |
+
+### Thinking and Analysis
+
+| Command | Purpose |
+|---------|---------|
+| `/think` | Structured reasoning with cognition-mcp (48 operations) |
+| `/deepthink` | Depth-first exploration with constraint chain and self-check |
+| `/ultra-think` | Multi-dimensional deep analysis and problem solving |
+| `/contemplate` | Reasoning strategist (recommends which thinking tools to use) |
+| `/problem-solve` | Convergent 8-step decision pipeline |
+| `/challenge` | Adversarial analysis (attack a proposal to find weaknesses) |
+
+### Project Setup
+
+| Command | Purpose |
+|---------|---------|
+| `/plan` | Unified planner (requirements + RA blueprint, no implementation) |
+| `/project-setup` | Initialize or update CLAUDE.md with project conventions |
+| `/design-dna` | Initialize or update design-dna for project design system |
+
+### Memory and Context
+
+| Command | Purpose |
+|---------|---------|
+| `/memory-search` | Unified search across all memory systems |
+| `/project-memory` | Manage project memory (Workshop, code-index.db) |
+| `/project-code` | Manage code context (code-index.db: status, sync, search) |
+| `/session-save` | Save current session context for automatic resumption |
+| `/session-resume` | Manually reload session context |
+
+### Design
+
+| Command | Purpose |
+|---------|---------|
+| `/design` | Creative design thinking (Photoshop, Illustrator, OpenSCAD) |
+| `/design-review` | In-depth UI/UX visual audit with Puppeteer MCP |
+| `/illustrate` | Measured Adobe execution with mandatory self-review |
+| `/clone-website` | Clone a website's UI into a project using web analysis |
+
+### Utility
+
+| Command | Purpose |
+|---------|---------|
+| `/enhance` | Transform vague requests into well-structured prompts |
+| `/reflect` | Self-improvement (learn from interactions) |
+| `/self-improve` | Run the Improvement Bus (route events to agents and gates) |
+| `/root-cause` | Root cause analysis (identify why something is failing) |

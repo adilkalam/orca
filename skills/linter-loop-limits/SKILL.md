@@ -1,3 +1,11 @@
+---
+name: linter-loop-limits
+description: >
+  Enforces a 3-strike rule for linter error fixes. Prevents agents from
+  entering infinite loops on persistent lint errors by requiring escalation
+  to the user after three failed attempts.
+---
+
 # Linter Loop Limits
 
 RULE: Do NOT loop more than 3 times fixing linter errors on the same file.

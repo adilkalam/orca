@@ -1,8 +1,8 @@
 # Memory Systems
 
-**Version:** OS 5.2 | **Last Updated:** 2026-01-24
+**Version:** OS 6.0 | **Last Updated:** 2026-02-13
 
-OS 5.2 uses multiple memory systems to maintain context across sessions and provide relevant information to agents.
+OS 6.0 uses multiple memory systems to maintain context across sessions and provide relevant information to agents.
 
 ## Memory Architecture
 
@@ -112,7 +112,7 @@ The ProjectContext MCP uses a hybrid approach for Workshop integration:
 
 ## Memory-First Pattern
 
-OS 5.2 checks fast, local memory before expensive queries:
+OS 6.0 checks fast, local memory before expensive queries:
 
 ```bash
 # Step 1: Check Workshop for relevant decisions/gotchas
@@ -195,12 +195,57 @@ mcp__project-context__save_standard({
 })
 ```
 
+## Memory Layer 5: Recording Database (.orca/recording.db)
+
+**What:** Per-project SQLite database that records full session activity, git-backed checkpoints, and cognitive state.
+
+**Overview:**
+The recording layer (added in OS 6.0) provides session-level persistence that goes beyond Workshop's decision/gotcha entries. It captures the full timeline of what happened in each session: prompts, tool calls, file changes, and checkpoints that can be rewound.
+
+**Storage:** `.orca/recording.db` (per-project, gitignored)
+
+**Key Tables:**
+- `sessions` -- Session metadata (start/end, branch, status)
+- `checkpoints` -- Git-backed snapshots with file diffs and cognitive links
+- `events` -- Tool calls, prompts, and state transitions
+- `transcripts` -- Session transcript segments
+
+**Git Integration:**
+- Shadow branches (`orca/<hash>-<wt>`) hold per-session checkpoint commits
+- Orphan branch (`orca/checkpoints/v1`) stores condensed permanent checkpoints
+- `ORCA-Checkpoint` commit trailers enable bidirectional linking
+
+**Cognitive Fusion:**
+Checkpoints link code state to cognition-mcp reasoning chains via 7 recording operations: `recording_status`, `recording_query`, `recording_checkpoint`, `recording_compare`, `recording_quality`, `recording_explain`, `recording_rewind`.
+
+**CLI:** `orca-record` (Bun-compiled binary at `~/.claude/bin/orca-record`) with 16 commands.
+
+**Supersedes:** Telemetry system (`.claude/telemetry/`) which is now deprecated.
+
 ## Session Hooks
 
 Memory is automatically managed via hooks:
 
-- **SessionStart**: Loads active task context (if exists), then Workshop summary
-- **SessionEnd**: Captures session summary to Workshop
+### Core Hooks
+
+| Hook | Trigger | Purpose |
+|------|---------|---------|
+| `session-start.sh` | SessionStart | Loads context, Workshop summary, active task |
+| `session-end.sh` | SessionEnd | Captures session summary to Workshop |
+| `post-tool-use.sh` | PostToolUse | ORCA-Mem truncation, auto-deploy |
+| `file-location-guard.sh` | PostToolUse | Enforces artifacts in `.claude/` |
+| `gate-enforcement.sh` | PreToolUse | Enforces quality gate requirements |
+| `auto-deploy.sh` | PostToolUse | Deploys ORCA-OS changes to `~/.claude/` |
+
+### Recording Layer Hooks (orca-record)
+
+| Hook | Trigger | Purpose |
+|------|---------|---------|
+| `orca-record prompt-submit` | UserPromptSubmit | Git status snapshot, start/continue session (async) |
+| `orca-record stop` | Stop | Transcript capture, file diff, checkpoint creation |
+| `orca-record pre-task` | PreToolUse[Task] | Pre-task file state capture |
+| `orca-record post-task` | PostToolUse[Task] | Subagent checkpoint |
+| `orca-record post-todo` | PostToolUse[TodoWrite] | Incremental checkpoint |
 
 ### Active Task Persistence
 

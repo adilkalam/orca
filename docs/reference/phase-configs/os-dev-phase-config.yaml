@@ -1,8 +1,8 @@
 /opt/homebrew/Library/Homebrew/cmd/shellenv.sh: line 18: /bin/ps: Operation not permitted
-# OS-Dev Pipeline Phase Configuration - OS 5.2
+# OS-Dev Pipeline Phase Configuration - OS 6.0
 # OS / Claude Code / Tooling Configuration Workflow
 #
-# NOTE: This pipeline is LOCAL to claude-vibe-config repo only.
+# NOTE: This pipeline is LOCAL to ORCA-OS repo only.
 # It is NOT deployed to ~/.claude global config.
 #
 # SACRED DEPLOYMENT LAWS (NEVER VIOLATE):
@@ -23,8 +23,8 @@
 
 pipeline:
   name: os-dev
-  description: OS 5.2 / Claude Code configuration and orchestration pipeline
-  version: "5.2"
+  description: OS 6.0 / Claude Code configuration and orchestration pipeline
+  version: "6.0"
 
 context:
   provider: ProjectContextServer
@@ -178,9 +178,9 @@ phase_state:
     - requirement_id
     - requirements_spec_path
     - complexity_tier
-    - current_mode               # NEW OS 3.1: planning | execution
-    - mode_history               # NEW OS 3.1: Track mode transitions
-    - current_phase_attempts     # NEW OS 3.1: Track retry attempts (max 3)
+    - current_mode               # planning | execution
+    - mode_history               # Track mode transitions
+    - current_phase_attempts     # Track retry attempts (max 3)
 
   phase_entries:
     intake:

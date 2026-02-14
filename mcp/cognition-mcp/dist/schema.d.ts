@@ -3747,8 +3747,69 @@ export declare const ReasoningStatsContentSchema: z.ZodObject<{
         to?: string | undefined;
     } | undefined;
 }>;
+export declare const RecordingStatusContentSchema: z.ZodOptional<z.ZodObject<{}, "strip", z.ZodTypeAny, {}, {}>>;
+export declare const RecordingQueryContentSchema: z.ZodObject<{
+    date_from: z.ZodOptional<z.ZodString>;
+    date_to: z.ZodOptional<z.ZodString>;
+    files: z.ZodOptional<z.ZodArray<z.ZodString, "many">>;
+    min_checkpoints: z.ZodOptional<z.ZodNumber>;
+    state: z.ZodOptional<z.ZodEnum<["IDLE", "ACTIVE", "ACTIVE_COMMITTED", "ENDED"]>>;
+    limit: z.ZodDefault<z.ZodOptional<z.ZodNumber>>;
+}, "strip", z.ZodTypeAny, {
+    limit: number;
+    state?: "IDLE" | "ACTIVE" | "ACTIVE_COMMITTED" | "ENDED" | undefined;
+    date_from?: string | undefined;
+    date_to?: string | undefined;
+    files?: string[] | undefined;
+    min_checkpoints?: number | undefined;
+}, {
+    state?: "IDLE" | "ACTIVE" | "ACTIVE_COMMITTED" | "ENDED" | undefined;
+    date_from?: string | undefined;
+    date_to?: string | undefined;
+    files?: string[] | undefined;
+    min_checkpoints?: number | undefined;
+    limit?: number | undefined;
+}>;
+export declare const RecordingCheckpointContentSchema: z.ZodObject<{
+    checkpoint_id: z.ZodString;
+}, "strip", z.ZodTypeAny, {
+    checkpoint_id: string;
+}, {
+    checkpoint_id: string;
+}>;
+export declare const RecordingCompareContentSchema: z.ZodObject<{
+    checkpoint_id_a: z.ZodString;
+    checkpoint_id_b: z.ZodString;
+}, "strip", z.ZodTypeAny, {
+    checkpoint_id_a: string;
+    checkpoint_id_b: string;
+}, {
+    checkpoint_id_a: string;
+    checkpoint_id_b: string;
+}>;
+export declare const RecordingQualityContentSchema: z.ZodObject<{
+    session_id: z.ZodOptional<z.ZodString>;
+}, "strip", z.ZodTypeAny, {
+    session_id?: string | undefined;
+}, {
+    session_id?: string | undefined;
+}>;
+export declare const RecordingExplainContentSchema: z.ZodObject<{
+    session_id: z.ZodString;
+}, "strip", z.ZodTypeAny, {
+    session_id: string;
+}, {
+    session_id: string;
+}>;
+export declare const RecordingRewindContentSchema: z.ZodObject<{
+    checkpoint_id: z.ZodString;
+}, "strip", z.ZodTypeAny, {
+    checkpoint_id: string;
+}, {
+    checkpoint_id: string;
+}>;
 export declare const CognitionInputSchema: z.ZodObject<{
-    operation: z.ZodEnum<["thought", "mental_model", "list_mental_models", "debug", "decide", "meta", "systems", "creative_thinking", "visual_reasoning", "checkpoint", "scientific_method", "collaborative_reasoning", "socratic_method", "structured_argumentation", "tree_of_thought", "beam_search", "mcts", "graph_of_thought", "orchestration_suggest", "research", "analogical_reasoning", "causal_analysis", "statistical_reasoning", "simulation", "optimization", "ethical_analysis", "visual_dashboard", "pdr_reasoning", "custom_framework", "code_execution", "ooda_loop", "ulysses_protocol", "notebook_create", "notebook_add_cell", "notebook_run_cell", "notebook_export", "audit", "session_info", "session_export", "session_import", "reasoning_stats"]>;
+    operation: z.ZodEnum<["thought", "mental_model", "list_mental_models", "debug", "decide", "meta", "systems", "creative_thinking", "visual_reasoning", "checkpoint", "scientific_method", "collaborative_reasoning", "socratic_method", "structured_argumentation", "tree_of_thought", "beam_search", "mcts", "graph_of_thought", "orchestration_suggest", "research", "analogical_reasoning", "causal_analysis", "statistical_reasoning", "simulation", "optimization", "ethical_analysis", "visual_dashboard", "pdr_reasoning", "custom_framework", "code_execution", "ooda_loop", "ulysses_protocol", "notebook_create", "notebook_add_cell", "notebook_run_cell", "notebook_export", "audit", "session_info", "session_export", "session_import", "reasoning_stats", "recording_status", "recording_query", "recording_checkpoint", "recording_compare", "recording_quality", "recording_explain", "recording_rewind"]>;
     content: z.ZodOptional<z.ZodRecord<z.ZodString, z.ZodUnknown>>;
     quality: z.ZodOptional<z.ZodObject<{
         confidence: z.ZodOptional<z.ZodNumber>;
@@ -3773,7 +3834,7 @@ export declare const CognitionInputSchema: z.ZodObject<{
     verbose: z.ZodOptional<z.ZodBoolean>;
     projectPath: z.ZodOptional<z.ZodString>;
 }, "strip", z.ZodTypeAny, {
-    operation: "thought" | "optimization" | "decide" | "mental_model" | "list_mental_models" | "debug" | "meta" | "systems" | "creative_thinking" | "visual_reasoning" | "checkpoint" | "scientific_method" | "collaborative_reasoning" | "socratic_method" | "structured_argumentation" | "tree_of_thought" | "beam_search" | "mcts" | "graph_of_thought" | "orchestration_suggest" | "research" | "analogical_reasoning" | "causal_analysis" | "statistical_reasoning" | "simulation" | "ethical_analysis" | "visual_dashboard" | "pdr_reasoning" | "custom_framework" | "code_execution" | "ooda_loop" | "ulysses_protocol" | "notebook_create" | "notebook_add_cell" | "notebook_run_cell" | "notebook_export" | "audit" | "session_info" | "session_export" | "session_import" | "reasoning_stats";
+    operation: "thought" | "optimization" | "decide" | "mental_model" | "list_mental_models" | "debug" | "meta" | "systems" | "creative_thinking" | "visual_reasoning" | "checkpoint" | "scientific_method" | "collaborative_reasoning" | "socratic_method" | "structured_argumentation" | "tree_of_thought" | "beam_search" | "mcts" | "graph_of_thought" | "orchestration_suggest" | "research" | "analogical_reasoning" | "causal_analysis" | "statistical_reasoning" | "simulation" | "ethical_analysis" | "visual_dashboard" | "pdr_reasoning" | "custom_framework" | "code_execution" | "ooda_loop" | "ulysses_protocol" | "notebook_create" | "notebook_add_cell" | "notebook_run_cell" | "notebook_export" | "audit" | "session_info" | "session_export" | "session_import" | "reasoning_stats" | "recording_status" | "recording_query" | "recording_checkpoint" | "recording_compare" | "recording_quality" | "recording_explain" | "recording_rewind";
     data?: any;
     content?: Record<string, unknown> | undefined;
     quality?: {
@@ -3788,7 +3849,7 @@ export declare const CognitionInputSchema: z.ZodObject<{
     verbose?: boolean | undefined;
     projectPath?: string | undefined;
 }, {
-    operation: "thought" | "optimization" | "decide" | "mental_model" | "list_mental_models" | "debug" | "meta" | "systems" | "creative_thinking" | "visual_reasoning" | "checkpoint" | "scientific_method" | "collaborative_reasoning" | "socratic_method" | "structured_argumentation" | "tree_of_thought" | "beam_search" | "mcts" | "graph_of_thought" | "orchestration_suggest" | "research" | "analogical_reasoning" | "causal_analysis" | "statistical_reasoning" | "simulation" | "ethical_analysis" | "visual_dashboard" | "pdr_reasoning" | "custom_framework" | "code_execution" | "ooda_loop" | "ulysses_protocol" | "notebook_create" | "notebook_add_cell" | "notebook_run_cell" | "notebook_export" | "audit" | "session_info" | "session_export" | "session_import" | "reasoning_stats";
+    operation: "thought" | "optimization" | "decide" | "mental_model" | "list_mental_models" | "debug" | "meta" | "systems" | "creative_thinking" | "visual_reasoning" | "checkpoint" | "scientific_method" | "collaborative_reasoning" | "socratic_method" | "structured_argumentation" | "tree_of_thought" | "beam_search" | "mcts" | "graph_of_thought" | "orchestration_suggest" | "research" | "analogical_reasoning" | "causal_analysis" | "statistical_reasoning" | "simulation" | "ethical_analysis" | "visual_dashboard" | "pdr_reasoning" | "custom_framework" | "code_execution" | "ooda_loop" | "ulysses_protocol" | "notebook_create" | "notebook_add_cell" | "notebook_run_cell" | "notebook_export" | "audit" | "session_info" | "session_export" | "session_import" | "reasoning_stats" | "recording_status" | "recording_query" | "recording_checkpoint" | "recording_compare" | "recording_quality" | "recording_explain" | "recording_rewind";
     data?: any;
     content?: Record<string, unknown> | undefined;
     quality?: {

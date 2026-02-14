@@ -1,4 +1,4 @@
-# ORCA-OS v5.2 Systems Analysis
+# ORCA-OS v6.0 Systems Analysis
 
 **Generated:** 2026-02-07
 **Source of Truth:** `docs/reference/os-dependency-graph.yaml`
@@ -11,19 +11,19 @@ ORCA-OS is a Claude Code configuration system that deploys to `~/.claude`. It co
 
 | Layer | Count | Purpose |
 |-------|-------|---------|
-| Commands | 33 | User entry points |
-| Agents | 112 | Workers across 11 domains |
+| Commands | 35 | User entry points |
+| Agents | 124 | Workers across 11 domains |
 | Pipelines | 14 | Workflow documentation |
 | Phase Configs | 12 | Machine-readable definitions |
 | MCPs | 10 | Tool integrations (4 global + 6 project-scoped) |
-| Skills | 34 | Knowledge packages (36 dirs, 2 empty) |
+| Skills | 36 | Knowledge packages |
 | Hooks | 8 | Lifecycle scripts |
 | Memory | 3-layer | Persistent context |
-| Cognition | 41 ops | Structured reasoning and substrate observation |
+| Cognition | 48 ops | Structured reasoning, substrate observation, and recording |
 
 ---
 
-## Layer 1: Commands (33)
+## Layer 1: Commands (35)
 
 User entry points invoked via `/command`.
 
@@ -38,7 +38,7 @@ User entry points invoked via `/command`.
 
 ### Three-Tier Routing
 
-All lane commands support three execution modes. This is the central routing mechanism of OS 5.2.
+All lane commands support three execution modes. This is the central routing mechanism of OS 6.0.
 
 | Mode | Flag | Path | Gates | Use Case |
 |------|------|------|-------|----------|
@@ -52,7 +52,7 @@ Complex mode requires a requirements spec (created by `/plan`). If one does not 
 
 ---
 
-## Layer 2: Agents (112)
+## Layer 2: Agents (124)
 
 Workers organized by domain with strict role boundaries.
 
@@ -72,7 +72,7 @@ Workers organized by domain with strict role boundaries.
 | Typography | 6 | `agents/typography/` | typography-orchestrator, glyph-editor, ttf-exporter, path-guardian |
 | SEO | 5 | `agents/seo/` | seo-research-specialist, seo-brief-strategist, seo-draft-writer, seo-optimizer |
 | Data | 4 | `agents/data/` | data-researcher, python-analytics-expert, competitive-analyst |
-| **TOTAL** | **112** | **12 dirs** | |
+| **TOTAL** | **124** | **13+ dirs** | |
 
 Note: OS-Dev (6) and Orca-Pipeline (5) share the `agents/os-dev/` directory, totaling 11 agents there.
 
@@ -148,7 +148,7 @@ One phase config per lane: ios, nextjs, django-react, expo, research, seo, data,
 ```yaml
 pipeline:
   name: "{lane}-pipeline"
-  version: "5.2"
+  version: "6.0"
 
 complexity_tiers:
   default:
@@ -195,7 +195,7 @@ Always available in `~/.claude.json`:
 
 | MCP | Purpose | Key Tools |
 |-----|---------|-----------|
-| cognition-mcp | Sequential thinking storage with 41 operations | `cognition` (accept-store-echo pattern) |
+| cognition-mcp | Sequential thinking storage with 48 operations (incl. 7 recording ops) | `cognition` (accept-store-echo pattern) |
 | project-context | Project context + ORCA-Mem recall | `query_context`, `save_decision`, `save_standard`, `save_task_history`, `index_project`, `reanalyze_project`, `recall` (7 tools) |
 | sequential-thinking | Extended multi-step reasoning | `sequentialthinking` |
 | context7 | Library documentation (disabled by default) | `resolve-library-id`, `get-library-docs` |
@@ -228,7 +228,7 @@ Additionally, openscad-mcp exists as an experimental integration with no dedicat
 
 ---
 
-## Layer 6: Skills (34)
+## Layer 6: Skills (36)
 
 Knowledge packages that agents reference. 36 directories exist in `skills/`; 2 are empty (`ios-simulator-skill`, `react-patterns`).
 
@@ -278,7 +278,7 @@ Lifecycle scripts in `hooks/`.
 | session-start.sh | SessionStart | Load context, Workshop summary, telemetry init |
 | session-end.sh | SessionEnd | Extract learnings from JSONL transcripts via Ollama |
 | auto-deploy.sh | PostToolUse (Edit/Write) | Sync ORCA-OS to ~/.claude |
-| file-location-guard.sh | PreToolUse (*) | Enforce .claude/ for artifacts |
+| file-location-guard.sh | PostToolUse (*) | Enforce .claude/ for artifacts |
 | gate-enforcement.sh | PreToolUse (Write/Edit) | Enforce quality thresholds |
 | alignment-gate-validator.sh | Alignment checks | Validate alignment gates |
 | post-tool-use.sh | PostToolUse | ORCA-Mem: truncate large outputs, archive originals |
@@ -314,7 +314,7 @@ Three-layer memory system feeding into ProjectContext MCP.
 | code-index.db | .claude/memory/code-index.db | `python3 ~/.claude/scripts/code-index.py <cmd>` |
 | project-meta | MCP cache | ProjectContext MCP auto-detection |
 
-### ProjectContext Implementation (OS 5.2)
+### ProjectContext Implementation (OS 6.0)
 
 The MCP uses a hybrid approach:
 - **Reads:** Direct SQLite queries via `better-sqlite3` (reliable, no CLI parsing)
@@ -357,7 +357,7 @@ MCP returns:   { thought: "X", ... }  <- UNCHANGED
 
 Claude generates the reasoning. The MCP tracks it with session continuity.
 
-### Operations (41 total)
+### Operations (48 total)
 
 | Category | Count | Operations |
 |----------|-------|------------|
@@ -371,6 +371,7 @@ Claude generates the reasoning. The MCP tracks it with session continuity.
 | Audit | 1 | audit |
 | Session | 3 | session_info, session_export, session_import |
 | Stats | 1 | reasoning_stats |
+| Recording | 7 | recording_status, recording_query, recording_checkpoint, recording_compare, recording_quality, recording_explain, recording_rewind |
 
 ### Substrate Observation
 
@@ -410,7 +411,7 @@ Templates live at `quick-reference/thinking-models/*.md`.
 
 ## Verification System
 
-OS 5.2 uses graduated gate scoring, not binary pass/fail.
+OS 6.0 uses graduated gate scoring, not binary pass/fail.
 
 ### Graduated Gate Labels
 
@@ -485,7 +486,7 @@ Gate agents check RA status from implementation phases and factor unresolved ass
 
 ## Self-Improvement System
 
-OS 5.2 provides learning at three levels, unified by the Improvement Bus.
+OS 6.0 provides learning at three levels, unified by the Improvement Bus.
 
 ### Three Levels
 
@@ -693,4 +694,4 @@ Cognitive analysis persists as files on disk. When the context window compacts, 
 ---
 
 _Source of truth: `docs/reference/os-dependency-graph.yaml`_
-_Version: OS 5.2 | Generated: 2026-02-07_
+_Version: OS 6.0 | Generated: 2026-02-07_
