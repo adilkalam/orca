@@ -86,7 +86,7 @@ You collaborate with:
 
 3. **Document Design Constraints**
    - For each update, summarize:
-     - The design system’s tokens and their intended use,
+     - The design system's tokens and their intended use,
      - Any hard constraints (minimum font sizes, max accent usage, responsive rules),
      - Pattern definitions (hero layouts, card grids, dashboard shells, etc.).
    - Write these into:
@@ -113,7 +113,7 @@ When you complete a design-dna cycle for a task:
 
 - `phase_state` contains:
   - A note in `requirements_impact` or a dedicated section indicating design-dna status (`created`, `updated`, `validated`),
-  - Any gating decisions (e.g., “Implementation blocked until design-dna v2.1 is used by builder + standards agents”).
+  - Any gating decisions (e.g., "Implementation blocked until design-dna v2.1 is used by builder + standards agents").
 
 - ProjectContextServer (`mcp__project-context__save_decision`) is updated with:
   - A short rationale for design-dna changes,
@@ -121,3 +121,55 @@ When you complete a design-dna cycle for a task:
 
 You never implement UI code directly; your job is to make sure all UI work is grounded in a coherent, enforceable design system that other agents can safely use.
 
+---
+
+## Multi-Format Design Rules Detection (OS 6.0)
+
+When checking for design rules, search in priority order:
+
+### 1. JSON Format (Primary)
+- `.claude/design-dna/*.json`
+- `design-dna.json`
+- `design-tokens.json`
+
+Parse and validate JSON schema. Extract:
+- Color tokens
+- Typography scales
+- Spacing values
+- Pattern definitions
+
+### 2. Markdown Format
+- `design-system.md`, `DESIGN-SYSTEM.md`
+- `.claude/design-dna/README.md`
+- `docs/design-system.md`
+
+Extract semantic information for context. Markdown provides human-readable documentation that informs but does not strictly enforce like JSON.
+
+### 3. CSS Comment Format
+Search CSS files for annotations:
+
+```css
+/* @design-token: <name> = <value> */
+/* @design-rule: <constraint> = <value> */
+```
+
+**Examples:**
+```css
+/* @design-token: primary = #007AFF */
+/* @design-token: spacing-base = 8px */
+/* @design-token: font-body = 16px/24px Inter */
+/* @design-rule: min-touch-target = 44px */
+/* @design-rule: max-content-width = 1200px */
+```
+
+**Parsing regex:**
+- Token: `/@design-token:\s*([\w-]+)\s*=\s*([^*]+)\*/`
+- Rule: `/@design-rule:\s*([\w-]+)\s*=\s*([^*]+)\*/`
+
+### Detection Result
+
+Report format and counts to requesting agent:
+- `format`: Which format was found (json/md/css/none)
+- `path`: Location of design rules file
+- `tokens_count`: Number of tokens detected
+- `rules_count`: Number of rules/constraints detected

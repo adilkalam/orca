@@ -1,6 +1,6 @@
 ---
 description: "OS 6.0 orchestrator entrypoint for OS / Claude Code configuration tasks (LOCAL to this repo)"
-argument-hint: "[-tweak] <task description or requirement ID>"
+argument-hint: "[--light | -tweak | --complex] <task description or requirement ID>"
 allowed-tools:
   - Task
   - AskUserQuestion
@@ -173,9 +173,10 @@ Your only job is to coordinate agents via `Task`.
 
 **Check for flags:**
 ```
-$ARGUMENTS contains "-tweak" → Fast path (light, no gates)
-$ARGUMENTS contains "--complex" → Full path (grand-architect, all gates)
-No flag → Default path (light + design gates)
+$ARGUMENTS contains "--light" → Section 1 (Light Orchestrator, NO confirmation)
+$ARGUMENTS contains "-tweak" → Section 1 (Builder Direct, NO confirmation)
+$ARGUMENTS contains "--complex" → Full pipeline with confirmation (Section 0)
+No flag → Light Orchestrator WITH confirmation (Section 1 via confirmation)
 ```
 
 ---
@@ -264,18 +265,23 @@ echo ""
 
 ---
 
-## 1. Flag Routing
+## 1. Light Path Flow (--light and -tweak modes, or Default after confirmation)
 
-### Default (no flag) - Light Path WITH Standards Gate
+This section applies when:
+- `--light` flag: Delegate directly to `os-dev-light-orchestrator`, skip confirmation
+- `-tweak` flag: Delegate directly to `os-dev-builder`, skip confirmation
+- Default (no flag) after confirmation: Route here from Section 0
 
-Delegate to `os-dev-builder` with standards check and Context Inheritance:
+### 1.1 --light Flag - Light Path WITHOUT Confirmation
 
-**Context Inheritance Protocol (default mode):**
+Delegate to `os-dev-light-orchestrator` directly.
+
+**Context Inheritance Protocol (--light mode):**
 
 ```
 Task({
-  subagent_type: 'os-dev-builder',
-  description: 'OS-Dev task with standards verification',
+  subagent_type: 'os-dev-light-orchestrator',
+  description: 'OS-Dev task with standards verification (fast, no confirmation)',
   prompt: `
 === CONTEXT BUNDLE (INHERITED) ===
 CONTEXT_SOURCE: /orca-os-dev
@@ -292,7 +298,7 @@ Handle this OS-Dev configuration task via the light path WITH standards gate.
 
 REQUEST: $ARGUMENTS
 
-ROUTING MODE: default (light + standards gate)
+ROUTING MODE: --light (light + standards gate, no confirmation)
 
 MANDATORY STEPS:
 1. Read docs/reference/os-dependency-graph.yaml
@@ -308,11 +314,9 @@ Gate will FAIL if documentation is not synced.
 })
 ```
 
-After builder completes, run `os-dev-standards-enforcer` to validate.
-
 ---
 
-### -tweak Flag - Light Path WITHOUT Gates (Pure Speed)
+### 1.2 -tweak Flag - Builder Direct (Pure Speed)
 
 1. Memory-first context only
 2. Delegate directly to `os-dev-builder`
@@ -349,11 +353,20 @@ ROUTING MODE: tweak (pure speed)
 
 ---
 
+### 1.3 Default (no flag) - Light Path WITH Confirmation
+
+For default mode (no flag), go to Section 0 for team confirmation first.
+After user confirms, route back here to delegate to `os-dev-light-orchestrator`.
+
+---
+
 ### --complex Flag - Full Pipeline (Grand-Architect + All Gates)
 
-Continue with full orchestration below.
+Continue with full orchestration below (Section 0).
 
 **0) Team Confirmation (MANDATORY - BLOCKING)**
+
+**This applies to both Default (no flag) and --complex modes.**
 
 **DO NOT PROCEED TO STEP 1 WITHOUT USER CONFIRMATION**
 
@@ -361,13 +374,43 @@ Continue with full orchestration below.
 
 #### Step A: OUTPUT the team (VISIBLE MARKDOWN - NOT inside AskUserQuestion)
 
-**FIRST, output this as regular markdown so the user can see it:**
+**FIRST, output this as regular markdown so the user can see it.**
+
+**For DEFAULT mode (no flag):**
 
 ```markdown
 ## Proposed OS-Dev Pipeline
 
 **Request:** [the task]
-**Complexity:** complex
+**Mode:** default (light path with confirmation)
+
+### Phases
+1. Context Query (ProjectContext)
+2. Light Orchestrator (os-dev-light-orchestrator) - coordination
+3. Implementation (os-dev-builder)
+4. Standards Gate (os-dev-standards-enforcer)
+
+### Agent Team
+| Role | Agent |
+|------|-------|
+| Coordination | os-dev-light-orchestrator |
+| Implementation | os-dev-builder |
+| Standards Gate | os-dev-standards-enforcer |
+
+### Files Likely Affected
+- [list from ContextBundle or memory]
+
+### Risks/Notes
+- [any identified risks]
+```
+
+**For --complex mode:**
+
+```markdown
+## Proposed OS-Dev Pipeline
+
+**Request:** [the task]
+**Mode:** --complex (full pipeline)
 
 ### Phases
 1. Intake & Complexity
@@ -408,7 +451,7 @@ AskUserQuestion({
     options: [
       { label: "Yes, proceed", description: "Execute the plan shown above" },
       { label: "Modify team", description: "I want to change agents or approach" },
-      { label: "Switch to -tweak", description: "Skip gates, use light path" }
+      { label: "Switch to --light", description: "Skip confirmation next time (use --light flag)" }
     ]
   }]
 })
@@ -416,9 +459,13 @@ AskUserQuestion({
 
 **After presenting the confirmation question:**
 1. STOP and wait for user response
-2. If user says "Yes, proceed" → continue to Step 1
+2. If user says "Yes, proceed" → Route based on mode (see below)
 3. If user says "Modify team" → ask what to change, update, re-output team, re-confirm
-4. If user says "Switch to -tweak" → use light path (Section above)
+4. If user says "Switch to --light" → delegate to os-dev-light-orchestrator directly (Section 1.1)
+
+**After confirmation received - ROUTING:**
+- If `--complex` flag → Continue to Step 1) Intake below (full pipeline)
+- If default (no flag) → Delegate to `os-dev-light-orchestrator` (Section 1.1, fast with gates)
 
 **Anti-patterns (WRONG):**
 - Putting the team list inside AskUserQuestion options

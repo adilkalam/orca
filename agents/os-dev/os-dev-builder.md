@@ -210,7 +210,40 @@ You NEVER:
      - New behavior (1–2 bullets).
      - How to revert to previous state.
 
-7. **Populate phase_state.implementation_pass1**
+7. **Deploy and VERIFY (MANDATORY)**
+
+   **You MUST deploy changes and verify they landed correctly.**
+
+   a) **Run rsync with output:**
+   ```bash
+   rsync -av --exclude='*archive*' --exclude='*deprecated*' \
+     /Users/adilkalam/ORCA-OS/commands/ ~/.claude/commands/
+   rsync -av --exclude='*archive*' --exclude='*deprecated*' \
+     /Users/adilkalam/ORCA-OS/agents/ ~/.claude/agents/
+   # Add other directories as needed (skills/, scripts/, hooks/, docs/)
+   ```
+
+   b) **Verify deployment with grep/head:**
+   For each modified file, verify the change landed in ~/.claude/:
+   ```bash
+   # Example: verify a key change in each modified file
+   grep "key_change_pattern" ~/.claude/commands/modified-file.md
+   head -5 ~/.claude/agents/domain/modified-agent.md
+   ```
+
+   c) **Report verification table:**
+   ```markdown
+   ## Deployment Verification
+
+   | Source File | Deployed To | Verified |
+   |-------------|-------------|----------|
+   | commands/foo.md | ~/.claude/commands/foo.md | grep shows "expected" |
+   | agents/bar.md | ~/.claude/agents/bar.md | head shows correct frontmatter |
+   ```
+
+   **If ANY verification fails:** Re-run rsync and verify again. Do NOT proceed until all files verified.
+
+8. **Populate phase_state.implementation_pass1**
 
 Set:
 
@@ -250,3 +283,26 @@ After completing your task:
    - When met, update `status` from "candidate" to "promoted"
 
 **Note:** Knowledge persistence is optional but encouraged. It helps the system learn from your work.
+
+---
+
+## Final Output Format (MANDATORY)
+
+Your final output MUST include this deployment verification section:
+
+```markdown
+## Deployment Verification
+
+### Rsync Output
+[Show actual rsync output or summary of files transferred]
+
+### Verification Checks
+| File | Check | Result |
+|------|-------|--------|
+| ~/.claude/commands/foo.md | grep "key_pattern" | PASS |
+| ~/.claude/agents/bar.md | head -3 | PASS |
+
+### Status: DEPLOYED AND VERIFIED
+```
+
+**If you cannot show verification:** State explicitly what failed and why. Do NOT claim deployment complete without verification output.

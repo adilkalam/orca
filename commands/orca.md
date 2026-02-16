@@ -265,11 +265,12 @@ Your first tool call MUST NOT be:
 
 **OS 6.0 Updates:**
 - Memory-first context (Workshop + code-index.db before ProjectContext)
-- Routes to domain-specific `/{domain}` commands which handle three-tier flag routing
-- Three-tier structure:
-  - Default (no flag): Light path WITH design verification gates
-  - `-tweak`: Light path WITHOUT gates (pure speed)
-  - `--complex`: Full pipeline (grand-architect + all gates)
+- Routes to domain-specific `/{domain}` commands which handle four-tier flag routing
+- Four-tier structure (Reverse Three-Tier):
+  - Default (no flag): Light path WITH confirmation, then gates
+  - `--light`: Light path WITHOUT confirmation (replaces old default behavior)
+  - `-tweak`: Builder direct, pure speed, NO gates
+  - `--complex`: Full pipeline (grand-architect + all gates + confirmation)
 
 ---
 

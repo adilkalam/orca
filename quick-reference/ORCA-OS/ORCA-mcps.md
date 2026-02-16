@@ -1,6 +1,6 @@
 # OS 6.0 MCP Reference
 
-**Last Updated:** 2026-02-13
+**Last Updated:** 2026-02-16
 **Version:** OS 6.0
 
 ---
@@ -14,6 +14,7 @@ Core MCPs in `~/.claude.json` global mcpServers:
 - `cognition-mcp` - Sequential thinking storage (accept-store-echo pattern)
 - `project-context` - Project context queries
 - `sequential-thinking` - Multi-step reasoning with revision
+- `chrome-devtools` - Browser automation and visual QA (headless, isolated)
 - `context7` - Library documentation (disabled by default)
 
 ### Project-Scoped MCPs
@@ -177,24 +178,29 @@ iOS/macOS development automation.
 
 ### chrome-devtools (Web)
 
-Live page inspection and debugging.
+Browser automation and visual QA. **Canonical browser tool for ORCA-OS** (global, headless, isolated).
+
+**Install globally:**
+```bash
+claude mcp add -s user chrome-devtools -- npx chrome-devtools-mcp@latest --headless=true --isolated=true
+```
 
 ```json
 {
   "chrome-devtools": {
     "type": "stdio",
     "command": "npx",
-    "args": ["-y", "chrome-devtools-mcp@latest"]
+    "args": ["-y", "chrome-devtools-mcp@latest", "--headless=true", "--isolated=true"]
   }
 }
 ```
 
-**Used by:** nextjs-design-reviewer, ios-ui-reviewer, expo-aesthetics-specialist
-**Projects:** (project-specific configuration)
+**Used by:** nextjs-design-reviewer
+**Scope:** Global (user-level)
 
-### puppeteer (Web)
+### puppeteer (Web) -- DEPRECATED
 
-Browser automation and visual testing. Simpler and more lightweight than Playwright.
+Browser automation and visual testing. **DEPRECATED** -- use chrome-devtools instead.
 
 ```json
 {
@@ -299,7 +305,7 @@ AI control of Adobe Photoshop and Illustrator via MCP protocol. Python-based MCP
 
 **Source:** [github.com/mikechambers/adb-mcp](https://github.com/mikechambers/adb-mcp)
 **Used by:** (project-specific configuration)
-**Projects:** (project-specific configuration)
+**Scope:** Global (user-level)
 
 ### openscad-mcp (3D Rendering - Experimental)
 
@@ -334,7 +340,7 @@ OpenSCAD 3D rendering capabilities for AI assistants. Provides tools for single 
 | Lane | MCPs Required |
 |------|---------------|
 | iOS | XcodeBuildMCP |
-| Next.js | chrome-devtools, puppeteer |
+| Next.js | chrome-devtools |
 | Django-React | (none) |
 | Expo | (none) |
 | Research | crawl4ai |
@@ -357,7 +363,6 @@ Define available MCPs for a project:
 {
   "mcpServers": {
     "chrome-devtools": { ... },
-    "puppeteer": { ... }
   }
 }
 ```
@@ -370,7 +375,7 @@ Enable project MCPs in global config:
 {
   "projects": {
     "/Users/yourname/project": {
-      "enabledMcpjsonServers": ["chrome-devtools", "puppeteer"]
+      "enabledMcpjsonServers": ["chrome-devtools"]
     }
   }
 }

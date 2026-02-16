@@ -1,6 +1,6 @@
 ---
 description: "OS 6.0 orchestrator entrypoint for Next.js frontend tasks"
-argument-hint: "[-tweak] <task description or requirement ID>"
+argument-hint: "[--light | -tweak | --complex] <task description or requirement ID>"
 allowed-tools:
   - Task
   - AskUserQuestion
@@ -65,9 +65,10 @@ Use this command for Next.js / frontend UI work.
 
 **Check for flags:**
 ```
-$ARGUMENTS contains "-tweak" → Fast path (light, no gates)
-$ARGUMENTS contains "--complex" → Full path (grand-architect, all gates)
-No flag → Default path (light + design gates)
+$ARGUMENTS contains "--light" → Section 2.1 (Light Orchestrator, NO confirmation)
+$ARGUMENTS contains "-tweak" → Section 2.2 (Builder Direct, NO confirmation)
+$ARGUMENTS contains "--complex" → Section 3 (Full Pipeline with confirmation)
+No flag → Section 3 (Light Orchestrator WITH confirmation)
 ```
 
 ---
@@ -343,18 +344,21 @@ Failure to apply these constraints will result in gate failure.
 
 ---
 
-## 2. Flag Routing
+## 2. Light Path Flow (--light and -tweak modes ONLY)
 
-### Default (no flag) - Light Path WITH Design Gates
+This section applies ONLY when user passes `--light` or `-tweak` flags.
+Default (no flag) now goes to Section 3 for confirmation first.
 
-Delegate to `nextjs-light-orchestrator` with Context Inheritance:
+### 2.1 --light Flag - Light Path WITHOUT Confirmation
 
-**Context Inheritance Protocol (default mode):**
+Delegate to `nextjs-light-orchestrator` directly. Skip Section 3.
+
+**Context Inheritance Protocol (--light mode):**
 
 ```
 Task({
   subagent_type: "nextjs-light-orchestrator",
-  description: "Next.js task with design verification",
+  description: "Next.js task with design verification (fast, no confirmation)",
   prompt: `
 === CONTEXT BUNDLE (INHERITED) ===
 CONTEXT_SOURCE: /nextjs
@@ -374,7 +378,7 @@ REQUEST: $ARGUMENTS
 MEMORY CONTEXT (if any):
 <memory hits from 1.1>
 
-ROUTING MODE: default (light + gates)
+ROUTING MODE: --light (light + gates, no confirmation)
 - Run nextjs-builder + specialists
 - Run design verification gates (standards-enforcer, design-reviewer)
 - Ephemeral phase_state only (scores for this run, no ceremony)
@@ -385,7 +389,7 @@ ROUTING MODE: default (light + gates)
 
 ---
 
-### -tweak Flag - Light Path WITHOUT Gates (Pure Speed)
+### 2.2 -tweak Flag - Builder Direct (Pure Speed)
 
 1. Memory-first context only (skip ProjectContext)
 2. Delegate directly to `nextjs-builder`
@@ -433,9 +437,11 @@ Continue with full orchestration below (Section 3).
 
 ---
 
-## 3. Full Pipeline Flow (--complex only)
+## 3. Pipeline Flow with Confirmation (Default and --complex modes)
 
-This section applies only when user passes `--complex` flag.
+This section applies when:
+- **Default (no flag)**: Routes to light-orchestrator AFTER confirmation
+- **--complex flag**: Routes to grand-architect AFTER confirmation
 
 ### 3.1 Team Confirmation (MANDATORY - BLOCKING)
 
@@ -445,7 +451,39 @@ This section applies only when user passes `--complex` flag.
 
 #### Step A: OUTPUT the team (VISIBLE MARKDOWN - NOT inside AskUserQuestion)
 
-**FIRST, output this as regular markdown so the user can see it:**
+**FIRST, output this as regular markdown so the user can see it.**
+
+**For DEFAULT mode (no flag):**
+
+```markdown
+## Proposed Next.js Pipeline
+
+**Request:** [the task]
+**Mode:** default (light path with confirmation)
+
+### Phases
+1. Context Query (ProjectContext)
+2. Light Orchestrator (nextjs-light-orchestrator) - coordination
+3. Implementation (nextjs-builder + specialists)
+4. Gates (nextjs-standards-enforcer, nextjs-design-reviewer)
+
+### Agent Team
+| Role | Agent |
+|------|-------|
+| Coordination | nextjs-light-orchestrator |
+| Implementation | nextjs-builder |
+| Specialists | [list relevant ones based on 3.1.1] |
+| Standards Gate | nextjs-standards-enforcer |
+| Design Gate | nextjs-design-reviewer |
+
+### Files Likely Affected
+- [list from ContextBundle or memory]
+
+### Risks/Notes
+- [any identified risks]
+```
+
+**For --complex mode:**
 
 ```markdown
 ## Proposed Next.js Pipeline
@@ -494,7 +532,7 @@ AskUserQuestion({
     options: [
       { label: "Yes, proceed", description: "Execute the plan shown above" },
       { label: "Modify team", description: "I want to change agents or approach" },
-      { label: "Switch to -tweak", description: "Skip gates, use light path" }
+      { label: "Switch to --light", description: "Skip confirmation next time (use --light flag)" }
     ]
   }]
 })
@@ -502,9 +540,13 @@ AskUserQuestion({
 
 **After presenting the confirmation question:**
 1. STOP and wait for user response
-2. If user says "Yes, proceed" → continue to 3.2
+2. If user says "Yes, proceed" → Route based on mode (see below)
 3. If user says "Modify team" → ask what to change, update, re-output team, re-confirm
-4. If user says "Switch to -tweak" → delegate to nextjs-builder directly (Section 2)
+4. If user says "Switch to --light" → delegate to nextjs-light-orchestrator directly (Section 2.1)
+
+**After confirmation received - ROUTING:**
+- If `--complex` flag → Delegate to `nextjs-grand-architect` (full pipeline, Section 3.2+)
+- If default (no flag) → Delegate to `nextjs-light-orchestrator` (fast, with gates)
 
 **Anti-patterns (WRONG):**
 - Putting the team list inside AskUserQuestion options

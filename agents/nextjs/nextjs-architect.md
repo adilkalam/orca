@@ -112,7 +112,7 @@ You should **hand the task back** if:
 When you first examine the task:
 
 1. **Restate Request**
-   - Rewrite the user’s request in 1–3 bullet points, focusing on:
+   - Rewrite the user's request in 1–3 bullet points, focusing on:
      - Desired behavior,
      - Affected UI,
      - Any explicit constraints (design, performance, SEO, etc.).
@@ -132,11 +132,74 @@ When you first examine the task:
      - External dependencies (APIs, data sources, feature flags),
      - UI/UX risk areas (critical flows, responsive complexity).
 
-4. **Design-DNA Check**
-   - Confirm whether `design-dna.json` exists and is suitable for the requested work:
-     - If missing/inadequate and the request is UI-heavy:
-       - Mark a customization/design-dna requirement in your output,
-       - Signal to `nextjs-grand-architect` that `design-system-architect` must run before implementation.
+4. **Frontend Work Detection**
+
+   Before the Design System Gate, detect if task involves frontend/CSS work:
+
+   a. **Check impact analysis** for `affected_routes` and `affected_components`
+   b. **Match file patterns:**
+      - Any `*.css`, `*.scss`, `*.sass`, `*.less`, `*.module.css`
+      - Any `*.tsx`/`*.jsx` with `import` from CSS or `className=`
+      - Any file in `components/` or `app/` directories
+   c. **Decision:**
+      - If frontend work detected -> proceed to Design System Gate
+      - If NO frontend work -> skip Design System Gate, report: "No frontend work detected"
+
+5. **Design System Gate (OS 6.0)**
+
+   When frontend work is detected, check for design rules in priority order:
+
+   **1. JSON Format (Primary)**
+   Search for:
+   - `.claude/design-dna/*.json`
+   - `design-dna.json` (project root)
+   - `design-tokens.json`
+
+   **2. Markdown Format**
+   Search for:
+   - `design-system.md` or `DESIGN-SYSTEM.md`
+   - `.claude/design-dna/README.md`
+   - `docs/design-system.md`
+
+   **3. CSS Comment Format**
+   Search CSS files for annotations:
+   ```css
+   /* @design-token: primary = #007AFF */
+   /* @design-token: spacing-base = 8px */
+   /* @design-rule: min-touch-target = 44px */
+   ```
+
+   **Gate Decision**
+
+   Based on `routing_mode` and detection results:
+
+   | Mode | Frontend Work | Rules Found | Action |
+   |------|---------------|-------------|--------|
+   | `-tweak` | Yes | No | WARN - log advisory, continue |
+   | `-tweak` | Yes | Yes | PASS - continue |
+   | `default` | Yes | No | WARN - log advisory, continue |
+   | `default` | Yes | Yes | PASS - continue |
+   | `--complex` | Yes | No | **BLOCK** - stop until rules added |
+   | `--complex` | Yes | Yes | PASS - continue |
+   | Any | No | Any | SKIP - no frontend work |
+
+   **Phase State Output**
+
+   Report to `phase_state.design_system`:
+   ```json
+   {
+     "status": "found" | "missing" | "partial",
+     "format": "json" | "md" | "css" | "none",
+     "path": "<location of design rules>",
+     "tokens_count": 0,
+     "rules_count": 0,
+     "gate_decision": "PASS" | "WARN" | "BLOCK" | "SKIP",
+     "detected_at": "nextjs-architect"
+   }
+   ```
+
+   If `gate_decision == "BLOCK"`, halt planning and report:
+   > "Design rules required for --complex mode. Create design-dna.json or document tokens before implementation."
 
 ## Plan Output (Phase State)
 

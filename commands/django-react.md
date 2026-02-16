@@ -1,6 +1,6 @@
 ---
 description: "OS 6.0 orchestrator entrypoint for Django + React TypeScript full-stack tasks"
-argument-hint: "[-tweak] <task description or requirement ID>"
+argument-hint: "[--light | -tweak | --complex] <task description or requirement ID>"
 allowed-tools:
   - Task
   - AskUserQuestion
@@ -85,9 +85,10 @@ Use this command for full-stack Django backend + React TypeScript frontend work.
 
 **Check for flags:**
 ```
-$ARGUMENTS contains "-tweak" -> Fast path (light, no gates)
-$ARGUMENTS contains "--complex" -> Full path (grand-architect, all gates)
-No flag -> Default path (light + design gates)
+$ARGUMENTS contains "--light" -> Section 2.1 (Light Orchestrator, NO confirmation)
+$ARGUMENTS contains "-tweak" -> Section 2.2 (Builder Direct, NO confirmation)
+$ARGUMENTS contains "--complex" -> Section 3 (Full Pipeline with confirmation)
+No flag -> Section 3 (Light Orchestrator WITH confirmation)
 ```
 
 ---
@@ -313,18 +314,21 @@ This helps agents avoid repeating past mistakes.
 
 ---
 
-## 2. Flag Routing
+## 2. Light Path Flow (--light and -tweak modes ONLY)
 
-### Default (no flag) - Light Path WITH Gates
+This section applies ONLY when user passes `--light` or `-tweak` flags.
+Default (no flag) now goes to Section 3 for confirmation first.
 
-Delegate to `django-react-light-orchestrator` with Context Inheritance:
+### 2.1 --light Flag - Light Path WITHOUT Confirmation
 
-**Context Inheritance Protocol (default mode):**
+Delegate to `django-react-light-orchestrator` directly. Skip Section 3.
+
+**Context Inheritance Protocol (--light mode):**
 
 ```
 Task({
   subagent_type: "django-react-light-orchestrator",
-  description: "Django + React task with verification",
+  description: "Django + React task with verification (fast, no confirmation)",
   prompt: `
 === CONTEXT BUNDLE (INHERITED) ===
 CONTEXT_SOURCE: /django-react
@@ -344,7 +348,7 @@ REQUEST: $ARGUMENTS
 MEMORY CONTEXT (if any):
 <memory hits from 1.1>
 
-ROUTING MODE: default (light + gates)
+ROUTING MODE: --light (light + gates, no confirmation)
 - Run django-react-builder + specialists
 - Run verification gates (standards-enforcer)
 - Ephemeral phase_state only (scores for this run, no ceremony)
@@ -355,7 +359,7 @@ ROUTING MODE: default (light + gates)
 
 ---
 
-### -tweak Flag - Light Path WITHOUT Gates (Pure Speed)
+### 2.2 -tweak Flag - Builder Direct (Pure Speed)
 
 1. Memory-first context only (skip ProjectContext)
 2. Delegate directly to `django-react-builder`
@@ -403,9 +407,11 @@ Continue with full orchestration below (Section 3).
 
 ---
 
-## 3. Full Pipeline Flow (--complex only)
+## 3. Pipeline Flow with Confirmation (Default and --complex modes)
 
-This section applies only when user passes `--complex` flag.
+This section applies when:
+- **Default (no flag)**: Routes to light-orchestrator AFTER confirmation
+- **--complex flag**: Routes to grand-architect AFTER confirmation
 
 ### 3.1 Team Confirmation (MANDATORY - BLOCKING)
 
@@ -415,7 +421,40 @@ This section applies only when user passes `--complex` flag.
 
 #### Step A: OUTPUT the team (VISIBLE MARKDOWN - NOT inside AskUserQuestion)
 
-**FIRST, output this as regular markdown so the user can see it:**
+**FIRST, output this as regular markdown so the user can see it.**
+
+**For DEFAULT mode (no flag):**
+
+```markdown
+## Proposed Django + React Pipeline
+
+**Request:** [the task]
+**Mode:** default (light path with confirmation)
+
+### Phases
+1. Context Query (ProjectContext)
+2. Light Orchestrator (django-react-light-orchestrator) - coordination
+3. Implementation (django-react-builder + specialists)
+4. Gates (django-react-standards-enforcer)
+
+### Agent Team
+| Role | Agent |
+|------|-------|
+| Coordination | django-react-light-orchestrator |
+| Implementation | django-react-builder |
+| Backend Specialists | [django-master, django-api-specialist] |
+| Frontend Specialists | [react-typescript-wizard] |
+| Standards Gate | django-react-standards-enforcer |
+
+### Files Likely Affected
+- Backend: [list from ContextBundle or memory]
+- Frontend: [list from ContextBundle or memory]
+
+### Risks/Notes
+- [any identified risks]
+```
+
+**For --complex mode:**
 
 ```markdown
 ## Proposed Django + React Pipeline
@@ -468,7 +507,7 @@ AskUserQuestion({
     options: [
       { label: "Yes, proceed", description: "Execute the plan shown above" },
       { label: "Modify team", description: "I want to change agents or approach" },
-      { label: "Switch to -tweak", description: "Skip gates, use light path" }
+      { label: "Switch to --light", description: "Skip confirmation next time (use --light flag)" }
     ]
   }]
 })
@@ -476,9 +515,13 @@ AskUserQuestion({
 
 **After presenting the confirmation question:**
 1. STOP and wait for user response
-2. If user says "Yes, proceed" -> continue to 3.2
+2. If user says "Yes, proceed" -> Route based on mode (see below)
 3. If user says "Modify team" -> ask what to change, update, re-output team, re-confirm
-4. If user says "Switch to -tweak" -> delegate to django-react-builder directly (Section 2)
+4. If user says "Switch to --light" -> delegate to django-react-light-orchestrator directly (Section 2.1)
+
+**After confirmation received - ROUTING:**
+- If `--complex` flag -> Delegate to `django-react-grand-architect` (full pipeline, Section 3.2+)
+- If default (no flag) -> Delegate to `django-react-light-orchestrator` (fast, with gates)
 
 **Anti-patterns (WRONG):**
 - Putting the team list inside AskUserQuestion options

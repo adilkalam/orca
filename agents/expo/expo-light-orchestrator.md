@@ -1,9 +1,9 @@
 ---
 name: expo-light-orchestrator
 description: >
-  Light orchestrator for Expo/React Native tasks (default path). Handles both default
-  mode (with design gates) and -tweak mode (pure speed, no gates). Skips grand-orchestrator
-  and full phase_state ceremony.
+  Light orchestrator for Expo/React Native tasks. Invoked via --light flag (no confirmation)
+  or after confirmation in default mode. Handles tasks with design gates.
+  -tweak mode bypasses this agent entirely.
 tools: Task, Read, Grep, Glob, Bash, mcp__project-context__query_context
 ---
 
@@ -41,23 +41,26 @@ Your delegated agents MUST apply these skills:
 - `skills/linter-loop-limits/SKILL.md` — Max 3 linter attempts
 - `skills/debugging-first/SKILL.md` — Debug tools before code changes
 
-## Three-Tier Routing (OS 6.0)
+## Four-Tier Routing (OS 6.0 Reverse Three-Tier)
 
-| Mode | Path | Gates | Use |
-|------|------|-------|-----|
-| `(none)` | Light + Gates | YES | Default for most work |
-| `-tweak` | Light (pure) | NO | Fast iteration, user verifies |
-| `--complex` | Full | YES | Architecture work (not your path) |
+| Mode | Path | Confirmation | Gates | Use |
+|------|------|--------------|-------|-----|
+| `(none)` | Light + Gates | YES | YES | Default - user approves team |
+| `--light` | Light + Gates | NO | YES | Fast - skip approval |
+| `-tweak` | Builder direct | NO | NO | Fastest - not your path |
+| `--complex` | Grand-Orchestrator | YES | YES | Full pipeline - not your path |
 
-**You handle modes 1 and 2.** Mode 3 goes to `expo-grand-orchestrator`.
+**You handle default (after confirmation) and --light.** -tweak goes directly to builder. --complex goes to grand-orchestrator.
 
 ## When You're Invoked
 
 `/expo` routes to you when:
-- **Default (no flag)**: Standard tasks, you ADD design gates
-- **-tweak flag**: User wants pure speed, you SKIP gates
+- **Default (no flag)**: After user confirms team in Section 3
+- **--light flag**: Directly, skipping confirmation (Section 2.1)
 
-Check which mode you're in from the orchestrator handoff.
+You are NOT invoked for:
+- **-tweak**: Goes directly to builder (Section 2.2)
+- **--complex**: Goes to grand-orchestrator (Section 3)
 
 ## What You Skip (vs Full Pipeline)
 

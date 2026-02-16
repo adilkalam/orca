@@ -125,7 +125,10 @@ export const DecideContentSchema = z.object({
 
 // Substrate observation schemas
 export const ReflexObservationSchema = z.object({
-  reflex: z.enum(['DEFLECTION', 'REGISTER_SHIFT', 'DISTANCE_MAINTENANCE', 'WHAT_ABOUT', 'SYCOPHANCY', 'CERTAINTY_CONSTRUCTION']),
+  // NOTE: Permissive by design. See ORCA-OS decision 2026-02-14.
+  // Claude may observe novel reflexes (e.g., TUNNEL_VISION, HYPOTHESIS_WITHOUT_VERIFICATION).
+  // Restricting to enum would cause validation failures for valuable observations.
+  reflex: z.string(),
   description: z.string(),
   caught: z.boolean(),
 });

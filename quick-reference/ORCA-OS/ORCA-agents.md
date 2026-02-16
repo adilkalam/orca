@@ -1,6 +1,6 @@
 # OS 6.0 Agents Quick Reference
 
-**Last Updated:** 2026-02-13
+**Last Updated:** 2026-02-16
 **Version:** OS 6.0
 **Total Agents:** 112
 
@@ -354,7 +354,7 @@ Located in `agents/dev/`. These agents work across multiple pipelines:
 | `a11y-enforcer` | Expo, Next.js | WCAG 2.2 compliance |
 | `crash-analyzer` | All lanes | Cross-domain crash and error analysis |
 | `debt-eliminator` | All lanes | Technical debt identification and prioritization |
-| `design-system-architect` | All UI lanes | Design token and component system |
+| `design-system-architect` | All UI lanes | Design system guardian: multi-format detection (JSON/MD/CSS), token enforcement |
 | `design-token-guardian` | Expo, Next.js | Token enforcement, no hardcoded values |
 | `performance-enforcer` | Expo, Next.js | Bundle size, performance budgets |
 | `performance-prophet` | Expo | Predictive performance analysis |

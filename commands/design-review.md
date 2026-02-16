@@ -1,5 +1,5 @@
 ---
-description: In-depth UI/UX audit using design reviewer agents with Puppeteer MCP
+description: In-depth UI/UX audit using design reviewer agents with Chrome DevTools MCP
 ---
 
 # /design-review — Visual Quality Gate
@@ -22,7 +22,7 @@ Triggers the appropriate design reviewer agent for comprehensive UI/UX auditing.
    - Next.js → `nextjs-design-reviewer`
    - iOS → `ios-ui-reviewer`
    - Expo → `expo-aesthetics-specialist`
-3. **Runs comprehensive audit** using Puppeteer MCP (web) or simulator tools (mobile)
+3. **Runs comprehensive audit** using Chrome DevTools MCP (web) or simulator tools (mobile)
 
 ## Execution
 

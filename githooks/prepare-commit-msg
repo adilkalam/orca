@@ -1,0 +1,8 @@
+#!/bin/sh
+# ORCA-RECORD HOOK -- auto-generated, do not edit manually
+# Installed: 2026-02-16T16:51:03.639Z
+
+# ORCA: inject checkpoint trailer
+if command -v "/Users/adilkalam/.claude/bin/orca-record" >/dev/null 2>&1; then
+  "/Users/adilkalam/.claude/bin/orca-record" prepare-commit-msg "$1" "$2" "$3" 2>/dev/null || true
+fi
