@@ -195,9 +195,14 @@ Recommends which /think operations to use.
 /deepthink "Why does user retention drop after day 3?"
 /deepthink --light "Quick question about caching"
 /deepthink --rigorous "Major architectural exploration"
+/deepthink --design "Redesign the login flow"
+/deepthink --design --light "Quick visual check"
+/deepthink --design --rigorous "Full UI audit"
 ```
-Depth-first exploration with constraint chain (default) and route-based modes (MAP, INVERT, PERSPECTIVES, EDGES, META, DEEP).
-**Modes:** --light (quick, no constraints), (default with constraint chain), --rigorous (constraint chain + full pre-mortem per mode)
+Depth-first exploration with constraint chain (default) and route-based modes (MAP, INVERT, PERSPECTIVES, EDGES, META, DEEP, DESIGN).
+**Intensity Modes:** --light (quick, no constraints), (default with constraint chain), --rigorous (constraint chain + full pre-mortem per mode)
+**Domain Modifiers:** --design (UI/UX exploration with auto-read of design-dna files). Combinable with intensity flags.
+**DESIGN Mode:** Auto-loads design-deepthink skill, reads project design files (design-dna.json, .claude/design-dna/, design-system.md), runs systems + thought analysis for anti-patterns, hierarchy, token compliance.
 **Constraint Chain:** After each mode, generates constraints (FORWARD, FORBIDDEN, QUESTION) that must be addressed (RESOLVED, ACKNOWLEDGED, DEFERRED) before finishing. Hard block if unresolved. DEFERRED items shown in final output.
 **Enhanced Modes:** MAP (systems + causal), INVERT (pre-mortem + reflexion), PERSPECTIVES (collaborative + steelmanning), EDGES (creative + analogical), DEEP (self-consistency via 3 parallel chains)
 **External Verification:** 6-question self-check including external-facing critique (64.5% blind spot reversal)

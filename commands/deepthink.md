@@ -1,6 +1,6 @@
 ---
 description: Depth-first exploration with constraint chain and mandatory self-check
-argument-hint: [--light|--rigorous] <problem or question to explore>
+argument-hint: [--light|--rigorous|--design] <problem or question to explore>
 ---
 
 # /deepthink - Depth-First Exploration
@@ -22,9 +22,12 @@ USAGE:
   /deepthink <problem or question>
   /deepthink --light <problem>     (1 mode, no constraints)
   /deepthink --rigorous <problem>  (pre-mortem after each mode + constraints)
+  /deepthink --design <problem>    (design-focused exploration)
+  /deepthink --design --light ...  (quick design exploration)
+  /deepthink --design --rigorous ...  (thorough design exploration)
   /deepthink --help
 
-MODES: MAP, INVERT, PERSPECTIVES, EDGES, META, DEEP
+MODES: MAP, INVERT, PERSPECTIVES, EDGES, META, DEEP, DESIGN
 CONSTRAINT CHAIN: After each mode, MCP tracks constraints (FORWARD/FORBIDDEN/QUESTION)
 
 RELATED: /problem-solve (convergent), /think (single operations)
@@ -32,13 +35,23 @@ RELATED: /problem-solve (convergent), /think (single operations)
 
 ---
 
-## Phase 0: Parse Intensity
+## Phase 0: Parse Flags
+
+### Intensity Flags (mutually exclusive)
 
 | Flag | Constraints | Description |
 |------|-------------|-------------|
 | --light | NO | ORIENT + 1 mode + brief HARVEST |
 | (none) | YES | ORIENT + 2-3 modes + constraint chain + HARVEST |
 | --rigorous | YES + pre-mortem | Extended + pre-mortem after each mode |
+
+### Domain Modifiers (combinable with intensity)
+
+| Flag | Effect |
+|------|--------|
+| --design | Loads design context + auto-selects DESIGN mode |
+
+`--design` is orthogonal to intensity. Valid: `--design`, `--design --light`, `--design --rigorous`.
 
 Include `verbose: false` in every cognition MCP call.
 
@@ -53,7 +66,19 @@ Call cognition with `operation: "thought"`, `sessionTitle: "DeepThink: <summary>
 
 ## Phase 2: ORIENT
 
-### SCOPE Check
+### --design Auto-Selection
+
+If `--design` flag is present:
+1. Load `design-deepthink` skill context
+2. Search for and read project design files:
+   - `design-dna.json` (project root)
+   - `.claude/design-dna/` directory (any files)
+   - `design-system.md` (project root)
+   - `css/design-system-tokens.css` (if exists)
+3. Auto-select DESIGN mode (skip mode selection below)
+4. User can still pivot to other modes if DESIGN doesn't fit
+
+### SCOPE Check (non-design)
 1. What is the SYMPTOM?
 2. What components could POSSIBLY cause it? (ALL, not just likely)
 3. Where does control flow NEXT after success? (destination component)
@@ -71,6 +96,7 @@ Call cognition `operation: "thought"` with: currentState (whatIKnow, whatImUncer
 | EDGES | Need options, analogies | creative_thinking, analogical_reasoning |
 | META | Too comfortable, might be avoiding | meta (substrate observation) |
 | DEEP | One question needs focus | 3 thought chains (analytical, intuitive, adversarial) |
+| DESIGN | UI/UX exploration, visual problems | systems + thought (design-specific) |
 
 ---
 
@@ -89,6 +115,13 @@ Execute the selected mode. Each mode uses 1-2 cognition operations.
 **META**: meta operation (observations, deflections, actualBehavior, insights). Depth gate: caught real behavior?
 
 **DEEP**: 3 thought chains (analytical, intuitive, adversarial), 5 thoughts each. Then convergence check thought (chain conclusions, convergent T/F, sharedInsights, divergentAreas). Depth gate: framings revealed blind spots?
+
+**DESIGN**: systems map (design context: components, tokens, relationships, design-dna rules) then thought analysis with design-specific prompts:
+- Anti-pattern detection (7 AI slop patterns from design-deepthink skill)
+- Visual hierarchy assessment
+- Token compliance check
+- Accessibility concerns
+Depth gate: Did we find specific, actionable design issues?
 
 **Field hints for operations without full examples above:**
 
