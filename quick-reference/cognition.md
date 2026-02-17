@@ -138,6 +138,7 @@ When you need more than one operation, use the composed commands. They chain mul
 | Command | What It Does | When to Use |
 |---------|--------------|-------------|
 | `/deepthink` | Divergent exploration with route-based modes | You're confused, need to discover what you don't know |
+| `/deepthink --design` | Design-focused exploration with auto-loaded context | UI/UX problems, visual design decisions |
 | `/problem-solve` | Convergent 8-step decision pipeline | You need to decide something with safeguards |
 | `/challenge` | Adversarial stress-test | You have a proposal, need to find its weaknesses |
 | `/contemplate` | Recommends which tool to use | Not sure where to start |
@@ -389,6 +390,7 @@ The handoff: Your cognition session produces insights and decisions. `/plan` tra
 /think --systems My app's data flow
 /problem-solve --quick JWT vs session auth
 /deepthink Why is user engagement low?
+/deepthink --design How should we restructure the dashboard layout?
 ```
 
 ---
