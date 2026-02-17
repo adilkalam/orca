@@ -37,13 +37,43 @@ fi
 - (none): Show checkpoint list (same as /checkpoints)
 - N: Restore to checkpoint #N from last /checkpoints list
 - <checkpoint-id>: Restore to checkpoint by full ID
+- --logs-only: Restore transcript only (no file changes)
 
 **Examples:**
 ```
 /restore           # Show list
 /restore 2         # Restore to #2 from list
 /restore abc123def456   # Restore by ID
+/restore abc123def456 --logs-only   # Transcript only
 ```
+
+---
+
+## Step 2b: Handle --logs-only Flag
+
+**If `--logs-only` flag is present in the arguments:**
+
+1. Extract the checkpoint ID (remove `--logs-only` from arguments)
+2. If checkpoint is a number, map it to checkpoint ID using `~/.claude/bin/orca-record checkpoints`
+3. Run transcript-only restore:
+
+```bash
+~/.claude/bin/orca-record rewind <checkpoint-id> --logs-only
+```
+
+**Expected output:**
+```
+Transcript restored to: ~/.claude/projects/-Users-adilkalam-project/sess-abc123.jsonl
+Resume with: claude --continue sess-abc123
+```
+
+**Display to user:**
+```
+Transcript restored (files unchanged).
+Resume with: claude --continue <session-id>
+```
+
+**Then STOP -- do not proceed to file restore steps.**
 
 ---
 

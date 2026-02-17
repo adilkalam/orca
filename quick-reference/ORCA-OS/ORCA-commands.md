@@ -380,8 +380,9 @@ Shows numbered list of checkpoints with timestamps and file change summaries.
 /restore                        # Show checkpoint list
 /restore 2                      # Restore to checkpoint #2
 /restore abc123def456           # Restore by checkpoint ID
+/restore abc123def456 --logs-only  # Transcript only (no file changes)
 ```
-Restores working directory files to a checkpoint state. Shows files affected and `claude --continue` hint.
+Restores working directory files to a checkpoint state. Shows files affected and `claude --continue` hint. Use `--logs-only` to restore only the session transcript for `claude --continue` without modifying files.
 
 ### `/continue` - Session Resume Info
 ```bash
