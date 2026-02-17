@@ -1418,6 +1418,43 @@ export declare const CheckpointContentSchema: z.ZodObject<{
     keyFindings: z.ZodOptional<z.ZodArray<z.ZodString, "many">>;
     openQuestions: z.ZodOptional<z.ZodArray<z.ZodString, "many">>;
     nextSteps: z.ZodOptional<z.ZodArray<z.ZodString, "many">>;
+    phase: z.ZodOptional<z.ZodString>;
+    command: z.ZodOptional<z.ZodString>;
+    addConstraints: z.ZodOptional<z.ZodArray<z.ZodObject<{
+        type: z.ZodEnum<["FORWARD", "FORBIDDEN", "QUESTION"]>;
+        text: z.ZodString;
+    }, "strip", z.ZodTypeAny, {
+        type: "FORWARD" | "FORBIDDEN" | "QUESTION";
+        text: string;
+    }, {
+        type: "FORWARD" | "FORBIDDEN" | "QUESTION";
+        text: string;
+    }>, "many">>;
+    resolveConstraints: z.ZodOptional<z.ZodArray<z.ZodString, "many">>;
+    acknowledgeConstraints: z.ZodOptional<z.ZodArray<z.ZodString, "many">>;
+    deferConstraints: z.ZodOptional<z.ZodArray<z.ZodObject<{
+        id: z.ZodString;
+        reason: z.ZodString;
+    }, "strip", z.ZodTypeAny, {
+        id: string;
+        reason: string;
+    }, {
+        id: string;
+        reason: string;
+    }>, "many">>;
+    gateCheck: z.ZodOptional<z.ZodObject<{
+        selfCheckPassed: z.ZodBoolean;
+        depthGatePassed: z.ZodBoolean;
+        notes: z.ZodOptional<z.ZodString>;
+    }, "strip", z.ZodTypeAny, {
+        selfCheckPassed: boolean;
+        depthGatePassed: boolean;
+        notes?: string | undefined;
+    }, {
+        selfCheckPassed: boolean;
+        depthGatePassed: boolean;
+        notes?: string | undefined;
+    }>>;
 }, "strip", z.ZodTypeAny, {
     text?: string | undefined;
     label?: string | undefined;
@@ -1425,6 +1462,23 @@ export declare const CheckpointContentSchema: z.ZodObject<{
     keyFindings?: string[] | undefined;
     openQuestions?: string[] | undefined;
     nextSteps?: string[] | undefined;
+    phase?: string | undefined;
+    command?: string | undefined;
+    addConstraints?: {
+        type: "FORWARD" | "FORBIDDEN" | "QUESTION";
+        text: string;
+    }[] | undefined;
+    resolveConstraints?: string[] | undefined;
+    acknowledgeConstraints?: string[] | undefined;
+    deferConstraints?: {
+        id: string;
+        reason: string;
+    }[] | undefined;
+    gateCheck?: {
+        selfCheckPassed: boolean;
+        depthGatePassed: boolean;
+        notes?: string | undefined;
+    } | undefined;
 }, {
     text?: string | undefined;
     label?: string | undefined;
@@ -1432,6 +1486,23 @@ export declare const CheckpointContentSchema: z.ZodObject<{
     keyFindings?: string[] | undefined;
     openQuestions?: string[] | undefined;
     nextSteps?: string[] | undefined;
+    phase?: string | undefined;
+    command?: string | undefined;
+    addConstraints?: {
+        type: "FORWARD" | "FORBIDDEN" | "QUESTION";
+        text: string;
+    }[] | undefined;
+    resolveConstraints?: string[] | undefined;
+    acknowledgeConstraints?: string[] | undefined;
+    deferConstraints?: {
+        id: string;
+        reason: string;
+    }[] | undefined;
+    gateCheck?: {
+        selfCheckPassed: boolean;
+        depthGatePassed: boolean;
+        notes?: string | undefined;
+    } | undefined;
 }>;
 export declare const ScientificMethodContentSchema: z.ZodObject<{
     text: z.ZodOptional<z.ZodString>;
@@ -1660,33 +1731,33 @@ export declare const StructuredArgumentationContentSchema: z.ZodObject<{
 export declare const TreeBranchSchema: z.ZodType;
 export declare const TreeOfThoughtContentSchema: z.ZodObject<{
     text: z.ZodOptional<z.ZodString>;
-    root: z.ZodString;
+    root: z.ZodOptional<z.ZodString>;
     branches: z.ZodArray<z.ZodType<any, z.ZodTypeDef, any>, "many">;
-    currentPath: z.ZodArray<z.ZodString, "many">;
+    currentPath: z.ZodOptional<z.ZodArray<z.ZodString, "many">>;
     bestPath: z.ZodArray<z.ZodString, "many">;
     pruned: z.ZodArray<z.ZodString, "many">;
     nextThoughtNeeded: z.ZodOptional<z.ZodBoolean>;
     constraints: z.ZodOptional<z.ZodArray<z.ZodString, "many">>;
     synthesis: z.ZodOptional<z.ZodString>;
 }, "strip", z.ZodTypeAny, {
-    root: string;
     branches: any[];
-    currentPath: string[];
     bestPath: string[];
     pruned: string[];
     text?: string | undefined;
     nextThoughtNeeded?: boolean | undefined;
     synthesis?: string | undefined;
+    root?: string | undefined;
+    currentPath?: string[] | undefined;
     constraints?: string[] | undefined;
 }, {
-    root: string;
     branches: any[];
-    currentPath: string[];
     bestPath: string[];
     pruned: string[];
     text?: string | undefined;
     nextThoughtNeeded?: boolean | undefined;
     synthesis?: string | undefined;
+    root?: string | undefined;
+    currentPath?: string[] | undefined;
     constraints?: string[] | undefined;
 }>;
 export declare const BeamCandidateSchema: z.ZodObject<{
@@ -1974,12 +2045,12 @@ export declare const SuggestedOperationSchema: z.ZodObject<{
     reason: z.ZodString;
     order: z.ZodNumber;
 }, "strip", z.ZodTypeAny, {
-    operation: string;
     reason: string;
+    operation: string;
     order: number;
 }, {
-    operation: string;
     reason: string;
+    operation: string;
     order: number;
 }>;
 export declare const AlternativeApproachSchema: z.ZodObject<{
@@ -2001,12 +2072,12 @@ export declare const OrchestrationSuggestContentSchema: z.ZodObject<{
         reason: z.ZodString;
         order: z.ZodNumber;
     }, "strip", z.ZodTypeAny, {
-        operation: string;
         reason: string;
+        operation: string;
         order: number;
     }, {
-        operation: string;
         reason: string;
+        operation: string;
         order: number;
     }>, "many">;
     alternativeApproaches: z.ZodArray<z.ZodObject<{
@@ -2025,8 +2096,8 @@ export declare const OrchestrationSuggestContentSchema: z.ZodObject<{
     task: string;
     complexity: "simple" | "medium" | "complex";
     suggestedOperations: {
-        operation: string;
         reason: string;
+        operation: string;
         order: number;
     }[];
     alternativeApproaches: {
@@ -2040,8 +2111,8 @@ export declare const OrchestrationSuggestContentSchema: z.ZodObject<{
     task: string;
     complexity: "simple" | "medium" | "complex";
     suggestedOperations: {
-        operation: string;
         reason: string;
+        operation: string;
         order: number;
     }[];
     alternativeApproaches: {
@@ -2241,17 +2312,17 @@ export declare const CauseSchema: z.ZodObject<{
     factor: z.ZodString;
     type: z.ZodString;
     strength: z.ZodString;
-    evidence: z.ZodString;
+    evidence: z.ZodOptional<z.ZodString>;
 }, "strip", z.ZodTypeAny, {
     type: string;
     strength: string;
-    evidence: string;
     factor: string;
+    evidence?: string | undefined;
 }, {
     type: string;
     strength: string;
-    evidence: string;
     factor: string;
+    evidence?: string | undefined;
 }>;
 export declare const EffectSchema: z.ZodObject<{
     outcome: z.ZodString;
@@ -2283,17 +2354,17 @@ export declare const CausalAnalysisContentSchema: z.ZodObject<{
         factor: z.ZodString;
         type: z.ZodString;
         strength: z.ZodString;
-        evidence: z.ZodString;
+        evidence: z.ZodOptional<z.ZodString>;
     }, "strip", z.ZodTypeAny, {
         type: string;
         strength: string;
-        evidence: string;
         factor: string;
+        evidence?: string | undefined;
     }, {
         type: string;
         strength: string;
-        evidence: string;
         factor: string;
+        evidence?: string | undefined;
     }>, "many">;
     effects: z.ZodArray<z.ZodObject<{
         outcome: z.ZodString;
@@ -2318,15 +2389,15 @@ export declare const CausalAnalysisContentSchema: z.ZodObject<{
         sequence: string[];
         probability: number;
     }>, "many">;
-    interventions: z.ZodArray<z.ZodString, "many">;
+    interventions: z.ZodOptional<z.ZodArray<z.ZodString, "many">>;
     nextThoughtNeeded: z.ZodOptional<z.ZodBoolean>;
 }, "strip", z.ZodTypeAny, {
     phenomenon: string;
     causes: {
         type: string;
         strength: string;
-        evidence: string;
         factor: string;
+        evidence?: string | undefined;
     }[];
     effects: {
         outcome: string;
@@ -2337,16 +2408,16 @@ export declare const CausalAnalysisContentSchema: z.ZodObject<{
         sequence: string[];
         probability: number;
     }[];
-    interventions: string[];
     text?: string | undefined;
     nextThoughtNeeded?: boolean | undefined;
+    interventions?: string[] | undefined;
 }, {
     phenomenon: string;
     causes: {
         type: string;
         strength: string;
-        evidence: string;
         factor: string;
+        evidence?: string | undefined;
     }[];
     effects: {
         outcome: string;
@@ -2357,9 +2428,9 @@ export declare const CausalAnalysisContentSchema: z.ZodObject<{
         sequence: string[];
         probability: number;
     }[];
-    interventions: string[];
     text?: string | undefined;
     nextThoughtNeeded?: boolean | undefined;
+    interventions?: string[] | undefined;
 }>;
 export declare const DataPointSchema: z.ZodObject<{
     variable: z.ZodString;
@@ -3541,7 +3612,7 @@ export declare const UlyssesProtocolContentSchema: z.ZodObject<{
         linkedRisk?: string | undefined;
     }>, "many">;
     accountability: z.ZodOptional<z.ZodString>;
-    review: z.ZodObject<{
+    review: z.ZodOptional<z.ZodObject<{
         frequency: z.ZodOptional<z.ZodString>;
         criteria: z.ZodOptional<z.ZodString>;
         successes: z.ZodOptional<z.ZodArray<z.ZodString, "many">>;
@@ -3559,7 +3630,7 @@ export declare const UlyssesProtocolContentSchema: z.ZodObject<{
         frequency?: string | undefined;
         successes?: string[] | undefined;
         failures?: string[] | undefined;
-    }>;
+    }>>;
     nextThoughtNeeded: z.ZodOptional<z.ZodBoolean>;
     escapeHatch: z.ZodOptional<z.ZodString>;
     reviewPoints: z.ZodOptional<z.ZodArray<z.ZodObject<{
@@ -3589,16 +3660,16 @@ export declare const UlyssesProtocolContentSchema: z.ZodObject<{
         safeguard: string;
         linkedRisk?: string | undefined;
     }[];
-    review: {
+    text?: string | undefined;
+    nextThoughtNeeded?: boolean | undefined;
+    accountability?: string | undefined;
+    review?: {
         criteria?: string | undefined;
         adjustments?: string[] | undefined;
         frequency?: string | undefined;
         successes?: string[] | undefined;
         failures?: string[] | undefined;
-    };
-    text?: string | undefined;
-    nextThoughtNeeded?: boolean | undefined;
-    accountability?: string | undefined;
+    } | undefined;
     escapeHatch?: string | undefined;
     reviewPoints?: {
         criteria: string;
@@ -3621,16 +3692,16 @@ export declare const UlyssesProtocolContentSchema: z.ZodObject<{
         safeguard: string;
         linkedRisk?: string | undefined;
     }[];
-    review: {
+    text?: string | undefined;
+    nextThoughtNeeded?: boolean | undefined;
+    accountability?: string | undefined;
+    review?: {
         criteria?: string | undefined;
         adjustments?: string[] | undefined;
         frequency?: string | undefined;
         successes?: string[] | undefined;
         failures?: string[] | undefined;
-    };
-    text?: string | undefined;
-    nextThoughtNeeded?: boolean | undefined;
-    accountability?: string | undefined;
+    } | undefined;
     escapeHatch?: string | undefined;
     reviewPoints?: {
         criteria: string;

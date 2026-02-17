@@ -21,6 +21,7 @@ export function buildResponse(
   storeType: keyof SessionStores,
   status: 'stored' | 'exported',
   exportPath?: string | null,
+  extra?: Record<string, unknown>,
 ): HandlerResult {
   const sessionContext = {
     sessionId: session.id,
@@ -39,12 +40,14 @@ export function buildResponse(
         status,
         sessionContext,
         ...(exportPath ? { exportPath } : {}),
+        ...(extra || {}),
       }
     : {
         ok: true,
         ...sessionContext,
         status,
         ...(exportPath ? { exportPath } : {}),
+        ...(extra || {}),
       };
 
   return {

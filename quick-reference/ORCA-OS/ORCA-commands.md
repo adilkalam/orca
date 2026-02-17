@@ -1,8 +1,8 @@
 # OS 6.2 Commands Quick Reference
 
-**Last Updated:** 2026-02-16
+**Last Updated:** 2026-02-17
 **Version:** OS 6.2
-**Total Commands:** 35 (+ orca-record CLI with 16 subcommands)
+**Total Commands:** 39 (+ orca-record CLI with 16 subcommands)
 
 ---
 
@@ -362,6 +362,39 @@ Guided wizard for project structure decisions. Detects project type (ios, nextjs
 **Features:** Auto-detects sacred paths per framework, handles existing CLAUDE.md (merge/replace/cancel), saves decisions to ProjectContext.
 
 ---
+
+## Recording Commands (4)
+
+Slash commands that wrap the orca-record CLI for easy checkpoint navigation.
+
+### `/checkpoints` - Explore Checkpoints
+```bash
+/checkpoints                    # Last 10 checkpoints
+/checkpoints 25                 # Last 25 checkpoints
+/checkpoints --session sess-abc # Filter to specific session
+```
+Shows numbered list of checkpoints with timestamps and file change summaries.
+
+### `/restore` - Restore to Checkpoint
+```bash
+/restore                        # Show checkpoint list
+/restore 2                      # Restore to checkpoint #2
+/restore abc123def456           # Restore by checkpoint ID
+```
+Restores working directory files to a checkpoint state. Shows files affected and `claude --continue` hint.
+
+### `/continue` - Session Resume Info
+```bash
+/continue                       # List recent sessions
+/continue sess-19c6983c46029c7  # Specific session info
+```
+Shows `claude --continue` commands for resuming previous sessions.
+
+### `/orca-status` - Recording Status
+```bash
+/orca-status                    # Current session status
+```
+Shows session ID, state, checkpoint count, and shadow branch info.
 
 ## Recording Layer (orca-record CLI)
 

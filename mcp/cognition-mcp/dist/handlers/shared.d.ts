@@ -12,5 +12,5 @@ import { SessionState } from '../session/state.js';
  * When verbose: true  -> full echo (backward compat, content + quality + status + context)
  * When verbose: false -> minimal ACK (ok + status + context only)
  */
-export declare function buildResponse(content: Record<string, unknown>, args: CognitionRequest, session: SessionState, storeType: keyof SessionStores, status: 'stored' | 'exported', exportPath?: string | null): HandlerResult;
+export declare function buildResponse(content: Record<string, unknown>, args: CognitionRequest, session: SessionState, storeType: keyof SessionStores, status: 'stored' | 'exported', exportPath?: string | null, extra?: Record<string, unknown>): HandlerResult;
 //# sourceMappingURL=shared.d.ts.map

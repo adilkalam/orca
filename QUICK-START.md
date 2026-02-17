@@ -164,10 +164,9 @@ claude
 
 ### Optional (User Prompted)
 
-- **playwright** - Browser automation
-- **puppeteer** - Browser automation (simpler alternative)
-- **chrome-devtools** - Chrome debugging
+- **chrome-devtools** - Browser debugging, screenshots, design review
 - **XcodeBuildMCP** - iOS/macOS build automation
+- **Adobe Photoshop + Illustrator** - Creative tools (requires uv, Adobe apps)
 
 ---
 

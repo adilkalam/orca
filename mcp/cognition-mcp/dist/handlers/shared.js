@@ -10,7 +10,7 @@
  * When verbose: true  -> full echo (backward compat, content + quality + status + context)
  * When verbose: false -> minimal ACK (ok + status + context only)
  */
-export function buildResponse(content, args, session, storeType, status, exportPath) {
+export function buildResponse(content, args, session, storeType, status, exportPath, extra) {
     const sessionContext = {
         sessionId: session.id,
         entryCount: session.getCount(storeType),
@@ -27,12 +27,14 @@ export function buildResponse(content, args, session, storeType, status, exportP
             status,
             sessionContext,
             ...(exportPath ? { exportPath } : {}),
+            ...(extra || {}),
         }
         : {
             ok: true,
             ...sessionContext,
             status,
             ...(exportPath ? { exportPath } : {}),
+            ...(extra || {}),
         };
     return {
         content: [{

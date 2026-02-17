@@ -136,7 +136,7 @@ try:
 
     servers = config.get('mcpServers', {})
     core = ['context7', 'sequential-thinking', 'project-context', 'cognition-mcp']
-    optional = ['crawl4ai', 'playwright', 'puppeteer', 'chrome-devtools', 'XcodeBuildMCP']
+    optional = ['crawl4ai', 'chrome-devtools', 'XcodeBuildMCP', 'adobe-photoshop', 'adobe-illustrator']
 
     print("  Core MCP servers:")
     for server in core:

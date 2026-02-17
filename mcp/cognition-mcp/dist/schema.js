@@ -249,6 +249,24 @@ export const CheckpointContentSchema = z.object({
     keyFindings: z.array(z.string()).optional(),
     openQuestions: z.array(z.string()).optional(),
     nextSteps: z.array(z.string()).optional(),
+    // Protocol state fields (all optional, backward compatible)
+    phase: z.string().optional(),
+    command: z.string().optional(),
+    addConstraints: z.array(z.object({
+        type: z.enum(['FORWARD', 'FORBIDDEN', 'QUESTION']),
+        text: z.string(),
+    })).optional(),
+    resolveConstraints: z.array(z.string()).optional(),
+    acknowledgeConstraints: z.array(z.string()).optional(),
+    deferConstraints: z.array(z.object({
+        id: z.string(),
+        reason: z.string(),
+    })).optional(),
+    gateCheck: z.object({
+        selfCheckPassed: z.boolean(),
+        depthGatePassed: z.boolean(),
+        notes: z.string().optional(),
+    }).optional(),
 });
 export const ScientificMethodContentSchema = z.object({
     text: z.string().optional(),
@@ -313,7 +331,7 @@ export const StructuredArgumentationContentSchema = z.object({
 // ============================================================================
 export const TreeBranchSchema = z.object({
     id: z.string(),
-    parent: z.string().nullable(),
+    parent: z.string().nullable().optional(),
     thought: z.string(),
     evaluation: z.union([
         z.string(),
@@ -323,15 +341,15 @@ export const TreeBranchSchema = z.object({
             weaknesses: z.array(z.string()).optional(),
             feasibility: z.string().optional(),
         }).passthrough(),
-    ]),
-    score: z.number(),
-    children: z.array(z.union([z.string(), z.lazy(() => TreeBranchSchema)])),
+    ]).optional(),
+    score: z.number().optional(),
+    children: z.array(z.union([z.string(), z.lazy(() => TreeBranchSchema)])).optional(),
 });
 export const TreeOfThoughtContentSchema = z.object({
     text: z.string().optional(),
-    root: z.string(),
+    root: z.string().optional(),
     branches: z.array(TreeBranchSchema),
-    currentPath: z.array(z.string()),
+    currentPath: z.array(z.string()).optional(),
     bestPath: z.array(z.string()),
     pruned: z.array(z.string()),
     nextThoughtNeeded: z.boolean().optional(),
@@ -459,7 +477,7 @@ export const CauseSchema = z.object({
     factor: z.string(),
     type: z.string(),
     strength: z.string(),
-    evidence: z.string(),
+    evidence: z.string().optional(),
 });
 export const EffectSchema = z.object({
     outcome: z.string(),
@@ -476,7 +494,7 @@ export const CausalAnalysisContentSchema = z.object({
     causes: z.array(CauseSchema),
     effects: z.array(EffectSchema),
     chains: z.array(CausalChainSchema),
-    interventions: z.array(z.string()),
+    interventions: z.array(z.string()).optional(),
     nextThoughtNeeded: z.boolean().optional(),
 });
 export const DataPointSchema = z.object({
@@ -728,7 +746,7 @@ export const UlyssesProtocolContentSchema = z.object({
     commitments: z.array(UlyssesCommitmentSchema),
     safeguards: z.array(UlyssesSafeguardSchema),
     accountability: z.string().optional(),
-    review: UlyssesReviewSchema,
+    review: UlyssesReviewSchema.optional(),
     nextThoughtNeeded: z.boolean().optional(),
     escapeHatch: z.string().optional(),
     reviewPoints: z.array(z.object({

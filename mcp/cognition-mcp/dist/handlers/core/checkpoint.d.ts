@@ -1,8 +1,10 @@
 /**
- * Checkpoint Handler - Accept-Store-Echo Pattern
+ * Checkpoint Handler - Accept-Store-Echo Pattern + Protocol State Management
  *
- * CRITICAL: This handler follows the accept-store-echo pattern exactly.
- * The MCP is a MIRROR. It cannot generate, suggest, enhance, or transform.
+ * Core pattern: accept-store-echo (unchanged content always stored).
+ * Enhancement: When protocol fields are present, MCP manages constraint state,
+ * evaluates gates, and auto-persists at harvest. This is FREE computation
+ * (runs in MCP process, not in context window).
  *
  * Note: Checkpoints do not have nextThoughtNeeded - they are state saves mid-chain.
  */

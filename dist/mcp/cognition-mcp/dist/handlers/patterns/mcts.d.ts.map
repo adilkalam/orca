@@ -1,1 +1,0 @@
-{"version":3,"file":"mcts.d.ts","sourceRoot":"","sources":["../../../src/handlers/patterns/mcts.ts"],"names":[],"mappings":"AAAA;;;;;GAKG;AAEH,OAAO,KAAK,EAAE,gBAAgB,EAAE,aAAa,EAAe,MAAM,gBAAgB,CAAC;AAEnF,OAAO,EAAE,YAAY,EAAE,MAAM,wBAAwB,CAAC;AAItD,wBAAsB,UAAU,CAC9B,IAAI,EAAE,gBAAgB,EACtB,OAAO,EAAE,YAAY,GACpB,OAAO,CAAC,aAAa,CAAC,CAqDxB"}

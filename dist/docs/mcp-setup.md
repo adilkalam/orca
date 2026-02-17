@@ -12,16 +12,17 @@ The installer automatically configures these MCP servers in `~/.claude.json`:
 | sequential-thinking | Multi-step reasoning with revision | `@modelcontextprotocol/server-sequential-thinking` (npx) |
 | cognition-mcp | Structured notepad for reasoning (48 operations) | Custom (bundled) |
 | project-context | Project memory and semantic search | Custom (bundled) |
+| orca-record | Session recording -- tool calls, file changes, checkpoints | Custom CLI binary (`~/.claude/bin/orca-record`) |
 | crawl4ai | Web content extraction and research | Docker SSE (`localhost:11235`) |
 
 **Optional (prompted during install):**
 
 | MCP Server | Purpose | Package |
 |------------|---------|---------|
-| playwright | Browser automation and testing | `@playwright/mcp` (npx) |
-| puppeteer | Browser automation | `@anthropic-ai/puppeteer-mcp` (npx) |
-| chrome-devtools | Chrome debugging and inspection | `chrome-devtools-mcp` (npx) |
+| chrome-devtools | Browser debugging, screenshots, design review | `chrome-devtools-mcp` (npx) |
 | XcodeBuildMCP | iOS/macOS build automation | `xcodebuildmcp` (npx) |
+| adobe-photoshop | Adobe Photoshop automation | Custom (adb-mcp, requires uv) |
+| adobe-illustrator | Adobe Illustrator automation | Custom (adb-mcp, requires uv) |
 
 Core MCPs are auto-configured. Optional MCPs require user confirmation during install.
 
@@ -158,6 +159,31 @@ Automatically invoked by orchestrators to load project context before any work.
 
 ---
 
+### orca-record (Session Recording)
+
+Bun-compiled CLI binary that captures session history -- every tool call, file change, and checkpoint. Hooks fire it on session events; cognition-mcp reads the database it writes.
+
+**Location:** `~/.claude/bin/orca-record`
+
+**Database:** `.orca/recording.db` (per-project, gitignored)
+
+**Commands:**
+- `orca-record prompt-submit` - Git status snapshot, start/continue session
+- `orca-record stop` - Transcript capture, file diff, checkpoint creation
+- `orca-record pre-task` - Pre-task file state capture
+- `orca-record post-task` - Subagent checkpoint
+- `orca-record post-todo` - Incremental checkpoint
+- `orca-record rewind` - Restore code + cognitive state to a checkpoint
+
+**Integration with cognition-mcp:**
+The cognition-mcp recording operations (`recording_status`, `recording_query`, `recording_checkpoint`, `recording_compare`, `recording_quality`, `recording_explain`, `recording_rewind`) read from the database that orca-record writes. This enables cognitive fusion -- combining reasoning chains with code change history.
+
+**Requirements:**
+- Bun (for building from source) or pre-built binary from installer
+- Hooks configured in project's `settings.local.json` to fire on session events
+
+---
+
 ### Crawl4AI (Web Content Extraction)
 
 Docker-based web content extraction via SSE. Connects to a local Crawl4AI server running in Docker at `localhost:11235`.
@@ -191,23 +217,6 @@ Docker-based web content extraction via SSE. Connects to a local Crawl4AI server
 - Installed via Docker, not pip or npm
 - Project-scoped: configured in project `.mcp.json` + enabled via `enabledMcpjsonServers`
 - See `mcp/crawl4ai/` in ORCA-OS for configuration reference
-
----
-
-### Playwright (Browser Automation)
-
-Full browser automation for testing, screenshots, and interaction.
-
-**Key Tools:**
-- `browser_navigate` - Navigate to URLs
-- `browser_snapshot` - Get accessibility tree (preferred over screenshots)
-- `browser_click` - Click elements
-- `browser_type` - Type text
-- `browser_take_screenshot` - Capture screenshots
-
-**Configuration options:**
-- `--headless` - Run without visible browser
-- `--caps vision` - Enable vision/screenshot capabilities
 
 ---
 

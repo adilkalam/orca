@@ -32,7 +32,7 @@ Heavy MCPs defined in project `.mcp.json` + enabled via `enabledMcpjsonServers`:
 
 ### cognition-mcp
 
-Sequential thinking storage with accept-store-echo pattern.
+Sequential thinking storage with accept-store-echo pattern and protocol state management.
 
 ```json
 {
@@ -46,12 +46,14 @@ Sequential thinking storage with accept-store-echo pattern.
 
 **Tool:** `cognition` (single tool)
 
-**Accept-Store-Echo Pattern:**
-This MCP is a MIRROR - it stores and echoes, never generates content.
+**Accept-Store-Echo Pattern + Protocol State:**
+This MCP stores and echoes content unchanged. Enhanced checkpoint operation manages protocol state (constraint tracking, gate evaluation, auto-persist at harvest) as free MCP-side computation.
 ```
 MCP receives: { thought: "X" }
 MCP stores:   { thought: "X" }
 MCP returns:  { thought: "X" }  <- UNCHANGED
+
+Checkpoint with protocol fields returns: { protocolState: { activeConstraints, gateStatus, blocked } }
 ```
 
 **Operations (48 total):**

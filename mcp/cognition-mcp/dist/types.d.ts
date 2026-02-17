@@ -211,6 +211,23 @@ export interface CheckpointContent {
     keyFindings?: string[];
     openQuestions?: string[];
     nextSteps?: string[];
+    phase?: string;
+    command?: string;
+    addConstraints?: Array<{
+        type: 'FORWARD' | 'FORBIDDEN' | 'QUESTION';
+        text: string;
+    }>;
+    resolveConstraints?: string[];
+    acknowledgeConstraints?: string[];
+    deferConstraints?: Array<{
+        id: string;
+        reason: string;
+    }>;
+    gateCheck?: {
+        selfCheckPassed: boolean;
+        depthGatePassed: boolean;
+        notes?: string;
+    };
 }
 export interface ScientificMethodContent {
     text?: string;
@@ -713,6 +730,19 @@ export type DebugEntry = StoredEntry<DebugContent>;
 export type DecideEntry = StoredEntry<DecideContent>;
 export type MetaEntry = StoredEntry<MetaContent>;
 export type SystemsEntry = StoredEntry<SystemsContent>;
+export interface ProtocolConstraint {
+    id: string;
+    type: 'FORWARD' | 'FORBIDDEN' | 'QUESTION';
+    text: string;
+    status: 'active' | 'resolved' | 'acknowledged' | 'deferred';
+    deferReason?: string;
+}
+export interface ProtocolState {
+    constraints: Map<string, ProtocolConstraint>;
+    nextConstraintId: number;
+    phasesCompleted: string[];
+    command?: string;
+}
 export interface SessionMetadata {
     id: string;
     title: string;
@@ -763,6 +793,12 @@ export interface SessionStores {
 export interface SessionExport {
     metadata: SessionMetadata;
     stores: SessionStores;
+    protocolState?: {
+        constraints: Record<string, ProtocolConstraint>;
+        nextConstraintId: number;
+        phasesCompleted: string[];
+        command?: string;
+    };
     exportedAt: number;
 }
 export interface CognitionRequest {
@@ -801,6 +837,7 @@ export interface SessionStateInterface {
     id: string;
     metadata: SessionMetadata;
     stores: SessionStores;
+    protocolState?: ProtocolState;
     add(type: keyof SessionStores, entry: StoredEntry<any>): void;
     getCount(type: keyof SessionStores): number;
     getTotalCount(): number;
@@ -808,5 +845,6 @@ export interface SessionStateInterface {
     getDuration(): number;
     toExport(): SessionExport;
     markComplete(): void;
+    getOrCreateProtocolState(): ProtocolState;
 }
 //# sourceMappingURL=types.d.ts.map

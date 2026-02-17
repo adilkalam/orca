@@ -610,20 +610,16 @@ configure_mcp_servers() {
 
     # Interactive: Ask about optional MCPs
     local install_xcode="n"
-    local install_playwright="n"
-    local install_puppeteer="n"
     local install_devtools="n"
     local install_adobe="n"
 
     if [ -t 0 ]; then
         echo ""
-        echo -e "    ${YELLOW}Optional MCP servers (browser automation):${NC}"
+        echo -e "    ${YELLOW}Optional MCP servers:${NC}"
+        read -p "    Install Chrome DevTools (browser debugging, screenshots, design review)? [y/N]: " install_devtools
         read -p "    Install XcodeBuildMCP (iOS/macOS development)? [y/N]: " install_xcode
-        read -p "    Install Playwright (browser automation)? [y/N]: " install_playwright
-        read -p "    Install Puppeteer (browser automation)? [y/N]: " install_puppeteer
-        read -p "    Install Chrome DevTools (debugging)? [y/N]: " install_devtools
         echo ""
-        echo -e "    ${YELLOW}Optional MCP servers (creative tools):${NC}"
+        echo -e "    ${YELLOW}Optional creative tools:${NC}"
         read -p "    Install Adobe Creative Cloud MCPs (Photoshop + Illustrator)? [y/N]: " install_adobe
         echo ""
     fi
@@ -702,22 +698,6 @@ if "${install_xcode}".lower() in ['y', 'yes']:
         "type": "stdio",
         "command": "npx",
         "args": ["-y", "xcodebuildmcp@latest"],
-        "env": {}
-    }
-
-if "${install_playwright}".lower() in ['y', 'yes']:
-    optional_servers["playwright"] = {
-        "type": "stdio",
-        "command": "npx",
-        "args": ["-y", "@playwright/mcp@latest", "--headless", "--caps", "vision"],
-        "env": {}
-    }
-
-if "${install_puppeteer}".lower() in ['y', 'yes']:
-    optional_servers["puppeteer"] = {
-        "type": "stdio",
-        "command": "npx",
-        "args": ["-y", "@anthropic-ai/puppeteer-mcp"],
         "env": {}
     }
 

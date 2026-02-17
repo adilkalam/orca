@@ -10,7 +10,7 @@
 ORCA-OS is a Claude Code orchestration system that counteracts trained defaults -- the tendency toward quick, shallow, agreeable output that LLM training optimizes for casual users rather than agentic development workflows. The architecture provides structure that prevents bypassing the capability that already exists in the model.
 
 - **112 agents** across 11 domains
-- **33 commands** (12 lane orchestrators + utilities) + orca-record CLI
+- **37 commands** (12 lane orchestrators + utilities) + orca-record CLI
 - **Project-scoped MCPs** to minimize token usage
 - **Recording layer** for session recording, git-backed checkpoints, and cognitive fusion
 - **Dependency graph** for change impact tracking

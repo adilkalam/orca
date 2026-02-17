@@ -288,19 +288,41 @@ if [ "$WORKSHOP_STATUS" = "loaded" ] && command -v workshop >/dev/null 2>&1; the
   echo ""
 fi
 
+
 # ═══════════════════════════════════════════════════════════
 # RECORDING LAYER CONTEXT
 # ═══════════════════════════════════════════════════════════
 if [ -f ".orca/recording.db" ]; then
   RECORDING_SESSIONS=$(sqlite3 ".orca/recording.db" "SELECT COUNT(*) FROM sessions;" 2>/dev/null || echo "0")
-  RECORDING_EVENTS=$(sqlite3 ".orca/recording.db" "SELECT COUNT(*) FROM events;" 2>/dev/null || echo "0")
+  
+  # Get checkpoint count for current or most recent session
+  CHECKPOINT_COUNT=$(sqlite3 ".orca/recording.db" "
+    SELECT COUNT(*) FROM events 
+    WHERE type = 'checkpoint' 
+    AND session_id = (SELECT id FROM sessions ORDER BY started_at DESC LIMIT 1);
+  " 2>/dev/null || echo "0")
+  
   if [ "$RECORDING_SESSIONS" != "0" ]; then
     echo ""
-    echo "Recording layer active: $RECORDING_SESSIONS sessions, $RECORDING_EVENTS events in .orca/recording.db"
-    echo "For deeper session history context, use cognition-mcp recording_explain operation."
+    echo "═══════════════════════════════════════════════════════════"
+    echo "RECORDING LAYER"
+    echo "═══════════════════════════════════════════════════════════"
+    echo ""
+    if [ "$CHECKPOINT_COUNT" != "0" ]; then
+      echo "Recording active: $CHECKPOINT_COUNT checkpoints. /checkpoints to explore, /restore to undo."
+    else
+      echo "Recording active: No checkpoints yet. Checkpoints created on each prompt."
+    fi
+    echo ""
+    echo "Commands:"
+    echo "  /checkpoints    - View checkpoint history"
+    echo "  /restore N      - Restore to checkpoint #N"
+    echo "  /continue       - Resume previous sessions"
+    echo "  /orca-status    - Current session status"
     echo ""
   fi
 fi
+
 
 # === ORCA-MEM PHASE 4: EPISODE INJECTION ===
 # Query recent episodes from workshop.db entries table (notes with #episode tag)

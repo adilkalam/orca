@@ -76,19 +76,9 @@ class CognitionServer {
       {
         name: 'cognition',
         description:
-          'Structured notepad for reasoning. Stores thoughts, mental models, debugging sessions, ' +
-          'decisions, metacognitive observations, and systems maps. ' +
-          'Claude provides all content; MCP stores and returns with session context. ' +
-          'PATTERN: Accept-Store-Echo. MCP never generates content. ' +
-          '\n\n' +
-          'OPERATIONS: ' +
-          '\n  Core: thought, mental_model, debug, decide, meta, systems' +
-          '\n  Reasoning: creative_thinking, collaborative_reasoning, socratic_method, structured_argumentation, scientific_method, analogical_reasoning' +
-          '\n  Analysis: tree_of_thought, causal_analysis, orchestration_suggest' +
-          '\n  Strategic: ooda_loop, ulysses_protocol, checkpoint' +
-          '\n  Session: session_info, session_export, session_import, reasoning_stats' +
-          '\n  Recording: recording_status, recording_query, recording_checkpoint, recording_compare, recording_quality, recording_explain, recording_rewind' +
-          '\n  (Additional: beam_search, mcts, graph_of_thought, research, statistical_reasoning, simulation, optimization, ethical_analysis, visual_dashboard, visual_reasoning, pdr_reasoning, custom_framework, code_execution, notebook_*)',
+          'Structured reasoning notepad. Stores thoughts, mental models, debugging sessions, decisions, metacognitive observations, and systems maps. Claude provides all content; MCP stores and returns with session context. PATTERN: Accept-Store-Echo.' +
+          '\n\nOperations: thought, mental_model, list_mental_models, debug, decide, meta, systems, creative_thinking, visual_reasoning, checkpoint, scientific_method, collaborative_reasoning, socratic_method, structured_argumentation, tree_of_thought, beam_search, mcts, graph_of_thought, orchestration_suggest, research, analogical_reasoning, causal_analysis, statistical_reasoning, simulation, optimization, ethical_analysis, visual_dashboard, pdr_reasoning, custom_framework, code_execution, ooda_loop, ulysses_protocol, audit, notebook_create, notebook_add_cell, notebook_run_cell, notebook_export, session_info, session_export, session_import, reasoning_stats, recording_status, recording_query, recording_checkpoint, recording_compare, recording_quality, recording_explain, recording_rewind' +
+          '\n\nProtocol: checkpoint supports constraint tracking + gate evaluation + auto-persist at harvest. Session context preserved across calls via sessionId. Recording operations query .orca/recording.db.',
         inputSchema: {
           type: 'object',
           properties: {

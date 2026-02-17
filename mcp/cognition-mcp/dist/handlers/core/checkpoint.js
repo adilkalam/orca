@@ -1,14 +1,229 @@
 /**
- * Checkpoint Handler - Accept-Store-Echo Pattern
+ * Checkpoint Handler - Accept-Store-Echo Pattern + Protocol State Management
  *
- * CRITICAL: This handler follows the accept-store-echo pattern exactly.
- * The MCP is a MIRROR. It cannot generate, suggest, enhance, or transform.
+ * Core pattern: accept-store-echo (unchanged content always stored).
+ * Enhancement: When protocol fields are present, MCP manages constraint state,
+ * evaluates gates, and auto-persists at harvest. This is FREE computation
+ * (runs in MCP process, not in context window).
  *
  * Note: Checkpoints do not have nextThoughtNeeded - they are state saves mid-chain.
  */
 import { validateOperationContent } from '../../schema.js';
 import { getSessionManager } from '../../session/manager.js';
 import { buildResponse } from '../shared.js';
+import { writeFileSync, mkdirSync, existsSync } from 'fs';
+import { join } from 'path';
+/**
+ * Check if checkpoint content includes any protocol state fields.
+ */
+function hasProtocolFields(content) {
+    return !!(content.phase ||
+        content.command ||
+        content.addConstraints ||
+        content.resolveConstraints ||
+        content.acknowledgeConstraints ||
+        content.deferConstraints ||
+        content.gateCheck);
+}
+/**
+ * Process protocol state updates from checkpoint content.
+ * Returns a summary object for the response.
+ */
+function processProtocolState(session, content) {
+    const state = session.getOrCreateProtocolState();
+    // Set command if provided
+    if (content.command) {
+        state.command = content.command;
+    }
+    // Track phase completion
+    if (content.phase) {
+        if (!state.phasesCompleted.includes(content.phase)) {
+            state.phasesCompleted.push(content.phase);
+        }
+    }
+    // Add new constraints with auto-assigned IDs
+    if (content.addConstraints) {
+        for (const c of content.addConstraints) {
+            const id = `C${state.nextConstraintId++}`;
+            state.constraints.set(id, {
+                id,
+                type: c.type,
+                text: c.text,
+                status: 'active',
+            });
+        }
+    }
+    // Resolve constraints
+    if (content.resolveConstraints) {
+        for (const id of content.resolveConstraints) {
+            const constraint = state.constraints.get(id);
+            if (constraint) {
+                constraint.status = 'resolved';
+            }
+        }
+    }
+    // Acknowledge constraints
+    if (content.acknowledgeConstraints) {
+        for (const id of content.acknowledgeConstraints) {
+            const constraint = state.constraints.get(id);
+            if (constraint) {
+                constraint.status = 'acknowledged';
+            }
+        }
+    }
+    // Defer constraints with reason
+    if (content.deferConstraints) {
+        for (const d of content.deferConstraints) {
+            const constraint = state.constraints.get(d.id);
+            if (constraint) {
+                constraint.status = 'deferred';
+                constraint.deferReason = d.reason;
+            }
+        }
+    }
+    // Build response summary
+    const allConstraints = Array.from(state.constraints.values());
+    const activeConstraints = allConstraints.filter(c => c.status === 'active');
+    const resolvedCount = allConstraints.filter(c => c.status === 'resolved').length;
+    const deferredCount = allConstraints.filter(c => c.status === 'deferred').length;
+    // Evaluate gate if requested
+    const gateStatus = evaluateGate(state, content);
+    // Generate next suggestion
+    let nextSuggestion;
+    if (activeConstraints.length > 0 && content.phase === 'harvest') {
+        nextSuggestion = `${activeConstraints.length} active constraint(s) remain. Address before harvest.`;
+    }
+    else if (activeConstraints.length > 0) {
+        nextSuggestion = `${activeConstraints.length} active constraint(s): ${activeConstraints.map(c => c.id).join(', ')}`;
+    }
+    return {
+        protocolState: {
+            activeConstraints: allConstraints.map(c => ({
+                id: c.id,
+                type: c.type,
+                text: c.text,
+                status: c.status,
+            })),
+            resolvedCount,
+            deferredCount,
+            gateStatus: gateStatus.status,
+            blocked: gateStatus.blocked,
+            phasesCompleted: [...state.phasesCompleted],
+            ...(nextSuggestion ? { nextSuggestion } : {}),
+        },
+    };
+}
+/**
+ * Evaluate gate status based on protocol state and gate check input.
+ */
+function evaluateGate(state, content) {
+    if (!content.gateCheck) {
+        // No gate check requested - just report blocked status
+        const activeCount = Array.from(state.constraints.values())
+            .filter(c => c.status === 'active').length;
+        const isHarvest = content.phase === 'harvest';
+        return {
+            status: null,
+            blocked: isHarvest && activeCount > 0,
+        };
+    }
+    const { selfCheckPassed, depthGatePassed } = content.gateCheck;
+    const activeCount = Array.from(state.constraints.values())
+        .filter(c => c.status === 'active').length;
+    const isHarvest = content.phase === 'harvest';
+    // Gate evaluation logic
+    if (!selfCheckPassed || !depthGatePassed) {
+        return { status: 'HARD_FAIL', blocked: true };
+    }
+    if (isHarvest && activeCount > 0) {
+        return { status: 'SOFT_FAIL', blocked: true };
+    }
+    if (activeCount > 0) {
+        return { status: 'SOFT_FAIL', blocked: false };
+    }
+    return { status: 'PASS', blocked: false };
+}
+/**
+ * Auto-persist session summary when phase is 'harvest'.
+ * Writes a markdown file to .claude/cognition/ in the project directory.
+ */
+function autoPersistHarvest(session, content, projectPath) {
+    if (content.phase !== 'harvest')
+        return null;
+    try {
+        const basePath = projectPath || process.cwd();
+        const cogDir = join(basePath, '.claude', 'cognition');
+        if (!existsSync(cogDir)) {
+            mkdirSync(cogDir, { recursive: true });
+        }
+        // Generate filename
+        const now = new Date();
+        const dateStr = now.toISOString().slice(0, 10).replace(/-/g, '');
+        const timeStr = now.toISOString().slice(11, 16).replace(':', '');
+        const command = session.protocolState?.command || 'session';
+        const summaryText = content.summary || content.text || 'analysis';
+        const slug = summaryText
+            .toLowerCase()
+            .replace(/[^a-z0-9]+/g, '-')
+            .slice(0, 30)
+            .replace(/-+$/, '');
+        const filename = `${dateStr}-${timeStr}-${slug}.md`;
+        const filepath = join(cogDir, filename);
+        // Aggregate key findings from all checkpoints
+        const allCheckpoints = session.getAll('checkpoints');
+        const allFindings = [];
+        for (const cp of allCheckpoints) {
+            if (cp.content?.keyFindings) {
+                allFindings.push(...cp.content.keyFindings);
+            }
+        }
+        if (content.keyFindings) {
+            allFindings.push(...content.keyFindings);
+        }
+        // Collect deferred constraints
+        const deferred = [];
+        if (session.protocolState) {
+            for (const c of session.protocolState.constraints.values()) {
+                if (c.status === 'deferred') {
+                    deferred.push(`- ${c.id}: ${c.text}${c.deferReason ? ` (${c.deferReason})` : ''}`);
+                }
+            }
+        }
+        const dateFormatted = `${now.toISOString().slice(0, 10)} ${now.toISOString().slice(11, 16)}`;
+        const commandLabel = command === 'deepthink' ? 'DeepThink' : command === 'problem-solve' ? 'ProblemSolve' : command;
+        const md = [
+            `# ${commandLabel}: ${summaryText.slice(0, 80)}`,
+            '',
+            `**Date**: ${dateFormatted}`,
+            `**Session ID**: ${session.id}`,
+            `**Command**: /${command}`,
+            '',
+            '## Executive Summary',
+            '',
+            content.summary || '(No summary provided)',
+            '',
+            '## Key Findings',
+            '',
+            ...(allFindings.length > 0 ? allFindings.map(f => `- ${f}`) : ['- (none)']),
+            '',
+            ...(deferred.length > 0
+                ? ['## Deferred Constraints', '', ...deferred, '']
+                : []),
+            '## Recovery',
+            '',
+            'To resume full analysis:',
+            '```',
+            `/think --import ${session.id}`,
+            '```',
+        ].join('\n');
+        writeFileSync(filepath, md, 'utf-8');
+        return { persisted: true, file: filepath };
+    }
+    catch {
+        // Auto-persist errors must not crash the checkpoint operation
+        return { persisted: false };
+    }
+}
 export async function handleCheckpoint(args, session) {
     const manager = getSessionManager();
     // 1. VALIDATE structure (not content)
@@ -40,8 +255,18 @@ export async function handleCheckpoint(args, session) {
     };
     // 3. PERSIST to filesystem
     await manager.addEntry(session, 'checkpoints', entry);
-    // Checkpoints never complete the session - they are mid-chain saves
-    // 4. ECHO unchanged + context (respects verbose flag)
-    return buildResponse(checkpointContent, args, session, 'checkpoints', 'stored');
+    // 4. Process protocol state if protocol fields are present
+    let extra;
+    if (hasProtocolFields(checkpointContent)) {
+        const protocolResult = processProtocolState(session, checkpointContent);
+        // Auto-persist at harvest
+        const persistResult = autoPersistHarvest(session, checkpointContent, args.projectPath);
+        if (persistResult) {
+            protocolResult.autoPersist = persistResult;
+        }
+        extra = protocolResult;
+    }
+    // 5. ECHO unchanged + context + protocol state (respects verbose flag)
+    return buildResponse(checkpointContent, args, session, 'checkpoints', 'stored', null, extra);
 }
 //# sourceMappingURL=checkpoint.js.map

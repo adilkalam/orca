@@ -364,6 +364,24 @@ export interface CheckpointContent {
   keyFindings?: string[];
   openQuestions?: string[];
   nextSteps?: string[];
+  // Protocol state fields (all optional, backward compatible)
+  phase?: string;
+  command?: string;
+  addConstraints?: Array<{
+    type: 'FORWARD' | 'FORBIDDEN' | 'QUESTION';
+    text: string;
+  }>;
+  resolveConstraints?: string[];
+  acknowledgeConstraints?: string[];
+  deferConstraints?: Array<{
+    id: string;
+    reason: string;
+  }>;
+  gateCheck?: {
+    selfCheckPassed: boolean;
+    depthGatePassed: boolean;
+    notes?: string;
+  };
 }
 
 export interface ScientificMethodContent {
@@ -981,6 +999,25 @@ export type MetaEntry = StoredEntry<MetaContent>;
 export type SystemsEntry = StoredEntry<SystemsContent>;
 
 // ============================================================================
+// PROTOCOL STATE (constraint tracking + gate evaluation)
+// ============================================================================
+
+export interface ProtocolConstraint {
+  id: string;
+  type: 'FORWARD' | 'FORBIDDEN' | 'QUESTION';
+  text: string;
+  status: 'active' | 'resolved' | 'acknowledged' | 'deferred';
+  deferReason?: string;
+}
+
+export interface ProtocolState {
+  constraints: Map<string, ProtocolConstraint>;
+  nextConstraintId: number;
+  phasesCompleted: string[];
+  command?: string;
+}
+
+// ============================================================================
 // SESSION STATE
 // ============================================================================
 
@@ -1044,6 +1081,12 @@ export interface SessionStores {
 export interface SessionExport {
   metadata: SessionMetadata;
   stores: SessionStores;
+  protocolState?: {
+    constraints: Record<string, ProtocolConstraint>;
+    nextConstraintId: number;
+    phasesCompleted: string[];
+    command?: string;
+  };
   exportedAt: number;
 }
 
@@ -1109,6 +1152,7 @@ export interface SessionStateInterface {
   id: string;
   metadata: SessionMetadata;
   stores: SessionStores;
+  protocolState?: ProtocolState;
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   add(type: keyof SessionStores, entry: StoredEntry<any>): void;
@@ -1118,4 +1162,5 @@ export interface SessionStateInterface {
   getDuration(): number;
   toExport(): SessionExport;
   markComplete(): void;
+  getOrCreateProtocolState(): ProtocolState;
 }

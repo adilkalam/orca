@@ -3,11 +3,12 @@
  *
  * Stores entries exactly as received. No transformation.
  */
-import type { SessionMetadata, SessionStores, SessionExport, StoredEntry, SessionStateInterface } from '../types.js';
+import type { SessionMetadata, SessionStores, SessionExport, StoredEntry, SessionStateInterface, ProtocolState } from '../types.js';
 export declare class SessionState implements SessionStateInterface {
     id: string;
     metadata: SessionMetadata;
     stores: SessionStores;
+    protocolState?: ProtocolState;
     constructor(id: string, title?: string, tags?: string[], projectPath?: string);
     /**
      * Add an entry to the specified store.
@@ -34,6 +35,10 @@ export declare class SessionState implements SessionStateInterface {
      * Mark session as complete.
      */
     markComplete(): void;
+    /**
+     * Get or lazily create protocol state for constraint tracking.
+     */
+    getOrCreateProtocolState(): ProtocolState;
     /**
      * Export session for persistence or reimport.
      */

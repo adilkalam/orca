@@ -219,6 +219,19 @@ export class SessionState {
         this.metadata.lastAccessedAt = Date.now();
     }
     /**
+     * Get or lazily create protocol state for constraint tracking.
+     */
+    getOrCreateProtocolState() {
+        if (!this.protocolState) {
+            this.protocolState = {
+                constraints: new Map(),
+                nextConstraintId: 1,
+                phasesCompleted: [],
+            };
+        }
+        return this.protocolState;
+    }
+    /**
      * Export session for persistence or reimport.
      */
     toExport() {
@@ -269,6 +282,14 @@ export class SessionState {
                 // Codebase audit store
                 audit: [...this.stores.audit],
             },
+            ...(this.protocolState ? {
+                protocolState: {
+                    constraints: Object.fromEntries(this.protocolState.constraints),
+                    nextConstraintId: this.protocolState.nextConstraintId,
+                    phasesCompleted: [...this.protocolState.phasesCompleted],
+                    ...(this.protocolState.command ? { command: this.protocolState.command } : {}),
+                },
+            } : {}),
             exportedAt: Date.now(),
         };
     }
@@ -323,6 +344,16 @@ export class SessionState {
             // Codebase audit store (with fallback for older exports)
             audit: [...(data.stores.audit || [])],
         };
+        // Restore protocol state if present (backward compatible with old exports)
+        if (data.protocolState) {
+            const ps = data.protocolState;
+            session.protocolState = {
+                constraints: new Map(Object.entries(ps.constraints || {})),
+                nextConstraintId: ps.nextConstraintId || 1,
+                phasesCompleted: [...(ps.phasesCompleted || [])],
+                ...(ps.command ? { command: ps.command } : {}),
+            };
+        }
         return session;
     }
 }

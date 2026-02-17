@@ -10,12 +10,15 @@ import type {
   SessionExport,
   StoredEntry,
   SessionStateInterface,
+  ProtocolState,
+  ProtocolConstraint,
 } from '../types.js';
 
 export class SessionState implements SessionStateInterface {
   id: string;
   metadata: SessionMetadata;
   stores: SessionStores;
+  protocolState?: ProtocolState;
 
   constructor(id: string, title?: string, tags?: string[], projectPath?: string) {
     this.id = id;
@@ -242,6 +245,20 @@ export class SessionState implements SessionStateInterface {
   }
 
   /**
+   * Get or lazily create protocol state for constraint tracking.
+   */
+  getOrCreateProtocolState(): ProtocolState {
+    if (!this.protocolState) {
+      this.protocolState = {
+        constraints: new Map<string, ProtocolConstraint>(),
+        nextConstraintId: 1,
+        phasesCompleted: [],
+      };
+    }
+    return this.protocolState;
+  }
+
+  /**
    * Export session for persistence or reimport.
    */
   toExport(): SessionExport {
@@ -292,6 +309,14 @@ export class SessionState implements SessionStateInterface {
         // Codebase audit store
         audit: [...this.stores.audit],
       },
+      ...(this.protocolState ? {
+        protocolState: {
+          constraints: Object.fromEntries(this.protocolState.constraints),
+          nextConstraintId: this.protocolState.nextConstraintId,
+          phasesCompleted: [...this.protocolState.phasesCompleted],
+          ...(this.protocolState.command ? { command: this.protocolState.command } : {}),
+        },
+      } : {}),
       exportedAt: Date.now(),
     };
   }
@@ -353,6 +378,17 @@ export class SessionState implements SessionStateInterface {
       // Codebase audit store (with fallback for older exports)
       audit: [...(data.stores.audit || [])],
     };
+
+    // Restore protocol state if present (backward compatible with old exports)
+    if (data.protocolState) {
+      const ps = data.protocolState;
+      session.protocolState = {
+        constraints: new Map(Object.entries(ps.constraints || {})),
+        nextConstraintId: ps.nextConstraintId || 1,
+        phasesCompleted: [...(ps.phasesCompleted || [])],
+        ...(ps.command ? { command: ps.command } : {}),
+      };
+    }
 
     return session;
   }
