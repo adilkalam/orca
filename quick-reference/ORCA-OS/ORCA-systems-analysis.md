@@ -1,4 +1,4 @@
-# ORCA-OS v6.0 Systems Analysis
+# ORCA-OS v6.2 Systems Analysis
 
 **Generated:** 2026-02-07
 **Source of Truth:** `docs/reference/os-dependency-graph.yaml`
@@ -36,15 +36,16 @@ User entry points invoked via `/command`.
 | Reasoning | 6 | `/think`, `/contemplate`, `/challenge`, `/ultra-think`, `/deepthink`, `/problem-solve` |
 | Utility | 13 | `/enhance`, `/root-cause`, `/design-dna`, `/design-review`, `/clone-website`, `/session-save`, `/session-resume`, `/project-memory`, `/project-code`, `/reflect`, `/self-improve`, `/memory-search`, `/project-setup` |
 
-### Three-Tier Routing
+### Four-Tier Routing
 
-All lane commands support three execution modes. This is the central routing mechanism of OS 6.0.
+All lane commands support four execution modes. This is the central routing mechanism of OS 6.2.
 
 | Mode | Flag | Path | Gates | Use Case |
 |------|------|------|-------|----------|
-| **Tweak** | `-tweak` | Light orchestrator + builder | NO | Speed iteration, user verifies |
-| **Default** | (none) | Light orchestrator + builder + gates | YES | Most work -- fast with quality |
-| **Complex** | `--complex` | Grand-architect + full pipeline + all gates | YES | Architecture, multi-file, specs |
+| **Light** | `--light` | Light orchestrator | YES | Confident users, skip confirmation |
+| **Default** | (none) | Light + Confirmation | YES | Most work -- fast with quality |
+| **Tweak** | `-tweak` | Builder direct | NO | Speed iteration, user verifies |
+| **Complex** | `--complex` | Full pipeline | YES | Architecture, multi-file, specs |
 
 Key inversion from earlier versions: Default mode now runs gates. Tweak is the explicit opt-out.
 
@@ -275,7 +276,7 @@ Lifecycle scripts in `hooks/`.
 
 | Hook | Trigger | Purpose |
 |------|---------|---------|
-| session-start.sh | SessionStart | Load context, Workshop summary, telemetry init |
+| session-start.sh | SessionStart | Load context, Workshop summary, active task |
 | session-end.sh | SessionEnd | Extract learnings from JSONL transcripts via Ollama |
 | auto-deploy.sh | PostToolUse (Edit/Write) | Sync ORCA-OS to ~/.claude |
 | file-location-guard.sh | PostToolUse (*) | Enforce .claude/ for artifacts |
@@ -314,7 +315,7 @@ Three-layer memory system feeding into ProjectContext MCP.
 | code-index.db | .claude/memory/code-index.db | `python3 ~/.claude/scripts/code-index.py <cmd>` |
 | project-meta | MCP cache | ProjectContext MCP auto-detection |
 
-### ProjectContext Implementation (OS 6.0)
+### ProjectContext Implementation (OS 6.2)
 
 The MCP uses a hybrid approach:
 - **Reads:** Direct SQLite queries via `better-sqlite3` (reliable, no CLI parsing)
@@ -411,7 +412,7 @@ Templates live at `quick-reference/thinking-models/*.md`.
 
 ## Verification System
 
-OS 6.0 uses graduated gate scoring, not binary pass/fail.
+OS 6.2 uses graduated gate scoring, not binary pass/fail.
 
 ### Graduated Gate Labels
 
@@ -486,7 +487,7 @@ Gate agents check RA status from implementation phases and factor unresolved ass
 
 ## Self-Improvement System
 
-OS 6.0 provides learning at three levels, unified by the Improvement Bus.
+OS 6.2 provides learning at three levels, unified by the Improvement Bus.
 
 ### Three Levels
 
@@ -528,36 +529,39 @@ Verification questions that fail 2+ times become mandatory checks in `.claude/ag
 
 ---
 
-## Telemetry
+## Recording Layer
 
-Pipeline execution tracking for debugging and performance analysis.
+Session activity is captured automatically by the **orca-record** recording layer via Claude Code hooks. The recording database (`.orca/recording.db`) stores session history, file changes, and checkpoints.
 
-### Events
+### Recording Context Injection
 
-| Event | When | Data Captured |
-|-------|------|---------------|
-| `pipeline_start` | Lane command starts | Domain, task, mode (tweak/default/complex) |
-| `gate_result` | Gate completes | Score, decision, issue count |
-| `pipeline_end` | Pipeline completes | Status, duration, files modified |
+Domain commands inject prior session context from the recording layer before delegating to agents:
 
-### Trace ID Format
+1. `/orca` queries `recording_query` for prior sessions related to the task
+2. `/orca` calls `recording_explain` on the most relevant session
+3. The narrative summary (max 500 chars) is passed as `RECORDING_CONTEXT`
+4. Domain grand-architects receive this context in their delegation prompt
 
-```
-{domain}-{timestamp}-{random}
-nextjs-20260124T143022-a7b3
-```
+Domain commands (`/nextjs`, `/ios`, `/expo`, etc.) check for inherited `RECORDING_CONTEXT` first. If invoked directly, they query `.orca/recording.db` independently.
+
+### Key Operations
+
+| Operation | Purpose |
+|-----------|---------|
+| `recording_query` | Find prior sessions by files, limit, state |
+| `recording_explain` | Get narrative summary of a specific session |
+| `recording_checkpoint` | Create git-backed snapshot |
+| `recording_rewind` | Restore code and cognitive state |
 
 ### Storage
 
 ```
-.claude/telemetry/
-  sessions/
-    trace-{domain}-{timestamp}-{random}.jsonl
-  index.json
+.orca/recording.db     # Per-project SQLite (gitignored)
+orca/<hash>-<wt>       # Shadow branches (per-session checkpoints)
+orca/checkpoints/v1    # Orphan branch (permanent storage)
 ```
 
-Viewer: `~/.claude/scripts/telemetry-viewer.sh --recent`
-Retention: 7 days.
+CLI: `orca-record` (16 commands). Supersedes legacy telemetry.
 
 ---
 
@@ -652,7 +656,7 @@ Cognitive analysis persists as files on disk. When the context window compacts, 
 5. **Context mandatory**: All agents call ProjectContext MCP first
 6. **State preserved**: phase_state.json enables resumption across sessions
 7. **All Opus 4.6**: Default model across all 112 agents, never specified
-8. **Three-tier routing**: -tweak (fast) / default (fast+gates) / --complex (full pipeline)
+8. **Four-tier routing**: --light (fast, no confirmation) / default (fast+gates) / -tweak (builder direct) / --complex (full pipeline)
 9. **User approval required**: Agents never auto-modify; improvements need explicit approval
 
 ---
@@ -685,7 +689,6 @@ Cognitive analysis persists as files on disk. When the context window compacts, 
     temp/                   # Working files (clean up after)
   requirements/             # Planning outputs
   cognition/                # Cognitive analysis persistence
-  telemetry/                # Pipeline traces
   improvement-events/       # Improvement Bus event log
   agent-knowledge/          # Per-agent pattern files
   audit/                    # Audit reports and index
@@ -694,4 +697,4 @@ Cognitive analysis persists as files on disk. When the context window compacts, 
 ---
 
 _Source of truth: `docs/reference/os-dependency-graph.yaml`_
-_Version: OS 6.0 | Generated: 2026-02-07_
+_Version: OS 6.2 | Generated: 2026-02-07_

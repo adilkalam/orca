@@ -4,7 +4,7 @@
 | | | | |_) | |     / _ \  | | | \___ \
 | |_| |  _ <| |___ / ___ \ | |_| |___) |
  \___/|_| \_\\____/_/   \_\ \___/|____/
-                                    v6.0
+                                    v6.2
 ```
 > **[QUICK-START.md](QUICK-START.md)**
 
@@ -130,11 +130,12 @@ ORCA is a loop, not a pipeline. Cognition—ie. extensive thinking—and plannin
             |                          |
             v                          v
 +---------------------+    +------------------------+
-|       MEMORY        |    |       COGNITION        |
+|   MEMORY+RECORDING  |    |       COGNITION        |
 |                     |--->|                        |
 |  past decisions     |    |  /deepthink            |
 |  gotchas            |    |  /problem-solve        |
 |  project context    |    |  /challenge            |
+|  recent sessions    |    |                        |
 +---------------------+    +----------+-------------+
             ^                          |
             |                          v
@@ -150,6 +151,7 @@ ORCA is a loop, not a pipeline. Cognition—ie. extensive thinking—and plannin
             |              |                        |
             |              |  specialists execute   |
             |              |  against the spec      |
+            |              |       [recording]      |
             |              +----------+-------------+
             |                         |
             |                         v
@@ -173,9 +175,10 @@ ORCA is a loop, not a pipeline. Cognition—ie. extensive thinking—and plannin
                  +------------------+
 ```
 
-Two feedback loops:
+Three feedback loops:
 - Inner: gate fails, work goes back, iterate until it passes.
-- Outer: completed work feeds self-improvement, which updates memory for future sessions. 
+- Outer: completed work feeds self-improvement, which updates memory for future sessions.
+- Recording: every session's tool calls and file changes persist outside the context window. The next session replays what's relevant before agents start work.
 
 The loop changes both sides -- Claude learns what to watch for, and you learn to engage at the depth the system rewards.
 
@@ -377,7 +380,7 @@ Multi-agent orchestration pipelines are a lens, not a source. It focuses whateve
 
 Send a vague prompt into a pipeline and you get a focused version of vague. Send a detailed spec and you get the thing you actually wanted.
 
-112 agents across 11 domains (iOS, Next.js, Django-React, Expo, Research, SEO, Data, Audit, and more). Role separation is strict: orchestrators coordinate and never write code, specialists implement scoped tasks, gates validate and never fix.
+124 agents across 13 domains (iOS, Next.js, Django-React, Expo, Research, SEO, Data, Audit, and more). Role separation is strict: orchestrators coordinate and never write code, specialists implement scoped tasks, gates validate and never fix.
 
 The agents are effective because of what they know -- extracted from studying market leaders and others:
 
@@ -391,6 +394,7 @@ Routing modes match complexity to effort:
 | Mode | What happens | When to use |
 |------|-------------|-------------|
 | **Default** | Builder + quality gates | Most work. Fast with automated checks. |
+| **--light** | Builder + quality gates, no confirmation step | You know what you want. Skip the "are you sure?" |
 | **--explore** | Divergent exploration, produces tentative brief | Half-baked ideas, early-stage thinking. Explores before committing. |
 | **--problem-solve** | Root-cause analysis with structured reasoning | Something is broken and you don't know why. Traces symptoms to causes. |
 | **-tweak** | Builder only, no gates | Rapid iteration. You verify yourself. |
@@ -455,17 +459,21 @@ Session 50 is different from session 1. And so is the person using it -- you lea
 
 Every Claude Code session starts blank. You explained your architecture yesterday. Today it asks again. The same decisions, the same constraints, the same "no, we tried that and it didn't work."
 
-Three memory systems change this:
+Four systems change this:
 
 - **Workshop** stores decisions and the reasoning behind them. "Why did we choose WebSockets?" returns the actual context from when the decision was made -- not a guess, the original reasoning.
 - **Code-index** searches your codebase by meaning, not just filename.
 - **ProjectContext** bundles everything relevant for a task -- files, state, decisions, similar past work. Agents start informed, not blank.
+- **Recording** captures what actually happened during sessions -- tool calls, file changes, decisions. Before agents start work, relevant history from recent sessions gets injected automatically. Session 12 knows what session 11 tried.
+
+The first three store structured artifacts: decisions, code knowledge, context bundles. But they miss the narrative -- what was tried, what failed, what was decided in the moment. Context compaction destroys tokens mid-session, and session boundaries destroy everything else. Recording persists the actual session history outside the context window. Before agents start working, commands inject relevant history from recent sessions. The result is that sessions build on each other automatically, not because someone remembered to write things down, but because the system was watching.
 
 Session continuity is automatic:
 
 - `/session-save` captures context; the next session loads it on startup
 - Cognitive commands persist output as files, not tokens -- survives context compaction
 - Large tool outputs truncated intelligently, middle archived for recall
+- Session recordings persist tool calls and file changes across sessions
 
 Read the [full guide on memory](quick-reference/ORCA-OS/ORCA-memory.md).
 
@@ -499,7 +507,8 @@ Claude Desktop gives you a capable one-pass analysis from training data. ORCA gi
 | **project-context** | Memory across sessions. Decisions, gotchas, preferences. Semantic code search. Context bundles per task. |
 | **sequential-thinking** | Multi-step reasoning with revision and backtracking. |
 | **context7** | Up-to-date library documentation instead of stale training data. |
-| **Verification MCPs** | Domain-specific proof. XcodeBuildMCP for iOS builds, Puppeteer for screenshots, Crawl4AI for research. |
+| **orca-record** | Session recording and replay. Captures every tool call and file change. Injects relevant history before agents start work. |
+| **Verification MCPs** | Domain-specific proof. XcodeBuildMCP for iOS builds, Chrome DevTools for live debugging and screenshots, Crawl4AI for research. |
 
 ---
 
@@ -529,4 +538,4 @@ Claude Desktop gives you a capable one-pass analysis from training data. ORCA gi
 
 ---
 
-**ORCA OS v6.0** -- [Documentation](DOCUMENTATION.md) -- [Quick Start](QUICK-START.md)
+**ORCA OS v6.2** -- [Documentation](DOCUMENTATION.md) -- [Quick Start](QUICK-START.md)

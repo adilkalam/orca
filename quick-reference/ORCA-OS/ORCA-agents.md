@@ -1,14 +1,14 @@
-# OS 6.0 Agents Quick Reference
+# OS 6.2 Agents Quick Reference
 
 **Last Updated:** 2026-02-16
-**Version:** OS 6.0
+**Version:** OS 6.2
 **Total Agents:** 112
 
 > **Scope Note:** This quick-reference covers all 112 agents across 11 domains. See `docs/reference/os-dependency-graph.yaml` for complete registry.
 
 ---
 
-## Agent Architecture (OS 6.0)
+## Agent Architecture (OS 6.2)
 
 **All Agents Use Opus 4.6:**
 - Grand architects (coordination & architecture)
@@ -92,7 +92,7 @@
 ### Implementation
 | Agent | Purpose |
 |-------|---------|
-| `nextjs-builder` | Next.js implementation specialist |
+| `nextjs-builder` | Next.js implementation specialist with proactive design thinking (Design Intent phase) |
 | `nextjs-layout-analyzer` | Structure-first layout analysis |
 | `nextjs-layout-specialist` | Complex layout implementation |
 | `nextjs-css-specialist` | Semantic CSS, @layer, design tokens |
@@ -107,7 +107,7 @@
 ### Gates
 | Agent | Purpose | Threshold |
 |-------|---------|-----------|
-| `nextjs-standards-enforcer` | Code standards, token usage | >=90 |
+| `nextjs-standards-enforcer` | Code standards, token usage, feature completeness (loading/error/form/nav checks) | >=90 |
 | `nextjs-design-reviewer` | Design QA, visual compliance | >=90 |
 | `nextjs-verification-agent` | Build/test/lint verification | PASS/FAIL |
 

@@ -1,11 +1,11 @@
-# OS 6.0 MCP Reference
+# OS 6.2 MCP Reference
 
 **Last Updated:** 2026-02-16
-**Version:** OS 6.0
+**Version:** OS 6.2
 
 ---
 
-## MCP Scoping Strategy (OS 6.0)
+## MCP Scoping Strategy (OS 6.2)
 
 MCPs are now project-scoped to reduce token bloat:
 
@@ -119,7 +119,7 @@ Mandatory context provider for all agents.
 - `reanalyze_project` - Re-analyze project after changes
 - `recall` - Retrieve full archived tool output by ID (ORCA-Mem)
 
-**Implementation (OS 6.0):**
+**Implementation (OS 6.2):**
 - **Reads:** SQLite direct access to `workshop.db` via `better-sqlite3`
 - **Writes:** Workshop CLI for schema migration compatibility
 - **Symlink:** Auto-creates `.workshop -> .claude/memory` on macOS/Linux
@@ -195,7 +195,7 @@ claude mcp add -s user chrome-devtools -- npx chrome-devtools-mcp@latest --headl
 }
 ```
 
-**Used by:** nextjs-design-reviewer
+**Used by:** nextjs-design-reviewer, shopify-ui-reviewer
 **Scope:** Global (user-level)
 
 ### puppeteer (Web) -- DEPRECATED
@@ -347,6 +347,7 @@ OpenSCAD 3D rendering capabilities for AI assistants. Provides tools for single 
 | SEO | ahrefs, crawl4ai |
 | Data | (none) |
 | Audit | cognition-mcp |
+| Shopify | chrome-devtools |
 | Typography | (none) |
 | OS-Dev | (none) |
 | orca-pipeline | (none) |

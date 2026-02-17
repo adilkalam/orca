@@ -1,5 +1,5 @@
 ---
-description: "OS 6.0 Expo/React Native Orchestrator – coordinates the Expo lane pipeline, never writes code"
+description: "OS 6.2 Expo/React Native Orchestrator – coordinates the Expo lane pipeline, never writes code"
 argument-hint: "[--light | -tweak | --complex] <task description or requirement ID>"
 allowed-tools:
   - Task
@@ -36,7 +36,7 @@ Even `-tweak` delegates to a builder. It skips gates, not agents.
 
 ---
 
-# /expo - Expo Lane Orchestrator (OS 6.0)
+# /expo - Expo Lane Orchestrator (OS 6.2)
 
 Use this command for Expo/React Native mobile work.
 
@@ -73,80 +73,49 @@ No flag → Section 3 (Light Orchestrator WITH confirmation)
 
 ---
 
-## 0.1 Telemetry (OS 6.0) - MUST EXECUTE
+## 0.1 Recording Context (OS 6.2)
 
-**Reference:** `docs/reference/telemetry-standard.md`
+> Session activity is captured automatically by **orca-record** hooks. Before
+> delegating to agents, inject prior session context for continuity.
 
-**MANDATORY: You MUST execute these Bash commands, not just read them.**
+### Recording Context Injection (OPTIONAL)
 
-### At Pipeline Start (EXECUTE THIS)
+**Check for inherited context first:**
+If invoked via `/orca`, check if `RECORDING_CONTEXT` was already provided in
+the delegation prompt. If present, use it directly and skip the query below.
 
-**Step 1:** Generate trace_id and emit pipeline_start event:
+**If no inherited context AND `.orca/recording.db` exists:**
 
-```
-Bash({
-  command: 'TRACE_ID="expo-$(date +%Y%m%dT%H%M%S)-$(LC_ALL=C tr -dc a-z0-9 </dev/urandom | head -c 4)" && mkdir -p .claude/telemetry/sessions && echo "{\"type\":\"pipeline_start\",\"trace_id\":\"$TRACE_ID\",\"ts\":\"$(date -u +%Y-%m-%dT%H:%M:%SZ)\",\"data\":{\"domain\":\"expo\",\"task\":\"$TASK_SUMMARY\",\"mode\":\"$MODE\"}}" >> .claude/telemetry/sessions/trace-$TRACE_ID.jsonl && echo $TRACE_ID',
-  description: "Generate telemetry trace ID"
-})
-```
+1. Query for relevant prior sessions:
+   ```
+   mcp__cognition-mcp__cognition({
+     operation: "recording_query",
+     content: {
+       files: [<files related to current task>],
+       limit: 3,
+       state: "ENDED"
+     }
+   })
+   ```
 
-**Step 2:** Store the returned TRACE_ID for use in delegation prompts.
+2. If sessions found, get narrative for most relevant:
+   ```
+   mcp__cognition-mcp__cognition({
+     operation: "recording_explain",
+     content: {
+       session_id: "<most relevant session id>"
+     }
+   })
+   ```
 
-### At Pipeline End (EXECUTE THIS)
+3. Include in delegation prompt to grand-architect:
+   ```
+   === RECORDING CONTEXT ===
+   <narrative.summary, max 500 chars>
+   ===
+   ```
 
-After all agents complete (or on failure/cancellation), emit pipeline_end:
-
-```
-Bash({
-  command: 'echo "{\"type\":\"pipeline_end\",\"trace_id\":\"$TRACE_ID\",\"ts\":\"$(date -u +%Y-%m-%dT%H:%M:%SZ)\",\"data\":{\"status\":\"$STATUS\",\"duration_sec\":$DURATION,\"total_delegations\":$DELEGATIONS,\"gates_run\":$GATES,\"files_modified\":$FILES}}" >> .claude/telemetry/sessions/trace-$TRACE_ID.jsonl',
-  description: "Log pipeline completion"
-})
-```
-
-Replace variables:
-- `$TRACE_ID`: The trace ID from pipeline start
-- `$STATUS`: "success", "failed", or "cancelled"
-- `$DURATION`: Approximate seconds (estimate is fine)
-- `$DELEGATIONS`: Count of Task tool calls made
-- `$GATES`: Count of gate agents run
-- `$FILES`: Count of files modified
-
-### Passing trace_id to Agents
-
-Include in every Task delegation prompt:
-```
-TELEMETRY_TRACE_ID: <the trace_id>
-```
-
-Agents may log delegation events using this ID (Phase 2).
-
-### After Each Gate (EXECUTE THIS)
-
-When a gate agent (e.g., design-token-guardian, a11y-enforcer, performance-enforcer) returns results, extract and emit:
-
-```
-Bash({
-  command: 'echo "{\"type\":\"gate_result\",\"trace_id\":\"$TRACE_ID\",\"ts\":\"$(date -u +%Y-%m-%dT%H:%M:%SZ)\",\"data\":{\"gate\":\"$GATE_NAME\",\"score\":$SCORE,\"decision\":\"$DECISION\",\"issues_count\":$ISSUES}}" >> .claude/telemetry/sessions/trace-$TRACE_ID.jsonl',
-  description: "Log gate result"
-})
-```
-
-Variables:
-- `$TRACE_ID`: From pipeline start
-- `$GATE_NAME`: Agent name (e.g., "expo-aesthetics-specialist")
-- `$SCORE`: Numeric score (0-100) from gate output
-- `$DECISION`: "PASS", "WARN", "ERROR", or "BLOCK"
-- `$ISSUES`: Count of issues found
-
-### On Failure (EXECUTE THIS)
-
-If pipeline status is "failed" or "cancelled", show viewer hint:
-
-```
-echo ""
-echo "Debug with: ~/.claude/scripts/telemetry-viewer.sh $TRACE_ID"
-echo ""
-```
+**If `.orca/recording.db` does not exist:** skip this section silently.
 
 ---
 
@@ -283,7 +252,7 @@ If memory hits are relevant:
 - Note them for context
 - May skip or reduce ProjectContext query scope
 
-### 1.1.1 Reflexion Loading (OS 6.0)
+### 1.1.1 Reflexion Loading (OS 6.2)
 
 Load relevant reflexions from past gate failures:
 
@@ -585,7 +554,7 @@ Initialize phase_state.json:
 
 Delegate to `expo-grand-orchestrator` with Context Inheritance:
 
-**Context Inheritance Protocol (OS 6.0):**
+**Context Inheritance Protocol (OS 6.2):**
 
 When delegating, wrap the ContextBundle with inheritance headers:
 
@@ -733,7 +702,7 @@ Update phase_state.verification.
 
 ---
 
-## 5. Standards Inputs (OS 6.0 Learning Loop)
+## 5. Standards Inputs (OS 6.2 Learning Loop)
 
 ### Gate Enforcement
 

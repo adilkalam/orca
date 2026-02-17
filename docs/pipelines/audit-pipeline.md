@@ -1,6 +1,6 @@
 # Audit Pipeline
 
-**Status:** OS 6.0 Standalone Diagnostic
+**Status:** OS 6.2 Standalone Diagnostic
 **Type:** `audit` (NOT a /orca pipeline)
 **Last Updated:** 2026-02-13
 
@@ -263,4 +263,4 @@ During audit execution:
 
 ---
 
-_Version: OS 6.0 | Audit Pipeline v1.0_
+_Version: OS 6.2 | Audit Pipeline v1.0_

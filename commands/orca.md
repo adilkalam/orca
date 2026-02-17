@@ -1,5 +1,5 @@
 ---
-description: "OS 6.0 Pure Orchestrator - Coordinates pipelines, never writes code"
+description: "OS 6.2 Pure Orchestrator - Coordinates pipelines, never writes code"
 argument-hint: "[--audit <scope>] <task description or requirement ID>"
 allowed-tools:
   - Task
@@ -250,7 +250,7 @@ Your first tool call MUST NOT be:
 
 ---
 
-# /orca – OS 6.0 Pure Orchestrator
+# /orca – OS 6.2 Pure Orchestrator
 
 **Philosophy:** Orca is a pure coordinator. It NEVER writes code. It detects the pipeline type, queries context ONCE, integrates with /plan if needed, and delegates to domain orchestrators.
 
@@ -263,7 +263,7 @@ Your first tool call MUST NOT be:
 6. **Domain Routing** - Routes to `/{domain}` commands for specialized handling
 7. **Never Codes** - Orchestrates agents, doesn't implement
 
-**OS 6.0 Updates:**
+**OS 6.2 Updates:**
 - Memory-first context (Workshop + code-index.db before ProjectContext)
 - Routes to domain-specific `/{domain}` commands which handle four-tier flag routing
 - Four-tier structure (Reverse Three-Tier):
@@ -284,7 +284,7 @@ pwd
 
 ---
 
-### Step 1.5: Memory-First Context (OS 6.0)
+### Step 1.5: Memory-First Context (OS 6.2)
 
 **Before expensive ProjectContext queries, check local memory:**
 
@@ -300,6 +300,55 @@ python3 ~/.claude/scripts/memory-search-unified.py "$TASK_KEYWORDS" --mode all -
 - Note them for context
 - May skip or reduce ProjectContext query scope
 - Pass memory summary to domain orchestrators
+
+---
+
+### Step 1.7: Recording Context (OS 6.2 -- OPTIONAL)
+
+**Inject prior session context from the recording layer for continuity.**
+
+```bash
+# Check if recording database exists
+if [ -f ".orca/recording.db" ]; then
+  HAS_RECORDING=true
+else
+  HAS_RECORDING=false
+  RECORDING_CONTEXT=""
+fi
+```
+
+**If `.orca/recording.db` exists:**
+
+1. Query for relevant prior sessions:
+   ```
+   mcp__cognition-mcp__cognition({
+     operation: "recording_query",
+     content: {
+       files: [<files from task context or memory hits>],
+       limit: 3,
+       state: "ENDED"
+     }
+   })
+   ```
+
+2. If sessions found, get narrative for most relevant:
+   ```
+   mcp__cognition-mcp__cognition({
+     operation: "recording_explain",
+     content: {
+       session_id: "<most relevant session id>"
+     }
+   })
+   ```
+
+3. Store as RECORDING_CONTEXT (max 500 chars of narrative.summary):
+   ```
+   RECORDING_CONTEXT = narrative.summary.substring(0, 500)
+   ```
+
+**If `.orca/recording.db` does not exist:** skip silently, set `RECORDING_CONTEXT = ""`.
+
+RECORDING_CONTEXT is included in Step 7 delegation prompts to domain grand-architects.
 
 ---
 
@@ -634,7 +683,7 @@ AskUserQuestion({
 
 ---
 
-### Step 7: Route to Domain Orchestrator (OS 6.0)
+### Step 7: Route to Domain Orchestrator (OS 6.2)
 
 **For pipelines with domain-specific `/{domain}` commands, route to them.**
 
@@ -657,7 +706,7 @@ Task({
   subagent_type: "nextjs-grand-architect",
   description: "Next.js pipeline coordination",
   prompt: `
-You are the Next.js Grand Architect for OS 6.0.
+You are the Next.js Grand Architect for OS 6.2.
 
 USER HAS ALREADY CONFIRMED THE PLAN. DO NOT ASK FOR CONFIRMATION AGAIN.
 EXECUTE IMMEDIATELY. NO QUESTIONS. DELEGATE TO SPECIALISTS NOW.
@@ -667,6 +716,8 @@ ${JSON.stringify(contextBundle, null, 2)}
 
 AGENT OUTCOMES (past successes/failures on this project):
 ${agentOutcomes || "No prior outcomes recorded for this pipeline"}
+
+${RECORDING_CONTEXT ? `=== RECORDING CONTEXT ===\n${RECORDING_CONTEXT}\n===` : ""}
 
 REQUEST: ${$ARGUMENTS}
 
@@ -727,7 +778,7 @@ Task({
   subagent_type: "ios-grand-architect",
   description: "iOS pipeline coordination",
   prompt: `
-You are the iOS Grand Architect for OS 6.0.
+You are the iOS Grand Architect for OS 6.2.
 
 USER HAS ALREADY CONFIRMED THE PLAN. DO NOT ASK FOR CONFIRMATION AGAIN.
 EXECUTE IMMEDIATELY. NO QUESTIONS. DELEGATE TO SPECIALISTS NOW.
@@ -737,6 +788,8 @@ ${JSON.stringify(contextBundle, null, 2)}
 
 AGENT OUTCOMES (past successes/failures on this project):
 ${agentOutcomes || "No prior outcomes recorded for this pipeline"}
+
+${RECORDING_CONTEXT ? `=== RECORDING CONTEXT ===\n${RECORDING_CONTEXT}\n===` : ""}
 
 REQUEST: ${$ARGUMENTS}
 
@@ -797,7 +850,7 @@ Task({
   subagent_type: "expo-grand-orchestrator",
   description: "Expo pipeline coordination",
   prompt: `
-You are the Expo Grand Orchestrator for OS 6.0.
+You are the Expo Grand Orchestrator for OS 6.2.
 
 USER HAS ALREADY CONFIRMED THE PLAN. DO NOT ASK FOR CONFIRMATION AGAIN.
 EXECUTE IMMEDIATELY. NO QUESTIONS. DELEGATE TO SPECIALISTS NOW.
@@ -807,6 +860,8 @@ ${JSON.stringify(contextBundle, null, 2)}
 
 AGENT OUTCOMES (past successes/failures on this project):
 ${agentOutcomes || "No prior outcomes recorded for this pipeline"}
+
+${RECORDING_CONTEXT ? `=== RECORDING CONTEXT ===\n${RECORDING_CONTEXT}\n===` : ""}
 
 REQUEST: ${$ARGUMENTS}
 
@@ -863,7 +918,7 @@ Task({
   subagent_type: "data-researcher",
   description: "Data analysis pipeline",
   prompt: `
-You are leading the Data pipeline for OS 6.0.
+You are leading the Data pipeline for OS 6.2.
 
 MEMORY CONTEXT:
 ${memorySummary || "No prior memory hits"}
@@ -911,7 +966,7 @@ Task({
   subagent_type: "seo-research-specialist",
   description: "SEO content pipeline",
   prompt: `
-You are leading the SEO pipeline for OS 6.0.
+You are leading the SEO pipeline for OS 6.2.
 
 MEMORY CONTEXT:
 ${memorySummary || "No prior memory hits"}
@@ -952,7 +1007,7 @@ Task({
   subagent_type: "design-system-architect",
   description: "Design system pipeline",
   prompt: `
-You are leading the Design pipeline for OS 6.0.
+You are leading the Design pipeline for OS 6.2.
 
 MEMORY CONTEXT:
 ${memorySummary || "No prior memory hits"}
@@ -1088,7 +1143,7 @@ When grand-architect signals completion:
 
 ## Memory Architecture
 
-OS 6.0 uses TWO memory systems:
+OS 6.2 uses TWO memory systems:
 
 1. **Workshop** (.claude/memory/workshop.db):
    - Decisions with reasoning

@@ -15,7 +15,7 @@ NC='\033[0m' # No Color
 BOLD='\033[1m'
 
 # Configuration
-ORCA_VERSION="6.0.0"
+ORCA_VERSION="6.2.0"
 CLAUDE_DIR="$HOME/.claude"
 BACKUP_DIR="$HOME/.claude-backup-$(date +%Y%m%d-%H%M%S)"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -120,6 +120,14 @@ check_prerequisites() {
         warn "Python3 not found (optional, needed for some features)"
     fi
 
+    # Check Bun (optional, for orca-record recording layer)
+    if command_exists bun; then
+        success "Bun $(bun --version 2>/dev/null || echo 'installed')"
+    else
+        warn "Bun not found (optional, needed for session recording)"
+        info "Install from https://bun.sh"
+    fi
+
     if [ $missing -eq 1 ]; then
         echo ""
         error "Missing required dependencies. Please install them and try again."
@@ -198,6 +206,7 @@ install_orca_files() {
         "hooks"
         "scripts/utilities"
         "scripts/seo"
+        "bin"
         "mcp/project-context-server"
         "mcp/cognition-mcp"
         "docs/pipelines"
@@ -272,9 +281,19 @@ install_orca_files() {
     done
     success "Hooks installed"
 
-    # Copy scripts (excluding archive)
+    # Copy scripts (excluding archive and deprecated telemetry)
     info "Installing scripts..."
-    cp "$ORCA_ROOT/scripts/"*.sh "$CLAUDE_DIR/scripts/" 2>/dev/null || true
+    for script in "$ORCA_ROOT/scripts/"*.sh; do
+        local sname=$(basename "$script")
+        case "$sname" in
+            telemetry-*.sh|sync-to-orca.sh)
+                # Skip deprecated telemetry scripts and internal sync
+                ;;
+            *)
+                cp "$script" "$CLAUDE_DIR/scripts/"
+                ;;
+        esac
+    done
     cp "$ORCA_ROOT/scripts/"*.py "$CLAUDE_DIR/scripts/" 2>/dev/null || true
     cp -r "$ORCA_ROOT/scripts/utilities/"* "$CLAUDE_DIR/scripts/utilities/" 2>/dev/null || true
     cp -r "$ORCA_ROOT/scripts/seo/"* "$CLAUDE_DIR/scripts/seo/" 2>/dev/null || true
@@ -331,15 +350,87 @@ install_orca_files() {
     cp "$ORCA_ROOT/mcp/cognition-mcp/tsconfig.json" "$CLAUDE_DIR/mcp/cognition-mcp/" 2>/dev/null || true
     success "Cognition MCP installed"
 
+    # Install orca-record (recording layer binary)
+    info "Installing orca-record (session recording)..."
+    if command_exists bun; then
+        if [ -f "$ORCA_ROOT/mcp/orca-record/package.json" ]; then
+            cd "$ORCA_ROOT/mcp/orca-record"
+            if bun run build 2>/dev/null; then
+                cp dist/orca-record "$CLAUDE_DIR/bin/orca-record" 2>/dev/null
+                chmod +x "$CLAUDE_DIR/bin/orca-record"
+                success "orca-record binary installed to ~/.claude/bin/"
+            else
+                warn "Failed to build orca-record"
+            fi
+            cd - > /dev/null
+        elif [ -f "$ORCA_ROOT/mcp/orca-record/dist/orca-record" ]; then
+            cp "$ORCA_ROOT/mcp/orca-record/dist/orca-record" "$CLAUDE_DIR/bin/orca-record"
+            chmod +x "$CLAUDE_DIR/bin/orca-record"
+            success "orca-record binary installed (pre-built)"
+        fi
+    else
+        # Try to copy pre-built binary if it exists
+        if [ -f "$ORCA_ROOT/mcp/orca-record/dist/orca-record" ]; then
+            cp "$ORCA_ROOT/mcp/orca-record/dist/orca-record" "$CLAUDE_DIR/bin/orca-record"
+            chmod +x "$CLAUDE_DIR/bin/orca-record"
+            success "orca-record binary installed (pre-built)"
+        else
+            warn "Bun not found - orca-record not built"
+            info "Install bun (https://bun.sh) and re-run installer for session recording"
+        fi
+    fi
+
     # Crawl4AI uses Docker - no local files needed
     info "Crawl4AI MCP will use Docker (no local install needed)"
     mkdir -p "$CLAUDE_DIR/mcp/crawl4ai-crawls"
     success "Crawl4AI output directory created"
 
-    # Copy root files
+    # Generate settings.local.json with correct hook configuration
     info "Installing configuration files..."
-    cp "$ORCA_ROOT/CLAUDE.md" "$CLAUDE_DIR/CLAUDE.md" 2>/dev/null || true
-    cp "$ORCA_ROOT/settings.local.json" "$CLAUDE_DIR/settings.local.json" 2>/dev/null || true
+    if [ ! -f "$CLAUDE_DIR/settings.local.json" ] || [ "${MERGE_MODE:-0}" = "0" ]; then
+        cat > "$CLAUDE_DIR/settings.local.json" << 'SETTINGS_JSON'
+{
+  "permissions": {
+    "allow": [],
+    "deny": []
+  },
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash ~/.claude/hooks/session-start.sh 2>/dev/null || echo 'SessionStart: hook not found'"
+          }
+        ]
+      }
+    ],
+    "SessionEnd": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash ~/.claude/hooks/session-end.sh 2>/dev/null || echo 'SessionEnd: hook not found'"
+          }
+        ]
+      }
+    ],
+    "PreCompact": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash ~/.claude/hooks/pre-compact.sh 2>/dev/null || echo 'PreCompact: hook not found'"
+          }
+        ]
+      }
+    ]
+  },
+  "enableAllProjectMcpServers": false
+}
+SETTINGS_JSON
+    fi
     cp "$ORCA_ROOT/statusline.sh" "$CLAUDE_DIR/statusline.sh" 2>/dev/null || true
     chmod +x "$CLAUDE_DIR/statusline.sh" 2>/dev/null || true
     success "Configuration files installed"
@@ -724,6 +815,13 @@ print_completion() {
     echo "     - cognition-mcp (48 reasoning operations)"
     echo "     - sequential-thinking (multi-step reasoning)"
     echo ""
+    if [ -f "$CLAUDE_DIR/bin/orca-record" ]; then
+    echo -e "  ${BOLD}Recording layer:${NC}"
+    echo "     - orca-record: ~/.claude/bin/orca-record"
+    echo "     - Captures session history (tool calls, file changes)"
+    echo "     - Injects relevant history before agents start work"
+    echo ""
+    fi
     echo -e "  ${BOLD}Required for /research, /seo, /orca-pipeline:${NC}"
     echo "     - Crawl4AI (install separately)"
     echo "     - Guide: https://docs.crawl4ai.com/core/installation/"

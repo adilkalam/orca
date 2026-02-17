@@ -1,6 +1,6 @@
 # Why ORCA-OS Architecture Exists
 
-**Version:** OS 6.0 | **Last Updated:** 2026-01-24
+**Version:** OS 6.2 | **Last Updated:** 2026-01-24
 
 This document captures the reasoning behind ORCA-OS's architecture. Reference this when questioning whether the system is "over-engineered."
 
@@ -158,7 +158,7 @@ The "simple is better" guidance is for Claude Desktop consumers. Anthropic's own
 ## See Also
 
 - [Pipeline Model](pipeline-model.md) - Multi-lane pipeline architecture
-- [Complexity Routing](complexity-routing.md) - Three-tier task routing
+- [Complexity Routing](complexity-routing.md) - Four-tier task routing
 - [Memory Systems](memory-systems.md) - Workshop + code-index.db + ProjectContext
 - [Self-Improvement](self-improvement.md) - Agent learning systems
 

@@ -1,6 +1,6 @@
 # ORCA-OS Documentation
 
-**Version:** OS 6.0
+**Version:** OS 6.2
 **Last Updated:** 2026-02-13
 
 Welcome to the ORCA-OS documentation. This document serves as the entry point and navigation hub for all ORCA-OS documentation.
@@ -13,7 +13,7 @@ New to ORCA-OS? Start here:
 
 1. **[Why ORCA Architecture](concepts/why-orca-architecture.md)** - Design philosophy
 2. **[Pipeline Model](concepts/pipeline-model.md)** - Multi-lane pipeline architecture
-3. **[Complexity Routing](concepts/complexity-routing.md)** - Three-tier routing (tweak/default/complex)
+3. **[Complexity Routing](concepts/complexity-routing.md)** - Four-tier routing (light/default/tweak/complex)
 4. **[Memory Systems](concepts/memory-systems.md)** - Workshop, code-index.db, and ProjectContext
 
 ---
@@ -25,7 +25,7 @@ Foundational concepts that power ORCA-OS:
 | Document | Description |
 |----------|-------------|
 | [Pipeline Model](concepts/pipeline-model.md) | Multi-lane pipeline architecture with phases and gates |
-| [Complexity Routing](concepts/complexity-routing.md) | Three-tier task routing: tweak, default, complex |
+| [Complexity Routing](concepts/complexity-routing.md) | Four-tier task routing: light, default, tweak, complex |
 | [Memory Systems](concepts/memory-systems.md) | Workshop + code-index.db + ProjectContext integration |
 | [Response Awareness](concepts/response-awareness.md) | RA tagging system for tracking assumptions |
 | [Skills](concepts/skills.md) | Reusable knowledge packages for agents |

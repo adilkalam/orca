@@ -1,8 +1,8 @@
 # Pipeline Model
 
-**Version:** OS 6.0 | **Last Updated:** 2026-01-24
+**Version:** OS 6.2 | **Last Updated:** 2026-01-24
 
-OS 6.0 uses a **multi-lane pipeline architecture** to handle different types of development work. Each "lane" is a domain-specific pipeline with its own agents, phases, and gates.
+OS 6.2 uses a **multi-lane pipeline architecture** to handle different types of development work. Each "lane" is a domain-specific pipeline with its own agents, phases, and gates.
 
 ## Core Concepts
 
@@ -56,7 +56,7 @@ Parse flags
 
 ### Agent Roles
 
-OS 6.0 enforces strict role separation:
+OS 6.2 enforces strict role separation:
 
 #### Orchestrators (Never Write Code)
 - **Commands**: `/orca`, `/ios`, `/nextjs`, etc.
@@ -189,12 +189,13 @@ canonical workaround for any subagent that needs MCP data.
 
 ## Recording Layer
 
-OS 6.0 pipelines are observed by the **recording layer** (`orca-record` CLI + `.orca/recording.db`). Every pipeline session can be recorded, checkpointed, and rewound:
+OS 6.2 pipelines are observed by the **recording layer** (`orca-record` CLI + `.orca/recording.db`). Every pipeline session can be recorded, checkpointed, and rewound:
 
 - **Session recording**: `orca-record start` / `orca-record stop` capture tool calls, decisions, and file changes to a per-project SQLite database
 - **Git checkpoints**: `orca-record checkpoint` creates lightweight snapshots on a shadow git branch, enabling `orca-record rewind` to any prior state
 - **Cognitive fusion**: 7 cognition-mcp recording operations (`recording_status`, `recording_query`, `recording_checkpoint`, `recording_compare`, `recording_quality`, `recording_explain`, `recording_rewind`) bridge structured reasoning with session history
 - **Condensation**: `orca-record condense` compresses checkpoint history to the `orca/checkpoints/v1` orphan branch for long-term storage
+- **Recording Context Injection**: Domain commands call `recording_query`/`recording_explain` to inject recent session context before delegation, providing continuity across sessions
 
 Recording is orthogonal to pipeline phases -- it wraps around the entire session, not individual phases.
 

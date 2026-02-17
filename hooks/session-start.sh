@@ -134,42 +134,6 @@ if [ -f "$SESSION_SUMMARY" ]; then
 fi
 
 # ============================================================
-# TELEMETRY INITIALIZATION (OS 6.0)
-# ============================================================
-
-TELEMETRY_DIR=".claude/telemetry"
-TELEMETRY_SESSIONS="$TELEMETRY_DIR/sessions"
-TELEMETRY_METRICS="$TELEMETRY_DIR/metrics"
-TELEMETRY_STATUS="not initialized"
-
-# Create telemetry directories (fail silently)
-if mkdir -p "$TELEMETRY_SESSIONS" "$TELEMETRY_METRICS" 2>/dev/null; then
-  TELEMETRY_STATUS="ready"
-
-  # Initialize index.json if missing
-  if [ ! -f "$TELEMETRY_DIR/index.json" ]; then
-    CREATED_TS="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
-    cat > "$TELEMETRY_DIR/index.json" 2>/dev/null << EOF || true
-{
-  "version": "2.5.0",
-  "created_at": "$CREATED_TS",
-  "last_cleanup": null,
-  "sessions": []
-}
-EOF
-    if [ -f "$TELEMETRY_DIR/index.json" ]; then
-      log_info "telemetry" "Initialized telemetry directory"
-    else
-      log_error "telemetry" "Failed to create index.json"
-      TELEMETRY_STATUS="init-partial"
-    fi
-  fi
-else
-  log_error "telemetry" "Failed to create telemetry directories"
-  TELEMETRY_STATUS="init-failed"
-fi
-
-# ============================================================
 # NATIVE MEMORY (CLAUDE.md)
 # ============================================================
 
@@ -195,7 +159,8 @@ WORKSHOP_STATUS="unknown"
 
 if [ -f "$DB_PATH" ]; then
   if command -v workshop >/dev/null 2>&1; then
-    WORKSHOP_CONTEXT=$(workshop --workspace "$WORKSHOP_DIR" context 2>&1) && WORKSHOP_STATUS="loaded" || {
+    # Filter out fileStructure blocks that can bloat context (251KB+ of recursive file tree)
+    WORKSHOP_CONTEXT=$(workshop --workspace "$WORKSHOP_DIR" context 2>&1 | grep -v '"fileStructure"' | head -c 4096) && WORKSHOP_STATUS="loaded" || {
       log_error "workshop" "Failed to load context: $WORKSHOP_CONTEXT"
       WORKSHOP_CONTEXT="Workshop context load failed - check $ERROR_LOG"
       WORKSHOP_STATUS="error"
@@ -263,7 +228,6 @@ fi
   echo "- Native Memory: ${NATIVE_PATH:-none} (${NATIVE_NOTE})"
   echo "- Workshop: $WORKSHOP_STATUS"
   echo "- Code Index: $CODE_INDEX_STATUS"
-  echo "- Telemetry: $TELEMETRY_STATUS"
   if [ "$ERROR_COUNT" -gt 0 ]; then
     echo "- Errors: $ERROR_COUNT (see $ERROR_LOG)"
   fi
@@ -324,26 +288,41 @@ if [ "$WORKSHOP_STATUS" = "loaded" ] && command -v workshop >/dev/null 2>&1; the
   echo ""
 fi
 
+# ═══════════════════════════════════════════════════════════
+# RECORDING LAYER CONTEXT
+# ═══════════════════════════════════════════════════════════
+if [ -f ".orca/recording.db" ]; then
+  RECORDING_SESSIONS=$(sqlite3 ".orca/recording.db" "SELECT COUNT(*) FROM sessions;" 2>/dev/null || echo "0")
+  RECORDING_EVENTS=$(sqlite3 ".orca/recording.db" "SELECT COUNT(*) FROM events;" 2>/dev/null || echo "0")
+  if [ "$RECORDING_SESSIONS" != "0" ]; then
+    echo ""
+    echo "Recording layer active: $RECORDING_SESSIONS sessions, $RECORDING_EVENTS events in .orca/recording.db"
+    echo "For deeper session history context, use cognition-mcp recording_explain operation."
+    echo ""
+  fi
+fi
+
 # === ORCA-MEM PHASE 4: EPISODE INJECTION ===
 # Query recent episodes from workshop.db entries table (notes with #episode tag)
 # Inject ~500 tokens of context at session start
 
 if [ -f "$DB_PATH" ]; then
-  # Query notes tagged with 'episode' (auto-captured by session-end.sh)
+  # Query notes tagged with session-relevant tags (auto-captured by session-end.sh)
   RECENT_EPISODES=$(sqlite3 -separator '|' "$DB_PATH" "
     SELECT
-      substr(content, 1, 80) as title,
+      substr(e.content, 1, 80) as title,
       CASE
-        WHEN content LIKE '%architecture%' THEN 'architecture'
-        WHEN content LIKE '%debug%' OR content LIKE '%fix%' THEN 'debugging'
-        WHEN content LIKE '%explore%' OR content LIKE '%research%' THEN 'exploration'
+        WHEN e.content LIKE '%architecture%' THEN 'architecture'
+        WHEN e.content LIKE '%debug%' OR e.content LIKE '%fix%' THEN 'debugging'
+        WHEN e.content LIKE '%explore%' OR e.content LIKE '%research%' THEN 'exploration'
         ELSE 'implementation'
       END as category,
-      substr(content, 1, 200) as preview
-    FROM entries
-    WHERE type = 'note'
-      AND entry_metadata LIKE '%episode%'
-    ORDER BY timestamp DESC
+      substr(e.content, 1, 200) as preview
+    FROM entries e
+    JOIN tags t ON e.id = t.entry_id
+    WHERE e.type = 'note'
+      AND t.tag IN ('session', 'auto', 'cognition', 'architecture', 'deepthink', 'problem-solve')
+    ORDER BY e.timestamp DESC
     LIMIT 5
   " 2>/dev/null || echo "")
 

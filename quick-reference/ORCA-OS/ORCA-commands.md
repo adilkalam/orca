@@ -1,19 +1,20 @@
-# OS 6.0 Commands Quick Reference
+# OS 6.2 Commands Quick Reference
 
-**Last Updated:** 2026-02-13
-**Version:** OS 6.0
+**Last Updated:** 2026-02-16
+**Version:** OS 6.2
 **Total Commands:** 35 (+ orca-record CLI with 16 subcommands)
 
 ---
 
 ## Routing Modes
 
-All `/orca-*` lane commands support three execution modes:
+All `/orca-*` lane commands support four execution modes:
 
 | Mode | Flag | Path | Gates | Use Case |
 |------|------|------|-------|----------|
-| **Default** | (none) | Light + Gates | YES | Most work |
-| **Tweak** | `-tweak` | Light (pure) | NO | Speed iteration |
+| **Light** | `--light` | Light orchestrator | YES | Confident users, skip confirmation |
+| **Default** | (none) | Light + Confirmation | YES | Most work |
+| **Tweak** | `-tweak` | Builder direct | NO | Speed iteration |
 | **Complex** | `--complex` | Full pipeline | YES | Architecture work |
 
 ---
@@ -339,6 +340,7 @@ Searches all memory systems for relevant context and decisions.
 ### `/reflect` - Self-Improvement
 ```bash
 /reflect                            # Analyze recent work
+/reflect --source recording         # Analyze from recording.db
 /reflect learn "Always check types" # Add rule
 /reflect status                     # View rules
 ```
@@ -423,6 +425,19 @@ Measure-place-verify guardrails for Adobe Photoshop and Illustrator MCP work. Pr
 - Only coordinate agents via Task tool
 - Read phase_state.json for resumption
 
+### Recording Context Injection (OS 6.2)
+
+All lane orchestrator commands inject prior session context from `.orca/recording.db`
+before delegating to agents:
+
+- `/orca` queries centrally via `recording_query` + `recording_explain`, passes
+  `RECORDING_CONTEXT` to domain grand-architects in delegation prompts
+- Domain commands (`/nextjs`, `/ios`, `/expo`, `/shopify`, `/django-react`,
+  `/orca-os-dev`, `/seo`) check for inherited context first; if invoked directly
+  (not via `/orca`), they query `.orca/recording.db` independently
+- All recording context is OPTIONAL -- silently skipped if `.orca/recording.db`
+  does not exist
+
 ### Quality Gates
 - Standards: >=90 to pass
 - Design QA: >=90 to pass
@@ -464,4 +479,4 @@ $ORCA_OS_PATH/commands/
 ---
 
 _Source of truth: `docs/reference/os-dependency-graph.yaml`_
-_Last sync: 2026-02-13_
+_Last sync: 2026-02-16_

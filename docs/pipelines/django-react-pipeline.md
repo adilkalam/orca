@@ -1,15 +1,15 @@
 # Django + React TypeScript Domain Pipeline
 
-**Status:** OS 6.0 Core Pipeline
+**Status:** OS 6.2 Core Pipeline
 **Last Updated:** 2026-02-13
 
 ## Overview
 
 The Django + React pipeline handles **full-stack development** combining Django backend (with Django REST Framework) and React TypeScript frontend. It features:
 
-- OS 6.0 primitives (ProjectContextServer, phase_state.json, code-index.db, Workshop, constraint framework)
+- OS 6.2 primitives (ProjectContextServer, phase_state.json, code-index.db, Workshop, constraint framework)
 - Memory-first context (Workshop + code-index.db before ProjectContext)
-- Three-tier routing (Default/Tweak/Complex with default running gates)
+- Four-tier routing (Light/Default/Tweak/Complex with default running gates)
 - Spec gating (complex tasks require requirements spec)
 - Response Awareness tagging (RA tags surface assumptions and decisions)
 - API contract flow (OpenAPI schema generation, TypeScript client generation)
@@ -33,14 +33,15 @@ The Django + React pipeline handles **full-stack development** combining Django 
 
 ---
 
-## Three-Tier Routing (OS 6.0)
+## Four-Tier Routing (OS 6.2)
 
-The Django + React pipeline uses three-tier routing:
+The Django + React pipeline uses four-tier routing:
 
 | Mode | Flag | Path | Gates | Use Case |
 |------|------|------|-------|----------|
-| **Default** | (none) | Light + Gates | YES | Most work - fast with quality |
-| **Tweak** | `-tweak` | Light (pure) | NO | Speed iteration, user verifies |
+| **Light** | `--light` | Light orchestrator | YES | Confident users, skip confirmation |
+| **Default** | (none) | Light + Confirmation | YES | Most work -- fast with quality |
+| **Tweak** | `-tweak` | Builder direct | NO | Speed iteration, user verifies |
 | **Complex** | `--complex` | Full pipeline | YES | Architecture, multi-endpoint, specs |
 
 ### Default Mode (Light + Gates)
@@ -127,6 +128,12 @@ Full pipeline with grand-architect planning. Spec required.
 | Agent | Role | Notes |
 |-------|------|-------|
 | `api-contract-specialist` | OpenAPI generation, TypeScript client | Used for type-safe API flow |
+
+---
+
+### Recording Context (OS 6.2)
+
+Domain commands inject recording context (recent session history from `.orca/recording.db`) before delegating to agents. This is optional and silently skipped if no recording database exists.
 
 ---
 

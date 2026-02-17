@@ -181,4 +181,4 @@ Next time you work on checkout, memory loads what you learned. Gates check what 
 
 ---
 
-_Version: OS 6.0_
+_Version: OS 6.2_

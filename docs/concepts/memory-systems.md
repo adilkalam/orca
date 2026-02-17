@@ -1,8 +1,8 @@
 # Memory Systems
 
-**Version:** OS 6.0 | **Last Updated:** 2026-02-13
+**Version:** OS 6.2 | **Last Updated:** 2026-02-13
 
-OS 6.0 uses multiple memory systems to maintain context across sessions and provide relevant information to agents.
+OS 6.2 uses multiple memory systems to maintain context across sessions and provide relevant information to agents.
 
 ## Memory Architecture
 
@@ -112,7 +112,7 @@ The ProjectContext MCP uses a hybrid approach for Workshop integration:
 
 ## Memory-First Pattern
 
-OS 6.0 checks fast, local memory before expensive queries:
+OS 6.2 checks fast, local memory before expensive queries:
 
 ```bash
 # Step 1: Check Workshop for relevant decisions/gotchas
@@ -200,7 +200,7 @@ mcp__project-context__save_standard({
 **What:** Per-project SQLite database that records full session activity, git-backed checkpoints, and cognitive state.
 
 **Overview:**
-The recording layer (added in OS 6.0) provides session-level persistence that goes beyond Workshop's decision/gotcha entries. It captures the full timeline of what happened in each session: prompts, tool calls, file changes, and checkpoints that can be rewound.
+The recording layer (added in OS 6.2) provides session-level persistence that goes beyond Workshop's decision/gotcha entries. It captures the full timeline of what happened in each session: prompts, tool calls, file changes, and checkpoints that can be rewound.
 
 **Storage:** `.orca/recording.db` (per-project, gitignored)
 
@@ -221,6 +221,39 @@ Checkpoints link code state to cognition-mcp reasoning chains via 7 recording op
 **CLI:** `orca-record` (Bun-compiled binary at `~/.claude/bin/orca-record`) with 16 commands.
 
 **Supersedes:** Telemetry system (`.claude/telemetry/`) which is now deprecated.
+
+## Recording Context Injection (OS 6.2)
+
+Commands use the recording layer to inject prior session context before delegating
+to agents. This provides continuity across sessions by surfacing what happened in
+previous work on the same files.
+
+**How it works:**
+
+1. The orchestrator command checks if `.orca/recording.db` exists
+2. If yes, calls `recording_query` with files from the current task context
+   (limit 3, state "ENDED") to find relevant prior sessions
+3. If sessions are found, calls `recording_explain` on the most relevant
+   session to get a narrative summary
+4. The narrative summary (max 500 chars) is included in the delegation prompt
+   to the grand-architect as `RECORDING_CONTEXT`
+
+**Central vs Independent injection:**
+
+- `/orca` queries centrally and passes `RECORDING_CONTEXT` to domain commands
+- Domain commands (`/nextjs`, `/ios`, etc.) check for inherited context first;
+  if invoked directly, they query `.orca/recording.db` independently
+- All recording context is OPTIONAL -- silently skipped without `.orca/recording.db`
+
+**Integration with reflect-analyze.py:**
+
+The `/reflect` analysis script (`scripts/reflect-analyze.py`) can also source data
+from `.orca/recording.db` via the `--source` flag:
+- `--source auto` (default): tries recording.db first, falls back to JSONL
+- `--source recording`: uses recording.db only
+- `--source jsonl`: uses JSONL transcripts only (legacy behavior)
+
+---
 
 ## Session Hooks
 

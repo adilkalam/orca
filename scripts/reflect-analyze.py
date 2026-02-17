@@ -72,9 +72,8 @@ def get_project_transcript_dir(project_path: str) -> Path:
     project_path = os.path.abspath(os.path.expanduser(project_path))
 
     # Convert to transcript dir format (replace / with -)
+    # Keep leading dash - Claude Code directories use it: -Users-adilkalam-project
     transcript_name = project_path.replace(os.sep, '-')
-    if transcript_name.startswith('-'):
-        transcript_name = transcript_name[1:]
 
     # Build full path to transcript directory
     claude_dir = Path.home() / '.claude' / 'projects' / transcript_name
@@ -309,6 +308,56 @@ def identify_patterns(journal: Dict) -> List[Dict]:
     return patterns
 
 
+def get_recording_data(project_path: str) -> Optional[Dict]:
+    """Query .orca/recording.db for recent session data."""
+    db_path = os.path.join(project_path, '.orca', 'recording.db')
+    if not os.path.exists(db_path):
+        return None
+
+    import sqlite3
+    try:
+        conn = sqlite3.connect(db_path)
+        conn.row_factory = sqlite3.Row
+
+        sessions = conn.execute("""
+            SELECT id, state, step_count, files_touched_json, started_at, ended_at
+            FROM sessions WHERE state = 'ENDED'
+            ORDER BY rowid DESC LIMIT 5
+        """).fetchall()
+
+        if not sessions:
+            conn.close()
+            return None
+
+        prompts = conn.execute("""
+            SELECT session_id, json_extract(hook_input_json, '$.prompt') as prompt
+            FROM events WHERE event_type = 'prompt_submit'
+            ORDER BY rowid DESC LIMIT 20
+        """).fetchall()
+
+        conn.close()
+        return {
+            'sessions': [dict(s) for s in sessions],
+            'prompts': [dict(p) for p in prompts]
+        }
+    except Exception as e:
+        print(f"Error reading recording.db: {e}", file=sys.stderr)
+        return None
+
+
+def extract_signals_from_recording(recording_data: Dict) -> List[Dict]:
+    """Convert recording.db data into signal format for the journal."""
+    messages = []
+    for prompt_row in recording_data.get('prompts', []):
+        prompt_text = prompt_row.get('prompt', '')
+        if prompt_text:
+            messages.append({
+                'role': 'human',
+                'content': prompt_text
+            })
+    return extract_signals(messages)
+
+
 def main():
     parser = argparse.ArgumentParser(
         description='Analyze JSONL transcripts for learning signals'
@@ -332,6 +381,13 @@ def main():
         default='summary',
         help='Output format (default: summary)'
     )
+    parser.add_argument(
+        '--source',
+        type=str,
+        choices=['auto', 'recording', 'jsonl'],
+        default='auto',
+        help='Data source: auto (recording.db first, JSONL fallback), recording, or jsonl'
+    )
 
     args = parser.parse_args()
 
@@ -341,29 +397,51 @@ def main():
     # Load existing journal
     journal = load_journal(project_path)
 
-    # Find transcript directory
-    transcript_dir = get_project_transcript_dir(project_path)
+    # Source routing: recording.db vs JSONL
+    use_recording = False
+    recording_data = None
 
-    if not transcript_dir.exists():
-        print(f"No transcript directory found at: {transcript_dir}", file=sys.stderr)
-        print(f"Looking for transcripts from project: {project_path}", file=sys.stderr)
-        sys.exit(1)
+    if args.source in ('auto', 'recording'):
+        recording_data = get_recording_data(project_path)
+        if recording_data:
+            use_recording = True
+        elif args.source == 'recording':
+            print("No recording.db found. Cannot use --source recording.", file=sys.stderr)
+            sys.exit(1)
 
-    # Find JSONL files
-    jsonl_files = find_jsonl_files(transcript_dir, days=args.days)
+    if use_recording:
+        new_signals = extract_signals_from_recording(recording_data)
+        files_analyzed = len(recording_data['sessions'])
+        messages_analyzed = len(recording_data['prompts'])
+        source_label = "recording.db"
+    else:
+        # Existing JSONL logic
+        # Find transcript directory
+        transcript_dir = get_project_transcript_dir(project_path)
 
-    if not jsonl_files:
-        print(f"No JSONL files found in the last {args.days} days", file=sys.stderr)
-        sys.exit(1)
+        if not transcript_dir.exists():
+            print(f"No transcript directory found at: {transcript_dir}", file=sys.stderr)
+            print(f"Looking for transcripts from project: {project_path}", file=sys.stderr)
+            sys.exit(1)
 
-    # Parse transcripts and extract messages
-    all_messages = []
-    for jsonl_path in jsonl_files:
-        messages = parse_jsonl_transcript(jsonl_path)
-        all_messages.extend(messages)
+        # Find JSONL files
+        jsonl_files = find_jsonl_files(transcript_dir, days=args.days)
 
-    # Extract signals
-    new_signals = extract_signals(all_messages)
+        if not jsonl_files:
+            print(f"No JSONL files found in the last {args.days} days", file=sys.stderr)
+            sys.exit(1)
+
+        # Parse transcripts and extract messages
+        all_messages = []
+        for jsonl_path in jsonl_files:
+            messages = parse_jsonl_transcript(jsonl_path)
+            all_messages.extend(messages)
+
+        # Extract signals
+        new_signals = extract_signals(all_messages)
+        files_analyzed = len(jsonl_files)
+        messages_analyzed = len(all_messages)
+        source_label = "JSONL"
 
     # Update journal
     journal = update_journal(journal, new_signals)
@@ -381,16 +459,18 @@ def main():
             'total_signals': len(journal['signals']),
             'new_signals_found': len(new_signals),
             'patterns_ready': patterns,
-            'files_analyzed': len(jsonl_files),
-            'messages_analyzed': len(all_messages)
+            'files_analyzed': files_analyzed,
+            'messages_analyzed': messages_analyzed,
+            'source': source_label
         }
         print(json.dumps(output, indent=2, ensure_ascii=False))
     else:
         # Summary output
         print(f"\n=== Reflect Analysis Summary ===\n")
         print(f"Project: {journal['project']}")
-        print(f"Files analyzed: {len(jsonl_files)}")
-        print(f"Messages analyzed: {len(all_messages)}")
+        print(f"Source: {source_label}")
+        print(f"Files/sessions analyzed: {files_analyzed}")
+        print(f"Messages analyzed: {messages_analyzed}")
         print(f"New signals found: {len(new_signals)}")
         print(f"Total signals tracked: {len(journal['signals'])}\n")
 

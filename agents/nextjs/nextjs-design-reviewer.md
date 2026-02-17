@@ -391,20 +391,48 @@ Follow a multi-phase review using Chrome DevTools MCP:
      - Color usage vs design-dna roles,
      - Image quality and cropping.
 
-5. **Accessibility (Lightweight)**
+5. **Image Rendering Audit**
+   - Verify every `<Image>`/`<img>` has explicit dimensions (`width`+`height`) or `fill` prop
+   - Verify `object-fit` is applied correctly:
+     - `cover` for heroes, card thumbnails, backgrounds
+     - `contain` for logos, icons, product images
+   - Check for stretched or distorted images (aspect ratio mismatches)
+   - Verify alt text is present and descriptive (not "image", "photo", or empty)
+   - Confirm images render at correct aspect ratios across viewports
+   - Verify Next.js `<Image>` component is used where appropriate (not raw `<img>`)
+
+6. **Metadata Audit (for new pages)**
+   - Verify page exports `metadata` or `generateMetadata`
+   - Title is unique and descriptive (not generic "Home" or site name alone)
+   - Description is present and within 150-160 characters
+   - OpenGraph metadata present with `title`, `description`, `images`, and `type`
+   - Twitter card metadata present (`card`, `title`, `description`, `images`)
+   - Link preview image exists (static file, dynamic `opengraph-image.tsx`, or project default). If missing, flag as high severity -- the user must be asked what image to use.
+   - Score deductions: missing metadata = high severity (-10), partial metadata = medium (-5), missing preview image = high severity (-10)
+
+7. **Feature Completeness Audit**
+   - New pages: verify loading.tsx and error.tsx exist as siblings
+   - Data components: verify loading/empty/error states are implemented
+   - Forms: verify validation, submit state, and success feedback are present
+   - Navigation: verify new pages are linked from existing UI
+   - Mobile: verify layout works at mobile viewport (if Chrome DevTools available, resize and check)
+   - Score deductions: missing loading.tsx = medium (-5), missing error states = medium (-5),
+     form without validation = medium (-5), orphan page = low (-3)
+
+8. **Accessibility (Lightweight)**
    - Check:
      - Basic color contrast,
      - Obvious missing alt text,
      - Keyboard focus visibility on key controls,
      - Semantics at a surface level (e.g., headings, main landmarks).
 
-6. **Robustness & Console**
+9. **Robustness & Console**
    - Use `evaluate_script` and `list_console_messages` to:
      - List console errors/warnings (`list_console_messages`),
      - Check application state (`evaluate_script`),
      - Verify error/empty/loading states where possible.
 
-## Scoring & Reporting (Graduated Gate Standard - OS 6.0)
+## Scoring & Reporting (Graduated Gate Standard - OS 6.2)
 
 **Reference:** `docs/reference/graduated-gate-scoring.md`
 
@@ -441,7 +469,7 @@ Start at 100. Subtract points based on severity:
 
 **User-configurable thresholds** via `.claude/config.json` or `--gates=strict/lenient` flag.
 
-## Reflexion on Failure (OS 6.0)
+## Reflexion on Failure (OS 6.2)
 
 When `gate_decision` is CAUTION or FAIL:
 
@@ -469,7 +497,7 @@ Write your results to `phase_state.gates`:
   - `design_score`,
   - `visual_issues`,
   - `gate_decision` (`PASS`, `CAUTION`, `FAIL`),
-  - `reflexion` (if CAUTION or FAIL, OS 6.0),
+  - `reflexion` (if CAUTION or FAIL, OS 6.2),
   - Any notes for `nextjs-builder` on what needs correction in Pass 2.
 - Update `gates_passed` / `gates_failed` with `"design_qa"` as appropriate.
 

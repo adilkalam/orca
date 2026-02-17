@@ -11,6 +11,7 @@ ORCA-OS transforms Claude Code from a coding assistant into a sophisticated mult
 - **112 Specialized Agents** across 11 domains (Next.js, iOS, Expo, Django-React, Research, SEO, Data, Audit, OS-Dev, Orca-Pipeline, Typography)
 - **33 Slash Commands** for orchestration, planning, thinking, and design review
 - **Persistent Memory** via Workshop and project-context MCP
+- **Session Recording** via orca-record (captures tool calls, file changes across sessions)
 - **Self-Improvement System** that learns rules from your interactions
 - **48 Reasoning Operations** via cognition-mcp
 
@@ -23,6 +24,7 @@ ORCA-OS transforms Claude Code from a coding assistant into a sophisticated mult
 
 - **Node.js** v18+ and npm
 - **Python 3.10+** (required for web scraping MCP)
+- **Bun** (optional, for session recording -- https://bun.sh)
 - **Claude Code CLI** (`npm install -g @anthropic-ai/claude-code`)
 
 ### Install
@@ -155,8 +157,9 @@ claude
 
 - **context7** - Up-to-date library documentation
 - **sequential-thinking** - Multi-step reasoning
-- **cognition-mcp** - 48 reasoning operations
+- **cognition-mcp** - 48 reasoning operations + recording layer integration
 - **project-context** - Project memory and semantic search
+- **orca-record** - Session recording CLI (captures tool calls, file changes, injects history)
 - **crawl4ai** - Web scraping & research (Python-based, auto-configured)
 
 ### Optional (User Prompted)
@@ -184,6 +187,8 @@ claude
 │   ├── typography/   # Font and type specialists
 │   ├── seo/          # SEO agents
 │   └── data/         # Analytics agents
+├── bin/              # CLI tools
+│   └── orca-record   # Session recording binary
 ├── commands/         # 33 slash commands
 ├── skills/           # Reusable behavior patterns
 ├── hooks/            # Session lifecycle hooks
@@ -216,6 +221,12 @@ ORCA-OS includes persistent memory across sessions:
 - Automatic context loading via MCP
 - Tracks decisions, standards, and task history
 - Semantic search across codebase
+
+### Recording Layer (Session History)
+- orca-record captures tool calls and file changes per session
+- Stored in `.orca/recording.db` (per-project, gitignored)
+- Recent session history injected before agents start work
+- cognition-mcp provides 7 recording operations for querying history
 
 ---
 
@@ -340,7 +351,7 @@ mv ~/.claude-backup-* ~/.claude
 
 ## Version
 
-ORCA-OS v6.0
+ORCA-OS v6.2
 
 ---
 

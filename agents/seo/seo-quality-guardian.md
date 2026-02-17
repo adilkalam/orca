@@ -3,7 +3,7 @@ name: seo-quality-guardian
 description: "Comprehensive SEO quality review with clarity gates, standards enforcement, and compliance checks"
 tools: Bash, Read, Write, Edit, mcp__project-context__save_standard, mcp__project-context__save_task_history
 
-# OS 6.0 Constraint Framework
+# OS 6.2 Constraint Framework
 required_context:
   - agentdb_session: "Access to full pipeline AgentDB cache"
   - brief_and_draft: "Brief.md and draft.md for QA review"
@@ -34,7 +34,7 @@ scope_boundaries:
   - "Do NOT publish - human review required after QA"
 ---
 
-# SEO Quality Guardian (OS 6.0)
+# SEO Quality Guardian (OS 6.2)
 
 ## Knowledge Loading
 
@@ -92,7 +92,7 @@ python3 scripts/seo_clarity_gates.py outputs/seo/${SLUG}-draft.md
 
 **This generates:** `outputs/seo/${SLUG}-draft-clarity-report.json`
 
-### Clarity Thresholds (OS 6.0 Quality Gates)
+### Clarity Thresholds (OS 6.2 Quality Gates)
 
 **Requirements:**
 - **Clarity Score:** 70+ (pass) / <70 (fail)

@@ -23,10 +23,10 @@
 
 | Agent Name              | Function                                                | Lines | Last Updated |
 |-------------------------|---------------------------------------------------------|-------|--------------|
-| competitive-analyst     | Competitive analysis specialist for OS 6.0. Performs... | 158   | 2026-01-30   |
-| data-researcher         | Data research specialist for OS 6.0. Designs and exe... | 197   | 2026-01-30   |
+| competitive-analyst     | Competitive analysis specialist for OS 6.2. Performs... | 158   | 2026-01-30   |
+| data-researcher         | Data research specialist for OS 6.2. Designs and exe... | 197   | 2026-01-30   |
 | python-analytics-expert | Python data analytics and engineering specialist for... | 214   | 2026-01-30   |
-| research-specialist     | Cross-domain research specialist for OS 6.0. Gathers... | 218   | 2026-01-30   |
+| research-specialist     | Cross-domain research specialist for OS 6.2. Gathers... | 218   | 2026-01-30   |
 
 ## Dev
 
@@ -70,12 +70,12 @@
 | api-guardian               | Validates API contracts and detects breaking changes... | 547   | 2026-01-30   |
 | bundle-assassin            | Analyzes and reduces React Native/Expo bundle size t... | 519   | 2026-01-30   |
 | expo-aesthetics-specialist | Expo/React Native aesthetics and visual quality revi... | 598   | 2026-01-30   |
-| expo-architect-agent       | OS 6.0 Expo/React Native lane architect. Uses Projec... | 490   | 2026-01-30   |
+| expo-architect-agent       | OS 6.2 Expo/React Native lane architect. Uses Projec... | 490   | 2026-01-30   |
 | expo-builder-agent         | Expo/React Native implementation specialist for OS 5... | 907   | 2026-01-30   |
 | expo-grand-orchestrator    | Tier-S meta-orchestrator for the Expo/React Native l... | 829   | 2026-01-30   |
 | expo-light-orchestrator    | Light orchestrator for Expo/React Native tasks (defa... | 275   | 2026-01-30   |
 | expo-standards-enforcer    | Standards gate for Expo/React Native. Audits recent ... | 206   | 2026-01-30   |
-| expo-verification-agent    | Expo/React Native verification agent for OS 6.0. Run... | 592   | 2026-01-30   |
+| expo-verification-agent    | Expo/React Native verification agent for OS 6.2. Run... | 592   | 2026-01-30   |
 | impact-analyzer            | Predicts change impact across React Native/Expo code... | 527   | 2026-01-30   |
 | refactor-surgeon           | Performs safe, targeted refactoring for React Native... | 389   | 2026-01-30   |
 | test-generator             | Generates comprehensive tests for React Native/Expo ... | 354   | 2026-01-30   |
@@ -111,7 +111,7 @@
 |---------------------------------|---------------------------------------------------------|-------|--------------|
 | nextjs-accessibility-specialist | Accessibility specialist for the Next.js pipeline. F... | 78    | 2026-01-30   |
 | nextjs-architect                | Next.js pipeline architect. Chooses App Router patte... | 236   | 2026-01-30   |
-| nextjs-builder                  | Nextjs implementation specialist. Use for App Router... | 361   | 2026-01-30   |
+| nextjs-builder                  | Nextjs implementation specialist with design thinking. Loads frontend-aesthetics + ui-implementation-rules skills. | 417   | 2026-02-16   |
 | nextjs-css-architecture-gate    | CSS/layout architecture quality gate for the Next.js... | 134   | 2026-01-30   |
 | nextjs-css-specialist           | Semantic CSS architecture specialist for Next.js. Ha... | 334   | 2025-12-26   |
 | nextjs-design-reviewer          | Visual/UX gate for the Next.js pipeline. Uses Puppet... | 476   | 2026-01-30   |
@@ -121,7 +121,7 @@
 | nextjs-light-orchestrator       | Light orchestrator for Next.js tasks (default path).... | 243   | 2026-01-30   |
 | nextjs-performance-specialist   | Performance specialist for the Next.js pipeline. Foc... | 80    | 2026-01-30   |
 | nextjs-seo-specialist           | SEO specialist for the Next.js pipeline. Ensures rou... | 77    | 2026-01-30   |
-| nextjs-standards-enforcer       | Code-level standards gate for the Next.js pipeline. ... | 248   | 2026-01-30   |
+| nextjs-standards-enforcer       | Code-level standards gate for the Next.js pipeline. Audits design-dna/token compliance, Next.js patterns, and feature completeness (loading/error/form/nav). | 266   | 2026-02-16   |
 | nextjs-typescript-specialist    | TypeScript specialist for the Next.js pipeline. Ensu... | 74    | 2026-01-30   |
 | nextjs-verification-agent       | Verification gate for the Next.js pipeline. Runs lin... | 211   | 2026-01-30   |
 

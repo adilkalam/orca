@@ -75,8 +75,6 @@ check "$CLAUDE_DIR/agents/research" "Research agents"
 check "$CLAUDE_DIR/agents/seo" "SEO agents"
 check "$CLAUDE_DIR/agents/data" "Data agents"
 check "$CLAUDE_DIR/agents/audit" "Audit agents"
-check "$CLAUDE_DIR/agents/shopify" "Shopify agents"
-check "$CLAUDE_DIR/agents/kg" "KG agents"
 check "$CLAUDE_DIR/agents/typography" "Typography agents"
 
 # Count all agents
@@ -86,6 +84,11 @@ for domain_dir in "$CLAUDE_DIR/agents/"*/; do
     total_agents=$((total_agents + count))
 done
 echo "  Agents found: $total_agents"
+
+echo ""
+echo "Checking recording layer..."
+check "$CLAUDE_DIR/bin" "bin directory" false
+check "$CLAUDE_DIR/bin/orca-record" "orca-record binary" false
 
 echo ""
 echo "Checking commands..."

@@ -1,15 +1,15 @@
 # Expo / React Native Domain Pipeline
 
-**Status:** OS 6.0 Core Pipeline (ExpoPipeline)
+**Status:** OS 6.2 Core Pipeline (ExpoPipeline)
 **Last Updated:** 2026-02-13
 
 ## Overview
 
 The Expo pipeline handles **React Native mobile development** for projects using Expo SDK 50+ / React Native 0.74+ with TypeScript. It combines:
 
-- OS 6.0 primitives (ProjectContextServer, phase_state.json, code-index.db, Workshop, constraint framework)
+- OS 6.2 primitives (ProjectContextServer, phase_state.json, code-index.db, Workshop, constraint framework)
 - Memory-first context (Workshop + code-index.db before ProjectContext)
-- Complexity-based routing (simple → light orchestrator, medium/complex → full pipeline)
+- Four-tier routing (Light/Default/Tweak/Complex)
 - Spec gating (complex tasks require requirements spec)
 - Response Awareness tagging (RA tags surface assumptions and decisions)
 - SenaiVerse's Expo agent system (Grand Orchestrator + design/a11y/perf/security agents)
@@ -33,14 +33,15 @@ use the **iOS** pipeline.
 
 ---
 
-## Three-Tier Routing (OS 6.0)
+## Four-Tier Routing (OS 6.2)
 
-The Expo pipeline uses three-tier routing:
+The Expo pipeline uses four-tier routing:
 
 | Mode | Flag | Path | Gates | Use Case |
 |------|------|------|-------|----------|
-| **Default** | (none) | Light + Gates | YES | Most work – fast with quality |
-| **Tweak** | `-tweak` | Light (pure) | NO | Speed iteration, user verifies |
+| **Light** | `--light` | Light orchestrator | YES | Confident users, skip confirmation |
+| **Default** | (none) | Light + Confirmation | YES | Most work -- fast with quality |
+| **Tweak** | `-tweak` | Builder direct | NO | Speed iteration, user verifies |
 | **Complex** | `--complex` | Full pipeline | YES | Architecture, multi-file, specs |
 
 ### Default Mode (Light + Gates)
@@ -79,7 +80,7 @@ Full pipeline with grand-orchestrator planning. Spec required.
 
 ---
 
-## Standards Inputs (OS 6.0 Learning Loop)
+## Standards Inputs (OS 6.2 Learning Loop)
 
 Standards flow into and out of the Expo pipeline:
 
@@ -563,6 +564,12 @@ pending → in_progress → completed
 
 ---
 
+### Recording Context (OS 6.2)
+
+Domain commands inject recording context (recent session history from `.orca/recording.db`) before delegating to agents. This is optional and silently skipped if no recording database exists.
+
+---
+
 ## Pipeline Architecture
 
 ```text
@@ -634,7 +641,7 @@ Decision Point:
 
 **Agents:**
 - `expo-architect-agent` (Expo pipeline architect)
-- `/orca` + OS 6.0 constraint framework
+- `/orca` + OS 6.2 constraint framework
 
 **Tasks:**
 1. Restate the request in clear, concrete terms (feature, bugfix, refactor).

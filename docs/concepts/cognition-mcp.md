@@ -896,4 +896,4 @@ The recording layer supersedes the `.claude/telemetry/` system. Telemetry script
 
 ---
 
-_Version: OS 6.0.1 | Last updated: 2026-02-14_
+_Version: OS 6.2 | Last updated: 2026-02-14_

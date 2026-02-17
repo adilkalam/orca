@@ -1,6 +1,6 @@
 # Orca-Pipeline Domain Pipeline
 
-**Status:** OS 6.0 Meta-Pipeline
+**Status:** OS 6.2 Meta-Pipeline
 **Domain:** `orca-pipeline`
 **Last Updated:** 2026-02-13
 
@@ -139,7 +139,7 @@ This pipeline ensures consistent, complete pipeline creation while preventing:
 **Produces:**
 - Agent taxonomy (orchestrators, builders, specialists, gates)
 - Phase flow with agent assignments
-- Three-tier complexity routing
+- Four-tier complexity routing
 - MCP requirements
 
 **Checkpoint:** User approves blueprint before generation.

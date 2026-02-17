@@ -1,15 +1,15 @@
 # iOS Domain Pipeline
 
-**Status:** OS 6.0 Core Pipeline (Native iOS)
+**Status:** OS 6.2 Core Pipeline (Native iOS)
 **Last Updated:** 2026-02-13
 
 ## Overview
 
 The iOS pipeline handles **native iOS app development** using Swift 6.x and modern Apple frameworks (SwiftUI, UIKit, Swift Concurrency). It combines:
 
-- OS 6.0 primitives (ProjectContextServer, phase_state.json, code-index.db, Workshop, constraint framework)
+- OS 6.2 primitives (ProjectContextServer, phase_state.json, code-index.db, Workshop, constraint framework)
 - Memory-first context (Workshop + code-index.db before ProjectContext)
-- Complexity-based routing (simple → light orchestrator, medium/complex → full pipeline)
+- Four-tier routing (Light/Default/Tweak/Complex)
 - Spec gating (complex tasks require requirements spec)
 - Response Awareness tagging (RA tags surface assumptions and decisions)
 - Swift/iOS specialist agents including `ios-light-orchestrator` for quick tasks
@@ -20,14 +20,15 @@ Goal: implement and evolve native iOS features with **architecture-aware plans**
 
 ---
 
-## Three-Tier Routing (OS 6.0)
+## Four-Tier Routing (OS 6.2)
 
-The iOS pipeline uses three-tier routing:
+The iOS pipeline uses four-tier routing:
 
 | Mode | Flag | Path | Gates | Use Case |
 |------|------|------|-------|----------|
-| **Default** | (none) | Light + Gates | YES | Most work – fast with quality |
-| **Tweak** | `-tweak` | Light (pure) | NO | Speed iteration, user verifies |
+| **Light** | `--light` | Light orchestrator | YES | Confident users, skip confirmation |
+| **Default** | (none) | Light + Confirmation | YES | Most work -- fast with quality |
+| **Tweak** | `-tweak` | Builder direct | NO | Speed iteration, user verifies |
 | **Complex** | `--complex` | Full pipeline | YES | Architecture, multi-file, specs |
 
 ### Default Mode (Light + Gates)
@@ -66,7 +67,7 @@ Full pipeline with grand-architect planning. Spec required.
 
 ---
 
-## Standards Inputs (OS 6.0 Learning Loop)
+## Standards Inputs (OS 6.2 Learning Loop)
 
 Standards flow into and out of the iOS pipeline:
 
@@ -116,6 +117,12 @@ Use this pipeline when:
 If the request is for:
 - Expo/React Native mobile → use the **Expo** pipeline.
 - Browser-based React/Next.js work → use the **nextjs** pipeline.
+
+---
+
+### Recording Context (OS 6.2)
+
+Domain commands inject recording context (recent session history from `.orca/recording.db`) before delegating to agents. This is optional and silently skipped if no recording database exists.
 
 ---
 

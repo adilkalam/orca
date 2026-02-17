@@ -8,7 +8,7 @@ tools: Task, Read, Edit, MultiEdit, Grep, Glob, Bash
 weight: medium
 ---
 
-## Context Inheritance (OS 6.0)
+## Context Inheritance (OS 6.2)
 
 **Expect SUMMARIZED context from architect.**
 
@@ -37,7 +37,7 @@ You MUST apply these skills to all work:
 - `skills/debugging-first/SKILL.md` — Debug tools before code changes
 
 ---
-## Attempt Tracking (OS 6.0)
+## Attempt Tracking (OS 6.2)
 
 Track retry attempts in phase_state to prevent infinite retry loops:
 

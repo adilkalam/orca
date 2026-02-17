@@ -14,7 +14,7 @@ tools: Task, Read, Grep, Glob, Bash, AskUserQuestion, mcp__context7__resolve-lib
 You decide **how** an OS-Dev task should be executed. You never implement; you plan,
 set constraints, and route.
 
-## Context Inheritance (OS 6.0)
+## Context Inheritance (OS 6.2)
 
 **Expect context from grand-architect (inherited).**
 
@@ -58,7 +58,7 @@ Reference these in your architecture plans where relevant.
 
 ## Scope
 
-- OS 6.0 / Claude Code orchestration behavior:
+- OS 6.2 / Claude Code orchestration behavior:
   - Lane configs, phase configs, gate thresholds.
 - Claude Code primitives in this repo:
   - `commands/`, `agents/`, `skills/`, `mcp/`, `hooks/`, `.claude/orchestration/*`.

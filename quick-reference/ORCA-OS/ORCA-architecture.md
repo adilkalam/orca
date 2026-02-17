@@ -1,7 +1,7 @@
-# OS 6.0 Architecture Quick Reference
+# OS 6.2 Architecture Quick Reference
 
 **Last Updated:** 2026-02-13
-**Version:** OS 6.0
+**Version:** OS 6.2
 
 ---
 
@@ -129,7 +129,7 @@ No gates, no architect, user verifies.
 **code-index.db:** Code chunks, symbols, embeddings (`.claude/memory/code-index.db`)
 **project-meta:** Project type, dependencies, tokens (MCP cache)
 
-### ProjectContext Implementation (OS 6.0)
+### ProjectContext Implementation (OS 6.2)
 
 The MCP uses a hybrid approach:
 - **Reads:** Direct SQLite queries via `better-sqlite3` (reliable, no CLI parsing)

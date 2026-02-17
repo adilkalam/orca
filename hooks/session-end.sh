@@ -26,7 +26,24 @@ if [ -f "$RECORDING_DB" ] && command -v sqlite3 >/dev/null 2>&1; then
       "SELECT step_count FROM sessions WHERE id='$ACTIVE_SESSION';" 2>/dev/null || echo "0")
     FILES_TOUCHED=$(sqlite3 "$RECORDING_DB" \
       "SELECT files_touched_json FROM sessions WHERE id='$ACTIVE_SESSION';" 2>/dev/null || echo "[]")
-    NOTE_CONTENT="Session $ACTIVE_SESSION: $STEP_COUNT steps. Files: $FILES_TOUCHED"
+    # Build semantic summary from recording data (extract user prompts)
+    USER_PROMPTS=$(sqlite3 "$RECORDING_DB" "
+      SELECT substr(
+        json_extract(hook_input_json, '$.prompt'),
+        1, 100
+      )
+      FROM events
+      WHERE session_id = '$ACTIVE_SESSION'
+        AND event_type = 'prompt_submit'
+      ORDER BY rowid ASC
+      LIMIT 3
+    " 2>/dev/null | head -c 300 || echo "")
+
+    if [ -n "$USER_PROMPTS" ]; then
+      NOTE_CONTENT="Session $ACTIVE_SESSION: $STEP_COUNT steps. Files: $FILES_TOUCHED. User prompts: $USER_PROMPTS"
+    else
+      NOTE_CONTENT="Session $ACTIVE_SESSION: $STEP_COUNT steps. Files: $FILES_TOUCHED"
+    fi
   fi
 fi
 

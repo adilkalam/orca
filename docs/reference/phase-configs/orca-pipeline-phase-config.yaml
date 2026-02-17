@@ -79,7 +79,7 @@ phase_state:
         - overall_status
       checkpoint: false  # Returns result or loops back
 
-# Two-Mode Routing (not three-tier like other pipelines)
+# Two-Mode Routing (not four-tier like other pipelines)
 modes:
   full:
     description: "Full 5-phase wizard with research"

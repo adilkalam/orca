@@ -1,15 +1,15 @@
 # Nextjs Domain Pipeline
 
-**Status:** OS 6.0 Core Pipeline
+**Status:** OS 6.2 Core Pipeline
 **Last Updated:** 2026-02-13
 
 ## Overview
 
 The Nextjs pipeline handles **frontend/web development work** for Next.js apps. It is CSS-agnostic and adapts to the project's styling approach (semantic CSS, Tailwind, CSS Modules, etc.). It combines:
 
-- OS 6.0 primitives (ProjectContextServer, phase_state.json, code-index.db, Workshop, constraint framework)
+- OS 6.2 primitives (ProjectContextServer, phase_state.json, code-index.db, Workshop, constraint framework)
 - Memory-first context (Workshop + code-index.db before ProjectContext)
-- Three-tier routing (Default/Tweak/Complex with default running gates)
+- Four-tier routing (Light/Default/Tweak/Complex with default running gates)
 - Spec gating (complex tasks require requirements spec)
 - Response Awareness tagging (RA tags surface assumptions and decisions as instrumentation)
 - Design DNA/token enforcement for all UI work
@@ -35,14 +35,15 @@ The Nextjs pipeline handles **frontend/web development work** for Next.js apps. 
 
 ---
 
-## Three-Tier Routing (OS 6.0)
+## Four-Tier Routing (OS 6.2)
 
-The Next.js pipeline uses three-tier routing (see `docs/concepts/complexity-routing.md` for details):
+The Next.js pipeline uses four-tier routing (see `docs/concepts/complexity-routing.md` for details):
 
 | Mode | Flag | Path | Gates | Use Case |
 |------|------|------|-------|----------|
-| **Default** | (none) | Light + Gates | YES | Most work – fast with quality |
-| **Tweak** | `-tweak` | Light (pure) | NO | Speed iteration, user verifies |
+| **Light** | `--light` | Light orchestrator | YES | Confident users, skip confirmation |
+| **Default** | (none) | Light + Confirmation | YES | Most work -- fast with quality |
+| **Tweak** | `-tweak` | Builder direct | NO | Speed iteration, user verifies |
 | **Complex** | `--complex` | Full pipeline | YES | Architecture, multi-file, specs |
 
 ### Default Mode (Light + Gates)
@@ -79,7 +80,7 @@ Full pipeline with grand-architect planning. Spec required.
 | Tweak | 1-3 | No | Rapid iteration, exploring options |
 | Complex | 5+ | **Required** | Multi-page flow, auth UI, SEO-critical |
 
-### CSS Architecture Refactor Mode (OS 6.0)
+### CSS Architecture Refactor Mode (OS 6.2)
 
 Some Next.js tasks are **structural CSS/layout refactors** rather than simple tweaks:
 
@@ -104,7 +105,7 @@ If the CSS Architecture Gate fails, the task cannot be marked complete even if t
 
 ---
 
-## Standards Inputs (OS 6.0 Learning Loop)
+## Standards Inputs (OS 6.2 Learning Loop)
 
 Standards flow into and out of the Next.js pipeline:
 
@@ -141,6 +142,12 @@ After task completion:
 ```
 violation → /audit → save_standard → code-index.db → future relatedStandards → gate enforcement
 ```
+
+---
+
+### Recording Context (OS 6.2)
+
+Domain commands inject recording context (recent session history from `.orca/recording.db`) before delegating to agents. This is optional and silently skipped if no recording database exists.
 
 ---
 
@@ -322,19 +329,33 @@ Optional (for image/mockup-driven work):
 
 **Constraints (HARD):**
 1. **Use design-dna.json tokens exclusively** - No inline styles
-2. **Edit existing components** - Never rewrite  
+2. **Edit existing components** - Never rewrite
    - **Exception:** In CSS Architecture Refactor Mode, targeted rewrites of style/layout layers (CSS modules, layout wrappers) are allowed when explicitly in scope.
 3. **Compose with primitives** - Use shadcn/ui + project components
 4. **Minimal changes only** - Scope strictly to request (or refactor scope)
 5. **Verification required** - Run lint/typecheck after changes
+6. **New pages MUST have metadata** - Every new `page.tsx` or route segment MUST export `metadata` or `generateMetadata()` with title, description, openGraph (title, description, images, type), and twitter card. **If the builder doesn't know the right title, description, or image -- it MUST ask the user.** No generic placeholders. A page without proper metadata is incomplete and MUST NOT pass gates.
+7. **New pages MUST have a link preview image** - The image shown when the URL is shared on Slack, Twitter, iMessage, etc. Use the project's existing default, add a route-specific one, or **ASK THE USER** what image to use. Never skip it, never guess.
+8. **New pages MUST be complete** - loading.tsx, error.tsx, navigation link, metadata. A page without loading and error handling is incomplete.
+9. **Data components MUST handle all states** - loading, empty, error. No blank screens.
+10. **Forms MUST be functional** - validation, submit state, success feedback, double-submit prevention. A form without validation is broken.
 
 **Tasks:**
+0. **Design Intent (Step 0 -- BEFORE ANY CODE)**: Articulate design intent
+   covering layout, typography, color, image handling, and spacing decisions.
+   Mandatory for all routing modes. For tweak mode, a brief 2-3 line intent
+   suffices. This shifts the builder from reactive compliance to proactive
+   design thinking.
 1. Load design-dna.json tokens
 2. Read target components (from analysis)
 3. Make minimal, safe edits
 4. Use only design system tokens/classes
-5. Run verification (lint, typecheck)
-6. Document what changed and why
+5. **If creating new pages/routes:** Set up metadata export (`metadata` or `generateMetadata`) with title, description, openGraph, twitter card, and link preview image. **If you don't know what title, description, or image to use -- ASK THE USER.** Do not use generic placeholders.
+6. Run verification (lint, typecheck)
+7. Document what changed and why
+8. If creating new pages: create loading.tsx, error.tsx, verify navigation link
+9. If building data components: implement loading, empty, and error states
+10. If building forms: implement validation, submit state, success feedback
 
 **Output:**
 - Code changes (via Edit/MultiEdit tools)
@@ -346,6 +367,7 @@ Optional (for image/mockup-driven work):
 - Lint passes
 - Typecheck passes
 - Only design system tokens used
+- New pages have metadata (title, description, openGraph, twitter) + link preview image
 
 **Artifacts:**
 - Modified files (tracked via git)
@@ -428,8 +450,11 @@ an additional **CSS Architecture Gate** runs as well.
    - Components use proper variants
 3. Check optical alignment (not just geometric)
 4. Check responsive behavior (if applicable)
-5. Compute Design QA Score (0-100)
-6. Generate visual issues report
+5. **Image Rendering Audit:** Verify all images have explicit dimensions/fill, correct object-fit, descriptive alt text, proper aspect ratios across viewports
+6. **Metadata Audit (new pages):** Verify metadata export exists with title (unique, not generic), description (150-160 chars, compelling), openGraph (with images), twitter card. Verify link preview image exists -- if missing, this is a blocking issue.
+7. **Feature Completeness Audit:** Verify new pages have loading.tsx and error.tsx. Verify data components handle loading/empty/error states. Verify forms have validation, submit state, success feedback. Verify new pages are linked from navigation.
+8. Compute Design QA Score (0-100)
+9. Generate visual issues report
 
 **Scoring:**
 - Start at 100
@@ -438,6 +463,9 @@ an additional **CSS Architecture Gate** runs as well.
 - -20 per color palette violation
 - -10 per optical alignment issue
 - -5 per responsive issue
+- -15 per image rendering issue (missing dimensions, wrong object-fit, missing alt)
+- -20 per missing metadata on new page (title, description, openGraph, twitter)
+- -15 per missing link preview image on new page
 
 **Output:**
 - Design QA Score (0-100)
@@ -736,6 +764,12 @@ forbidden_operations:
   - arbitrary_values: "All values must come from design system"
   - scope_expansion: "Strictly implement requested changes only"
   - third_pass: "Maximum 2 implementation passes allowed"
+  - pages_without_metadata: "New pages MUST export metadata with title, description, openGraph, twitter card. If unsure what to use, ASK THE USER."
+  - pages_without_preview_image: "New pages MUST have a link preview image. If none exists, ASK THE USER."
+  - incomplete_pages: "New pages without loading.tsx and error.tsx are incomplete"
+  - blank_data_states: "Data components without loading/empty/error states are broken"
+  - forms_without_validation: "Forms without validation are broken"
+  - orphan_pages: "Pages not reachable from existing navigation (unless intentionally direct-link)"
 ```
 
 ### Verification Required
@@ -954,4 +988,4 @@ As the pipeline runs, it learns:
 ---
 
 _Last updated: 2026-02-13_
-_Version: OS 6.0_
+_Version: OS 6.2_

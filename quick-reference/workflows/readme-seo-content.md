@@ -1,4 +1,4 @@
-# OS 6.0 SEO Lane Quick Reference
+# OS 6.2 SEO Lane Quick Reference
 
 **Lane:** SEO Content
 **Domain:** `seo`
@@ -21,7 +21,7 @@ Use for:
 
 ## 2. Agents (5 total)
 
-**Note:** SEO uses its own sequential pipeline routing rather than the three-tier (grand-architect / light-orchestrator / builder) model used by other lanes.
+**Note:** SEO uses its own sequential pipeline routing rather than the four-tier (light/default/tweak/complex) model used by other lanes.
 
 | Agent | Role |
 |-------|------|
@@ -114,4 +114,4 @@ Use for:
 
 ---
 
-_Version: OS 6.0_
+_Version: OS 6.2_

@@ -1,4 +1,4 @@
-# Nextjs Pipeline Phase Configuration - OS 6.0
+# Nextjs Pipeline Phase Configuration - OS 6.2
 # Nextjs / Frontend Workflow
 
 pipeline:
@@ -6,7 +6,7 @@ pipeline:
   description: Nextjs frontend development pipeline with design-first approach
   version: "6.0"
 
-# Phase State Schema (OS 6.0)
+# Phase State Schema (OS 6.2)
 phase_state:
   # Top-level fields
   domain: nextjs
@@ -16,14 +16,14 @@ phase_state:
   current_phase: string
   memory_summary: string | null           # Hits from memory-first search
 
-  # Mode Tracking (OS 6.0)
+  # Mode Tracking (OS 6.2)
   current_mode: planning | execution      # NEW: Explicit mode tracking
   mode_history:                           # NEW: Track mode transitions
     - mode: string
       timestamp: string
       reason: string
 
-  # Attempt Tracking (OS 6.0)
+  # Attempt Tracking (OS 6.2)
   current_phase_attempts: 0               # NEW: Track retry attempts
   max_attempts: 3                         # NEW: Hard limit per spec
 
@@ -39,7 +39,7 @@ phase_state:
     verification: object
     completion: object
 
-# Three-Tier Routing (OS 6.0)
+# Four-Tier Routing (OS 6.2)
 # Default now runs gates. -tweak skips gates. --complex forces full pipeline.
 complexity_tiers:
   default:
@@ -132,11 +132,13 @@ phases:
       quality: design-dna.json enforcement
       integration: Lint and typecheck before gates
       resource: Token-conscious, no unnecessary refactors
+      metadata: New pages MUST export metadata (title, description, openGraph, twitter) + link preview image. If builder doesn't know what to use, ASK THE USER.
+      completeness: New pages must have loading.tsx, error.tsx, nav link. Data components must handle all states. Forms must have validation.
 
   # Phase 3: Design QA
   - name: design_qa
     agent: nextjs-design-reviewer
-    description: Visual quality assurance gate
+    description: Visual quality assurance gate (includes image audit + metadata audit)
     dependencies:
       - implementation
     context_required: true
@@ -146,6 +148,8 @@ phases:
     outputs:
       - design_score
       - visual_issues
+      - metadata_issues    # Missing metadata/OG on new pages
+      - image_issues       # Missing dimensions, wrong object-fit, missing alt
       - gate_decision
     quality_gates:
       design_score:
@@ -181,6 +185,14 @@ phases:
         threshold: 0
         type: hard_block
         message: Design token violations
+      missing_metadata:
+        threshold: 0
+        type: hard_block
+        message: New pages must have metadata (title, description, openGraph, twitter) and link preview image. Ask user if unsure.
+      feature_completeness:
+        threshold: 0
+        type: soft_block  # WARN, not hard block -- some exceptions are valid
+        message: New pages/forms/data components must be feature-complete (loading, error, empty states)
 
 # Additional Enforcers (Optional)
 optional_phases:

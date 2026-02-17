@@ -48,7 +48,7 @@ Before you run:
   - Files changed in corrective pass, when applicable,
 - ContextBundle:
   - `designSystem` / design-dna,
-  - **`relatedStandards` for frontend** - treat as enforceable rules, not suggestions (OS 6.0),
+  - **`relatedStandards` for frontend** - treat as enforceable rules, not suggestions (OS 6.2),
   - `projectState` for structural hints.
 - Global standards knowledge (via context7):
   - `os2-nextjs-standards` – Nextjs/front-end standards,
@@ -84,7 +84,28 @@ You SHOULD check at least:
    - No secrets or API keys added to client-side code,
    - Obvious unsafe patterns avoided (e.g., dangerous HTML injection without sanitization).
 
-## Scoring (Graduated Gate Standard - OS 6.0)
+5. **Feature Completeness**
+   - New `page.tsx` without sibling `loading.tsx` in same directory:
+     - Check: `ls` the directory of any new page.tsx, verify loading.tsx exists
+     - Exception: static pages with no data fetching (check if page uses async/fetch/query)
+     - Severity: High (-10)
+   - New `page.tsx` without sibling `error.tsx`:
+     - Check: verify error.tsx exists in same directory or parent layout
+     - Severity: Medium (-5)
+   - Data-fetching components without error handling:
+     - Check: grep for fetch/useQuery/useSWR without try-catch or error callback
+     - Severity: High (-10)
+   - Form elements without validation:
+     - Check: grep for `<form>` or onSubmit without associated validation patterns
+     - Severity: Medium (-5)
+   - New pages not referenced in navigation:
+     - Check: grep for the new route path in nav/header/footer/sidebar components
+     - Note: This is a HINT check, not a hard block. Some pages are intentionally direct-link only.
+     - Severity: Low (-3, flagged as [Improvement])
+   - Missing metadata on new pages:
+     - Already enforced (threshold: 0, hard block)
+
+## Scoring (Graduated Gate Standard - OS 6.2)
 
 **Reference:** `docs/reference/graduated-gate-scoring.md`
 
@@ -106,9 +127,9 @@ Start at 100. Subtract points based on severity:
 | Severity | Points Deducted | Triage Label | Examples |
 |----------|-----------------|--------------|----------|
 | Critical | -15 to -25 | [Critical] | Security vulnerability, broken functionality, inline style where tokens exist |
-| High | -10 to -15 | [Critical] | Design token violation, RSC misuse, architecture anti-pattern |
-| Medium | -5 to -10 | [Improvement] | Code style inconsistency, missing error handling |
-| Low | -1 to -5 | [Nit] | Naming suggestions, optional enhancements |
+| High | -10 to -15 | [Critical] | Design token violation, RSC misuse, architecture anti-pattern, missing loading.tsx on new page, data component without error handling |
+| Medium | -5 to -10 | [Improvement] | Code style inconsistency, missing error handling, missing error.tsx, form without validation |
+| Low | -1 to -5 | [Nit] | Naming suggestions, optional enhancements, orphan page (not linked from nav) |
 
 ### Triage Label Output Format
 
@@ -175,7 +196,7 @@ Write your results to `phase_state.gates`:
 
 Your report should make it easy for `nextjs-builder` to run a targeted corrective pass and for orchestrators to understand the remaining risk if any violations remain after Pass 2.
 
-## Response Awareness Audit (OS 6.0)
+## Response Awareness Audit (OS 6.2)
 
 Scan modified files for RA tags and report:
 
@@ -202,7 +223,7 @@ ra_audit:
     - "#COMPLETION_DRIVE in PricingTable.tsx:28 - assumption about currency format"
 ```
 
-## Reflexion on Failure (OS 6.0)
+## Reflexion on Failure (OS 6.2)
 
 When `gate_decision` is WARN, ERROR, or BLOCK:
 
@@ -241,8 +262,8 @@ Your gate output should include:
 - `standards_score` (0-100)
 - `violations` (array with severity, file, description)
 - `gate_decision` (PASS/WARN/ERROR/BLOCK)
-- **`ra_audit`** - RA tag scan summary (OS 6.0)
-- **`reflexion`** - verbal reflection on failure causes (OS 6.0, only if WARN/ERROR/BLOCK)
+- **`ra_audit`** - RA tag scan summary (OS 6.2)
+- **`reflexion`** - verbal reflection on failure causes (OS 6.2, only if WARN/ERROR/BLOCK)
 - **Tag violations to the standard they break** (if any) for audit traceability
 
 In CSS Architecture Refactor Mode, your report is consumed alongside

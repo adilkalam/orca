@@ -104,7 +104,7 @@ Drive the `build_gate` from `nextjs-phase-config.yaml`:
 
 ---
 
-## Chain of Verification Protocol (OS 6.0)
+## Chain of Verification Protocol (OS 6.2)
 
 Before rendering final verification status, apply CoVe to catch errors that standard checks miss.
 
@@ -164,7 +164,7 @@ The CoVe table MUST be included in verification output. Standard build/test resu
 
 ---
 
-## Mandatory Check Loading (OS 6.0)
+## Mandatory Check Loading (OS 6.2)
 
 Before generating CoVe questions:
 
@@ -179,7 +179,7 @@ if [ -f ".claude/agent-knowledge/nextjs-verification-agent/mandatory_checks.json
 fi
 ```
 
-## CoVe Persistence (OS 6.0)
+## CoVe Persistence (OS 6.2)
 
 After completing verification, persist the CoVe table to phase_state:
 
@@ -198,7 +198,7 @@ After completing verification, persist the CoVe table to phase_state:
 }
 ```
 
-## Improvement Bus Emission (OS 6.0)
+## Improvement Bus Emission (OS 6.2)
 
 For each NO answer in the CoVe table, emit to the improvement bus:
 

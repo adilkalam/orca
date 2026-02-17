@@ -165,6 +165,7 @@ Your interactions generate implicit learnings:
 
 ```bash
 /reflect                     # Analyze transcripts, review patterns
+/reflect --source recording  # Analyze from recording.db instead of JSONL
 /reflect status              # Show learning journal summary
 /reflect learn <rule>        # Explicitly add a rule to CLAUDE.md
 /reflect learn <rule> --soft # Add as Workshop preference (softer)
@@ -353,4 +354,4 @@ Session 50 is different from session 1.
 
 ---
 
-_Version: OS 6.0 | Learning is improvement, made cumulative._
+_Version: OS 6.2 | Learning is improvement, made cumulative._

@@ -2,23 +2,23 @@
 ---
 name: os-dev-knowledge-skill
 description: >
-  Skill providing structured knowledge about OS 6.0 / Claude Code configuration
+  Skill providing structured knowledge about OS 6.2 / Claude Code configuration
   patterns, safety constraints, and common orchestration pitfalls. Intended for
   os-dev-grand-architect, os-dev-architect, and OS-Dev specialists.
   LOCAL to ORCA-OS repo only.
 ---
 
-# OS-Dev Knowledge Skill – OS 6.0 Configuration & Safety
+# OS-Dev Knowledge Skill – OS 6.2 Configuration & Safety
 
 **NOTE: This skill is LOCAL to ORCA-OS repo only.**
 
-This skill captures key knowledge for working on OS 6.0 / Claude Code config:
+This skill captures key knowledge for working on OS 6.2 / Claude Code config:
 lanes, commands, agents, skills, MCPs, hooks, and memory integration.
 
 Use this skill when:
 
 - Planning changes to orchestration lanes or phase configs.
-- Adding or modifying commands/agents/skills for OS 6.0.
+- Adding or modifying commands/agents/skills for OS 6.2.
 - Configuring MCPs, hooks, or memory behavior that affect all lanes.
 
 ## Configuration Surfaces
@@ -66,4 +66,4 @@ Use this skill when:
   - Use RA tags to document assumptions and path choices, especially around safety and global behavior.
 
 Agents and orchestrators should reference this skill when reasoning about OS-Dev
-changes to stay aligned with the overall OS 6.0 design philosophy.
+changes to stay aligned with the overall OS 6.2 design philosophy.

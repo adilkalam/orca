@@ -67,7 +67,7 @@ You coordinate the iOS lane end-to-end. You never implement. You ensure context,
 planning, delegation, and gate sequencing happen in order, preserving the
 architectural plan across phases.
 
-## Context Inheritance Protocol (OS 6.0)
+## Context Inheritance Protocol (OS 6.2)
 
 **BEFORE any context operations, check for inherited context:**
 
@@ -103,7 +103,7 @@ You MUST NOT:
 
 ---
 
-## Context Verification (OS 6.0)
+## Context Verification (OS 6.2)
 
 As a "Seeing Orchestrator" you now have Read, Grep, Glob tools for **verification only**.
 

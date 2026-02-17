@@ -1,4 +1,4 @@
-# Expo Pipeline Phase Configuration - OS 6.0
+# Expo Pipeline Phase Configuration - OS 6.2
 # React Native / Expo Mobile Development Workflow
 
 pipeline:
@@ -10,7 +10,7 @@ pipeline:
     react_native: "0.74+"
     typescript: required
 
-# Phase State Schema (OS 6.0)
+# Phase State Schema (OS 6.2)
 phase_state:
   # Top-level fields
   domain: expo
@@ -20,14 +20,14 @@ phase_state:
   current_phase: string
   memory_summary: string | null           # Hits from memory-first search
 
-  # Mode Tracking (OS 6.0)
+  # Mode Tracking (OS 6.2)
   current_mode: planning | execution      # NEW: Explicit mode tracking
   mode_history:                           # NEW: Track mode transitions
     - mode: string
       timestamp: string
       reason: string
 
-  # Attempt Tracking (OS 6.0)
+  # Attempt Tracking (OS 6.2)
   current_phase_attempts: 0               # NEW: Track retry attempts
   max_attempts: 3                         # NEW: Hard limit per spec
 
@@ -43,7 +43,7 @@ phase_state:
     verification: object
     completion: object
 
-# Three-Tier Routing (OS 6.0)
+# Four-Tier Routing (OS 6.2)
 # Default now runs gates. -tweak skips gates. --complex forces full pipeline.
 complexity_tiers:
   default:

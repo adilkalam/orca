@@ -1,5 +1,5 @@
 /opt/homebrew/Library/Homebrew/cmd/shellenv.sh: line 18: /bin/ps: Operation not permitted
-# OS-Dev Pipeline Phase Configuration - OS 6.0
+# OS-Dev Pipeline Phase Configuration - OS 6.2
 # OS / Claude Code / Tooling Configuration Workflow
 #
 # NOTE: This pipeline is LOCAL to ORCA-OS repo only.
@@ -23,7 +23,7 @@
 
 pipeline:
   name: os-dev
-  description: OS 6.0 / Claude Code configuration and orchestration pipeline
+  description: OS 6.2 / Claude Code configuration and orchestration pipeline
   version: "6.0"
 
 context:

@@ -1,16 +1,53 @@
-# Quick Reference: Telemetry (OS 6.0)
+# Quick Reference: Telemetry and Recording (OS 6.2)
 
-**Last Updated:** 2026-02-13
-**Version:** OS 6.0
-**Status:** Deprecated -- superseded by orca-record recording layer
+**Last Updated:** 2026-02-16
+**Version:** OS 6.2
+**Status:** ACTIVE via recording layer (manual telemetry deprecated)
 
-> **DEPRECATION NOTICE:** This telemetry system is superseded by `orca-record`.
-> The recording layer provides full session recording, git-backed checkpoints, and
-> cognitive fusion via cognition-mcp. Use `orca-record status` and `orca-record history`
-> for session inspection. Legacy telemetry scripts remain functional but will not
-> receive new features.
+## Recording Layer (Active)
 
-Telemetry tracks pipeline execution for debugging and performance analysis.
+Session activity is captured automatically by the **orca-record** recording layer
+via Claude Code hooks. The recording database (`.orca/recording.db`) stores session
+history, prompts, file changes, and checkpoints.
+
+### Recording Context Injection in Commands
+
+OS 6.2 commands inject prior session context from the recording layer before
+delegating to agents. This follows **Pattern A (command-layer injection)**:
+
+**Flow:**
+1. `/orca` queries `recording_query` for prior sessions related to the task
+2. `/orca` calls `recording_explain` on the most relevant session
+3. The narrative summary (max 500 chars) is passed as `RECORDING_CONTEXT`
+4. Domain grand-architects receive this context in their delegation prompt
+
+**Domain commands** (`/nextjs`, `/ios`, `/expo`, `/shopify`, `/django-react`,
+`/orca-os-dev`, `/seo`) check for inherited `RECORDING_CONTEXT` first. If not
+present (direct invocation without `/orca`), they query `.orca/recording.db`
+independently.
+
+**Key constraint:** Recording context is always OPTIONAL. Every guard checks
+for `.orca/recording.db` existence first. Projects without the recording layer
+skip silently.
+
+### Operations Used
+
+| Operation | Purpose |
+|-----------|---------|
+| `recording_query` | Find prior sessions by files, limit, state |
+| `recording_explain` | Get narrative summary of a specific session |
+
+## Legacy Telemetry (Deprecated)
+
+Manual telemetry has been fully removed from all lane command files.
+Legacy telemetry scripts (`telemetry-emit.sh`, `telemetry-viewer.sh`) remain in
+`scripts/` for backward compatibility but are no longer invoked by any pipeline.
+
+The section below is kept as historical reference only.
+
+---
+
+Telemetry previously tracked pipeline execution for debugging and performance analysis.
 
 ---
 
@@ -135,16 +172,16 @@ mkdir -p .claude/telemetry/sessions
 
 ---
 
-## Planned (Phase 2)
+## Phase 2 Status
 
-The following features are planned for future implementation:
+The following features were planned for Phase 2. Most are now fulfilled by the recording layer:
 
-- **Delegation auto-capture:** Hook-based tracking of agent-to-agent delegations
-- **File change tracking:** Track which files are modified during pipelines
-- **Metrics aggregation:** Daily/weekly gate score trends
-- **Session summaries:** JSON summary with complexity signals
-- **Smart Router training:** Use telemetry data to improve `/plan` routing
+- **Delegation auto-capture:** Fulfilled by `orca-record pre-task`/`post-task` hooks
+- **File change tracking:** Fulfilled by `orca-record stop` (file diffs captured per session)
+- **Session summaries:** Fulfilled by `recording_explain` (narrative summaries per session)
+- **Metrics aggregation:** Not yet implemented (recording.db has raw data for future analysis)
+- **Smart Router training:** Not yet implemented (recording data can feed future routing improvements)
 
 ---
 
-*Part of ORCA OS 6.0*
+*Part of ORCA OS 6.2*

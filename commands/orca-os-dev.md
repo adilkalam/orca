@@ -1,5 +1,5 @@
 ---
-description: "OS 6.0 orchestrator entrypoint for OS / Claude Code configuration tasks (LOCAL to this repo)"
+description: "OS 6.2 orchestrator entrypoint for OS / Claude Code configuration tasks (LOCAL to this repo)"
 argument-hint: "[--light | -tweak | --complex] <task description or requirement ID>"
 allowed-tools:
   - Task
@@ -103,10 +103,10 @@ Even `-tweak` delegates to a builder. It skips gates, not agents.
 
 ---
 
-# /orca-os-dev – OS / Tooling Orchestrator (OS 6.0)
+# /orca-os-dev – OS / Tooling Orchestrator (OS 6.2)
 
 Use this command when the task is clearly OS / Claude Code / tooling
-configuration work for **Vibe OS 6.0**, not application code.
+configuration work for **Vibe OS 6.2**, not application code.
 
 **IMPORTANT: This command is LOCAL to ORCA-OS repo only.**
 It is NOT deployed to `~/.claude` global config. Use `/orca-os-dev` only
@@ -123,8 +123,8 @@ when working in this repository to modify the OS itself.
 Examples:
 
 - Adjust lane/phase config behavior (Next.js, iOS, etc.)
-- Add or update commands/agents/skills used by OS 6.0
-- Configure MCP servers and integrate them into OS 6.0 lanes
+- Add or update commands/agents/skills used by OS 6.2
+- Configure MCP servers and integrate them into OS 6.2 lanes
 - Change how memory and context are used by `/plan` / `/orca` / `/audit`
 
 **Key Resources:**
@@ -181,87 +181,50 @@ No flag → Light Orchestrator WITH confirmation (Section 1 via confirmation)
 
 ---
 
-## 0.1 Telemetry (OS 6.0) - DEPRECATED
+## 0.1 Recording Context (OS 6.2)
 
-> **DEPRECATED:** This telemetry system is superseded by `orca-record` (recording layer).
-> The recording layer automatically captures all session events via Claude Code hooks.
-> These manual telemetry emit commands are kept for backward compatibility but are
-> no longer required. New pipelines should not add telemetry emit calls.
+> Session activity is captured automatically by **orca-record** hooks. Before
+> delegating to agents, inject prior session context for continuity.
+> See `docs/reference/telemetry-standard.md` for telemetry history.
 
-**Reference:** `docs/reference/telemetry-standard.md`
+### Recording Context Injection (OPTIONAL)
 
-**MANDATORY: You MUST execute these Bash commands, not just read them.**
+**Check for inherited context first:**
+If invoked via `/orca`, check if `RECORDING_CONTEXT` was already provided in
+the delegation prompt. If present, use it directly and skip the query below.
 
-### At Pipeline Start (EXECUTE THIS)
+**If no inherited context AND `.orca/recording.db` exists:**
 
-**Step 1:** Generate trace_id using the telemetry emit script:
+1. Query for relevant prior sessions:
+   ```
+   mcp__cognition-mcp__cognition({
+     operation: "recording_query",
+     content: {
+       files: [<files related to current task>],
+       limit: 3,
+       state: "ENDED"
+     }
+   })
+   ```
 
-```
-Bash({
-  command: '~/.claude/scripts/telemetry-emit.sh start os-dev "$TASK_SUMMARY" $MODE',
-  description: "Generate telemetry trace ID"
-})
-```
+2. If sessions found, get narrative for most relevant:
+   ```
+   mcp__cognition-mcp__cognition({
+     operation: "recording_explain",
+     content: {
+       session_id: "<most relevant session id>"
+     }
+   })
+   ```
 
-Replace `$TASK_SUMMARY` with a brief task description and `$MODE` with default/tweak/complex.
+3. Include in delegation prompt to grand-architect:
+   ```
+   === RECORDING CONTEXT ===
+   <narrative.summary, max 500 chars>
+   ===
+   ```
 
-**Step 2:** Store the returned TRACE_ID for use in delegation prompts.
-
-### At Pipeline End (EXECUTE THIS)
-
-After all agents complete (or on failure/cancellation), emit pipeline_end:
-
-```
-Bash({
-  command: '~/.claude/scripts/telemetry-emit.sh end $TRACE_ID $STATUS $DURATION $DELEGATIONS $GATES $FILES',
-  description: "Log pipeline completion"
-})
-```
-
-Replace variables:
-- `$TRACE_ID`: The trace ID from pipeline start
-- `$STATUS`: "success", "failed", or "cancelled"
-- `$DURATION`: Approximate seconds (estimate is fine)
-- `$DELEGATIONS`: Count of Task tool calls made
-- `$GATES`: Count of gate agents run
-- `$FILES`: Count of files modified
-
-### Passing trace_id to Agents
-
-Include in every Task delegation prompt:
-```
-TELEMETRY_TRACE_ID: <the trace_id>
-```
-
-Agents may log delegation events using this ID (Phase 2).
-
-### After Each Gate (EXECUTE THIS)
-
-When a gate agent (e.g., os-dev-standards-enforcer) returns results, extract and emit:
-
-```
-Bash({
-  command: 'echo "{\"type\":\"gate_result\",\"trace_id\":\"$TRACE_ID\",\"ts\":\"$(date -u +%Y-%m-%dT%H:%M:%SZ)\",\"data\":{\"gate\":\"$GATE_NAME\",\"score\":$SCORE,\"decision\":\"$DECISION\",\"issues_count\":$ISSUES}}" >> .claude/telemetry/sessions/trace-$TRACE_ID.jsonl',
-  description: "Log gate result"
-})
-```
-
-Variables:
-- `$TRACE_ID`: From pipeline start
-- `$GATE_NAME`: Agent name (e.g., "os-dev-standards-enforcer")
-- `$SCORE`: Numeric score (0-100) from gate output
-- `$DECISION`: "PASS", "WARN", "ERROR", or "BLOCK"
-- `$ISSUES`: Count of issues found
-
-### On Failure (EXECUTE THIS)
-
-If pipeline status is "failed" or "cancelled", show viewer hint:
-
-```
-echo ""
-echo "Debug with: ~/.claude/scripts/telemetry-viewer.sh $TRACE_ID"
-echo ""
-```
+**If `.orca/recording.db` does not exist:** skip this section silently.
 
 ---
 
@@ -523,7 +486,7 @@ Working with `os-dev-grand-architect`:
    python3 ~/.claude/scripts/memory-search-unified.py "$TASK_SUMMARY" --mode all --top-k 10 || true
    ```
 
-2. Load relevant reflexions from past gate failures (OS 6.0):
+2. Load relevant reflexions from past gate failures (OS 6.2):
 
    ```bash
    workshop --workspace .claude/memory search "reflexion" -t os-dev --limit 5 2>/dev/null || true

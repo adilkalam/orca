@@ -22,6 +22,7 @@ fi
 
 echo "This will remove the following:"
 echo "  - ~/.claude/agents/"
+echo "  - ~/.claude/bin/"
 echo "  - ~/.claude/commands/"
 echo "  - ~/.claude/skills/"
 echo "  - ~/.claude/hooks/"
@@ -47,6 +48,7 @@ echo ""
 echo "Removing ORCA-OS files..."
 
 rm -rf "$CLAUDE_DIR/agents"
+rm -rf "$CLAUDE_DIR/bin"
 rm -rf "$CLAUDE_DIR/commands"
 rm -rf "$CLAUDE_DIR/skills"
 rm -rf "$CLAUDE_DIR/hooks"

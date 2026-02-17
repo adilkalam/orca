@@ -154,6 +154,21 @@ This prevents diving into major work without planning.
 
 ---
 
+## Recording Context Injection (OS 6.2)
+
+Domain commands inject prior session context from `.orca/recording.db` before delegating to agents. This provides continuity across sessions.
+
+**How it works:**
+1. `/orca` queries `recording_query` for prior sessions related to the current task
+2. Calls `recording_explain` on the most relevant session for a narrative summary
+3. Passes the summary (max 500 chars) as `RECORDING_CONTEXT` in the delegation prompt
+
+**Central vs independent:** `/orca` queries centrally and passes context to domain commands. Domain commands (`/nextjs`, `/ios`, etc.) check for inherited context first; if invoked directly, they query independently.
+
+All recording context is optional -- silently skipped if `.orca/recording.db` does not exist.
+
+---
+
 ## The Agent Team
 
 Strict role separation prevents drift.
@@ -398,4 +413,4 @@ This is why the four systems (cognition, memory, orchestration, learning) work t
 
 ---
 
-_Version: OS 6.0 | Orchestration is execution, made reliable._
+_Version: OS 6.2 | Orchestration is execution, made reliable._

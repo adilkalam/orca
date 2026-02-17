@@ -1,9 +1,9 @@
 ---
 name: performance-prophet
-description: "Expo/React Native predictive performance specialist with OS 6.0 integration"
+description: "Expo/React Native predictive performance specialist with OS 6.2 integration"
 tools: Read, Grep, Glob, WebFetch, mcp__project-context__query_context
 
-# OS 6.0 Constraint Framework
+# OS 6.2 Constraint Framework
 required_context:
   - query_context: "MANDATORY - Must call ProjectContextServer.query_context() (domain: expo) before deep perf prediction"
   - context_bundle: "Use ContextBundle.relevantFiles and pastDecisions (previous perf incidents) to focus analysis"

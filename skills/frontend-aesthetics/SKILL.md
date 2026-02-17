@@ -10,7 +10,7 @@ allowed-tools:
   - WebFetch
 metadata:
   category: "frontend-design"
-  source: "anthropic-frontend-design-plugin + OS 6.0 design-dna"
+  source: "anthropic-frontend-design-plugin + OS 6.2 design-dna"
 ---
 
 # Frontend Aesthetics – Global Design Skill
@@ -30,11 +30,14 @@ This skill does **not** define a visual language by itself. It layers on top of:
 
 ## 1. When to Use This Skill
 
-You can use this skill in **any** frontend context (web/expo/ios) when:
-- The user asks for UI that feels **distinctive, premium, or designed**, not
-  "just another dashboard".
+This skill is **ALWAYS loaded by builders for ANY UI work**. It is not optional
+and does not require the user to ask for "distinctive" or "premium" UI. Every
+piece of frontend output should reflect intentional design thinking.
+
+You can use this skill in **any** frontend context (web/expo/ios):
+- Every UI implementation task, regardless of scope or complexity.
 - The project has at least some design/dna docs or tokens you can honor.
-- You want to avoid generic AI patterns and make more intentional choices.
+- Even for "simple" tasks -- good design thinking costs nothing extra.
 
 You must still:
 - Respect project design systems and constraints.
@@ -51,6 +54,20 @@ These principles help create intentional, distinctive UI while respecting projec
 - Choose **intentional type roles**, not arbitrary sizes:
   - Headings, section titles, labels, body, meta.
   - Use project tokens or semantic CSS classes where available.
+- **4-tier font system** (when choosing fonts without design-dna guidance):
+  - **Display**: One distinctive font for large headings and hero text.
+  - **Body**: One refined, highly readable font for paragraphs and content.
+  - **Accent**: Optional third font for taglines, labels, quotes.
+  - **Monospace**: For code blocks and technical content only.
+  - Pair a distinctive display font with a refined body font.
+- **Anti-convergence principle**: NEVER converge on the same common font choices
+  across projects or generations. Each project deserves its own typographic identity.
+- Advisory guidance on font selection:
+  - Generic, overused fonts (Inter, Roboto, Arial, system-ui defaults) are a sign
+    of lazy defaults, not intentional design. Recommend distinctive alternatives
+    that match the project's character and audience.
+  - This is advisory -- not a hard ban. If a project's design-dna specifies Inter,
+    use Inter. But when you are choosing, choose with intention.
 - Avoid:
   - Overused generic fonts in projects that ship their own type.
   - Random size ladders that don't map to design tokens.
@@ -74,6 +91,10 @@ These principles help create intentional, distinctive UI while respecting projec
 
 ### 2.3 Spacing, Layout & Rhythm
 
+- **Mathematical spacing principle**: Every spacing value should come from a
+  system, not be eyeballed. Use a consistent scale (4px/8px base grid) and
+  derive all values from it. See `skills/ui-implementation-rules/SKILL.md`
+  for the concrete spacing scale and the 2x rule.
 - Snap spacing to the project's **grid and spacing tokens**.
 - Use consistent vertical rhythm:
   - Section breaks.
@@ -82,9 +103,14 @@ These principles help create intentional, distinctive UI while respecting projec
 - Avoid:
   - Uneven, ad-hoc spacing just to make something "fit".
   - Over-nesting containers when simple layout primitives would suffice.
+  - Arbitrary pixel values that don't belong to any spacing scale.
 
 ### 2.4 Motion & Micro-interactions
 
+- **Focus on high-impact moments**: One well-orchestrated page load with
+  staggered reveals (animation-delay) creates more delight than scattered
+  micro-interactions. Invest motion budget where it matters most.
+- Use scroll-triggering and hover states that surprise.
 - Use motion to:
   - Clarify state changes.
   - Add subtle delight to key interactions.
@@ -103,9 +129,22 @@ These principles help create intentional, distinctive UI while respecting projec
   - Flat, lifeless layouts where everything is the same value.
   - Heavy borders; prefer hairlines and surface contrast.
 
+### 2.6 Spatial Composition
+
+- **Unexpected layouts**: Asymmetry. Overlap. Grid-breaking elements. Generous
+  negative space OR controlled density. Not every layout needs to be a symmetric
+  grid of equal-width cards.
+- **Match implementation complexity to the aesthetic vision**:
+  - Maximalist designs need elaborate code with extensive animations and effects.
+  - Minimalist designs need precision and restraint -- careful attention to
+    spacing, typography, and subtle details.
+  - Elegance comes from executing the vision well, not from complexity.
+- Consider diagonal flow, layered elements, and unexpected spatial relationships
+  that make the design feel intentionally crafted rather than auto-generated.
+
 ---
 
-## 3. Anti-Pattern Library – "AI Slop" to Avoid
+## 3. Anti-Pattern Library -- "AI Slop" to Avoid
 
 When designing or implementing UI, watch out for:
 
@@ -126,6 +165,17 @@ When designing or implementing UI, watch out for:
 5. **Over-animated UI**
    - Every hover zooms/bounces.
    - Long transitions that slow the interface down.
+
+6. **Generic AI-generated aesthetics**
+   - Overused font families (Inter, Roboto, Arial, system fonts) as lazy defaults.
+   - Cliched purple gradients on white backgrounds.
+   - Predictable layouts and component patterns.
+   - Cookie-cutter design that lacks context-specific character.
+
+7. **Same design across projects**
+   - No design should look the same across projects. Vary between light and
+     dark themes, different fonts, different aesthetics.
+   - If your output could belong to any project, it belongs to none.
 
 If you see these emerging, pause and re-center on project design-dna and the
 principles above.

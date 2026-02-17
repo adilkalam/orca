@@ -1,22 +1,23 @@
-# Complexity Routing - Three-Tier Structure
+# Complexity Routing - Four-Tier Structure
 
-**Version:** OS 6.0 | **Last Updated:** 2026-01-24
+**Version:** OS 6.2 | **Last Updated:** 2026-02-16
 
-OS 6.0 uses **three-tier routing** to optimize for speed while maintaining quality gates.
+OS 6.2 uses **four-tier routing** to optimize for speed while maintaining quality gates.
 
-## Three-Tier Routing Table
+## Four-Tier Routing Table
 
 | Mode | Flag | Path | Gates | Use Case |
 |------|------|------|-------|----------|
-| **Default** | (none) | Light + Gates | YES | Most work – fast with quality |
-| **Tweak** | `-tweak` | Light (pure) | NO | Speed iteration, user verifies |
+| **Light** | `--light` | Light orchestrator | YES | Confident users, skip confirmation |
+| **Default** | (none) | Light + Confirmation | YES | Most work -- fast with quality |
+| **Tweak** | `-tweak` | Builder direct | NO | Speed iteration, user verifies |
 | **Complex** | `--complex` | Full pipeline | YES | Architecture, multi-file, specs |
 
 **Key Inversion:** Default now runs gates. Previous versions skipped them.
 
-## Default Mode (Light + Gates)
+## Default Mode (Light + Confirmation + Gates)
 
-Most tasks take this path. Fast execution with automated quality checks.
+Most tasks take this path. User confirms the proposed team before execution. Fast execution with automated quality checks.
 
 **Indicators:**
 - 1-5 files affected
@@ -25,12 +26,23 @@ Most tasks take this path. Fast execution with automated quality checks.
 - Copy/label changes
 - Simple logic changes
 
-**Route:** Light orchestrator → builder → gates → done
+**Route:** Confirmation → Light orchestrator → builder → gates → done
 
 **Gates run (domain-specific):**
 - Next.js: `nextjs-standards-enforcer` + `nextjs-design-reviewer`
 - iOS: `ios-standards-enforcer` + `ios-ui-reviewer`
 - Expo: `design-token-guardian` + `expo-aesthetics-specialist`
+
+## Light Mode (`--light`)
+
+Same as default but skips the team confirmation step. For confident users who know the pipeline.
+
+**Use when:**
+- You know the task is straightforward
+- You want to skip the confirmation dialog
+- You trust the default agent team
+
+**Route:** Light orchestrator → builder → gates → done (no confirmation)
 
 ## Tweak Mode (`-tweak`)
 
@@ -42,7 +54,7 @@ Pure speed path. User explicitly accepts responsibility for verification.
 - Minor adjustments
 - You'll verify yourself
 
-**Route:** Light orchestrator → builder → done (skip gates)
+**Route:** Builder direct → done (skip gates)
 
 ## Complex Mode (`--complex`)
 
@@ -64,8 +76,9 @@ Team size scales with routing mode:
 
 | Mode | Files | Agents | Team Composition |
 |------|-------|--------|------------------|
-| Default | 1-5 | 2-4 | Light orchestrator + builder + gates |
-| Tweak | 1-3 | 1-2 | Light orchestrator + builder only |
+| Light | 1-5 | 2-4 | Light orchestrator + builder + gates (no confirmation) |
+| Default | 1-5 | 2-4 | Confirmation + light orchestrator + builder + gates |
+| Tweak | 1-3 | 1-2 | Builder direct |
 | Complex | 5+ | 5-10 | Grand-architect + architect + builders + all gates |
 
 ### Extended Thinking (Complex Mode)
@@ -81,7 +94,7 @@ This aligns with Anthropic best practices for complex reasoning tasks.
 
 ### No Flag (Default)
 
-Light path WITH quality gates:
+Light path WITH confirmation and quality gates:
 
 ```bash
 /ios "fix button padding"
@@ -90,6 +103,18 @@ Light path WITH quality gates:
 ```
 
 Fast execution + automated quality checks. Best for most work.
+
+### `--light` Flag
+
+Light path WITH gates, WITHOUT confirmation:
+
+```bash
+/ios --light "fix button padding"
+/nextjs --light "update header text"
+/expo --light "adjust card spacing"
+```
+
+Same execution as default but skips the team confirmation dialog.
 
 ### `-tweak` Flag
 
@@ -156,19 +181,21 @@ Created by `/plan`, consumed by domain orchestrators.
 ```
 Parse Arguments
     
-     Contains "-tweak"? → Light Orchestrator (TWEAK MODE - no gates)
+     Contains "--light"? → Light Orchestrator (LIGHT MODE - gates, no confirmation)
     
-     Contains "--complex"? → Grand-Architect (full pipeline)
+     Contains "-tweak"? → Builder Direct (TWEAK MODE - no gates)
+    
+     Contains "--complex"? → Grand-Architect (full pipeline, with confirmation)
     
      Contains "--audit"? → Audit Mode
     
      Otherwise (default):
         
-        Assess Complexity
+        Team Confirmation
             
-             SIMPLE/MEDIUM → Light Orchestrator (DEFAULT MODE - with gates)
+             Confirmed → Light Orchestrator (DEFAULT MODE - with gates)
             
-             COMPLEX (detected):
+             Complexity detected:
                 
                  Has spec? → Grand-Architect (full pipeline)
                 
@@ -188,11 +215,11 @@ Handle default and tweak modes:
 | OS-Dev | `os-dev-light-orchestrator` | `os-dev-standards-enforcer` |
 
 Light orchestrators:
-- **DEFAULT mode**: builder → gates → report
-- **TWEAK mode**: builder → report (skip gates)
+- **LIGHT mode**: builder → gates → report (no confirmation)
+- **DEFAULT mode**: confirmation → builder → gates → report
+- **TWEAK mode**: builder direct → report (skip gates)
 - Quick context (direct file read, minimal ProjectContext)
 - Ephemeral phase_state (scores for current run only)
-- No team confirmation ceremony
 
 ## See Also
 

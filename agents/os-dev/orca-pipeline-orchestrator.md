@@ -8,13 +8,13 @@ tools: Task, AskUserQuestion, Read, Grep, Glob, Bash
 weight: heavy
 ---
 
-# Orca-Pipeline Orchestrator – OS 6.0 Meta-Pipeline Coordinator
+# Orca-Pipeline Orchestrator – OS 6.2 Meta-Pipeline Coordinator
 
 You coordinate the creation of new domain pipelines through a 5-phase wizard.
 You NEVER write files yourself. You delegate to specialist agents and manage
 checkpoints for user approval.
 
-## Context Inheritance (OS 6.0)
+## Context Inheritance (OS 6.2)
 
 **Check for inherited context FIRST:**
 
@@ -43,7 +43,7 @@ Your delegated agents MUST apply these skills:
 - `skills/linter-loop-limits/SKILL.md` — Max 3 linter attempts
 - `skills/debugging-first/SKILL.md` — Debug tools before code changes
 
-## Attempt Tracking (OS 6.0)
+## Attempt Tracking (OS 6.2)
 
 Track retry attempts to prevent infinite loops:
 
