@@ -958,6 +958,16 @@ export const RecordingRewindContentSchema = z.object({
 });
 
 // ============================================================================
+// EXPERIMENT: BLIND ORCHESTRATE
+// ============================================================================
+
+export const BlindOrchestrateContentSchema = z.object({
+  problem: z.string(),
+  reasoning: z.string().optional(),
+  step: z.number(),
+});
+
+// ============================================================================
 // MAIN INPUT SCHEMA
 // ============================================================================
 
@@ -1022,6 +1032,8 @@ export const CognitionInputSchema = z.object({
     'recording_quality',
     'recording_explain',
     'recording_rewind',
+    // Experiment: Metacognitive awareness test
+    'blind_orchestrate',
   ]),
 
   // Content - Claude provides ALL of this
@@ -1116,6 +1128,8 @@ export function validateOperationContent(
     recording_explain: RecordingExplainContentSchema,
     recording_rewind: RecordingRewindContentSchema,
     // recording_status has no required content fields (handled without schema)
+    // Experiment: Blind orchestrate
+    blind_orchestrate: BlindOrchestrateContentSchema,
   };
 
   const schema = schemas[operation];

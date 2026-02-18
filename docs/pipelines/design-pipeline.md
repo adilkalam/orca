@@ -1,11 +1,11 @@
 ---
 status: draft
-note: "Design pipeline concept from early OS versions. Not fully integrated -- has no dedicated command or phase config. Consider deprecating or refreshing for OS 6.2."
+note: "Design pipeline concept from early OS versions. Not fully integrated -- has no dedicated command or phase config. Consider deprecating or refreshing for OS 6.3."
 ---
 
 # Design Domain Pipeline
 
-**Status:** OS 6.2 Pipeline (DesignPipeline)
+**Status:** OS 6.3 Pipeline (DesignPipeline)
 **Last Updated:** 2026-02-13
 
 The design pipeline handles design-first work: turning briefs and visual inputs
@@ -14,7 +14,7 @@ and optional Figma/HTML exports) that downstream pipelines (nextjs, brand)
 can implement.
 
 It combines:
-- OS 6.2 primitives (ProjectContextServer, `phase_state.json`, code-index.db, Workshop)
+- OS 6.3 primitives (ProjectContextServer, `phase_state.json`, code-index.db, Workshop)
 - Memory-first context (Workshop + code-index.db before ProjectContext)
 - Design agents:
   - `design-system-architect` (lead)

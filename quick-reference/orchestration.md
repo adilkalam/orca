@@ -154,7 +154,7 @@ This prevents diving into major work without planning.
 
 ---
 
-## Recording Context Injection (OS 6.2)
+## Recording Context Injection (OS 6.3)
 
 Domain commands inject prior session context from `.orca/recording.db` before delegating to agents. This provides continuity across sessions.
 
@@ -413,4 +413,4 @@ This is why the four systems (cognition, memory, orchestration, learning) work t
 
 ---
 
-_Version: OS 6.2 | Orchestration is execution, made reliable._
+_Version: OS 6.3 | Orchestration is execution, made reliable._

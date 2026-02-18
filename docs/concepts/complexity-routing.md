@@ -1,8 +1,8 @@
 # Complexity Routing - Four-Tier Structure
 
-**Version:** OS 6.2 | **Last Updated:** 2026-02-16
+**Version:** OS 6.3 | **Last Updated:** 2026-02-16
 
-OS 6.2 uses **four-tier routing** to optimize for speed while maintaining quality gates.
+OS 6.3 uses **four-tier routing** to optimize for speed while maintaining quality gates.
 
 ## Four-Tier Routing Table
 

@@ -1,8 +1,8 @@
 # Pipeline Model
 
-**Version:** OS 6.2 | **Last Updated:** 2026-01-24
+**Version:** OS 6.3 | **Last Updated:** 2026-01-24
 
-OS 6.2 uses a **multi-lane pipeline architecture** to handle different types of development work. Each "lane" is a domain-specific pipeline with its own agents, phases, and gates.
+OS 6.3 uses a **multi-lane pipeline architecture** to handle different types of development work. Each "lane" is a domain-specific pipeline with its own agents, phases, and gates.
 
 ## Core Concepts
 
@@ -56,7 +56,7 @@ Parse flags
 
 ### Agent Roles
 
-OS 6.2 enforces strict role separation:
+OS 6.3 enforces strict role separation:
 
 #### Orchestrators (Never Write Code)
 - **Commands**: `/orca`, `/ios`, `/nextjs`, etc.
@@ -189,7 +189,7 @@ canonical workaround for any subagent that needs MCP data.
 
 ## Recording Layer
 
-OS 6.2 pipelines are observed by the **recording layer** (`orca-record` CLI + `.orca/recording.db`). Every pipeline session can be recorded, checkpointed, and rewound:
+OS 6.3 pipelines are observed by the **recording layer** (`orca-record` CLI + `.orca/recording.db`). Every pipeline session can be recorded, checkpointed, and rewound:
 
 - **Session recording**: `orca-record start` / `orca-record stop` capture tool calls, decisions, and file changes to a per-project SQLite database
 - **Git checkpoints**: `orca-record checkpoint` creates lightweight snapshots on a shadow git branch, enabling `orca-record rewind` to any prior state

@@ -23,10 +23,10 @@
 
 | Agent Name              | Function                                                | Lines | Last Updated |
 |-------------------------|---------------------------------------------------------|-------|--------------|
-| competitive-analyst     | Competitive analysis specialist for OS 6.2. Performs... | 158   | 2026-01-30   |
-| data-researcher         | Data research specialist for OS 6.2. Designs and exe... | 197   | 2026-01-30   |
+| competitive-analyst     | Competitive analysis specialist for OS 6.3. Performs... | 158   | 2026-01-30   |
+| data-researcher         | Data research specialist for OS 6.3. Designs and exe... | 197   | 2026-01-30   |
 | python-analytics-expert | Python data analytics and engineering specialist for... | 214   | 2026-01-30   |
-| research-specialist     | Cross-domain research specialist for OS 6.2. Gathers... | 218   | 2026-01-30   |
+| research-specialist     | Cross-domain research specialist for OS 6.3. Gathers... | 218   | 2026-01-30   |
 
 ## Dev
 
@@ -70,12 +70,12 @@
 | api-guardian               | Validates API contracts and detects breaking changes... | 547   | 2026-01-30   |
 | bundle-assassin            | Analyzes and reduces React Native/Expo bundle size t... | 519   | 2026-01-30   |
 | expo-aesthetics-specialist | Expo/React Native aesthetics and visual quality revi... | 598   | 2026-01-30   |
-| expo-architect-agent       | OS 6.2 Expo/React Native lane architect. Uses Projec... | 490   | 2026-01-30   |
+| expo-architect-agent       | OS 6.3 Expo/React Native lane architect. Uses Projec... | 490   | 2026-01-30   |
 | expo-builder-agent         | Expo/React Native implementation specialist for OS 5... | 907   | 2026-01-30   |
 | expo-grand-orchestrator    | Tier-S meta-orchestrator for the Expo/React Native l... | 829   | 2026-01-30   |
 | expo-light-orchestrator    | Light orchestrator for Expo/React Native tasks (defa... | 275   | 2026-01-30   |
 | expo-standards-enforcer    | Standards gate for Expo/React Native. Audits recent ... | 206   | 2026-01-30   |
-| expo-verification-agent    | Expo/React Native verification agent for OS 6.2. Run... | 592   | 2026-01-30   |
+| expo-verification-agent    | Expo/React Native verification agent for OS 6.3. Run... | 592   | 2026-01-30   |
 | impact-analyzer            | Predicts change impact across React Native/Expo code... | 527   | 2026-01-30   |
 | refactor-surgeon           | Performs safe, targeted refactoring for React Native... | 389   | 2026-01-30   |
 | test-generator             | Generates comprehensive tests for React Native/Expo ... | 354   | 2026-01-30   |

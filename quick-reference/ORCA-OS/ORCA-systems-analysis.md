@@ -1,4 +1,4 @@
-# ORCA-OS v6.2 Systems Analysis
+# ORCA-OS v6.3 Systems Analysis
 
 **Generated:** 2026-02-07
 **Source of Truth:** `docs/reference/os-dependency-graph.yaml`
@@ -33,12 +33,12 @@ User entry points invoked via `/command`.
 |----------|-------|----------|
 | Lane Orchestrators | 10 | `/ios`, `/nextjs`, `/django-react`, `/expo`, `/research`, `/seo`, `/typography`, `/orca-os-dev`, `/orca`, `/orca-pipeline` |
 | Planning & Audit | 2 | `/plan`, `/audit` |
-| Reasoning | 6 | `/think`, `/contemplate`, `/challenge`, `/ultra-think`, `/deepthink`, `/problem-solve` |
+| Reasoning | 5 | `/think`, `/contemplate`, `/challenge`, `/deepthink`, `/problem-solve` |
 | Utility | 13 | `/enhance`, `/root-cause`, `/design-dna`, `/design-review`, `/clone-website`, `/session-save`, `/session-resume`, `/project-memory`, `/project-code`, `/reflect`, `/self-improve`, `/memory-search`, `/project-setup` |
 
 ### Four-Tier Routing
 
-All lane commands support four execution modes. This is the central routing mechanism of OS 6.2.
+All lane commands support four execution modes. This is the central routing mechanism of OS 6.3.
 
 | Mode | Flag | Path | Gates | Use Case |
 |------|------|------|-------|----------|
@@ -315,7 +315,7 @@ Three-layer memory system feeding into ProjectContext MCP.
 | code-index.db | .claude/memory/code-index.db | `python3 ~/.claude/scripts/code-index.py <cmd>` |
 | project-meta | MCP cache | ProjectContext MCP auto-detection |
 
-### ProjectContext Implementation (OS 6.2)
+### ProjectContext Implementation (OS 6.3)
 
 The MCP uses a hybrid approach:
 - **Reads:** Direct SQLite queries via `better-sqlite3` (reliable, no CLI parsing)
@@ -400,7 +400,7 @@ Templates live at `quick-reference/thinking-models/*.md`.
 ```
 .claude/cognition/
   YYYYMMDD-daily.md              # Daily log (/think, /contemplate)
-  YYYYMMDD-HHMM-<slug>.md       # Per-session (/deepthink, /problem-solve, /challenge, /ultra-think, /root-cause)
+  YYYYMMDD-HHMM-<slug>.md       # Per-session (/deepthink, /problem-solve, /challenge, /root-cause)
 
 ~/.orca-cognition/
   sessions/{id}/*.jsonl          # Full session logs
@@ -412,7 +412,7 @@ Templates live at `quick-reference/thinking-models/*.md`.
 
 ## Verification System
 
-OS 6.2 uses graduated gate scoring, not binary pass/fail.
+OS 6.3 uses graduated gate scoring, not binary pass/fail.
 
 ### Graduated Gate Labels
 
@@ -487,7 +487,7 @@ Gate agents check RA status from implementation phases and factor unresolved ass
 
 ## Self-Improvement System
 
-OS 6.2 provides learning at three levels, unified by the Improvement Bus.
+OS 6.3 provides learning at three levels, unified by the Improvement Bus.
 
 ### Three Levels
 
@@ -697,4 +697,4 @@ Cognitive analysis persists as files on disk. When the context window compacts, 
 ---
 
 _Source of truth: `docs/reference/os-dependency-graph.yaml`_
-_Version: OS 6.2 | Generated: 2026-02-07_
+_Version: OS 6.3 | Generated: 2026-02-07_

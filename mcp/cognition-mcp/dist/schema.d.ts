@@ -3879,8 +3879,21 @@ export declare const RecordingRewindContentSchema: z.ZodObject<{
 }, {
     checkpoint_id: string;
 }>;
+export declare const BlindOrchestrateContentSchema: z.ZodObject<{
+    problem: z.ZodString;
+    reasoning: z.ZodOptional<z.ZodString>;
+    step: z.ZodNumber;
+}, "strip", z.ZodTypeAny, {
+    problem: string;
+    step: number;
+    reasoning?: string | undefined;
+}, {
+    problem: string;
+    step: number;
+    reasoning?: string | undefined;
+}>;
 export declare const CognitionInputSchema: z.ZodObject<{
-    operation: z.ZodEnum<["thought", "mental_model", "list_mental_models", "debug", "decide", "meta", "systems", "creative_thinking", "visual_reasoning", "checkpoint", "scientific_method", "collaborative_reasoning", "socratic_method", "structured_argumentation", "tree_of_thought", "beam_search", "mcts", "graph_of_thought", "orchestration_suggest", "research", "analogical_reasoning", "causal_analysis", "statistical_reasoning", "simulation", "optimization", "ethical_analysis", "visual_dashboard", "pdr_reasoning", "custom_framework", "code_execution", "ooda_loop", "ulysses_protocol", "notebook_create", "notebook_add_cell", "notebook_run_cell", "notebook_export", "audit", "session_info", "session_export", "session_import", "reasoning_stats", "recording_status", "recording_query", "recording_checkpoint", "recording_compare", "recording_quality", "recording_explain", "recording_rewind"]>;
+    operation: z.ZodEnum<["thought", "mental_model", "list_mental_models", "debug", "decide", "meta", "systems", "creative_thinking", "visual_reasoning", "checkpoint", "scientific_method", "collaborative_reasoning", "socratic_method", "structured_argumentation", "tree_of_thought", "beam_search", "mcts", "graph_of_thought", "orchestration_suggest", "research", "analogical_reasoning", "causal_analysis", "statistical_reasoning", "simulation", "optimization", "ethical_analysis", "visual_dashboard", "pdr_reasoning", "custom_framework", "code_execution", "ooda_loop", "ulysses_protocol", "notebook_create", "notebook_add_cell", "notebook_run_cell", "notebook_export", "audit", "session_info", "session_export", "session_import", "reasoning_stats", "recording_status", "recording_query", "recording_checkpoint", "recording_compare", "recording_quality", "recording_explain", "recording_rewind", "blind_orchestrate"]>;
     content: z.ZodOptional<z.ZodRecord<z.ZodString, z.ZodUnknown>>;
     quality: z.ZodOptional<z.ZodObject<{
         confidence: z.ZodOptional<z.ZodNumber>;
@@ -3905,7 +3918,7 @@ export declare const CognitionInputSchema: z.ZodObject<{
     verbose: z.ZodOptional<z.ZodBoolean>;
     projectPath: z.ZodOptional<z.ZodString>;
 }, "strip", z.ZodTypeAny, {
-    operation: "thought" | "optimization" | "decide" | "mental_model" | "list_mental_models" | "debug" | "meta" | "systems" | "creative_thinking" | "visual_reasoning" | "checkpoint" | "scientific_method" | "collaborative_reasoning" | "socratic_method" | "structured_argumentation" | "tree_of_thought" | "beam_search" | "mcts" | "graph_of_thought" | "orchestration_suggest" | "research" | "analogical_reasoning" | "causal_analysis" | "statistical_reasoning" | "simulation" | "ethical_analysis" | "visual_dashboard" | "pdr_reasoning" | "custom_framework" | "code_execution" | "ooda_loop" | "ulysses_protocol" | "notebook_create" | "notebook_add_cell" | "notebook_run_cell" | "notebook_export" | "audit" | "session_info" | "session_export" | "session_import" | "reasoning_stats" | "recording_status" | "recording_query" | "recording_checkpoint" | "recording_compare" | "recording_quality" | "recording_explain" | "recording_rewind";
+    operation: "thought" | "optimization" | "decide" | "mental_model" | "list_mental_models" | "debug" | "meta" | "systems" | "creative_thinking" | "visual_reasoning" | "checkpoint" | "scientific_method" | "collaborative_reasoning" | "socratic_method" | "structured_argumentation" | "tree_of_thought" | "beam_search" | "mcts" | "graph_of_thought" | "orchestration_suggest" | "research" | "analogical_reasoning" | "causal_analysis" | "statistical_reasoning" | "simulation" | "ethical_analysis" | "visual_dashboard" | "pdr_reasoning" | "custom_framework" | "code_execution" | "ooda_loop" | "ulysses_protocol" | "notebook_create" | "notebook_add_cell" | "notebook_run_cell" | "notebook_export" | "audit" | "session_info" | "session_export" | "session_import" | "reasoning_stats" | "recording_status" | "recording_query" | "recording_checkpoint" | "recording_compare" | "recording_quality" | "recording_explain" | "recording_rewind" | "blind_orchestrate";
     data?: any;
     content?: Record<string, unknown> | undefined;
     quality?: {
@@ -3920,7 +3933,7 @@ export declare const CognitionInputSchema: z.ZodObject<{
     verbose?: boolean | undefined;
     projectPath?: string | undefined;
 }, {
-    operation: "thought" | "optimization" | "decide" | "mental_model" | "list_mental_models" | "debug" | "meta" | "systems" | "creative_thinking" | "visual_reasoning" | "checkpoint" | "scientific_method" | "collaborative_reasoning" | "socratic_method" | "structured_argumentation" | "tree_of_thought" | "beam_search" | "mcts" | "graph_of_thought" | "orchestration_suggest" | "research" | "analogical_reasoning" | "causal_analysis" | "statistical_reasoning" | "simulation" | "ethical_analysis" | "visual_dashboard" | "pdr_reasoning" | "custom_framework" | "code_execution" | "ooda_loop" | "ulysses_protocol" | "notebook_create" | "notebook_add_cell" | "notebook_run_cell" | "notebook_export" | "audit" | "session_info" | "session_export" | "session_import" | "reasoning_stats" | "recording_status" | "recording_query" | "recording_checkpoint" | "recording_compare" | "recording_quality" | "recording_explain" | "recording_rewind";
+    operation: "thought" | "optimization" | "decide" | "mental_model" | "list_mental_models" | "debug" | "meta" | "systems" | "creative_thinking" | "visual_reasoning" | "checkpoint" | "scientific_method" | "collaborative_reasoning" | "socratic_method" | "structured_argumentation" | "tree_of_thought" | "beam_search" | "mcts" | "graph_of_thought" | "orchestration_suggest" | "research" | "analogical_reasoning" | "causal_analysis" | "statistical_reasoning" | "simulation" | "ethical_analysis" | "visual_dashboard" | "pdr_reasoning" | "custom_framework" | "code_execution" | "ooda_loop" | "ulysses_protocol" | "notebook_create" | "notebook_add_cell" | "notebook_run_cell" | "notebook_export" | "audit" | "session_info" | "session_export" | "session_import" | "reasoning_stats" | "recording_status" | "recording_query" | "recording_checkpoint" | "recording_compare" | "recording_quality" | "recording_explain" | "recording_rewind" | "blind_orchestrate";
     data?: any;
     content?: Record<string, unknown> | undefined;
     quality?: {

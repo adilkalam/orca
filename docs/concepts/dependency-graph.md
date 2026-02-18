@@ -1,6 +1,6 @@
 # Dependency Graph
 
-**Version:** OS 6.2 | **Last Updated:** 2026-01-24
+**Version:** OS 6.3 | **Last Updated:** 2026-01-24
 
 The dependency graph is the source of truth for ORCA-OS artifact relationships. It ensures documentation stays synchronized when lanes, agents, commands, or MCPs are added or modified.
 

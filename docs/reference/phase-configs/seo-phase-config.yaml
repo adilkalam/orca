@@ -1,4 +1,4 @@
-# SEO Pipeline Phase Configuration - OS 6.2
+# SEO Pipeline Phase Configuration - OS 6.3
 # SEO Content Creation and Optimization Workflow
 
 pipeline:
@@ -13,7 +13,7 @@ context:
   query_on_start: true
   memory_first: true
 
-# Four-Tier Routing (OS 6.2)
+# Four-Tier Routing (OS 6.3)
 complexity_tiers:
   default:
     description: Standard SEO content workflow

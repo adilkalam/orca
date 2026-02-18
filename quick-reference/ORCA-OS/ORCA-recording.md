@@ -1,4 +1,4 @@
-# OS 6.2 Recording Layer Reference
+# OS 6.3 Recording Layer Reference
 
 **Last Updated:** 2026-02-17
 **Version:** orca-record v0.3.0

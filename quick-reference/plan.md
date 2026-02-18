@@ -1,4 +1,4 @@
-# Quick Reference: /plan Command (OS 6.2)
+# Quick Reference: /plan Command (OS 6.3)
 
 The `/plan` command creates blueprint-quality requirements specs before implementation.
 
@@ -201,4 +201,4 @@ Grand architects respect these tags and don't re-decide settled `#PATH_DECISION`
 
 ---
 
-*Part of ORCA OS 6.2*
+*Part of ORCA OS 6.3*

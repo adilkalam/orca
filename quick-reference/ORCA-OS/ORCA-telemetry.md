@@ -1,7 +1,7 @@
-# Quick Reference: Telemetry and Recording (OS 6.2)
+# Quick Reference: Telemetry and Recording (OS 6.3)
 
 **Last Updated:** 2026-02-16
-**Version:** OS 6.2
+**Version:** OS 6.3
 **Status:** ACTIVE via recording layer (manual telemetry deprecated)
 
 ## Recording Layer (Active)
@@ -12,7 +12,7 @@ history, prompts, file changes, and checkpoints.
 
 ### Recording Context Injection in Commands
 
-OS 6.2 commands inject prior session context from the recording layer before
+OS 6.3 commands inject prior session context from the recording layer before
 delegating to agents. This follows **Pattern A (command-layer injection)**:
 
 **Flow:**
@@ -184,4 +184,4 @@ The following features were planned for Phase 2. Most are now fulfilled by the r
 
 ---
 
-*Part of ORCA OS 6.2*
+*Part of ORCA OS 6.3*

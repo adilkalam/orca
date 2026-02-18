@@ -204,7 +204,7 @@ The model *can* do this. It just needs structural scaffolding that doesn't let i
 - Phase 4.5: Constraint tables at mode boundaries
 - Phase 5: Hard blocking on unresolved constraints
 - Phase 6: DEFERRED constraints surface in final output
-- Flag structure: `--light` (no constraints), default (constraints), `--rigorous` (constraints + pre-mortem)
+- Flag structure: `--light` (no constraints), default (pre-mortem exploration with constraints)
 
 ### The Escape Taxonomy
 Eight documented escape hatches with blocking mechanisms for four.

@@ -10,7 +10,7 @@ allowed-tools:
   - WebFetch
 metadata:
   category: "frontend-design"
-  source: "anthropic-frontend-design-plugin + OS 6.2 design-dna"
+  source: "anthropic-frontend-design-plugin + OS 6.3 design-dna"
 ---
 
 # Frontend Aesthetics – Global Design Skill

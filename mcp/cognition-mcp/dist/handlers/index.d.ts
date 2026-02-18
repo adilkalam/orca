@@ -45,6 +45,7 @@ import { handleNotebookAddCell } from './notebook/add-cell.js';
 import { handleNotebookRunCell } from './notebook/run-cell.js';
 import { handleNotebookExport } from './notebook/export.js';
 import { handleReasoningStats } from './stats.js';
+import { handleBlindOrchestrate } from './experiment/blind-orchestrate.js';
 import { handleRecordingStatus } from './recording/recording-status.js';
 import { handleRecordingQuery } from './recording/recording-query.js';
 import { handleRecordingCheckpoint } from './recording/recording-checkpoint.js';
@@ -57,5 +58,5 @@ import { handleRecordingRewind } from './recording/recording-rewind.js';
  * Returns error response for unknown operations.
  */
 export declare function routeOperation(args: CognitionRequest, session: SessionState): Promise<HandlerResult>;
-export { handleThought, handleMentalModel, handleListMentalModels, handleDebug, handleDecide, handleMeta, handleSystems, handleAudit, handleCreativeThinking, handleVisualReasoning, handleCheckpoint, handleScientificMethod, handleCollaborativeReasoning, handleSocraticMethod, handleStructuredArgumentation, handleTreeOfThought, handleBeamSearch, handleMCTS, handleGraphOfThought, handleOrchestrationSuggest, handleResearch, handleAnalogicalReasoning, handleCausalAnalysis, handleStatisticalReasoning, handleSimulation, handleOptimization, handleEthicalAnalysis, handleVisualDashboard, handlePDRReasoning, handleCustomFramework, handleCodeExecution, handleOODALoop, handleUlyssesProtocol, handleNotebookCreate, handleNotebookAddCell, handleNotebookRunCell, handleNotebookExport, handleSessionInfo, handleSessionExport, handleSessionImport, handleReasoningStats, handleRecordingStatus, handleRecordingQuery, handleRecordingCheckpoint, handleRecordingCompare, handleRecordingQuality, handleRecordingExplain, handleRecordingRewind, };
+export { handleThought, handleMentalModel, handleListMentalModels, handleDebug, handleDecide, handleMeta, handleSystems, handleAudit, handleCreativeThinking, handleVisualReasoning, handleCheckpoint, handleScientificMethod, handleCollaborativeReasoning, handleSocraticMethod, handleStructuredArgumentation, handleTreeOfThought, handleBeamSearch, handleMCTS, handleGraphOfThought, handleOrchestrationSuggest, handleResearch, handleAnalogicalReasoning, handleCausalAnalysis, handleStatisticalReasoning, handleSimulation, handleOptimization, handleEthicalAnalysis, handleVisualDashboard, handlePDRReasoning, handleCustomFramework, handleCodeExecution, handleOODALoop, handleUlyssesProtocol, handleNotebookCreate, handleNotebookAddCell, handleNotebookRunCell, handleNotebookExport, handleSessionInfo, handleSessionExport, handleSessionImport, handleReasoningStats, handleRecordingStatus, handleRecordingQuery, handleRecordingCheckpoint, handleRecordingCompare, handleRecordingQuality, handleRecordingExplain, handleRecordingRewind, handleBlindOrchestrate, };
 //# sourceMappingURL=index.d.ts.map

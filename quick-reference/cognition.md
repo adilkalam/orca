@@ -258,15 +258,16 @@ When you have a clear direction but need depth:
 
 | Flag | Effect |
 |------|--------|
-| `--deep` | Extended thinking (8-12+ thoughts with review checkpoints) |
+| `--light` | Quick exploration (1-3 modes, no constraints) |
 | `--visual` | Generate ASCII diagram |
 | `--challenge` | Add adversarial critique |
+| `--design` | UI/UX-focused design exploration |
 
 **Example combinations**:
 ```bash
 /think --systems --visual     # Map system + show diagram
 /think --decide --challenge   # Decide + stress-test the choice
-/think --deep --debug         # Extended debugging session
+/think --light Quick question about caching
 ```
 
 ---
@@ -316,8 +317,8 @@ Before diving into implementation:
 When surface-level thinking isn't enough:
 
 ```bash
-/think --deep Why does our test suite take 20 minutes?
-# Produces 8-12 thoughts with review and synthesis checkpoints
+/think Why does our test suite take 20 minutes?
+# Default mode: multi-perspective constraint chain exploration
 ```
 
 ### The Full Safety Pipeline
@@ -404,4 +405,4 @@ The handoff: Your cognition session produces insights and decisions. `/plan` tra
 
 ---
 
-_Version: OS 6.2 | Cognition is thinking, made visible._
+_Version: OS 6.3 | Cognition is thinking, made visible._

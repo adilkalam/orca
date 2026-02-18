@@ -1,11 +1,11 @@
-# OS 6.2 MCP Reference
+# OS 6.3 MCP Reference
 
 **Last Updated:** 2026-02-16
-**Version:** OS 6.2
+**Version:** OS 6.3
 
 ---
 
-## MCP Scoping Strategy (OS 6.2)
+## MCP Scoping Strategy (OS 6.3)
 
 MCPs are now project-scoped to reduce token bloat:
 
@@ -121,7 +121,7 @@ Mandatory context provider for all agents.
 - `reanalyze_project` - Re-analyze project after changes
 - `recall` - Retrieve full archived tool output by ID (ORCA-Mem)
 
-**Implementation (OS 6.2):**
+**Implementation (OS 6.3):**
 - **Reads:** SQLite direct access to `workshop.db` via `better-sqlite3`
 - **Writes:** Workshop CLI for schema migration compatibility
 - **Symlink:** Auto-creates `.workshop -> .claude/memory` on macOS/Linux
@@ -308,6 +308,31 @@ AI control of Adobe Photoshop and Illustrator via MCP protocol. Python-based MCP
 **Source:** [github.com/mikechambers/adb-mcp](https://github.com/mikechambers/adb-mcp)
 **Used by:** (project-specific configuration)
 **Scope:** Global (user-level)
+
+### bambu-3mf (3D Printing)
+
+Programmatic Bambu Studio 3MF print settings manipulation. Reads and writes settings
+inside 3MF ZIP archives via JSZip. Enforces gcode key protection.
+
+**Tools:**
+- `list_presets` - Scan ~/3D-Models/_presets/ for available filament and process presets
+- `read_settings` - Extract settings from a 3MF file (excludes gcode blocks)
+- `apply_preset` - Merge a preset into a 3MF at a specific filament slot
+- `update_settings` - Surgical key-value override on a 3MF file
+
+**Safety:** 6 gcode keys are SACRED and never modified.
+**Source:** `mcp/bambu-3mf/`
+**Scope:** Project-scoped (3D-Models)
+
+```json
+{
+  "bambu-3mf": {
+    "type": "stdio",
+    "command": "node",
+    "args": ["/Users/adilkalam/.claude/mcp/bambu-3mf/dist/index.js"]
+  }
+}
+```
 
 ### openscad-mcp (3D Rendering - Experimental)
 

@@ -58,6 +58,7 @@ class CognitionServer {
                 name: 'cognition',
                 description: 'Structured reasoning notepad. Stores thoughts, mental models, debugging sessions, decisions, metacognitive observations, and systems maps. Claude provides all content; MCP stores and returns with session context. PATTERN: Accept-Store-Echo.' +
                     '\n\nOperations: thought, mental_model, list_mental_models, debug, decide, meta, systems, creative_thinking, visual_reasoning, checkpoint, scientific_method, collaborative_reasoning, socratic_method, structured_argumentation, tree_of_thought, beam_search, mcts, graph_of_thought, orchestration_suggest, research, analogical_reasoning, causal_analysis, statistical_reasoning, simulation, optimization, ethical_analysis, visual_dashboard, pdr_reasoning, custom_framework, code_execution, ooda_loop, ulysses_protocol, audit, notebook_create, notebook_add_cell, notebook_run_cell, notebook_export, session_info, session_export, session_import, reasoning_stats, recording_status, recording_query, recording_checkpoint, recording_compare, recording_quality, recording_explain, recording_rewind' +
+                    ', blind_orchestrate' +
                     '\n\nProtocol: checkpoint supports constraint tracking + gate evaluation + auto-persist at harvest. Session context preserved across calls via sessionId. Recording operations query .orca/recording.db.',
                 inputSchema: {
                     type: 'object',
@@ -113,6 +114,7 @@ class CognitionServer {
                                 'recording_quality',
                                 'recording_explain',
                                 'recording_rewind',
+                                'blind_orchestrate',
                             ],
                             description: 'The operation to perform',
                         },

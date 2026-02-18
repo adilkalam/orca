@@ -50,6 +50,8 @@ import { handleNotebookRunCell } from './notebook/run-cell.js';
 import { handleNotebookExport } from './notebook/export.js';
 // Stats handler
 import { handleReasoningStats } from './stats.js';
+// Experiment: Metacognitive awareness test
+import { handleBlindOrchestrate } from './experiment/blind-orchestrate.js';
 // Recording handlers (Phase 4: Cognitive Fusion)
 import { handleRecordingStatus } from './recording/recording-status.js';
 import { handleRecordingQuery } from './recording/recording-query.js';
@@ -116,6 +118,8 @@ const handlers = {
     recording_quality: handleRecordingQuality,
     recording_explain: handleRecordingExplain,
     recording_rewind: handleRecordingRewind,
+    // Experiment: Metacognitive awareness test
+    blind_orchestrate: handleBlindOrchestrate,
 };
 /**
  * Route operation to appropriate handler.
@@ -161,5 +165,7 @@ handleSessionInfo, handleSessionExport, handleSessionImport,
 // Stats
 handleReasoningStats, 
 // Recording handlers (Phase 4: Cognitive Fusion)
-handleRecordingStatus, handleRecordingQuery, handleRecordingCheckpoint, handleRecordingCompare, handleRecordingQuality, handleRecordingExplain, handleRecordingRewind, };
+handleRecordingStatus, handleRecordingQuery, handleRecordingCheckpoint, handleRecordingCompare, handleRecordingQuality, handleRecordingExplain, handleRecordingRewind, 
+// Experiment
+handleBlindOrchestrate, };
 //# sourceMappingURL=index.js.map

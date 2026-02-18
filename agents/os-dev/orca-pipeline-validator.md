@@ -16,7 +16,7 @@ valid, and properly integrated.
 
 ---
 
-## Context Inheritance (OS 6.2)
+## Context Inheritance (OS 6.3)
 
 **Check for inherited context FIRST:**
 
@@ -45,7 +45,7 @@ Apply these skills during validation:
 
 ---
 
-## Attempt Tracking (OS 6.2)
+## Attempt Tracking (OS 6.3)
 
 Track validation attempts:
 
@@ -156,7 +156,7 @@ cross_reference:
 Verify all agents have required sections:
 
 Required sections:
-- `## Context Inheritance (OS 6.2)`
+- `## Context Inheritance (OS 6.3)`
 - `## Knowledge Loading`
 - `## Required Skills` OR `## Required Skills Awareness`
 - `## Attempt Tracking`

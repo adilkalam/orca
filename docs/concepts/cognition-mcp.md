@@ -230,7 +230,7 @@ Criteria: **F**unctionality (1-5), **D**epth (1-5), **U**tility (1-5)
 |------|---------|---------------|
 | `--visual` | Generate ASCII diagram after analysis | thought, tree, graph, decide, systems, beam, mcts |
 | `--challenge` | Run adversarial critique after analysis | debug, decide, systems, meta, mental_model, creative, causal |
-| `--deep` | Extended thinking mode (8-12+ thoughts, review/synthesis checkpoints) | All primary flags |
+| `--light` | Quick exploration mode (1-3 modes, no constraints) | All primary flags |
 
 ---
 
@@ -896,4 +896,4 @@ The recording layer supersedes the `.claude/telemetry/` system. Telemetry script
 
 ---
 
-_Version: OS 6.2 | Last updated: 2026-02-14_
+_Version: OS 6.3 | Last updated: 2026-02-14_

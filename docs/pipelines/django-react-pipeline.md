@@ -1,13 +1,13 @@
 # Django + React TypeScript Domain Pipeline
 
-**Status:** OS 6.2 Core Pipeline
+**Status:** OS 6.3 Core Pipeline
 **Last Updated:** 2026-02-13
 
 ## Overview
 
 The Django + React pipeline handles **full-stack development** combining Django backend (with Django REST Framework) and React TypeScript frontend. It features:
 
-- OS 6.2 primitives (ProjectContextServer, phase_state.json, code-index.db, Workshop, constraint framework)
+- OS 6.3 primitives (ProjectContextServer, phase_state.json, code-index.db, Workshop, constraint framework)
 - Memory-first context (Workshop + code-index.db before ProjectContext)
 - Four-tier routing (Light/Default/Tweak/Complex with default running gates)
 - Spec gating (complex tasks require requirements spec)
@@ -33,7 +33,7 @@ The Django + React pipeline handles **full-stack development** combining Django 
 
 ---
 
-## Four-Tier Routing (OS 6.2)
+## Four-Tier Routing (OS 6.3)
 
 The Django + React pipeline uses four-tier routing:
 
@@ -131,7 +131,7 @@ Full pipeline with grand-architect planning. Spec required.
 
 ---
 
-### Recording Context (OS 6.2)
+### Recording Context (OS 6.3)
 
 Domain commands inject recording context (recent session history from `.orca/recording.db`) before delegating to agents. This is optional and silently skipped if no recording database exists.
 

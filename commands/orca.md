@@ -1,5 +1,5 @@
 ---
-description: "OS 6.2 Pure Orchestrator - Coordinates pipelines, never writes code"
+description: "OS 6.3 Pure Orchestrator - Coordinates pipelines, never writes code"
 argument-hint: "[--audit <scope>] <task description or requirement ID>"
 allowed-tools:
   - Task
@@ -250,7 +250,7 @@ Your first tool call MUST NOT be:
 
 ---
 
-# /orca – OS 6.2 Pure Orchestrator
+# /orca – OS 6.3 Pure Orchestrator
 
 **Philosophy:** Orca is a pure coordinator. It NEVER writes code. It detects the pipeline type, queries context ONCE, integrates with /plan if needed, and delegates to domain orchestrators.
 
@@ -263,7 +263,7 @@ Your first tool call MUST NOT be:
 6. **Domain Routing** - Routes to `/{domain}` commands for specialized handling
 7. **Never Codes** - Orchestrates agents, doesn't implement
 
-**OS 6.2 Updates:**
+**OS 6.3 Updates:**
 - Memory-first context (Workshop + code-index.db before ProjectContext)
 - Routes to domain-specific `/{domain}` commands which handle four-tier flag routing
 - Four-tier structure (Reverse Three-Tier):
@@ -284,7 +284,7 @@ pwd
 
 ---
 
-### Step 1.5: Memory-First Context (OS 6.2)
+### Step 1.5: Memory-First Context (OS 6.3)
 
 **Before expensive ProjectContext queries, check local memory:**
 
@@ -303,7 +303,7 @@ python3 ~/.claude/scripts/memory-search-unified.py "$TASK_KEYWORDS" --mode all -
 
 ---
 
-### Step 1.7: Recording Context (OS 6.2 -- OPTIONAL)
+### Step 1.7: Recording Context (OS 6.3 -- OPTIONAL)
 
 **Inject prior session context from the recording layer for continuity.**
 
@@ -683,7 +683,7 @@ AskUserQuestion({
 
 ---
 
-### Step 7: Route to Domain Orchestrator (OS 6.2)
+### Step 7: Route to Domain Orchestrator (OS 6.3)
 
 **For pipelines with domain-specific `/{domain}` commands, route to them.**
 
@@ -706,7 +706,7 @@ Task({
   subagent_type: "nextjs-grand-architect",
   description: "Next.js pipeline coordination",
   prompt: `
-You are the Next.js Grand Architect for OS 6.2.
+You are the Next.js Grand Architect for OS 6.3.
 
 USER HAS ALREADY CONFIRMED THE PLAN. DO NOT ASK FOR CONFIRMATION AGAIN.
 EXECUTE IMMEDIATELY. NO QUESTIONS. DELEGATE TO SPECIALISTS NOW.
@@ -778,7 +778,7 @@ Task({
   subagent_type: "ios-grand-architect",
   description: "iOS pipeline coordination",
   prompt: `
-You are the iOS Grand Architect for OS 6.2.
+You are the iOS Grand Architect for OS 6.3.
 
 USER HAS ALREADY CONFIRMED THE PLAN. DO NOT ASK FOR CONFIRMATION AGAIN.
 EXECUTE IMMEDIATELY. NO QUESTIONS. DELEGATE TO SPECIALISTS NOW.
@@ -850,7 +850,7 @@ Task({
   subagent_type: "expo-grand-orchestrator",
   description: "Expo pipeline coordination",
   prompt: `
-You are the Expo Grand Orchestrator for OS 6.2.
+You are the Expo Grand Orchestrator for OS 6.3.
 
 USER HAS ALREADY CONFIRMED THE PLAN. DO NOT ASK FOR CONFIRMATION AGAIN.
 EXECUTE IMMEDIATELY. NO QUESTIONS. DELEGATE TO SPECIALISTS NOW.
@@ -918,7 +918,7 @@ Task({
   subagent_type: "data-researcher",
   description: "Data analysis pipeline",
   prompt: `
-You are leading the Data pipeline for OS 6.2.
+You are leading the Data pipeline for OS 6.3.
 
 MEMORY CONTEXT:
 ${memorySummary || "No prior memory hits"}
@@ -966,7 +966,7 @@ Task({
   subagent_type: "seo-research-specialist",
   description: "SEO content pipeline",
   prompt: `
-You are leading the SEO pipeline for OS 6.2.
+You are leading the SEO pipeline for OS 6.3.
 
 MEMORY CONTEXT:
 ${memorySummary || "No prior memory hits"}
@@ -1007,7 +1007,7 @@ Task({
   subagent_type: "design-system-architect",
   description: "Design system pipeline",
   prompt: `
-You are leading the Design pipeline for OS 6.2.
+You are leading the Design pipeline for OS 6.3.
 
 MEMORY CONTEXT:
 ${memorySummary || "No prior memory hits"}
@@ -1143,7 +1143,7 @@ When grand-architect signals completion:
 
 ## Memory Architecture
 
-OS 6.2 uses TWO memory systems:
+OS 6.3 uses TWO memory systems:
 
 1. **Workshop** (.claude/memory/workshop.db):
    - Decisions with reasoning

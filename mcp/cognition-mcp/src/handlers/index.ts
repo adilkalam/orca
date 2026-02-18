@@ -53,6 +53,8 @@ import { handleNotebookRunCell } from './notebook/run-cell.js';
 import { handleNotebookExport } from './notebook/export.js';
 // Stats handler
 import { handleReasoningStats } from './stats.js';
+// Experiment: Metacognitive awareness test
+import { handleBlindOrchestrate } from './experiment/blind-orchestrate.js';
 // Recording handlers (Phase 4: Cognitive Fusion)
 import { handleRecordingStatus } from './recording/recording-status.js';
 import { handleRecordingQuery } from './recording/recording-query.js';
@@ -125,6 +127,8 @@ const handlers: Record<OperationType, OperationHandler> = {
   recording_quality: handleRecordingQuality,
   recording_explain: handleRecordingExplain,
   recording_rewind: handleRecordingRewind,
+  // Experiment: Metacognitive awareness test
+  blind_orchestrate: handleBlindOrchestrate,
 };
 
 /**
@@ -217,4 +221,6 @@ export {
   handleRecordingQuality,
   handleRecordingExplain,
   handleRecordingRewind,
+  // Experiment
+  handleBlindOrchestrate,
 };

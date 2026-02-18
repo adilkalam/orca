@@ -1,6 +1,6 @@
-# Natural Language Triggers and Tools (OS 6.2)
+# Natural Language Triggers and Tools (OS 6.3)
 
-**Version:** OS 6.2
+**Version:** OS 6.3
 **Last Updated:** 2026-01-19
 
 Say what you want; map to the right command.
@@ -16,7 +16,7 @@ Say what you want; map to the right command.
 
 ### Review & Quality
 - "Check quality of recent work" → `/audit "last 10 tasks"`
-- "Is this safe? What's risky?" → `/ultra-think "risk analysis for X"`
+- "Is this safe? What's risky?" → `/challenge "risk analysis for X"`
 - "Check how it looks" → Domain design-reviewer agent (in pipeline)
 - "Prove it's done" → Verification agent runs automatically in pipeline
 
@@ -31,7 +31,7 @@ Say what you want; map to the right command.
 - "Explore a new design" → `/plan "design exploration"` with design focus
 
 ### Analysis
-- "Help me think this through" → `/ultra-think "problem description"`
+- "Help me think this through" → `/think "problem description"`
 - "Analyze this data" → `/orca-data "analysis request"`
 
 ## Workflow Patterns
@@ -58,8 +58,8 @@ Say what you want; map to the right command.
 
 ### Complex Architecture Decision
 ```
-1. /ultra-think "architecture decision context"
-   → Deep analysis
+1. /think "architecture decision context"
+   → Multi-perspective analysis
 
 2. /plan "implement chosen architecture"
    → Blueprint with #PATH_DECISION tags
@@ -102,8 +102,8 @@ Say what you want; map to the right command.
 - Before starting large initiative (learn from recent work)
 - Noticing recurring issues
 
-**Use `/ultra-think` when:**
-- Complex decision needs deep analysis
+**Use `/think` when:**
+- Complex decision needs multi-perspective analysis
 - Multiple competing approaches
 - High-risk architectural choice
 - Need to explore problem space
@@ -123,4 +123,4 @@ Say what you want; map to the right command.
 
 ---
 
-_OS 6.2 simplifies workflows: `/plan` → `/orca` → `/audit` replaces 8+ fragmented commands_
+_OS 6.3 simplifies workflows: `/plan` → `/orca` → `/audit` replaces 8+ fragmented commands_

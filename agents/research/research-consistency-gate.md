@@ -52,7 +52,7 @@ Perform the following checks:
      ensure the report explicitly calls this out as a limitation.
 
 ---
-## 3. Scoring & Decision (Graduated Gate Standard - OS 6.2)
+## 3. Scoring & Decision (Graduated Gate Standard - OS 6.3)
 
 **Reference:** `docs/reference/graduated-gate-scoring.md`
 

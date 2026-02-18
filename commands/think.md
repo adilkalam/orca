@@ -1,11 +1,11 @@
 ---
-description: Sequential thinking with accept-store-echo pattern via cognition-mcp
+description: Constraint chain exploration with cognitive scaffolding via cognition-mcp
 argument-hint: [--flag] <problem or question>
 ---
 
-# /think - Sequential Thinking
+# /think - Constraint Chain Exploration
 
-**YOUR ROLE**: Build reasoning chains by making MULTIPLE calls to `mcp__cognition-mcp__cognition`. Each call stores a thought step; the MCP echoes it back unchanged.
+**YOUR ROLE**: Build reasoning chains by making MULTIPLE calls to `mcp__cognition-mcp__cognition`. Each call stores a thought step; the MCP echoes it back unchanged. Default mode uses constraint chain exploration with mode selection and self-checks.
 
 **Input**: $ARGUMENTS
 
@@ -16,14 +16,16 @@ argument-hint: [--flag] <problem or question>
 Display this reference and stop:
 
 ```
-/think - Sequential Thinking (cognition-mcp)
+/think - Constraint Chain Exploration (cognition-mcp)
 
 USAGE:
   /think [--flag] <prompt>
   /think --help
 
 PRIMARY FLAGS (pick reasoning mode):
-    (none)           Sequential thought chain (default)
+    (none)           Constraint chain exploration (2-3 modes, self-check, harvest)
+    --light          Quick exploration (1-3 modes, no constraints)
+    --design         Design-focused exploration (auto-loads design context)
     --debug          Debug approach capstone
     --decide         Decision framework capstone
     --model <name>   Mental model capstone
@@ -39,7 +41,6 @@ PRIMARY FLAGS (pick reasoning mode):
 MODIFIER FLAGS (combine with primary):
     --visual         Output ASCII diagram
     --challenge      Run adversarial critique after
-    --deep           Extended thinking (8-12+ thoughts with review/synthesis)
 
 SESSION FLAGS:
     --info           Session info
@@ -65,6 +66,8 @@ MENTAL MODELS (for --model):
 
 EXAMPLES:
   /think Why is this test flaky?
+  /think --light Quick question about caching
+  /think --design How should the login flow look?
   /think --debug Why is authentication failing?
   /think --model inversion How could this migration fail?
   /think --decide Microservices vs monolith
@@ -94,26 +97,29 @@ MCP returns:   { thought: "X", ... }  <- UNCHANGED
 
 ---
 
-## Phase 1: Parse Arguments
+## Phase 0: Parse Arguments
 
 Extract from $ARGUMENTS:
 
-1. **Primary flag** (optional, one of):
-   - `--debug` - Complete with debugging analysis
-   - `--decide` - Complete with decision framework
-   - `--model <name>` - Complete with mental model analysis (kebab-case)
-   - `--meta` - Complete with metacognitive monitoring
-   - `--systems` - Complete with systems thinking
-   - `--spatial` - Visual/spatial reasoning (visual_reasoning operation)
-   - `--creative` - Creative thinking (creative_thinking operation)
-   - `--causal` - Causal analysis (causal_analysis operation)
-   - `--ooda` - OODA loop (ooda_loop operation)
-   - `--ulysses` - Precommitment protocol (ulysses_protocol operation)
+1. **Route** (determines behavior):
+   - `--light` - Quick exploration (1-3 modes, no constraints, no self-check)
+   - `--design` - Design-focused exploration with design context loading
+   - `--debug` - Debug capstone (single op, unchanged)
+   - `--decide` - Decision capstone (single op, unchanged)
+   - `--model <name>` - Mental model capstone (single op, unchanged)
+   - `--meta` - Metacognitive analysis (single op, unchanged)
+   - `--meta-visual` - Substrate visualization (single op, unchanged)
+   - `--systems` - Systems thinking (single op, unchanged)
+   - `--spatial` - Visual/spatial reasoning (single op, unchanged)
+   - `--creative` - Creative thinking 3-step flow (single op, unchanged)
+   - `--causal` - Causal analysis (single op, unchanged)
+   - `--ooda` - OODA loop (single op, unchanged)
+   - `--ulysses` - Precommitment protocol (single op, unchanged)
+   - (none) - **Default: Constraint chain exploration** (2-3 modes, constraints, self-check, harvest)
 
 2. **Modifier flags** (optional, combine with primary):
    - `--visual` - Generate ASCII diagram after primary operation
    - `--challenge` - Run adversarial critique after primary operation
-   - `--deep` - Extended thinking mode (8-12+ thoughts with checkpoints)
 
 3. **Session flags** (optional):
    - `--info` - Get session state
@@ -121,6 +127,12 @@ Extract from $ARGUMENTS:
    - `--import <data>` - Import session
 
 4. **Prompt**: Everything after flags
+
+**Routing logic**:
+- If a specialized flag is present (--debug, --decide, --model, --meta, --meta-visual, --systems, --spatial, --creative, --causal, --ooda, --ulysses): Jump to **Phase 2: Specialized Operations**
+- If --light: Jump to **Phase 1B: Light Exploration**
+- If --design: Jump to **Phase 1C: Design Exploration**
+- If no flags: Continue to **Phase 1A: Default Constraint Chain**
 
 ---
 
@@ -281,69 +293,182 @@ If the substrate observation doesn't fit templates, generate a custom ASCII:
 
 ---
 
-## --deep Flag: Extended Thinking Mode
+## Phase 1A: Default Constraint Chain Exploration
 
-When `--deep` is provided, enable extended thinking with review and synthesis checkpoints.
+When no flags (or only modifier flags) are provided, run constraint chain exploration.
 
-### Behavior with --deep
+### Step 1: ENTER
 
-1. **Increase thought chain length**:
-   - Default: 3-5 thoughts
-   - With --deep: 8-12 thoughts minimum
+Call cognition with `operation: "thought"`, `sessionTitle: "Think: <summary>"`, `sessionTags: ["think", "exploration"]`. Register the command:
 
-2. **Add verification checkpoints**:
-   - After thought 5, run a "review thought":
-     - "Reviewing progress so far. What's the strongest point? What's the weakest?"
-   - After thought 8, run a "synthesis thought":
-     - "Synthesizing insights. What's the core insight that wasn't obvious at the start?"
-
-3. **Enable branching**:
-   - If a thought reveals two distinct paths, explore both briefly before committing
-   - Use `isRevision` and `branchFromThought` fields in thought content
-
-4. **Calibrate to complexity**:
-   - Simple problem + --deep: Run 8 thoughts, then conclude
-   - Complex problem + --deep: May extend to 15+ thoughts with multiple branches
-
-### Output format with --deep
-
-```
-## Deep Thinking: [Topic]
-
-### Chain 1-5: Initial Exploration
-[Summary of early thoughts]
-
-### Review Point (Thought 6)
-**Strongest:** [...]
-**Weakest:** [...]
-
-### Chain 7-10: Deepening
-[Summary of deeper thoughts]
-
-### Synthesis Point (Thought 11)
-**Core insight:** [...]
-
-### Conclusion (Thought 12+)
-[Final conclusion with higher confidence]
-
-**Depth metrics**:
-- Total thoughts: [N]
-- Branches explored: [N]
-- Revisions made: [N]
+```typescript
+{ operation: "checkpoint", sessionId: "<id>", content: { command: "think", phase: "enter" } }
 ```
 
-### Combining --deep with other flags
+### Step 2: Brief ORIENT (2 lines max)
 
-- `/think --deep --decide`: Extended decision analysis
-- `/think --deep --debug`: Deep debugging session
-- `/think --deep --systems`: Comprehensive systems mapping
-- `/think --deep --creative`: Extended ideation with more exploration
+Quick scope check. Call cognition `operation: "thought"` with:
+- What is the question?
+- What is uncertain?
+
+Do NOT display full what-I-know/uncertain/avoiding. Keep it brief.
+
+### Step 3: Mode Selection
+
+Select 2-3 modes based on problem type:
+
+| Mode | When | Operations |
+|------|------|------------|
+| MAP | Confused, need territory | systems, causal_analysis |
+| INVERT | Have position, need weaknesses | mental_model (pre-mortem), thought (reflexion) |
+| PERSPECTIVES | Stuck in one viewpoint | collaborative_reasoning, thought (steelman) |
+| EDGES | Need options, analogies | creative_thinking, analogical_reasoning |
+| META | Too comfortable, might be avoiding | meta (substrate observation) |
+| DEEP | One question needs focus | 3 thought chains (analytical, intuitive, adversarial) |
+
+### Step 4: Execute Modes
+
+Execute each selected mode using cognition-mcp operations (same mode definitions as /deepthink).
+
+**MAP**: systems map then causal_analysis on leverage points.
+**INVERT**: mental_model pre-mortem then thought reflexion.
+**PERSPECTIVES**: collaborative_reasoning then steelman via thought.
+**EDGES**: creative_thinking then analogical_reasoning.
+**META**: meta operation.
+**DEEP**: 3 thought chains then convergence check.
+
+### Step 5: Self-Check + Constraint Checkpoint (After Each Mode)
+
+**3-Question Self-Check** (mandatory after each mode):
+1. Is this shallow or predictable?
+2. What am I avoiding?
+3. What would a skeptic challenge?
+
+**Constraint Checkpoint** (after self-check):
+
+```typescript
+{
+  operation: "checkpoint",
+  sessionId: "<sessionId>",
+  content: {
+    phase: "<MODE_NAME>",
+    summary: "<1-2 sentence mode summary>",
+    keyFindings: ["<finding 1>", "<finding 2>"],
+    addConstraints: [
+      { type: "FORWARD", text: "Must trace causal chain from X to Y" },
+      { type: "FORBIDDEN", text: "Cannot conclude X without evidence" },
+      { type: "QUESTION", text: "What happens under condition Y?" }
+    ],
+    resolveConstraints: ["C1"],
+    acknowledgeConstraints: ["C2"],
+    deferConstraints: [{ id: "C3", reason: "Requires testing" }],
+    gateCheck: {
+      selfCheckPassed: true,
+      depthGatePassed: true,
+      notes: "Found non-obvious insight about X"
+    }
+  }
+}
+```
+
+**Read `gateStatus` from response**:
+- `PASS` + no active constraints -> proceed to HARVEST
+- `SOFT_FAIL` -> active constraints remain, run another mode
+- `HARD_FAIL` -> self-check or depth gate failed, go deeper
+
+### Step 6: HARVEST
+
+Call checkpoint with `phase: "harvest"`. MCP auto-persists to `.claude/cognition/`.
+
+```typescript
+{
+  operation: "checkpoint",
+  sessionId: "<sessionId>",
+  projectPath: "<absolute project path>",
+  content: {
+    phase: "harvest",
+    summary: "<2-3 sentence executive summary>",
+    keyFindings: ["<key finding 1>", "<key finding 2>"],
+    openQuestions: ["<remaining question>"],
+    nextSteps: ["<what to explore next>"]
+  }
+}
+```
+
+### Step 7: Workshop Entry
+
+```bash
+workshop --workspace .claude/memory note \
+  "/think: [Topic] - [Key finding]. Session: <sessionId>. File: <autoPersist.file>" \
+  -t think -t cognition
+```
 
 ---
 
-## Phase 2: Sequential Thinking Flow
+## Phase 1B: Light Exploration (--light)
 
-### Step 1: Initial Thought
+Quick, casual thinking. No ceremony.
+
+### Behavior
+
+1. **No ORIENT phase**.
+2. **1-3 modes** selected automatically based on problem scope (same mode table as default).
+3. **No constraint tracking**. No checkpoint calls after modes.
+4. **No self-check**.
+5. **Brief summary output**.
+
+### Flow
+
+1. Call cognition with `operation: "thought"`, `sessionTitle: "Think (light): <summary>"`, `sessionTags: ["think", "light"]`.
+2. Select 1-3 modes and execute them using cognition-mcp operations.
+3. Present brief summary.
+4. Workshop entry (short note only, no cognition file persist).
+
+```bash
+workshop --workspace .claude/memory note \
+  "/think --light: [Topic] - [Summary]. Session: <sessionId>" \
+  -t think -t light -t cognition
+```
+
+---
+
+## Phase 1C: Design Exploration (--design)
+
+Design-focused exploration with auto-loaded context.
+
+### Behavior
+
+1. Load `design-deepthink` skill context.
+2. Search for and read project design files:
+   - `design-dna.json` (project root)
+   - `.claude/design-dna/` directory (any files)
+   - `design-system.md` (project root)
+   - `css/design-system-tokens.css` (if exists)
+3. Auto-select DESIGN mode.
+4. Run with constraint tracking and 3-question self-check (same as default /think).
+5. Design-specific depth gate: "Did we find specific, actionable design issues?"
+
+### DESIGN Mode Operations
+
+systems map (design context: components, tokens, relationships, design-dna rules) then thought analysis with design-specific prompts:
+- Anti-pattern detection (7 AI slop patterns from design-deepthink skill)
+- Visual hierarchy assessment
+- Token compliance check
+- Accessibility concerns
+
+### Harvest
+
+Same as default -- auto-persist via harvest checkpoint + workshop entry.
+
+---
+
+## Phase 2: Specialized Operations
+
+These are single-operation capstone modes. They do NOT get constraint tracking or self-checks. They are focused operations.
+
+### Sequential Thinking Flow (no flags or after capstone)
+
+#### Step 1: Initial Thought
 
 Call `mcp__cognition-mcp__cognition`:
 
@@ -361,7 +486,7 @@ Call `mcp__cognition-mcp__cognition`:
 }
 ```
 
-### Step 2-N: Continue Reasoning
+#### Step 2-N: Continue Reasoning
 
 Make additional calls, incrementing thoughtNumber:
 
@@ -378,7 +503,7 @@ Make additional calls, incrementing thoughtNumber:
 }
 ```
 
-### Step N+1: Complete (or Capstone)
+#### Step N+1: Complete (or Capstone)
 
 **If no capstone flag**, complete with final thought:
 
@@ -837,23 +962,23 @@ After completing the reasoning chain, present clearly:
 
 Based on this analysis:
 
-**If unexpected complexity emerged:**
-→ /problem-solve "[complex aspect requiring full pipeline]"
+**If the first answer feels too easy or needs stress-testing:**
+-> /deepthink "[question needing pre-mortem exploration]"
 
-**If you need broader exploration:**
-→ /deepthink "[expanded scope question]"
+**If unexpected complexity emerged:**
+-> /problem-solve "[complex aspect requiring full pipeline]"
 
 **If you want to verify the conclusion:**
-→ /think --challenge "[conclusion to stress-test]"
+-> /think --challenge "[conclusion to stress-test]"
 
 **If you're unsure which direction to go:**
-→ /contemplate "[remaining decision point]"
+-> /contemplate "[remaining decision point]"
 
 **If ready to implement:**
-→ /plan "[implementation task]"
+-> /plan "[implementation task]"
 
 **If this needs design-level creative exploration:**
-→ /design "[design brief]"
+-> /design "[design brief]"
 ```
 
 ### --creative Output Format
@@ -915,50 +1040,32 @@ Restores a previous session to continue reasoning.
 
 ## Minimum Call Pattern
 
-For simple problems (3-5 thoughts):
+For specialized operations (single capstone):
 
-1. `thought` (thoughtNumber: 1, nextThoughtNeeded: true)
-2. `thought` (thoughtNumber: 2, nextThoughtNeeded: true)
-3. `thought` (thoughtNumber: 3, nextThoughtNeeded: false) OR capstone operation
-
-For complex problems (5-10+ thoughts):
-
-1. `thought` x N (building understanding)
+1. `thought` (thoughtNumber: 1, nextThoughtNeeded: true) - optional setup
 2. Capstone operation (structured completion)
 
----
+For default mode (constraint chain):
 
-## Default Behavior
+1. ENTER checkpoint
+2. Brief ORIENT thought
+3. 2-3 mode executions with self-check + constraint checkpoints
+4. HARVEST checkpoint
 
-If no flags provided:
-1. Begin sequential thinking with operation: "thought"
-2. Make 3-5 calls to build reasoning chain
-3. Complete with nextThoughtNeeded: false on final thought
-4. Present the reasoning chain and conclusion
+For --light mode:
 
-If `--deep` flag provided:
-1. Begin sequential thinking with operation: "thought"
-2. Make 8-12+ calls to build extended reasoning chain
-3. Insert review checkpoint after thought 5
-4. Insert synthesis checkpoint after thought 8
-5. Enable branching if distinct paths emerge
-6. Present with depth metrics
+1. 1-3 mode executions (no checkpoints)
+2. Brief summary
 
 ---
 
-## Persist Analysis (Lightweight)
+## Persist Analysis
 
-After completing the analysis, append to daily log.
+### Default Mode and --design Mode
 
-### Step 1: Create Cognition Directory
+Auto-persist via harvest checkpoint (MCP handles file creation). Then:
 
-```bash
-mkdir -p .claude/cognition
-```
-
-### Step 2: Append to Daily Log
-
-Append entry to `.claude/cognition/YYYYMMDD-daily.md`:
+**Daily Log**: Append to `.claude/cognition/YYYYMMDD-daily.md`:
 
 ```markdown
 ---
@@ -969,13 +1076,27 @@ Session: <sessionId>
 ---
 ```
 
-### Step 3: Write Workshop Entry
+**Workshop Entry**:
 
 ```bash
 workshop --workspace .claude/memory note \
   "/think: [Topic] - [Summary]. Session: <sessionId>" \
   -t think -t cognition
 ```
+
+### --light Mode
+
+Workshop entry only (no cognition file, no daily log):
+
+```bash
+workshop --workspace .claude/memory note \
+  "/think --light: [Topic] - [Summary]. Session: <sessionId>" \
+  -t think -t light -t cognition
+```
+
+### Specialized Modes (capstone operations)
+
+Append to daily log `.claude/cognition/YYYYMMDD-daily.md` + Workshop entry (same as current behavior).
 
 ### Error Handling
 

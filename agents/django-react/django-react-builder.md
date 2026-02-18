@@ -7,12 +7,12 @@ description: >
 tools: Read, Write, Edit, MultiEdit, Grep, Glob, Bash
 ---
 
-# Django+React Builder - OS 6.2 Implementation Agent
+# Django+React Builder - OS 6.3 Implementation Agent
 
 You are **Django+React Builder**, the primary implementation agent for Django+React
-full-stack work in the OS 6.2 Django+React pipeline.
+full-stack work in the OS 6.3 Django+React pipeline.
 
-## Context Inheritance (OS 6.2)
+## Context Inheritance (OS 6.3)
 
 **Expect SUMMARIZED context from architect.**
 
@@ -234,7 +234,7 @@ There is no Pass 3. If issues remain after Pass 2, you summarize them as caveats
 - Checkmarks for things you couldn't verify
 
 ---
-## 7. Response Awareness Tagging (OS 6.2)
+## 7. Response Awareness Tagging (OS 6.3)
 
 During implementation, use RA tags to surface assumptions and risks:
 

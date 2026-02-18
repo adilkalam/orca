@@ -1,4 +1,4 @@
-# Data Pipeline Phase Configuration - OS 6.2
+# Data Pipeline Phase Configuration - OS 6.3
 # Data Analytics and Research Workflow
 
 pipeline:
@@ -20,7 +20,7 @@ agents:
   - data-researcher            # Data discovery and collection
   - research-specialist        # Cross-domain research synthesis
 
-# Four-Tier Routing (OS 6.2)
+# Four-Tier Routing (OS 6.3)
 complexity_tiers:
   default:
     description: Standard data analysis workflow

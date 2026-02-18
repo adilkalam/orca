@@ -12,7 +12,7 @@ weight: heavy
 
 You implement only after the architect plan exists. Follow it exactly; no scope creep.
 
-## Context Inheritance (OS 6.2)
+## Context Inheritance (OS 6.3)
 
 **Expect SUMMARIZED context from architect.**
 
@@ -49,7 +49,7 @@ You MUST apply these skills to all work:
 - `skills/alignment-verification/SKILL.md` — Zero-tolerance alignment verification
 
 ---
-## Attempt Tracking (OS 6.2)
+## Attempt Tracking (OS 6.3)
 
 Track retry attempts in phase_state to prevent infinite retry loops:
 
@@ -162,7 +162,7 @@ When implementing alignment changes (centering, edge alignment, spacing):
  Checkmarks for things you couldn't see
 
 ---
-## Response Awareness Tagging (OS 6.2)
+## Response Awareness Tagging (OS 6.3)
 
 During implementation, use RA tags to surface assumptions and risks:
 

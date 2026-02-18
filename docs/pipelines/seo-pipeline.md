@@ -1,6 +1,6 @@
 # SEO Domain Pipeline
 
-**Status:** OS 6.2 Pipeline (SEOPipeline)
+**Status:** OS 6.3 Pipeline (SEOPipeline)
 **Last Updated:** 2026-02-13
 
 ## Overview
@@ -11,7 +11,7 @@ The SEO pipeline turns a target keyword + project context into:
 - A structured QA report with explicit gates.
 
 It combines:
-- OS 6.2 primitives (ProjectContextServer, `phase_state.json`, code-index.db, Workshop)
+- OS 6.3 primitives (ProjectContextServer, `phase_state.json`, code-index.db, Workshop)
 - Memory-first context (Workshop + code-index.db before ProjectContext)
 - SEO agents:
   - `seo-research-specialist` (lead)

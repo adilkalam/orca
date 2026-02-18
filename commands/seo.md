@@ -1,9 +1,9 @@
 ---
-description: "SEO content pipeline orchestration with OS 6.2 project context and quality gates"
+description: "SEO content pipeline orchestration with OS 6.3 project context and quality gates"
 allowed-tools: ["Task", "Read", "Write", "Bash", "AskUserQuestion", "TodoWrite", "mcp__project-context__query_context", "mcp__project-context__save_decision"]
 ---
 
-# /seo – SEO Content Pipeline Orchestrator (OS 6.2)
+# /seo – SEO Content Pipeline Orchestrator (OS 6.3)
 
 **Elite SEO orchestration** that produces 3,000+ word sophisticated content with natural clarity—matching manually-crafted gold standards through deep knowledge graph integration, external research citations, and automated clarity quality gates.
 
@@ -109,7 +109,7 @@ Follow your agent spec at ~/.claude/agents/seo/seo-optimizer.md
 
 ---
 
-## 0.1 Recording Context (OS 6.2)
+## 0.1 Recording Context (OS 6.3)
 
 > Session activity is captured automatically by **orca-record** hooks. Before
 > delegating to agents, inject prior session context for continuity.
@@ -344,7 +344,7 @@ await Task({
   subagent_type: "seo-research-specialist",
   description: "SEO research with SERP + direct files + KG + crawl4ai",
   prompt: `
-You are the seo-research-specialist (OS 6.2).
+You are the seo-research-specialist (OS 6.3).
 
 ## Your Mission
 Perform deep SEO research for keyword: "${KEYWORD}"
@@ -435,7 +435,7 @@ await Task({
   subagent_type: "seo-brief-strategist",
   description: "Strategic brief enhancement",
   prompt: `
-You are the seo-brief-strategist (OS 6.2).
+You are the seo-brief-strategist (OS 6.3).
 
 ## Your Mission
 Refine the research brief with strategic guidance and project context.
@@ -475,7 +475,7 @@ await Task({
   subagent_type: "seo-draft-writer",
   description: "Sophisticated content writing with v4 clarity",
   prompt: `
-You are the seo-draft-writer (OS 6.2).
+You are the seo-draft-writer (OS 6.3).
 
 ## Your Mission
 Write sophisticated, clear long-form content matching v4 gold-standard quality.
@@ -526,7 +526,7 @@ await Task({
   subagent_type: "seo-quality-guardian",
   description: "Comprehensive QA with clarity gates",
   prompt: `
-You are the seo-quality-guardian (OS 6.2).
+You are the seo-quality-guardian (OS 6.3).
 
 ## Your Mission
 Perform comprehensive quality review before human hand-off.

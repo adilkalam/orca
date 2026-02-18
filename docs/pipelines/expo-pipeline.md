@@ -1,13 +1,13 @@
 # Expo / React Native Domain Pipeline
 
-**Status:** OS 6.2 Core Pipeline (ExpoPipeline)
+**Status:** OS 6.3 Core Pipeline (ExpoPipeline)
 **Last Updated:** 2026-02-13
 
 ## Overview
 
 The Expo pipeline handles **React Native mobile development** for projects using Expo SDK 50+ / React Native 0.74+ with TypeScript. It combines:
 
-- OS 6.2 primitives (ProjectContextServer, phase_state.json, code-index.db, Workshop, constraint framework)
+- OS 6.3 primitives (ProjectContextServer, phase_state.json, code-index.db, Workshop, constraint framework)
 - Memory-first context (Workshop + code-index.db before ProjectContext)
 - Four-tier routing (Light/Default/Tweak/Complex)
 - Spec gating (complex tasks require requirements spec)
@@ -33,7 +33,7 @@ use the **iOS** pipeline.
 
 ---
 
-## Four-Tier Routing (OS 6.2)
+## Four-Tier Routing (OS 6.3)
 
 The Expo pipeline uses four-tier routing:
 
@@ -80,7 +80,7 @@ Full pipeline with grand-orchestrator planning. Spec required.
 
 ---
 
-## Standards Inputs (OS 6.2 Learning Loop)
+## Standards Inputs (OS 6.3 Learning Loop)
 
 Standards flow into and out of the Expo pipeline:
 
@@ -564,7 +564,7 @@ pending → in_progress → completed
 
 ---
 
-### Recording Context (OS 6.2)
+### Recording Context (OS 6.3)
 
 Domain commands inject recording context (recent session history from `.orca/recording.db`) before delegating to agents. This is optional and silently skipped if no recording database exists.
 
@@ -641,7 +641,7 @@ Decision Point:
 
 **Agents:**
 - `expo-architect-agent` (Expo pipeline architect)
-- `/orca` + OS 6.2 constraint framework
+- `/orca` + OS 6.3 constraint framework
 
 **Tasks:**
 1. Restate the request in clear, concrete terms (feature, bugfix, refactor).

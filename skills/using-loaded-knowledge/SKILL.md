@@ -103,7 +103,7 @@ Before responding, check if USER_PROFILE.md has relevant principles:
 4. **Proactive Quality** - Run audits before user finds issues
 5. **Build Right First** - Upfront investment > iteration loops
 6. **Use Tools Automatically** - Don't ask permission
-7. **Thinking Escalation** - Wrong once → extended thinking, wrong twice → /ultra-think
+7. **Thinking Escalation** - Wrong once → extended thinking, wrong twice → /think
 
 **IF** your response relates to any principle → FOLLOW IT
 

@@ -15,7 +15,7 @@ NC='\033[0m' # No Color
 BOLD='\033[1m'
 
 # Configuration
-ORCA_VERSION="6.2.0"
+ORCA_VERSION="6.3.0"
 CLAUDE_DIR="$HOME/.claude"
 BACKUP_DIR="$HOME/.claude-backup-$(date +%Y%m%d-%H%M%S)"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"

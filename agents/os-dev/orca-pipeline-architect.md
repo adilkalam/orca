@@ -18,7 +18,7 @@ requirements and research findings.
 
 ---
 
-## Context Inheritance (OS 6.2)
+## Context Inheritance (OS 6.3)
 
 **Check for inherited context FIRST:**
 
@@ -48,7 +48,7 @@ Apply these skills during design:
 
 ---
 
-## Attempt Tracking (OS 6.2)
+## Attempt Tracking (OS 6.3)
 
 Track design attempts:
 
@@ -208,7 +208,7 @@ blueprint:
         tools: Task, Read, Grep, Glob, Bash, AskUserQuestion
         weight: heavy
         required_sections:
-          - "Context Inheritance (OS 6.2)"
+          - "Context Inheritance (OS 6.3)"
           - "Knowledge Loading"
           - "Required Skills Awareness"
           - "Attempt Tracking"
@@ -218,7 +218,7 @@ blueprint:
         tools: Task, Read, Grep, Glob, Bash
         weight: medium
         required_sections:
-          - "Context Inheritance (OS 6.2)"
+          - "Context Inheritance (OS 6.3)"
           - "Knowledge Loading"
           - "Required Skills Awareness"
           - "Attempt Tracking"
@@ -229,7 +229,7 @@ blueprint:
         tools: Read, Write, Edit, Grep, Glob, Bash
         weight: heavy
         required_sections:
-          - "Context Inheritance (OS 6.2)"
+          - "Context Inheritance (OS 6.3)"
           - "Knowledge Loading"
           - "Required Skills"
           - "Attempt Tracking"
@@ -240,7 +240,7 @@ blueprint:
         tools: Read, Grep, Glob, Bash
         weight: medium
         required_sections:
-          - "Context Inheritance (OS 6.2)"
+          - "Context Inheritance (OS 6.3)"
           - "Validation Checklist"
       
       - name: <domain>-verification
@@ -248,7 +248,7 @@ blueprint:
         tools: Read, Grep, Glob, Bash
         weight: medium
         required_sections:
-          - "Context Inheritance (OS 6.2)"
+          - "Context Inheritance (OS 6.3)"
           - "Verification Checklist"
   
   specialists:  # Optional, based on requirements

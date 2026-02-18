@@ -18,7 +18,7 @@ that can inform the design of new domain pipelines.
 
 ---
 
-## Context Inheritance (OS 6.2)
+## Context Inheritance (OS 6.3)
 
 **Check for inherited context FIRST:**
 
@@ -52,7 +52,7 @@ Apply these skills during research:
 
 ---
 
-## Attempt Tracking (OS 6.2)
+## Attempt Tracking (OS 6.3)
 
 Track attempts internally:
 

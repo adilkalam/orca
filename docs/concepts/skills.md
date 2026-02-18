@@ -1,6 +1,6 @@
 # Skills
 
-**Version:** OS 6.2 | **Last Updated:** 2026-02-13 | **Total:** See quick-reference for current count
+**Version:** OS 6.3 | **Last Updated:** 2026-02-13 | **Total:** See quick-reference for current count
 
 Skills are reusable knowledge packages that provide domain expertise to agents.
 
@@ -152,7 +152,7 @@ Other competitor patterns not yet extracted into skills: Perplexity's report str
 ### Domain Knowledge Skills
 - `ios-knowledge-skill` - iOS/Swift patterns and conventions
 - `nextjs-knowledge-skill` - Next.js patterns and conventions
-- `os-dev-knowledge-skill` - OS 6.2 configuration knowledge (LOCAL)
+- `os-dev-knowledge-skill` - OS 6.3 configuration knowledge (LOCAL)
 
 ### Content/Writing Skills
 - `elements-of-style` - Classic writing guide by William Strunk Jr. (1918) for clarity, conciseness, and grammar

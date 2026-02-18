@@ -1,14 +1,14 @@
-# OS 6.2 Agents Quick Reference
+# OS 6.3 Agents Quick Reference
 
 **Last Updated:** 2026-02-16
-**Version:** OS 6.2
+**Version:** OS 6.3
 **Total Agents:** 112
 
 > **Scope Note:** This quick-reference covers all 112 agents across 11 domains. See `docs/reference/os-dependency-graph.yaml` for complete registry.
 
 ---
 
-## Agent Architecture (OS 6.2)
+## Agent Architecture (OS 6.3)
 
 **All Agents Use Opus 4.6:**
 - Grand architects (coordination & architecture)

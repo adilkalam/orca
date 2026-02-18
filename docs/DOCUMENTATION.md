@@ -1,6 +1,6 @@
 # ORCA-OS Documentation
 
-**Version:** OS 6.2
+**Version:** OS 6.3
 **Last Updated:** 2026-02-13
 
 Welcome to the ORCA-OS documentation. This document serves as the entry point and navigation hub for all ORCA-OS documentation.

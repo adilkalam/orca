@@ -1,5 +1,5 @@
 ---
-description: "OS 6.2 orchestrator entrypoint for OS / Claude Code configuration tasks (LOCAL to this repo)"
+description: "OS 6.3 orchestrator entrypoint for OS / Claude Code configuration tasks (LOCAL to this repo)"
 argument-hint: "[--light | -tweak | --complex] <task description or requirement ID>"
 allowed-tools:
   - Task
@@ -103,10 +103,10 @@ Even `-tweak` delegates to a builder. It skips gates, not agents.
 
 ---
 
-# /orca-os-dev – OS / Tooling Orchestrator (OS 6.2)
+# /orca-os-dev – OS / Tooling Orchestrator (OS 6.3)
 
 Use this command when the task is clearly OS / Claude Code / tooling
-configuration work for **Vibe OS 6.2**, not application code.
+configuration work for **Vibe OS 6.3**, not application code.
 
 **IMPORTANT: This command is LOCAL to ORCA-OS repo only.**
 It is NOT deployed to `~/.claude` global config. Use `/orca-os-dev` only
@@ -123,8 +123,8 @@ when working in this repository to modify the OS itself.
 Examples:
 
 - Adjust lane/phase config behavior (Next.js, iOS, etc.)
-- Add or update commands/agents/skills used by OS 6.2
-- Configure MCP servers and integrate them into OS 6.2 lanes
+- Add or update commands/agents/skills used by OS 6.3
+- Configure MCP servers and integrate them into OS 6.3 lanes
 - Change how memory and context are used by `/plan` / `/orca` / `/audit`
 
 **Key Resources:**
@@ -181,7 +181,7 @@ No flag → Light Orchestrator WITH confirmation (Section 1 via confirmation)
 
 ---
 
-## 0.1 Recording Context (OS 6.2)
+## 0.1 Recording Context (OS 6.3)
 
 > Session activity is captured automatically by **orca-record** hooks. Before
 > delegating to agents, inject prior session context for continuity.
@@ -486,7 +486,7 @@ Working with `os-dev-grand-architect`:
    python3 ~/.claude/scripts/memory-search-unified.py "$TASK_SUMMARY" --mode all --top-k 10 || true
    ```
 
-2. Load relevant reflexions from past gate failures (OS 6.2):
+2. Load relevant reflexions from past gate failures (OS 6.3):
 
    ```bash
    workshop --workspace .claude/memory search "reflexion" -t os-dev --limit 5 2>/dev/null || true

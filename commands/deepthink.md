@@ -1,11 +1,11 @@
 ---
-description: Depth-first exploration with constraint chain and mandatory self-check
-argument-hint: [--light|--rigorous|--design] <problem or question to explore>
+description: Pre-mortem exploration with adaptive failure analysis via cognition-mcp
+argument-hint: [--design] <problem or question to explore>
 ---
 
-# /deepthink - Depth-First Exploration
+# /deepthink - Pre-Mortem Exploration
 
-**YOUR ROLE**: Execute depth-first exploration with route-based mode selection. DIVERGENT thinking -- exploring questions, generating hypotheses, finding what you don't know. For CONVERGENT decision-making, use `/problem-solve`.
+**YOUR ROLE**: Execute depth-first exploration with adaptive pre-mortems after conclusion-producing modes. DIVERGENT thinking -- exploring questions, generating hypotheses, stress-testing conclusions before they solidify. For CONVERGENT decision-making, use `/problem-solve`. For lighter exploration without pre-mortems, use `/think`.
 
 **Question/Problem**: $ARGUMENTS
 
@@ -16,42 +16,29 @@ argument-hint: [--light|--rigorous|--design] <problem or question to explore>
 Display this reference and stop:
 
 ```
-/deepthink - Depth-First Exploration
+/deepthink - Pre-Mortem Exploration
 
 USAGE:
   /deepthink <problem or question>
-  /deepthink --light <problem>     (1 mode, no constraints)
-  /deepthink --rigorous <problem>  (pre-mortem after each mode + constraints)
-  /deepthink --design <problem>    (design-focused exploration)
-  /deepthink --design --light ...  (quick design exploration)
-  /deepthink --design --rigorous ...  (thorough design exploration)
+  /deepthink --design <problem>    (design-focused exploration with pre-mortems)
   /deepthink --help
 
 MODES: MAP, INVERT, PERSPECTIVES, EDGES, META, DEEP, DESIGN
 CONSTRAINT CHAIN: After each mode, MCP tracks constraints (FORWARD/FORBIDDEN/QUESTION)
+ADAPTIVE PRE-MORTEM: After conclusion-producing modes, runs failure analysis
 
-RELATED: /problem-solve (convergent), /think (single operations)
+RELATED: /think (constraint chain, no pre-mortems), /problem-solve (convergent)
 ```
 
 ---
 
 ## Phase 0: Parse Flags
 
-### Intensity Flags (mutually exclusive)
-
-| Flag | Constraints | Description |
-|------|-------------|-------------|
-| --light | NO | ORIENT + 1 mode + brief HARVEST |
-| (none) | YES | ORIENT + 2-3 modes + constraint chain + HARVEST |
-| --rigorous | YES + pre-mortem | Extended + pre-mortem after each mode |
-
-### Domain Modifiers (combinable with intensity)
+### Domain Modifiers
 
 | Flag | Effect |
 |------|--------|
 | --design | Loads design context + auto-selects DESIGN mode |
-
-`--design` is orthogonal to intensity. Valid: `--design`, `--design --light`, `--design --rigorous`.
 
 Include `verbose: false` in every cognition MCP call.
 
@@ -65,6 +52,14 @@ Call cognition with `operation: "thought"`, `sessionTitle: "DeepThink: <summary>
 ```
 
 ## Phase 2: ORIENT
+
+### Full ORIENT Display
+
+Call cognition `operation: "thought"` with full orientation:
+- **What I know**: Key facts and evidence
+- **What I'm uncertain about**: Gaps, assumptions, unknowns
+- **What I'm avoiding**: Uncomfortable angles, taboo options
+- **Mode selection**: Recommended modes with rationale
 
 ### --design Auto-Selection
 
@@ -83,10 +78,7 @@ If `--design` flag is present:
 2. What components could POSSIBLY cause it? (ALL, not just likely)
 3. Where does control flow NEXT after success? (destination component)
 
-### Orient to Problem Space
-Call cognition `operation: "thought"` with: currentState (whatIKnow, whatImUncertainAbout, whatImAvoiding), modeSelection (recommended mode + reason).
-
-**Mode Selection Guide:**
+### Mode Selection Guide
 
 | Mode | When | Operations |
 |------|------|------------|
@@ -102,7 +94,7 @@ Call cognition `operation: "thought"` with: currentState (whatIKnow, whatImUncer
 
 ## Phase 3: MODE EXECUTION
 
-Execute the selected mode. Each mode uses 1-2 cognition operations.
+Execute the selected mode. Each mode uses 1-2 cognition operations. Typically run 3-4 modes.
 
 **MAP**: systems map (components, relationships, feedbackLoops, blindSpots) then causal_analysis on leverage points (causes, effects, chains). Depth gate: non-obvious insights?
 
@@ -136,14 +128,21 @@ Depth gate: Did we find specific, actionable design issues?
 
 ---
 
-## Phase 4: SELF-CHECK + CONSTRAINT CHECKPOINT (After Each Mode)
+## Phase 4: SELF-CHECK + CONSTRAINT CHECKPOINT + ADAPTIVE PRE-MORTEM (After Each Mode)
 
-### Self-Check (6 questions, mandatory)
+### 6-Question Self-Check (mandatory)
 
-**Internal**: (1) Shallow/predictable? (2) What am I avoiding? (3) Why not the uncomfortable option?
-**External**: (4) What would I critique if someone else wrote this? (5) What would a skeptical expert challenge? (6) Any verifiable claims?
+**Internal**:
+1. Is this shallow or predictable?
+2. What am I avoiding?
+3. Why not the uncomfortable option?
 
-### Constraint Checkpoint (skip if --light)
+**External**:
+4. What would I critique if someone else wrote this?
+5. What would a skeptical expert challenge?
+6. Any verifiable claims that should be checked?
+
+### Constraint Checkpoint
 
 After self-check, call checkpoint with protocol state fields. MCP tracks constraints and evaluates gates.
 
@@ -181,19 +180,36 @@ After self-check, call checkpoint with protocol state fields. MCP tracks constra
 - `gateStatus: "HARD_FAIL"` -> self-check or depth gate failed, go deeper
 - `blocked: true` -> cannot harvest until constraints addressed
 
-Minimum constraints: 2 per mode (standard), 3 per mode (rigorous).
+Minimum constraints: 2 per mode.
 
-### --rigorous: Additional pre-mortem on mode output
+### Adaptive Pre-Mortem (After Each Mode)
 
-Run mental_model pre-mortem on the mode's output. Each non-trivial failure mode becomes a new constraint via addConstraints in next checkpoint.
+After the constraint checkpoint, evaluate whether the mode produced a **testable conclusion**. This is a heuristic YOU apply, not MCP logic.
+
+**Run a pre-mortem** (via `mental_model` operation with `modelName: "pre-mortem"`) if the mode output contains:
+- A specific recommendation ("use X instead of Y")
+- A position reversal or commitment
+- An actionable architecture/design decision
+
+**Skip the pre-mortem** if the mode output is:
+- An exploratory map (systems diagram, causal graph)
+- A question-generating exercise
+- Pure information gathering
+
+When running the pre-mortem:
+1. Call `mental_model` with `modelName: "pre-mortem"`, `problem: "<the conclusion being tested>"`, `setup: "This decision/recommendation failed. What happened?"`, `steps: [failure modes]`
+2. Each non-trivial failure mode becomes a new constraint via `addConstraints` in the next checkpoint
+
+This ensures conclusions are stress-tested before they propagate through subsequent modes.
 
 ---
 
 ## Phase 5: ROUTING
 
-- **--light**: After 1 mode, proceed to HARVEST (no constraint check)
-- **Standard**: After 2-3 modes with PASS gates AND protocolState.blocked === false
-- **--rigorous**: Continue until genuine surprise + all constraints addressed
+After each mode + self-check + optional pre-mortem:
+- Check `protocolState.blocked` -- if true, must address constraints before harvest
+- After 3-4 modes with PASS gates AND `protocolState.blocked === false`, proceed to HARVEST
+- Continue until genuine surprise + all constraints addressed
 
 ---
 
@@ -236,14 +252,19 @@ If workshop fails, display warning and continue.
 # DeepThink Exploration: [Problem Summary]
 
 ## Entry Point
-[What I knew and didn't know]
+[What I knew, what I was uncertain about, what I was avoiding]
 
 ## Exploration Journey
 ### Mode: [MODE 1]
 [Key findings]
 **Depth Check:** [Assessment]
+**Pre-Mortem:** [If run -- key failure modes found. If skipped -- "Exploratory mode, no testable conclusion."]
 
-### Mode: [MODE 2] (if applicable)
+### Mode: [MODE 2]
+[Key findings]
+**Pre-Mortem:** [Assessment]
+
+### Mode: [MODE 3] (if applicable)
 [Key findings]
 
 ## Harvest
@@ -253,26 +274,29 @@ If workshop fails, display warning and continue.
 - Assumptions Exposed: ...
 - Surprises: ...
 - Deferred Constraints: [from protocolState]
+- Pre-Mortem Failures Flagged: [summary of failure modes found]
 
 ## Honest Assessment
 [Genuine insight or just text?]
 
 ## Next Steps
-→ /problem-solve "[hypothesis]"  (if hypotheses found)
-→ /deepthink "[question]"        (if deeper questions found)
-→ /think --systems "[system]"    (if systems exposed)
+-> /problem-solve "[hypothesis]"  (if hypotheses found and ready to converge)
+-> /deepthink "[question]"        (if deeper questions found)
+-> /think --systems "[system]"    (if systems exposed)
+-> /think "[question]"            (if lighter exploration needed)
 ```
 
 ---
 
-## Key Differences from /problem-solve
+## Key Differences from Other Commands
 
-| /deepthink | /problem-solve |
-|------------|----------------|
-| Divergent - explore, question | Convergent - decide, commit |
-| Valid: "more confused in useful ways" | Valid: clear decision + safeguards |
-| Route based on need | Fixed 8-step sequence |
+| /deepthink | /think | /problem-solve |
+|------------|--------|----------------|
+| Divergent + pre-mortems | Divergent, no pre-mortems | Convergent - decide, commit |
+| 6-question self-check | 3-question self-check | Phase gates |
+| Adaptive failure analysis | Constraint chain only | Fixed 8-step sequence |
+| Valid: "more confused in useful ways" | Valid: "new insight found" | Valid: clear decision + safeguards |
 
 ---
 
-_See also: `problem-solve.md`, `think.md`, `guide-think-complex.md`_
+_See also: `think.md`, `problem-solve.md`, `guide-think-complex.md`_

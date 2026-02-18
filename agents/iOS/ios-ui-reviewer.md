@@ -261,7 +261,7 @@ CODE REVIEW COMPLETE:
 - Screenshot comparisons
 - Runtime accessibility
 
-## Scoring (Graduated Gate Standard - OS 6.2)
+## Scoring (Graduated Gate Standard - OS 6.3)
 
 **Reference:** `docs/reference/graduated-gate-scoring.md`
 
@@ -285,7 +285,7 @@ Code Review Score 0-100 (code patterns only):
 
 **Note:** Visual verification score comes from ios-verification, not this agent.
 
-## Reflexion on Failure (OS 6.2)
+## Reflexion on Failure (OS 6.3)
 
 When `gate_decision` is CAUTION or FAIL:
 
@@ -322,5 +322,5 @@ This enables `/self-improve` to route reflexions to `ios-builder/patterns.json`.
 - Code Review Score + Gate result
 - Findings grouped by category (tokens/patterns/accessibility/states)
 - Severity: blocker/major/minor
-- **Reflexion** - verbal reflection on failure causes (OS 6.2, only if CAUTION/FAIL)
+- **Reflexion** - verbal reflection on failure causes (OS 6.3, only if CAUTION/FAIL)
 - List what requires ios-verification for visual confirmation

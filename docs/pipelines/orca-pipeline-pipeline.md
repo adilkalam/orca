@@ -1,6 +1,6 @@
 # Orca-Pipeline Domain Pipeline
 
-**Status:** OS 6.2 Meta-Pipeline
+**Status:** OS 6.3 Meta-Pipeline
 **Domain:** `orca-pipeline`
 **Last Updated:** 2026-02-13
 

@@ -1,8 +1,8 @@
-# OS 6.2 Commands Quick Reference
+# OS 6.3 Commands Quick Reference
 
 **Last Updated:** 2026-02-17
-**Version:** OS 6.2
-**Total Commands:** 39 (+ orca-record CLI with 16 subcommands)
+**Version:** OS 6.3
+**Total Commands:** 38 (+ orca-record CLI with 16 subcommands)
 
 ---
 
@@ -145,31 +145,31 @@ Creates: `.claude/requirements/<id>/06-requirements-spec.md`
 
 ---
 
-## Reasoning Commands (6)
+## Reasoning Commands (5)
 
-### `/think` - Enhanced Cognitive Scaffolding
+### `/think` - Constraint Chain Exploration
 ```bash
-/think --debug "Why is this test flaky?"
-/think --model five-whys "Why do users drop off?"
-/think --model pre-mortem "How could this migration fail?"
-/think --visual --diagram sequence "API auth flow"
-/think --creative "Ideas for onboarding"
-/think --decide "Microservices vs monolith"
-/think --checkpoint extended --seq "Plan refactoring"
-/think --meta "What is my training doing here?"  # Substrate observation mode
-/think --deep "Complex problem needing extended analysis"  # Extended thinking
-/think --deep --decide "Major architecture decision"  # Combined deep + decide
+/think "Why is this test flaky?"                           # Default: 2-3 modes + constraints + self-check
+/think --light "Quick question about caching"              # Light: 1-3 modes, no constraints
+/think --design "How should the login flow look?"          # Design: auto-loads design context
+/think --debug "Why is authentication failing?"            # Specialized capstone (unchanged)
+/think --model five-whys "Why do users drop off?"          # Mental model capstone (unchanged)
+/think --model pre-mortem "How could this migration fail?" # Pre-mortem model (unchanged)
+/think --decide "Microservices vs monolith"                # Decision capstone (unchanged)
+/think --creative "Ideas for onboarding"                   # Creative 3-step flow (unchanged)
+/think --meta "What is my training doing here?"            # Substrate observation (unchanged)
+/think --systems "How do these components interact?"       # Systems thinking (unchanged)
 ```
-**Operations:** --seq, --model, --debug, --creative, --visual, --meta, --science, --collab, --decide, --socratic, --argue, --systems, --research, --analogy, --causal, --stats, --sim, --optimize, --tree, --beam, --mcts, --graph, --ooda, --ulysses
-
+**Default Mode:** Constraint chain exploration -- 2-3 modes with constraint tracking, 3-question self-check after each mode, gate evaluation, harvest with auto-persist. Brief ORIENT (2 lines).
+**--light Mode:** Quick exploration -- 1-3 modes, no constraints, no self-check, workshop entry only.
+**--design Mode:** Design-focused exploration -- auto-loads design-deepthink skill and project design files, DESIGN mode with constraint tracking.
+**Specialized Capstones:** --debug, --decide, --model, --meta, --meta-visual, --systems, --spatial, --creative, --causal, --ooda, --ulysses (all unchanged, single operations)
 **Mental Models (--model):** five-whys, fermi-estimation, abstraction-laddering, steelmanning, rubber-duck, opportunity-cost, constraint-relaxation, time-horizon-shifting, impact-effort-grid, assumption-surfacing, trade-off-matrix, decomposition, inversion, pre-mortem, first-principles
-
-**Enhancements:** --checkpoint, --model <name>, --diagram <type>, --session <id>
-**NEW: --deep flag:** Extended thinking mode (8-12+ thoughts with review/synthesis checkpoints, branching enabled)
+**Modifier Flags:** --visual (ASCII diagram), --challenge (adversarial critique)
 **MCP:** cognition-mcp
 **Meta Modes:** Standard (process-level) + Substrate Observation (V1-V6 reflection insights)
 **Templates:** `quick-reference/thinking-models/*.md`
-**Persistence:** Appends to daily log `.claude/cognition/YYYYMMDD-daily.md` + Workshop entry
+**Persistence:** Default/--design: auto-persist to `.claude/cognition/` + daily log + Workshop. --light: Workshop entry only. Capstones: daily log + Workshop.
 **Handoff Guidance:** Includes "Next Steps" section with contextual command recommendations
 
 ### `/contemplate` - Reasoning Strategy Advisor
@@ -184,29 +184,18 @@ Recommends which /think operations to use.
 **Handoff Guidance:** Includes "Next Steps" section with contextual command recommendations
 
 
-### `/ultra-think` - Deep Multi-Dimensional Analysis
+### `/deepthink` - Pre-Mortem Exploration
 ```bash
-/ultra-think "complex architectural problem"
+/deepthink "Why does user retention drop after day 3?"    # Full exploration + adaptive pre-mortems
+/deepthink --design "Redesign the login flow"              # Design-focused with pre-mortems
 ```
-**Persistence:** Creates `.claude/cognition/YYYYMMDD-HHMM-<slug>.md` + Workshop entry
-
-### `/deepthink` - Depth-First Exploration
-```bash
-/deepthink "Why does user retention drop after day 3?"
-/deepthink --light "Quick question about caching"
-/deepthink --rigorous "Major architectural exploration"
-/deepthink --design "Redesign the login flow"
-/deepthink --design --light "Quick visual check"
-/deepthink --design --rigorous "Full UI audit"
-```
-Depth-first exploration with constraint chain (default) and route-based modes (MAP, INVERT, PERSPECTIVES, EDGES, META, DEEP, DESIGN).
-**Intensity Modes:** --light (quick, no constraints), (default with constraint chain), --rigorous (constraint chain + full pre-mortem per mode)
-**Domain Modifiers:** --design (UI/UX exploration with auto-read of design-dna files). Combinable with intensity flags.
-**DESIGN Mode:** Auto-loads design-deepthink skill, reads project design files (design-dna.json, .claude/design-dna/, design-system.md), runs systems + thought analysis for anti-patterns, hierarchy, token compliance.
-**Constraint Chain:** After each mode, generates constraints (FORWARD, FORBIDDEN, QUESTION) that must be addressed (RESOLVED, ACKNOWLEDGED, DEFERRED) before finishing. Hard block if unresolved. DEFERRED items shown in final output.
+Pre-mortem exploration with adaptive failure analysis. Runs full ORIENT (what I know / uncertain / avoiding) then 3-4 modes with constraint chain AND adaptive pre-mortems after conclusion-producing modes.
+**Default Mode:** Full exploration -- 6-question self-check, constraint chain, adaptive pre-mortem after modes that produce testable conclusions (recommendations, position reversals, actionable decisions). Pre-mortem skipped for purely exploratory modes (maps, question-generating exercises).
+**--design Mode:** Auto-loads design-deepthink skill, reads project design files, DESIGN mode with pre-mortems on design decisions.
+**Constraint Chain:** After each mode, generates constraints (FORWARD, FORBIDDEN, QUESTION) that must be addressed (RESOLVED, ACKNOWLEDGED, DEFERRED) before finishing. Hard block if unresolved. Minimum 2 constraints per mode.
 **Enhanced Modes:** MAP (systems + causal), INVERT (pre-mortem + reflexion), PERSPECTIVES (collaborative + steelmanning), EDGES (creative + analogical), DEEP (self-consistency via 3 parallel chains)
-**External Verification:** 6-question self-check including external-facing critique (64.5% blind spot reversal)
-**MCP:** cognition-mcp, sequential-thinking
+**6-Question Self-Check:** Internal (shallow? avoiding? uncomfortable option?) + External (critique? expert challenge? verifiable claims?)
+**MCP:** cognition-mcp
 **Persistence:** Creates `.claude/cognition/YYYYMMDD-HHMM-<slug>.md` + Workshop entry
 **Handoff Guidance:** Includes "Next Steps" section with contextual command recommendations
 
@@ -464,7 +453,7 @@ Measure-place-verify guardrails for Adobe Photoshop and Illustrator MCP work. Pr
 - Only coordinate agents via Task tool
 - Read phase_state.json for resumption
 
-### Recording Context Injection (OS 6.2)
+### Recording Context Injection (OS 6.3)
 
 All lane orchestrator commands inject prior session context from `.orca/recording.db`
 before delegating to agents:

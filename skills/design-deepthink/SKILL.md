@@ -6,7 +6,7 @@ license: internal
 
 # Design-Deepthink Skill
 
-Loaded by `/deepthink --design` for structured design exploration.
+Loaded by `/deepthink --design` or `/think --design` for structured design exploration.
 
 ## 1. AI Slop Anti-Patterns (7 Patterns)
 

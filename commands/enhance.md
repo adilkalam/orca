@@ -106,9 +106,9 @@ No rigid rules - use Claude's reasoning to pick what adds value.
 
 **Risk-Based Additions:**
 - **Low risk** (typo, docs): Baseline only
-- **Medium risk** (features): Add steps 3, 5, 9, 11, 15a (ultra_think)
-- **High risk** (auth, payments): Add steps 10, 12, 13, 15a (ultra_think), 16
-- **Critical** (production): All relevant steps + 15a (ultra_think MANDATORY)
+- **Medium risk** (features): Add steps 3, 5, 9, 11, 15a (think_assessment)
+- **High risk** (auth, payments): Add steps 10, 12, 13, 15a (think_assessment), 16
+- **Critical** (production): All relevant steps + 15a (think_assessment MANDATORY)
 
 **Examples:**
 - "Fix typo in README" → [1, 2, 7, 8]
@@ -140,7 +140,7 @@ Mark operations that can run in parallel with
 13. **ROLLBACK_PLAN**: Create recovery strategy for potential failures
 14. **MONITORING**: Define observability, metrics, and alerting requirements
 15. **VALIDATION_CRITERIA**: Set clear success metrics and acceptance criteria
-15a. **ULTRA_THINK_ASSESSMENT**: For medium/high/critical risk tasks, require /ultra-think before claiming completion to prevent overclaiming (prevents ~80% false completion rate)
+15a. **THINK_ASSESSMENT**: For medium/high/critical risk tasks, require /think before claiming completion to prevent overclaiming (prevents ~80% false completion rate)
 
 ### Specialized Domain Steps (16-25)
 16. **SECURITY_AUDIT**: Vulnerability scanning, threat modeling, sanitization checks
@@ -295,8 +295,8 @@ SUCCESS CRITERIA:
 - [ ] Performance targets met (if step 20 selected)
 - [ ] Edge cases handled gracefully
 - [ ] Documentation updated
-- [ ] **ULTRA_THINK ASSESSMENT** (if step 15a selected for medium/high/critical risk):
-  Before claiming work complete, run: `/ultra-think "Assess actual vs claimed completion: What evidence proves we delivered? Am I overclaiming? What's missing?"`
+- [ ] **THINK ASSESSMENT** (if step 15a selected for medium/high/critical risk):
+  Before claiming work complete, run: `/think "Assess actual vs claimed completion: What evidence proves we delivered? Am I overclaiming? What's missing?"`
   This prevents the ~80% false completion rate by forcing multi-perspective analysis before completion claims.
 
 MEASURABLE OUTCOMES:

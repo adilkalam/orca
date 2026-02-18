@@ -67,7 +67,9 @@ export type OperationType =
   | 'recording_compare'
   | 'recording_quality'
   | 'recording_explain'
-  | 'recording_rewind';
+  | 'recording_rewind'
+  // Experiment: Metacognitive awareness test
+  | 'blind_orchestrate';
 
 // ============================================================================
 // CONTENT STRUCTURES (Claude provides ALL of this)

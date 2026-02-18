@@ -1,5 +1,5 @@
 ---
-description: "OS 6.2 orchestrator entrypoint for native iOS tasks"
+description: "OS 6.3 orchestrator entrypoint for native iOS tasks"
 argument-hint: "[--light | -tweak | --complex] <task description or requirement ID>"
 allowed-tools:
   - Task
@@ -36,7 +36,7 @@ Even `-tweak` delegates to a builder. It skips gates, not agents.
 
 ---
 
-# /ios - iOS Lane Orchestrator (OS 6.2)
+# /ios - iOS Lane Orchestrator (OS 6.3)
 
 Use this command for native iOS work (Swift/SwiftUI/UIKit, Xcode, device features).
 
@@ -73,7 +73,7 @@ No flag → Section 3 (Light Orchestrator WITH confirmation)
 
 ---
 
-## 0.1 Recording Context (OS 6.2)
+## 0.1 Recording Context (OS 6.3)
 
 > Session activity is captured automatically by **orca-record** hooks. Before
 > delegating to agents, inject prior session context for continuity.
@@ -253,7 +253,7 @@ If memory hits are relevant:
 - Note them for context
 - May skip or reduce ProjectContext query scope
 
-### 1.1.1 Reflexion Loading (OS 6.2)
+### 1.1.1 Reflexion Loading (OS 6.3)
 
 Load relevant reflexions from past gate failures:
 
@@ -546,7 +546,7 @@ Initialize phase_state.json:
 
 Delegate to `ios-grand-architect` with Context Inheritance:
 
-**Context Inheritance Protocol (OS 6.2):**
+**Context Inheritance Protocol (OS 6.3):**
 
 When delegating, wrap the ContextBundle with inheritance headers:
 

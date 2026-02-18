@@ -1,8 +1,8 @@
-# Requirements Pipeline Phase Configuration - OS 6.2
+# Requirements Pipeline Phase Configuration - OS 6.3
 
 pipeline:
   name: requirements
-  description: Requirements gathering lane for OS 6.2
+  description: Requirements gathering lane for OS 6.3
   version: "6.0"
 
 context:
