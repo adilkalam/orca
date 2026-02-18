@@ -189,6 +189,36 @@ function autoPersistHarvest(session, content, projectPath) {
                 }
             }
         }
+        // Collect follow-up questions from content + auto-extract deferred constraints
+        const followUpQuestions = [];
+        // Explicit follow-ups from harvest content
+        if (content.followUpQuestions) {
+            for (const fq of content.followUpQuestions) {
+                followUpQuestions.push({
+                    question: fq.question,
+                    command: fq.command,
+                    source: 'harvest-explicit',
+                    rationale: fq.rationale,
+                });
+            }
+        }
+        // Auto-extract deferred constraints as follow-up questions
+        if (session.protocolState) {
+            for (const c of session.protocolState.constraints.values()) {
+                if (c.status === 'deferred') {
+                    // Check if not already covered by explicit follow-ups
+                    const alreadyCovered = followUpQuestions.some(fq => fq.question.toLowerCase().includes(c.text.toLowerCase().slice(0, 30)));
+                    if (!alreadyCovered) {
+                        followUpQuestions.push({
+                            question: `Verify: ${c.text}`,
+                            command: '/think',
+                            source: 'deferred-constraint',
+                            rationale: c.deferReason || 'Deferred constraint from previous session',
+                        });
+                    }
+                }
+            }
+        }
         const dateFormatted = `${now.toISOString().slice(0, 10)} ${now.toISOString().slice(11, 16)}`;
         const commandLabel = command === 'deepthink' ? 'DeepThink' : command === 'problem-solve' ? 'ProblemSolve' : command;
         const md = [
@@ -209,6 +239,14 @@ function autoPersistHarvest(session, content, projectPath) {
             ...(deferred.length > 0
                 ? ['## Deferred Constraints', '', ...deferred, '']
                 : []),
+            ...(followUpQuestions.length > 0
+                ? [
+                    '## Follow-Up Questions (for compounding)',
+                    '',
+                    ...followUpQuestions.map((fq, i) => `${i + 1}. \`${fq.command} "${fq.question}"\`\n   _${fq.source === 'deferred-constraint' ? 'From deferred constraint' : 'Rationale'}: ${fq.rationale || 'See findings above'}_`),
+                    '',
+                ]
+                : []),
             '## Recovery',
             '',
             'To resume full analysis:',
@@ -217,7 +255,7 @@ function autoPersistHarvest(session, content, projectPath) {
             '```',
         ].join('\n');
         writeFileSync(filepath, md, 'utf-8');
-        return { persisted: true, file: filepath };
+        return { persisted: true, file: filepath, followUpQuestions: followUpQuestions.length > 0 ? followUpQuestions : undefined };
     }
     catch {
         // Auto-persist errors must not crash the checkpoint operation
@@ -263,6 +301,10 @@ export async function handleCheckpoint(args, session) {
         const persistResult = autoPersistHarvest(session, checkpointContent, args.projectPath);
         if (persistResult) {
             protocolResult.autoPersist = persistResult;
+            // Surface follow-up questions at top level for easy access
+            if (persistResult.followUpQuestions) {
+                protocolResult.followUpQuestions = persistResult.followUpQuestions;
+            }
         }
         extra = protocolResult;
     }

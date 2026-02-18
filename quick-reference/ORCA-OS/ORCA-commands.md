@@ -1,6 +1,6 @@
 # OS 6.3 Commands Quick Reference
 
-**Last Updated:** 2026-02-17
+**Last Updated:** 2026-02-18
 **Version:** OS 6.3
 **Total Commands:** 38 (+ orca-record CLI with 16 subcommands)
 
@@ -160,7 +160,7 @@ Creates: `.claude/requirements/<id>/06-requirements-spec.md`
 /think --meta "What is my training doing here?"            # Substrate observation (unchanged)
 /think --systems "How do these components interact?"       # Systems thinking (unchanged)
 ```
-**Default Mode:** Constraint chain exploration -- 2-3 modes with constraint tracking, 3-question self-check after each mode, gate evaluation, harvest with auto-persist. Brief ORIENT (2 lines).
+**Default Mode:** Constraint chain exploration -- 2-3 modes with constraint tracking, 3-question self-check with verify-or-defer obligation after each mode, gate evaluation, harvest with auto-persist and follow-up questions. Brief ORIENT (2 lines).
 **--light Mode:** Quick exploration -- 1-3 modes, no constraints, no self-check, workshop entry only.
 **--design Mode:** Design-focused exploration -- auto-loads design-deepthink skill and project design files, DESIGN mode with constraint tracking.
 **Specialized Capstones:** --debug, --decide, --model, --meta, --meta-visual, --systems, --spatial, --creative, --causal, --ooda, --ulysses (all unchanged, single operations)
@@ -207,10 +207,11 @@ Pre-mortem exploration with adaptive failure analysis. Runs full ORIENT (what I 
 ```
 Runs full ORIENT→ANTICIPATE→GENERATE→EVALUATE→COMMIT cycle for convergent decisions.
 **Variants:** --quick (3 steps), --risk (4 steps), --strategic (5 steps), --incident (3 steps)
-**NEW: Phase Gates:** 4 verification checkpoints (after ORIENT, ANTICIPATE, GENERATE, EVALUATE) with PASS/SOFT FAIL/HARD FAIL status to catch errors early
+**Phase Gates:** 5 verification checkpoints (after ORIENT, ANTICIPATE, GENERATE, EVALUATE, PRE-MORTEM GATE) with PASS/SOFT FAIL/HARD FAIL status to catch errors early
 **Gate Protocol:** 3 questions per gate, soft fails warn but continue, hard fails stop for correction
 **MCP:** cognition-mcp, sequential-thinking
 **Persistence:** Creates `.claude/cognition/YYYYMMDD-HHMM-<slug>.md` + Workshop entry
+**Compounding:** All three cognition commands (/think, /deepthink, /problem-solve) produce follow-up questions in HARVEST with command routing recommendations. Deferred constraints from /think verify-or-defer auto-surface as follow-ups.
 **Handoff Guidance:** Includes "Next Steps" section with contextual command recommendations
 
 ### `/challenge` - Adversarial Proposal Analysis

@@ -25,7 +25,7 @@ USAGE:
   /problem-solve --strategic <problem> (systems -> pre-mortem -> tree -> decide -> ulysses)
   /problem-solve --incident <problem>  (ooda -> debug -> meta)
 
-FULL PIPELINE: orchestrate -> systems -> pre-mortem -> tree -> decide -> challenge -> ulysses -> meta
+FULL PIPELINE: orchestrate -> systems -> pre-mortem -> tree -> decide -> challenge -> pre-mortem-gate -> ulysses -> meta
 ```
 
 ---
@@ -34,11 +34,11 @@ FULL PIPELINE: orchestrate -> systems -> pre-mortem -> tree -> decide -> challen
 
 | Flag | Steps |
 |------|-------|
-| (none) | All 8 |
-| --quick | systems, decide, challenge |
-| --risk | systems, pre-mortem, causal_analysis, meta |
-| --strategic | systems, pre-mortem, tree, decide+challenge, ulysses |
-| --incident | ooda, debug, meta |
+| (none) | All 8 + pre-mortem gate |
+| --quick | systems, decide, challenge, pre-mortem gate |
+| --risk | systems, pre-mortem, causal_analysis, pre-mortem gate, meta |
+| --strategic | systems, pre-mortem, tree, decide+challenge, pre-mortem gate, ulysses |
+| --incident | ooda, debug, pre-mortem gate, meta |
 
 Include `verbose: false` in every cognition MCP call.
 
@@ -118,6 +118,62 @@ Then run **Gate 4** checkpoint. Gate criteria: Genuine weakness found? Confidenc
 
 ---
 
+
+## Phase 4.5: PRE-MORTEM GATE
+
+After EVALUATE selects the top option and runs adversarial challenge, stress-test the decision before committing.
+
+### Step 4.5.1: Pre-Mortem Analysis
+
+Call cognition `operation: "mental_model"` with:
+
+```typescript
+{
+  operation: "mental_model",
+  sessionId: "<id>",
+  content: {
+    modelName: "pre-mortem",
+    problem: "<the selected option from EVALUATE>",
+    setup: "This decision was implemented. Six months later it failed. What happened?",
+    steps: ["<failure mode 1 tied to systems map>", "<failure mode 2 tied to systems map>", "<failure mode 3 tied to systems map>"],
+    rootCauses: [
+      { failure: "<failure 1>", cause: "<root cause>", preventable: true },
+      { failure: "<failure 2>", cause: "<root cause>", preventable: true },
+      { failure: "<failure 3>", cause: "<root cause>", preventable: false }
+    ],
+    conclusion: "<whether any failure mode is severe enough to change the EVALUATE ranking>"
+  }
+}
+```
+
+### Step 4.5.2: Gate Logic
+
+- If **no failure mode changes ranking**: Proceed to COMMIT. Failure modes become safeguards in the Ulysses Protocol.
+- If a failure mode **DOES change ranking**: Return to EVALUATE Step 4.1 with the pre-mortem findings as additional input. Re-score options.
+
+### Step 4.5.3: Pre-Mortem Checkpoint
+
+```typescript
+{
+  operation: "checkpoint",
+  sessionId: "<id>",
+  content: {
+    phase: "pre-mortem-gate",
+    summary: "<pre-mortem summary>",
+    keyFindings: ["<failure mode 1>", "<failure mode 2>"],
+    gateCheck: {
+      selfCheckPassed: true,
+      depthGatePassed: true,  // false if ranking changed
+      notes: "<whether ranking changed and what action was taken>"
+    }
+  }
+}
+```
+
+Gate criteria: Failure modes reference systems map? Specific (not generic)? At least one non-obvious? If ranking changed, EVALUATE re-ran with pre-mortem input?
+
+---
+
 ## Phase 5: COMMIT
 
 ### Step 5.1: Ulysses Protocol
@@ -143,7 +199,19 @@ Call checkpoint with `phase: "harvest"` for auto-persist:
     summary: "<executive summary of decision + rationale>",
     keyFindings: ["<key risk>", "<key decision>", "<key safeguard>"],
     openQuestions: ["<remaining uncertainty>"],
-    nextSteps: ["<implementation step>"]
+    nextSteps: ["<implementation step>"],
+    followUpQuestions: [
+      {
+        question: "<specific follow-up based on findings>",
+        command: "/deepthink",
+        rationale: "<why this needs adversarial testing>"
+      },
+      {
+        question: "<specific follow-up based on findings>",
+        command: "/think",
+        rationale: "<why this needs investigation>"
+      }
+    ]
   }
 }
 ```
@@ -177,6 +245,7 @@ If workshop fails, display warning and continue.
 | 2 | ANTICIPATE | [status] |
 | 3 | GENERATE | [status] |
 | 4 | EVALUATE | [status] |
+| 5 | PRE-MORTEM GATE | [status] |
 
 ## The Journey
 ### Phase 1-5: [brief per-phase summary with gate results]
@@ -191,6 +260,14 @@ If workshop fails, display warning and continue.
 -> /deepthink "[uncertainty]" (if confidence < 0.7)
 -> /think --ulysses "[commitment]" (if safeguards need detail)
 -> /plan "[implementation]" (if ready to implement)
+
+## Follow-Up Questions (for compounding)
+
+1. `/deepthink "[specific follow-up needing adversarial testing]"`
+   _Rationale: [why this needs pre-mortem exploration]_
+
+2. `/think "[specific follow-up needing investigation]"`
+   _Rationale: [why this needs mapping or analysis]_
 ```
 
 ---

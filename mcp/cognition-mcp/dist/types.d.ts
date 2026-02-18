@@ -204,6 +204,12 @@ export interface VisualReasoningContent {
     insights: string[];
     nextThoughtNeeded?: boolean;
 }
+export interface FollowUpQuestion {
+    question: string;
+    command: string;
+    source: 'deferred-constraint' | 'harvest-explicit';
+    rationale?: string;
+}
 export interface CheckpointContent {
     text?: string;
     label?: string;
@@ -223,6 +229,7 @@ export interface CheckpointContent {
         id: string;
         reason: string;
     }>;
+    followUpQuestions?: FollowUpQuestion[];
     gateCheck?: {
         selfCheckPassed: boolean;
         depthGatePassed: boolean;

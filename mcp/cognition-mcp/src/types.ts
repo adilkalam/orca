@@ -359,6 +359,15 @@ export interface VisualReasoningContent {
   nextThoughtNeeded?: boolean;
 }
 
+
+// Follow-up question for compounding across sessions
+export interface FollowUpQuestion {
+  question: string;
+  command: string;  // "/deepthink" | "/think" | "/problem-solve"
+  source: 'deferred-constraint' | 'harvest-explicit';
+  rationale?: string;
+}
+
 export interface CheckpointContent {
   text?: string;
   label?: string;
@@ -379,6 +388,7 @@ export interface CheckpointContent {
     id: string;
     reason: string;
   }>;
+  followUpQuestions?: FollowUpQuestion[];
   gateCheck?: {
     selfCheckPassed: boolean;
     depthGatePassed: boolean;

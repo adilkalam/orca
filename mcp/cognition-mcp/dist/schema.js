@@ -262,6 +262,12 @@ export const CheckpointContentSchema = z.object({
         id: z.string(),
         reason: z.string(),
     })).optional(),
+    followUpQuestions: z.array(z.object({
+        question: z.string(),
+        command: z.string(),
+        source: z.enum(['deferred-constraint', 'harvest-explicit']).optional(),
+        rationale: z.string().optional(),
+    })).optional(),
     gateCheck: z.object({
         selfCheckPassed: z.boolean(),
         depthGatePassed: z.boolean(),

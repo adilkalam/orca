@@ -395,6 +395,35 @@ The handoff: Your cognition session produces insights and decisions. `/plan` tra
 
 ---
 
+## Verify-or-Defer (in /think)
+
+The default /think mode enforces a **verify-or-defer obligation** after each mode's 3-question self-check. When the self-check raises a concern (Q2: "What am I avoiding?" or Q3: "What would a skeptic challenge?"), the model must either:
+
+- **VERIFY**: Actually check the claim -- read a file, grep, search, cross-reference. Record what was verified and the result.
+- **DEFER**: Explicitly state the concern and the reason it cannot be verified now. Express as `deferConstraints` in the checkpoint call.
+
+**No dismiss**: Raising a concern and then arguing it away in the same breath is not allowed. This eliminates the "raise and rationalize" pattern observed in A/B experiments where self-checks identified real issues but then self-dismissed them.
+
+Deferred concerns flow to HARVEST as open questions and auto-surface as follow-up questions.
+
+---
+
+## Compounding (all cognition commands)
+
+All three cognition commands (/think, /deepthink, /problem-solve) now produce **follow-up questions** in their HARVEST phase. Each question includes:
+
+- A specific follow-up question based on the session's findings
+- A command recommendation (/deepthink for adversarial testing, /think for investigation, /problem-solve for decisions)
+- A rationale explaining why this question and why this command
+
+**Automatic extraction**: Deferred constraints from /think's verify-or-defer obligation auto-surface as follow-up questions with `source: "deferred-constraint"`. Explicit follow-ups from the harvest content have `source: "harvest-explicit"`.
+
+The MCP checkpoint handler collects both explicit and deferred follow-ups at harvest time, includes them in the response alongside `autoPersist` and `protocolState`, and writes them to the auto-persisted markdown file.
+
+This creates a **compounding loop**: each session's output seeds the next session's input, building on previous analysis rather than starting from scratch.
+
+---
+
 ## See Also
 
 - `docs/concepts/cognition-mcp.md` - Full reference for all 48 operations
@@ -405,4 +434,4 @@ The handoff: Your cognition session produces insights and decisions. `/plan` tra
 
 ---
 
-_Version: OS 6.3 | Cognition is thinking, made visible._
+_Version: OS 6.3 | Updated: 2026-02-18 | Cognition is thinking, made visible._

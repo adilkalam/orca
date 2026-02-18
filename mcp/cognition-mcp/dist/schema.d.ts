@@ -1442,6 +1442,22 @@ export declare const CheckpointContentSchema: z.ZodObject<{
         id: string;
         reason: string;
     }>, "many">>;
+    followUpQuestions: z.ZodOptional<z.ZodArray<z.ZodObject<{
+        question: z.ZodString;
+        command: z.ZodString;
+        source: z.ZodOptional<z.ZodEnum<["deferred-constraint", "harvest-explicit"]>>;
+        rationale: z.ZodOptional<z.ZodString>;
+    }, "strip", z.ZodTypeAny, {
+        command: string;
+        question: string;
+        source?: "deferred-constraint" | "harvest-explicit" | undefined;
+        rationale?: string | undefined;
+    }, {
+        command: string;
+        question: string;
+        source?: "deferred-constraint" | "harvest-explicit" | undefined;
+        rationale?: string | undefined;
+    }>, "many">>;
     gateCheck: z.ZodOptional<z.ZodObject<{
         selfCheckPassed: z.ZodBoolean;
         depthGatePassed: z.ZodBoolean;
@@ -1474,6 +1490,12 @@ export declare const CheckpointContentSchema: z.ZodObject<{
         id: string;
         reason: string;
     }[] | undefined;
+    followUpQuestions?: {
+        command: string;
+        question: string;
+        source?: "deferred-constraint" | "harvest-explicit" | undefined;
+        rationale?: string | undefined;
+    }[] | undefined;
     gateCheck?: {
         selfCheckPassed: boolean;
         depthGatePassed: boolean;
@@ -1497,6 +1519,12 @@ export declare const CheckpointContentSchema: z.ZodObject<{
     deferConstraints?: {
         id: string;
         reason: string;
+    }[] | undefined;
+    followUpQuestions?: {
+        command: string;
+        question: string;
+        source?: "deferred-constraint" | "harvest-explicit" | undefined;
+        rationale?: string | undefined;
     }[] | undefined;
     gateCheck?: {
         selfCheckPassed: boolean;

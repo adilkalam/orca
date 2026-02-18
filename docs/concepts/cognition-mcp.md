@@ -887,6 +887,57 @@ The recording layer supersedes the `.claude/telemetry/` system. Telemetry script
 
 ---
 
+
+## Harvest Response: followUpQuestions
+
+When `phase === "harvest"` in a checkpoint call, the MCP collects follow-up questions from two sources and includes them in the response:
+
+### Sources
+
+1. **harvest-explicit**: Follow-up questions provided directly in the harvest checkpoint content via the `followUpQuestions` field.
+2. **deferred-constraint**: Auto-extracted from deferred constraints in the protocol state. Constraints with `status: 'deferred'` that are not already covered by explicit follow-ups are converted to follow-up questions with `/think` as the default command.
+
+### Response Format
+
+```typescript
+{
+  // ... existing response fields ...
+  protocolState: { /* constraint state */ },
+  autoPersist: { persisted: true, file: "<path>" },
+  followUpQuestions: [
+    {
+      question: "Verify whether X actually breaks under condition Y",
+      command: "/think",
+      source: "deferred-constraint",
+      rationale: "Requires running tests to verify. Cannot verify in /think session."
+    },
+    {
+      question: "Does finding A hold under adversarial conditions?",
+      command: "/deepthink",
+      source: "harvest-explicit",
+      rationale: "This conclusion needs stress-testing before acting on it"
+    }
+  ]
+}
+```
+
+### FollowUpQuestion Type
+
+```typescript
+interface FollowUpQuestion {
+  question: string;
+  command: string;  // "/deepthink" | "/think" | "/problem-solve"
+  source: 'deferred-constraint' | 'harvest-explicit';
+  rationale?: string;
+}
+```
+
+### Auto-Persisted Markdown
+
+Follow-up questions are included in the auto-persisted markdown file under a "Follow-Up Questions (for compounding)" section with numbered entries showing the command and rationale.
+
+---
+
 ## See Also
 
 - [Pipeline Model](pipeline-model.md) - How cognition integrates with pipelines
@@ -896,4 +947,4 @@ The recording layer supersedes the `.claude/telemetry/` system. Telemetry script
 
 ---
 
-_Version: OS 6.3 | Last updated: 2026-02-14_
+_Version: OS 6.3 | Last updated: 2026-02-18_

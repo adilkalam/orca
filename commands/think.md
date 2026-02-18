@@ -337,14 +337,24 @@ Execute each selected mode using cognition-mcp operations (same mode definitions
 **META**: meta operation.
 **DEEP**: 3 thought chains then convergence check.
 
-### Step 5: Self-Check + Constraint Checkpoint (After Each Mode)
+### Step 5: Self-Check + Verify-or-Defer + Constraint Checkpoint (After Each Mode)
 
 **3-Question Self-Check** (mandatory after each mode):
 1. Is this shallow or predictable?
 2. What am I avoiding?
 3. What would a skeptic challenge?
 
-**Constraint Checkpoint** (after self-check):
+**Verify-or-Defer Obligation** (mandatory after self-check):
+
+For each concern raised in Q2 or Q3, you MUST either:
+- **VERIFY**: Actually check the claim (read a file, grep, search, cross-reference). Record what was verified and the result.
+- **DEFER**: Explicitly state the concern and the reason it cannot be verified now. Express as `deferConstraints` in the checkpoint call.
+
+**No dismiss**: You CANNOT raise a concern and then argue it away in the same self-check. If you raise "what if X breaks?" you must either verify X doesn't break or defer with a reason.
+
+Deferred concerns flow to HARVEST as open questions with their deferral reasons and auto-surface as follow-up questions.
+
+**Constraint Checkpoint** (after verify-or-defer):
 
 ```typescript
 {
@@ -361,11 +371,13 @@ Execute each selected mode using cognition-mcp operations (same mode definitions
     ],
     resolveConstraints: ["C1"],
     acknowledgeConstraints: ["C2"],
-    deferConstraints: [{ id: "C3", reason: "Requires testing" }],
+    deferConstraints: [
+      { id: "C3", reason: "Requires running tests to verify. Cannot verify in /think session." }
+    ],
     gateCheck: {
       selfCheckPassed: true,
       depthGatePassed: true,
-      notes: "Found non-obvious insight about X"
+      notes: "Verified: [what was verified]. Deferred: [what was deferred and why]."
     }
   }
 }
@@ -380,6 +392,8 @@ Execute each selected mode using cognition-mcp operations (same mode definitions
 
 Call checkpoint with `phase: "harvest"`. MCP auto-persists to `.claude/cognition/`.
 
+Deferred concerns from verify-or-defer appear as open questions AND auto-surface as follow-up questions in the MCP response.
+
 ```typescript
 {
   operation: "checkpoint",
@@ -389,8 +403,20 @@ Call checkpoint with `phase: "harvest"`. MCP auto-persists to `.claude/cognition
     phase: "harvest",
     summary: "<2-3 sentence executive summary>",
     keyFindings: ["<key finding 1>", "<key finding 2>"],
-    openQuestions: ["<remaining question>"],
-    nextSteps: ["<what to explore next>"]
+    openQuestions: ["<remaining question>", "<deferred concern with reason>"],
+    nextSteps: ["<what to explore next>"],
+    followUpQuestions: [
+      {
+        question: "<specific follow-up based on findings>",
+        command: "/deepthink",
+        rationale: "<why this needs adversarial testing>"
+      },
+      {
+        question: "<specific follow-up based on findings>",
+        command: "/think",
+        rationale: "<why this needs further investigation>"
+      }
+    ]
   }
 }
 ```
@@ -979,6 +1005,14 @@ Based on this analysis:
 
 **If this needs design-level creative exploration:**
 -> /design "[design brief]"
+
+### Follow-Up Questions (for compounding)
+
+1. `/deepthink "[specific follow-up needing adversarial testing]"`
+   _Rationale: [why this needs pre-mortem exploration]_
+
+2. `/think "[specific follow-up needing investigation]"`
+   _Rationale: [why this needs mapping or analysis]_
 ```
 
 ### --creative Output Format

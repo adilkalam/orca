@@ -59,6 +59,7 @@ Call cognition `operation: "thought"` with full orientation:
 - **What I know**: Key facts and evidence
 - **What I'm uncertain about**: Gaps, assumptions, unknowns
 - **What I'm avoiding**: Uncomfortable angles, taboo options
+- **What would an essayist notice?**: Free-associate briefly -- what connections, reframings, or uncomfortable observations might structured analysis miss? (1-2 sentences, not a mode)
 - **Mode selection**: Recommended modes with rationale
 
 ### --design Auto-Selection
@@ -227,12 +228,24 @@ Call checkpoint with `phase: "harvest"`. MCP auto-persists a summary file to `.c
     summary: "<2-3 sentence executive summary>",
     keyFindings: ["<key finding 1>", "<key finding 2>"],
     openQuestions: ["<remaining question>"],
-    nextSteps: ["<what to explore next>"]
+    nextSteps: ["<what to explore next>"],
+    followUpQuestions: [
+      {
+        question: "<specific follow-up based on findings>",
+        command: "/deepthink",
+        rationale: "<why this needs adversarial testing>"
+      },
+      {
+        question: "<specific follow-up based on findings>",
+        command: "/think",
+        rationale: "<why this needs investigation>"
+      }
+    ]
   }
 }
 ```
 
-**Response includes**: `autoPersist: { persisted: true, file: "<path>" }` and `protocolState` with deferred constraints.
+**Response includes**: `autoPersist: { persisted: true, file: "<path>" }`, `protocolState` with deferred constraints, and `followUpQuestions` array (explicit + auto-extracted from deferred constraints).
 
 ### Workshop Entry (after harvest)
 
@@ -284,6 +297,17 @@ If workshop fails, display warning and continue.
 -> /deepthink "[question]"        (if deeper questions found)
 -> /think --systems "[system]"    (if systems exposed)
 -> /think "[question]"            (if lighter exploration needed)
+
+## Follow-Up Questions (for compounding)
+
+1. `/deepthink "[specific follow-up needing adversarial testing]"`
+   _Rationale: [why this needs pre-mortem exploration]_
+
+2. `/think "[specific follow-up needing investigation]"`
+   _Rationale: [why this needs mapping or analysis]_
+
+3. `/problem-solve "[specific decision point]"`
+   _Rationale: [why this needs convergent decision-making]_
 ```
 
 ---
