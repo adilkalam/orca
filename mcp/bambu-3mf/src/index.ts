@@ -70,11 +70,13 @@ class Bambu3MFServer {
       {
         name: 'read_settings',
         description:
-          'Extract print settings from a 3MF file. Gcode blocks are always excluded.',
+          'Extract print settings from a 3MF file or a JSON preset file. ' +
+          'For JSON presets, returns settings as project_settings with filament_count 0. ' +
+          'Gcode blocks are always excluded.',
         inputSchema: {
           type: 'object' as const,
           properties: {
-            path: { type: 'string', description: 'Absolute path to the .3mf file' },
+            path: { type: 'string', description: 'Absolute path to a .3mf or .json preset file' },
             filament_slot: { type: 'number', description: '0-indexed filament slot. Default: all slots.' },
             keys: { type: 'array', items: { type: 'string' }, description: 'Specific keys to return.' },
           },

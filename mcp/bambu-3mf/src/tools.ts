@@ -58,13 +58,32 @@ export async function listPresets(
   return results;
 }
 
-/** read_settings - Extract settings from a 3MF file. */
+/** read_settings - Extract settings from a 3MF or JSON preset file. */
 export async function readSettings(
   path: string,
   filamentSlot?: number,
   keys?: string[]
 ): Promise<ReadSettingsResult> {
   const absPath = resolve(path);
+
+  // Plain JSON preset files: read directly instead of treating as zip
+  if (absPath.endsWith('.json')) {
+    const raw = await readFile(absPath, 'utf-8');
+    let parsed = stripGcodeKeys(JSON.parse(raw) as Settings);
+    if (keys && keys.length > 0) {
+      const filtered: Settings = {};
+      for (const key of keys) {
+        if (key in parsed) filtered[key] = parsed[key];
+      }
+      parsed = filtered;
+    }
+    return {
+      project_settings: parsed,
+      filament_settings: {},
+      filament_count: 0,
+    };
+  }
+
   const contents = await read3MF(absPath);
 
   let projectSettings = stripGcodeKeys(contents.projectSettings);
