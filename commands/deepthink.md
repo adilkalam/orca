@@ -261,53 +261,39 @@ If workshop fails, display warning and continue.
 
 ## Final Output Format
 
+The output is bottom-anchored for terminal reading. The last thing printed is the most important.
+
 ```
-# DeepThink Exploration: [Problem Summary]
+# DeepThink: [Problem Summary]
 
 ## Entry Point
-[What I knew, what I was uncertain about, what I was avoiding]
+What I knew: [key facts, scope, constraints]
+What I was uncertain about: [gaps, unknowns, open questions]
+What I was avoiding: [uncomfortable angles, things that might not be true yet]
 
-## Exploration Journey
-### Mode: [MODE 1]
-[Key findings]
-**Depth Check:** [Assessment]
-**Pre-Mortem:** [If run -- key failure modes found. If skipped -- "Exploratory mode, no testable conclusion."]
+## Exploration
+### [MODE 1]: [2-3 sentence key finding]
+### [MODE 2]: [2-3 sentence key finding]
+### [MODE 3]: [2-3 sentence key finding]
 
-### Mode: [MODE 2]
-[Key findings]
-**Pre-Mortem:** [Assessment]
+## What the Protocol Caught
 
-### Mode: [MODE 3] (if applicable)
-[Key findings]
+| Assumption / Default | Caught By | Outcome |
+|---------------------|-----------|---------|
+| [what we initially believed or would have done] | [constraint, pre-mortem, self-check, or verification] | [what actually turned out to be true] |
+| [another default that got overridden] | [mechanism] | [result] |
 
-## Harvest
-- Questions Discovered: ...
-- Hypotheses Worth Testing: ...
-- Constraints Found: ...
-- Assumptions Exposed: ...
-- Surprises: ...
-- Deferred Constraints: [from protocolState]
-- Pre-Mortem Failures Flagged: [summary of failure modes found]
+## Summary
+[2-4 sentences: the actual synthesis. What did this exploration reveal?
+End with honest assessment -- genuine insight or just structured text?]
 
-## Honest Assessment
-[Genuine insight or just text?]
-
-## Next Steps
--> /problem-solve "[hypothesis]"  (if hypotheses found and ready to converge)
--> /deepthink "[question]"        (if deeper questions found)
--> /think --systems "[system]"    (if systems exposed)
--> /think "[question]"            (if lighter exploration needed)
-
-## Follow-Up Questions (for compounding)
-
-1. `/deepthink "[specific follow-up needing adversarial testing]"`
-   _Rationale: [why this needs pre-mortem exploration]_
-
-2. `/think "[specific follow-up needing investigation]"`
-   _Rationale: [why this needs mapping or analysis]_
-
-3. `/problem-solve "[specific decision point]"`
-   _Rationale: [why this needs convergent decision-making]_
+## Where to Go Next
+-> /problem-solve "[specific decision point]"
+   _[why this needs convergent decision-making]_
+-> /deepthink "[specific follow-up]"
+   _[why this needs further adversarial exploration]_
+-> /think "[specific question]"
+   _[why this needs investigation]_
 ```
 
 ---

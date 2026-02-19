@@ -971,53 +971,56 @@ Best: B (highest value)
 
 ## Phase 3: Present Results
 
-After completing the reasoning chain, present clearly:
+After completing the reasoning chain, present clearly. Output is bottom-anchored for terminal reading.
+
+**Default mode (constraint chain):**
 
 ```
-## Thinking: [Topic]
+# Think: [Topic]
 
-### Reasoning Chain
-1. [Thought 1 summary]
-2. [Thought 2 summary]
-...
+## Entry Point
+What is the question: [concise framing]
+What is uncertain: [key unknowns]
 
-### [Conclusion / Debug Analysis / Decision / etc.]
-[Final output based on capstone or final thought]
+## Exploration
+### [MODE 1]: [2-3 sentence key finding]
+### [MODE 2]: [2-3 sentence key finding]
 
-### Next Steps
+## What the Protocol Caught
 
-Based on this analysis:
+| Assumption / Default | Caught By | Outcome |
+|---------------------|-----------|---------|
+| [what we initially believed] | [self-check, verify-or-defer, constraint] | [what actually held up] |
+| [concern raised then checked] | [verification or deferral] | [result] |
 
-**If the first answer feels too easy or needs stress-testing:**
--> /deepthink "[question needing pre-mortem exploration]"
+## Summary
+[2-3 sentences: the key insight and what changed or became clear]
 
-**If unexpected complexity emerged:**
--> /problem-solve "[complex aspect requiring full pipeline]"
-
-**If you want to verify the conclusion:**
--> /think --challenge "[conclusion to stress-test]"
-
-**If you're unsure which direction to go:**
--> /contemplate "[remaining decision point]"
-
-**If ready to implement:**
+## Where to Go Next
+-> /deepthink "[question needing adversarial exploration]"
+   _[why this needs pre-mortem stress-testing]_
+-> /problem-solve "[decision point]"
+   _[why this needs convergent decision-making]_
 -> /plan "[implementation task]"
-
-**If this needs design-level creative exploration:**
--> /design "[design brief]"
-
-### Follow-Up Questions (for compounding)
-
-1. `/deepthink "[specific follow-up needing adversarial testing]"`
-   _Rationale: [why this needs pre-mortem exploration]_
-
-2. `/think "[specific follow-up needing investigation]"`
-   _Rationale: [why this needs mapping or analysis]_
+   _[if ready to implement]_
 ```
 
-### --creative Output Format
+**Specialized modes (--debug, --decide, --model, etc.):**
 
-When `--creative` is used, present results in this structure instead of the generic format:
+```
+## Think: [Topic]
+
+### [Analysis type: Debug / Decision / Model / etc.]
+[Structured output from the capstone operation]
+
+### Summary
+[2-3 sentence synthesis]
+
+### Where to Go Next
+[Routed follow-ups]
+```
+
+**--creative mode:**
 
 ```
 ## Creative Thinking: [Topic]
@@ -1032,6 +1035,9 @@ Assumed constraints: [constraints that might not be real]
 ### Synthesis
 Most interesting non-default: [idea]
 Why it's interesting: [reason]
+
+### Where to Go Next
+[Routed follow-ups]
 ```
 
 ---

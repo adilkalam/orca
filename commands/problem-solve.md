@@ -232,42 +232,37 @@ If workshop fails, display warning and continue.
 
 ## Final Output Format
 
+The output is bottom-anchored for terminal reading. The last thing printed is the most important.
+
 ```
-# ProblemSolve Analysis: [Problem Summary]
-
-## Executive Summary
-[2-3 sentences]
-
-## Gate Summary
-| Gate | Phase | Status |
-|------|-------|--------|
-| 1 | ORIENT | [status] |
-| 2 | ANTICIPATE | [status] |
-| 3 | GENERATE | [status] |
-| 4 | EVALUATE | [status] |
-| 5 | PRE-MORTEM GATE | [status] |
+# ProblemSolve: [Problem Summary]
 
 ## The Journey
-### Phase 1-5: [brief per-phase summary with gate results]
+### ORIENT: [2-3 sentences -- what the systems map revealed]
+### ANTICIPATE: [2-3 sentences -- key failure modes from pre-mortem]
+### GENERATE: [2-3 sentences -- options considered, what was pruned and why]
+### EVALUATE: [2-3 sentences -- what was chosen and at what confidence]
 
-## Recommended Action
-[Clear next step]
+## What the Protocol Caught
 
-## Key Safeguards + Review Schedule
-[From ulysses protocol]
+| Assumption / Default | Caught By | Outcome |
+|---------------------|-----------|---------|
+| [initial framing or instinct] | [pre-mortem, adversarial challenge, gate failure] | [how the decision changed] |
+| [another default that got stress-tested] | [mechanism] | [result] |
 
-## Next Steps
--> /deepthink "[uncertainty]" (if confidence < 0.7)
--> /think --ulysses "[commitment]" (if safeguards need detail)
--> /plan "[implementation]" (if ready to implement)
+## Summary
+[2-4 sentences: the decision, the rationale, and confidence level]
 
-## Follow-Up Questions (for compounding)
+## Safeguards
+[From ulysses protocol -- specific commitments to prevent identified failures]
 
-1. `/deepthink "[specific follow-up needing adversarial testing]"`
-   _Rationale: [why this needs pre-mortem exploration]_
-
-2. `/think "[specific follow-up needing investigation]"`
-   _Rationale: [why this needs mapping or analysis]_
+## Where to Go Next
+-> /deepthink "[uncertainty needing exploration]"
+   _[why this needs adversarial testing]_
+-> /plan "[implementation task]"
+   _[if ready to implement]_
+-> /think "[open question]"
+   _[why this needs investigation]_
 ```
 
 ---
