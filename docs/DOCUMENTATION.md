@@ -86,7 +86,7 @@ Technical specifications and standards:
 
 For day-to-day usage, see the quick-reference guides:
 
-- **[ORCA Commands](../quick-reference/ORCA-OS/ORCA-commands.md)** - All 37 commands
+- **[ORCA Commands](../quick-reference/ORCA-OS/ORCA-commands.md)** - All 36 commands
 - **[ORCA Agents](../quick-reference/ORCA-OS/ORCA-agents.md)** - All 112 agents
 - **[ORCA Architecture](../quick-reference/ORCA-OS/ORCA-architecture.md)** - System architecture overview
 - **[ORCA MCPs](../quick-reference/ORCA-OS/ORCA-mcps.md)** - MCP server reference

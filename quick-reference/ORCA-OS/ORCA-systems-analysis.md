@@ -261,8 +261,6 @@ Referenced by ALL agents in "Required Skills" section:
 | stripe-integration | Next.js, Django-React |
 | security-basics | Cross-cutting |
 | testing-strategy | Cross-cutting |
-| api-design | Cross-cutting |
-| git-workflow | Cross-cutting |
 
 ### Utility Skills
 

@@ -138,7 +138,9 @@ You MUST apply these skills to all work:
 - `skills/react-performance/SKILL.md` — React/Next.js performance patterns
 - `skills/stripe-integration/SKILL.md` — Payment integration patterns (when Stripe work detected)
 - `skills/frontend-aesthetics/SKILL.md` — Visual aesthetics (anti-AI-slop, typography, color, spacing rhythm)
-- `skills/ui-implementation-rules/SKILL.md` — Concrete image/typography/spacing implementation rules
+- `skills/ui-image-rules/SKILL.md` — Mandatory image rendering rules
+- `skills/ui-typography-spacing/SKILL.md` — Typography and spacing fallbacks
+- `skills/ui-page-standards/SKILL.md` — New page checklist (metadata, states, forms, mobile, SEO)
 
 ---
 ## 1.3 Attempt Tracking (OS 6.3)
@@ -184,7 +186,7 @@ Source code is the ONLY exception.
 ## 1.4 Design Quality
 
 For design methodology, load `skills/frontend-aesthetics/SKILL.md`.
-For concrete implementation rules, load `skills/ui-implementation-rules/SKILL.md`.
+For concrete implementation rules, load `skills/ui-image-rules/SKILL.md`, `skills/ui-typography-spacing/SKILL.md`, and `skills/ui-page-standards/SKILL.md`.
 
 ### Critical Rules (Always In Context)
 

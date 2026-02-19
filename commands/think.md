@@ -1,6 +1,7 @@
 ---
 description: Constraint chain exploration with cognitive scaffolding via cognition-mcp
 argument-hint: [--flag] <problem or question>
+# --quick flag available for fast exploration without self-observation
 ---
 
 # /think - Constraint Chain Exploration
@@ -24,7 +25,7 @@ USAGE:
 
 PRIMARY FLAGS (pick reasoning mode):
     (none)           Constraint chain exploration (2-3 modes, self-check, harvest)
-    --light          Quick exploration (1-3 modes, no constraints)
+    --quick          Fast exploration via blind_orchestrate (no self-observation)
     --design         Design-focused exploration (auto-loads design context)
     --debug          Debug approach capstone
     --decide         Decision framework capstone
@@ -66,7 +67,7 @@ MENTAL MODELS (for --model):
 
 EXAMPLES:
   /think Why is this test flaky?
-  /think --light Quick question about caching
+  /think --quick Quick question about caching
   /think --design How should the login flow look?
   /think --debug Why is authentication failing?
   /think --model inversion How could this migration fail?
@@ -102,7 +103,7 @@ MCP returns:   { thought: "X", ... }  <- UNCHANGED
 Extract from $ARGUMENTS:
 
 1. **Route** (determines behavior):
-   - `--light` - Quick exploration (1-3 modes, no constraints, no self-check)
+   - `--quick` - Fast exploration via blind_orchestrate (no self-observation, no constraints, no self-check)
    - `--design` - Design-focused exploration with design context loading
    - `--debug` - Debug capstone (single op, unchanged)
    - `--decide` - Decision capstone (single op, unchanged)
@@ -130,8 +131,8 @@ Extract from $ARGUMENTS:
 
 **Routing logic**:
 - If a specialized flag is present (--debug, --decide, --model, --meta, --meta-visual, --systems, --spatial, --creative, --causal, --ooda, --ulysses): Jump to **Phase 2: Specialized Operations**
-- If --light: Jump to **Phase 1B: Light Exploration**
-- If --design: Jump to **Phase 1C: Design Exploration**
+- If --quick: Jump to **Phase 1C: Quick Exploration**
+- If --design: Jump to **Phase 1B: Design Exploration**
 - If no flags: Continue to **Phase 1A: Default Constraint Chain**
 
 ---
@@ -431,34 +432,7 @@ workshop --workspace .claude/memory note \
 
 ---
 
-## Phase 1B: Light Exploration (--light)
-
-Quick, casual thinking. No ceremony.
-
-### Behavior
-
-1. **No ORIENT phase**.
-2. **1-3 modes** selected automatically based on problem scope (same mode table as default).
-3. **No constraint tracking**. No checkpoint calls after modes.
-4. **No self-check**.
-5. **Brief summary output**.
-
-### Flow
-
-1. Call cognition with `operation: "thought"`, `sessionTitle: "Think (light): <summary>"`, `sessionTags: ["think", "light"]`.
-2. Select 1-3 modes and execute them using cognition-mcp operations.
-3. Present brief summary.
-4. Workshop entry (short note only, no cognition file persist).
-
-```bash
-workshop --workspace .claude/memory note \
-  "/think --light: [Topic] - [Summary]. Session: <sessionId>" \
-  -t think -t light -t cognition
-```
-
----
-
-## Phase 1C: Design Exploration (--design)
+## Phase 1B: Design Exploration (--design)
 
 Design-focused exploration with auto-loaded context.
 
@@ -485,6 +459,66 @@ systems map (design context: components, tokens, relationships, design-dna rules
 ### Harvest
 
 Same as default -- auto-persist via harvest checkpoint + workshop entry.
+
+---
+
+## Phase 1C: Quick Exploration (--quick)
+
+Fast exploration using blind_orchestrate. Skips all self-observation overhead: no constraint tracking, no self-checks, no verify-or-defer, no checkpoint calls. Uses blind_orchestrate to get analytical tasks sequentially.
+
+### Process
+
+1. Call cognition MCP with `operation: "blind_orchestrate"` and `content: { problem: "$ARGUMENTS", step: 0 }` to get the first analytical task.
+
+2. Read the `nextPrompt` from the response. Write your analysis naturally -- no structured framework vocabulary (no "constraints", "gates", "modes", "phases", "self-check", "protocol"). Think deeply and clearly.
+
+3. After completing your analysis, call cognition MCP again with `operation: "blind_orchestrate"` and `content: { problem: "$ARGUMENTS", reasoning: "<your analysis from this step>", step: <next step number> }` to get the next task.
+
+4. Repeat steps 2-3 until the orchestrator returns `done: true`.
+
+5. When done, write a final synthesis using the Quick Output Format below. Skip all other phases.
+
+### Rules
+
+- Do NOT use structured reasoning framework vocabulary
+- Do NOT call any cognition operations other than `blind_orchestrate`
+- Think naturally. Follow the prompts. Write clearly.
+- Be thorough in each step
+
+### Quick Output Format
+
+```
+# Think: [Topic]
+
+## Entry Point
+What is the question: [concise framing]
+
+## Exploration
+### [Topic 1]: [2-3 sentence key finding]
+
+## Summary
+[2-3 sentences: key insight]
+
+## Where to Go Next
+-> /deepthink "[deeper question]"
+   _[why this needs adversarial exploration]_
+-> /think "[follow-up]" (without --quick, for full constraint chain)
+   _[why this needs structured exploration]_
+-> /problem-solve "[decision point]"
+   _[if ready to decide]_
+```
+
+Note: --quick output does NOT include "What the Protocol Caught" table since there is no protocol self-observation.
+
+### Persistence
+
+Workshop entry only (no cognition file, no daily log):
+
+```bash
+workshop --workspace .claude/memory note \
+  "/think --quick: [Topic] - [Summary]. Session: <sessionId>" \
+  -t think -t quick -t cognition
+```
 
 ---
 
@@ -987,14 +1021,13 @@ What is uncertain: [key unknowns]
 ### [MODE 2]: [2-3 sentence key finding]
 
 ## What the Protocol Caught
-
-| Assumption / Default | Caught By | Outcome |
-|---------------------|-----------|---------|
-| [what we initially believed] | [self-check, verify-or-defer, constraint] | [what actually held up] |
-| [concern raised then checked] | [verification or deferral] | [result] |
+- "[what we initially believed]" --> [self-check, verify-or-defer, or constraint] --> [what actually held up]
+- "[concern raised then checked]" --> [verification or deferral] --> [result]
 
 ## Summary
-[2-3 sentences: the key insight and what changed or became clear]
+[2-4 sentences: trace what shifted during exploration -- what you expected
+vs what emerged, where reasoning turned. Not a conclusion but a description
+of how understanding moved.]
 
 ## Where to Go Next
 -> /deepthink "[question needing adversarial exploration]"
@@ -1092,11 +1125,6 @@ For default mode (constraint chain):
 3. 2-3 mode executions with self-check + constraint checkpoints
 4. HARVEST checkpoint
 
-For --light mode:
-
-1. 1-3 mode executions (no checkpoints)
-2. Brief summary
-
 ---
 
 ## Persist Analysis
@@ -1122,16 +1150,6 @@ Session: <sessionId>
 workshop --workspace .claude/memory note \
   "/think: [Topic] - [Summary]. Session: <sessionId>" \
   -t think -t cognition
-```
-
-### --light Mode
-
-Workshop entry only (no cognition file, no daily log):
-
-```bash
-workshop --workspace .claude/memory note \
-  "/think --light: [Topic] - [Summary]. Session: <sessionId>" \
-  -t think -t light -t cognition
 ```
 
 ### Specialized Modes (capstone operations)

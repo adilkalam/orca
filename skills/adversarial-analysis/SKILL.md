@@ -176,44 +176,33 @@ Integrate findings into actionable recommendations.
 ## Full Output Template
 
 ```markdown
-## Adversarial Analysis: [Proposal Summary]
+# Challenge: [Proposal Summary]
 
-### Pre-mortem
-> "It's 6 months from now. This failed. Why?"
-- [Failure 1]
-- [Failure 2]
-- [Failure 3]
+## The Attack
+### Causal Failure Map: [root causes and cascade effects]
+### Assumption Audit: [weakest assumptions]
+### Counter-Arguments: [strongest case against]
 
-### Assumptions (confidence: H/M/L)
-| Assumption | Confidence | If Wrong |
-|------------|------------|----------|
-| ... | ... | ... |
+## What the Analysis Caught
 
-### Edge Cases
-- [Scenario 1]
-- [Scenario 2]
-... (10+)
+| Weakness | Source | Severity | Mitigation |
+|----------|--------|----------|------------|
+| [weakness] | [phase] | Critical/High/Medium | [action] |
 
-### Counter-Arguments
-> "A senior engineer thinks this is wrong. Their case:"
-- [Argument 1]
-- [Argument 2]
+## Verdict
+**[GO / CONDITIONAL GO / NO GO]** (confidence: X.X)
+[2-4 sentences: real risk picture, what would change the verdict]
 
-### Failure Modes
-| Component | How It Fails | Blast Radius | Detection |
-|-----------|--------------|--------------|-----------|
-| ... | ... | ... | ... |
+**Required Mitigations (if CONDITIONAL GO):**
+1. [mitigation]
 
-### Synthesis
-**Critical Weaknesses (must address):**
-1. [Weakness] - Mitigation: [Action]
-
-**Significant Concerns (should address):**
-1. [Concern] - Mitigation: [Action]
-
-**Verdict:** [GO / CONDITIONAL GO / NO GO]
-**Confidence:** [High / Medium / Low]
-**Rationale:** [Explanation]
+## Where to Go Next
+-> /challenge --deep "[proposal]"
+   _[if verdict needs simulation/ethical analysis]_
+-> /problem-solve "[how to mitigate top risk]"
+   _[if proceeding and need to decide on approach]_
+-> /deepthink "[specific uncertainty]"
+   _[if a key assumption needs exploration]_
 ```
 
 ---
@@ -240,20 +229,27 @@ Structure as 2 thoughts per phase (analysis + output), allowing revision and bra
 When time is limited, run Phase 1 only and extract top 3 risks:
 
 ```markdown
-## Quick Adversarial Analysis: [Proposal Summary]
+# Challenge (Quick): [Proposal Summary]
 
-### Pre-mortem
-> "It's 6 months from now. This failed. Why?"
-- [Failure 1]
-- [Failure 2]
-- [Failure 3]
+## Causal Map
+[cause] -> [intermediate] -> [effect]
+Root causes: [2-3 most critical]
 
-### Top 3 Risks
-1. **[Risk]** - Likelihood: [H/M/L], Impact: [H/M/L]
-2. **[Risk]** - Likelihood: [H/M/L], Impact: [H/M/L]
-3. **[Risk]** - Likelihood: [H/M/L], Impact: [H/M/L]
+## What the Analysis Found
 
-**Quick Verdict:** [Proceed with caution / Needs more analysis / Red flags present]
+| Risk | Likelihood | Impact | Mitigation |
+|------|-----------|--------|------------|
+| [risk] | H/M/L | [impact] | [mitigation] |
+
+## Quick Verdict
+[Proceed with caution / Needs more analysis / Red flags present]
+[1-2 sentences: why]
+
+## Where to Go Next
+-> /challenge "[proposal]" (full analysis)
+   _[why deeper analysis would help]_
+-> /problem-solve "[decision point]"
+   _[if ready to decide]_
 ```
 
 ---

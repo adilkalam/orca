@@ -141,41 +141,29 @@ mcp__cognition-mcp__cognition
 ### Output Format
 
 ```markdown
-## Quick Adversarial Analysis: [Proposal Summary]
+# Challenge (Quick): [Proposal Summary]
 
-**Session:** [sessionId from response]
+## Causal Map
+[cause] -> [intermediate] -> [effect] (P: X%)
+Root causes: [2-3 most critical, one line each]
 
-### Pre-mortem Causal Analysis
-> "This failed. Here's the causal map of why:"
+## What the Analysis Found
 
-**Root Causes:**
-- [cause 1] (strength: H/M/L) - [evidence]
-- [cause 2] (strength: H/M/L) - [evidence]
+| Risk | Likelihood | Impact | Mitigation |
+|------|-----------|--------|------------|
+| [risk from causal analysis] | H/M/L | [what breaks] | [intervention] |
+| [assumption risk] | H/M/L | [if wrong] | [validation step] |
+| [edge case risk] | H/M/L | [blast radius] | [detection] |
 
-**Cascade Effects:**
-- [effect 1] - Likelihood: [H/M/L], Timeframe: [when]
-- [effect 2] - Likelihood: [H/M/L], Timeframe: [when]
+## Quick Verdict
+[Proceed with caution / Needs more analysis / Red flags present]
+[1-2 sentences: why]
 
-**Critical Causal Chain:**
-[cause] -> [intermediate] -> [effect] (probability: X%)
-
-**Quick Mitigations:**
-1. [intervention 1]
-2. [intervention 2]
-
-**Assumptions to Validate First:**
-1. [assumption] (confidence: H/M/L) -> If wrong: [impact]
-2. [assumption] (confidence: H/M/L) -> If wrong: [impact]
-3. [assumption] (confidence: H/M/L) -> If wrong: [impact]
-
-**Top Edge Triggers:**
-- [edge case 1]
-- [edge case 2]
-- [edge case 3]
-
-**Quick Verdict:** [Proceed with caution / Needs more analysis / Red flags present]
-
-*Analysis persisted to session. Run `/challenge --deep` for full analysis.*
+## Where to Go Next
+-> /challenge "[proposal]" (full analysis without --quick)
+   _[why deeper analysis would help]_
+-> /problem-solve "[decision point]"
+   _[if ready to decide on approach]_
 ```
 
 ---
@@ -307,118 +295,36 @@ mcp__cognition-mcp__cognition
 ### Output Format
 
 ```markdown
-## Adversarial Analysis: [Proposal Summary]
+# Challenge: [Proposal Summary]
 
-**Session:** [sessionId] | **Entries:** [totalEntries] | **Duration:** [sessionDuration]ms
+## The Attack
+### Causal Failure Map: [2-3 sentence summary of root causes and cascade effects]
+### Assumption Audit: [2-3 sentence summary of weakest assumptions]
+### Counter-Arguments: [2-3 sentence summary of strongest case against]
 
----
+## What the Analysis Caught
 
-### Phase 1: Causal Failure Analysis
+| Weakness | Source | Severity | Mitigation |
+|----------|--------|----------|------------|
+| [critical weakness 1] | [causal/assumption/edge/failure mode/counter-arg] | Critical/High/Medium | [specific action] |
+| [critical weakness 2] | [source phase] | Critical/High/Medium | [specific action] |
+| [weakness 3] | [source phase] | Critical/High/Medium | [specific action] |
 
-**Phenomenon:** Failure of [proposal]
-
-**Root Causes:**
-| Factor | Type | Strength | Evidence |
-|--------|------|----------|----------|
-| [factor] | [root/contributing/trigger] | [H/M/L] | [evidence] |
-
-**Cascade Effects:**
-| Outcome | Likelihood | Timeframe |
-|---------|------------|-----------|
-| [outcome] | [H/M/L] | [timeframe] |
-
-**Critical Causal Chains:**
-1. [cause] -> [intermediate] -> [effect] (P: X%)
-2. [cause] -> [intermediate] -> [effect] (P: X%)
-
-**Interventions Identified:**
-- [intervention 1]
-- [intervention 2]
-- [intervention 3]
-
----
-
-### Phase 1.5: Assumptions, Edge Cases, and Failure Modes
-
-**Assumptions (confidence + impact):**
-| Assumption | Confidence | If Wrong |
-|------------|------------|----------|
-| [assumption] | [H/M/L] | [impact] |
-
-**Edge Cases (minimum 10):**
-- [edge case 1]
-- [edge case 2]
-- [edge case 3]
-- [edge case 4]
-- [edge case 5]
-- [edge case 6]
-- [edge case 7]
-- [edge case 8]
-- [edge case 9]
-- [edge case 10]
-
-**Failure Mode Catalog:**
-| Component | How It Fails | Blast Radius | Detection |
-|-----------|--------------|--------------|-----------|
-| [component] | [failure mode] | [contained/cascading] | [signal] |
-
----
-
-### Phase 2: Structured Counter-Arguments
-
-**Claim:** This proposal should NOT be implemented because...
-
-**Premises:**
-1. [premise 1]
-2. [premise 2]
-3. [premise 3]
-
-**Evidence:**
-| Point | Source | Strength |
-|-------|--------|----------|
-| [point] | [source] | [strong/moderate/weak] |
-
-**Steel-Man & Rebuttal:**
-> "A proponent would argue: [argument for]"
-> *Rebuttal:* [why that argument is flawed]
-
-**Argumentation Conclusion:**
-[synthesis]
-
----
-
-### Phase 3: Final Decision
-
-**Statement:** Should we proceed with [proposal]?
-
-**Options Evaluated:**
-| Option | Description | Pros | Cons |
-|--------|-------------|------|------|
-| GO | Proceed | [pros] | [cons] |
-| CONDITIONAL GO | Proceed with mitigations | [pros] | [cons] |
-| NO GO | Do not proceed | [pros] | [cons] |
-
-**Decision Criteria:**
-1. [criterion 1]
-2. [criterion 2]
-3. [criterion 3]
-
-**Analysis:**
-[detailed analysis]
-
----
-
-### Verdict
-
-**Decision:** [GO / CONDITIONAL GO / NO GO]
-**Confidence:** [X.X] (0-1 scale)
-**Bias Check:** [identified biases]
+## Verdict
+**[GO / CONDITIONAL GO / NO GO]** (confidence: X.X)
+[2-4 sentences: the synthesis -- what's the real risk picture? What would change the verdict?]
 
 **Required Mitigations (if CONDITIONAL GO):**
 1. [mitigation 1]
 2. [mitigation 2]
 
-**Session Export:** Run `workshop export cognition [sessionId]` to retrieve full analysis
+## Where to Go Next
+-> /challenge --deep "[proposal]"
+   _[if verdict needs simulation/ethical analysis]_
+-> /problem-solve "[how to mitigate top risk]"
+   _[if proceeding and need to decide on approach]_
+-> /deepthink "[specific uncertainty]"
+   _[if a key assumption needs exploration]_
 ```
 
 ---
@@ -487,69 +393,12 @@ mcp__cognition-mcp__cognition
 
 ### Output Format
 
-Same as Default Mode, plus:
+Same as Default Mode output above, with two additional sections inserted before the Verdict:
 
-```markdown
----
+### Failure Simulation: [2-3 sentence summary -- what broke and at which step]
+### Ethical Analysis: [2-3 sentence summary -- stakeholder impacts and recommendation]
 
-### Phase 2.5: Failure Simulation
-
-**Scenario:** [proposal] implementation failure
-
-**Initial Conditions:**
-- [var 1]: [value]
-- [var 2]: [value]
-
-**Simulation Steps:**
-| Step | Action | Outcome |
-|------|--------|---------|
-| 1 | [action] | [outcome] |
-| 2 | [action] | [outcome] |
-| 3 | [action] | [outcome] |
-| 4 | [FAILURE POINT] | [catastrophic outcome] |
-
-**Final State:** [description]
-
-**Insights:**
-- [insight 1]
-- [insight 2]
-
-**Alternative Outcomes:**
-- If [X]: [alternative result]
-- If [Y]: [alternative result]
-
----
-
-### Phase 2.75: Ethical Analysis
-
-**Situation:** Implementation of [proposal]
-
-**Stakeholder Impact:**
-| Group | Interests | Impact |
-|-------|-----------|--------|
-| [group] | [interests] | [impact] |
-
-**Ethical Principles Applied:**
-| Principle | Application | Weight |
-|-----------|-------------|--------|
-| [principle] | [application] | [0-1] |
-
-**Ethical Scoring:**
-| Option | Score | Reasoning |
-|--------|-------|-----------|
-| Proceed as-is | [0-1] | [reasoning] |
-| Proceed with safeguards | [0-1] | [reasoning] |
-| Do not proceed | [0-1] | [reasoning] |
-
-**Ethical Recommendation:** [recommendation]
-**Dissenting View:** [dissent]
-
----
-
-### Revised Verdict (incorporating simulation + ethics)
-
-[Updated verdict if needed]
-```
+And the Verdict section becomes "Revised Verdict" incorporating simulation + ethics findings.
 
 ---
 
@@ -566,6 +415,29 @@ Same as Default Mode, plus:
 ## Persist Analysis (MANDATORY)
 
 After completing the analysis, persist for future reference.
+
+### Step 0: Harvest Checkpoint
+
+```
+mcp__cognition-mcp__cognition
+  operation: "checkpoint"
+  sessionId: "<sessionId>"
+  projectPath: "<absolute project path>"
+  content: {
+    phase: "harvest",
+    summary: "<verdict and key risks>",
+    keyFindings: ["<weakness 1>", "<weakness 2>"],
+    openQuestions: ["<unresolved concern>"],
+    nextSteps: ["<mitigation step>"],
+    followUpQuestions: [
+      {
+        question: "<specific follow-up>",
+        command: "/deepthink",
+        rationale: "<why>"
+      }
+    ]
+  }
+```
 
 ### Step 1: Create Cognition Directory
 

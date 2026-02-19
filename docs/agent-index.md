@@ -111,7 +111,7 @@
 |---------------------------------|---------------------------------------------------------|-------|--------------|
 | nextjs-accessibility-specialist | Accessibility specialist for the Next.js pipeline. F... | 78    | 2026-01-30   |
 | nextjs-architect                | Next.js pipeline architect. Chooses App Router patte... | 236   | 2026-01-30   |
-| nextjs-builder                  | Nextjs implementation specialist with design thinking. Loads frontend-aesthetics + ui-implementation-rules skills. | 417   | 2026-02-16   |
+| nextjs-builder                  | Nextjs implementation specialist with design thinking. Loads frontend-aesthetics + ui-image-rules + ui-typography-spacing + ui-page-standards skills. | 417   | 2026-02-16   |
 | nextjs-css-architecture-gate    | CSS/layout architecture quality gate for the Next.js... | 134   | 2026-01-30   |
 | nextjs-css-specialist           | Semantic CSS architecture specialist for Next.js. Ha... | 334   | 2025-12-26   |
 | nextjs-design-reviewer          | Visual/UX gate for the Next.js pipeline. Uses Puppet... | 476   | 2026-01-30   |

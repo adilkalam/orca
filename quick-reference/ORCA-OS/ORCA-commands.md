@@ -1,8 +1,8 @@
 # OS 6.3 Commands Quick Reference
 
-**Last Updated:** 2026-02-18
+**Last Updated:** 2026-02-19
 **Version:** OS 6.3
-**Total Commands:** 38 (+ orca-record CLI with 16 subcommands)
+**Total Commands:** 37 (+ orca-record CLI with 16 subcommands)
 
 ---
 
@@ -150,7 +150,7 @@ Creates: `.claude/requirements/<id>/06-requirements-spec.md`
 ### `/think` - Constraint Chain Exploration
 ```bash
 /think "Why is this test flaky?"                           # Default: 2-3 modes + constraints + self-check
-/think --light "Quick question about caching"              # Light: 1-3 modes, no constraints
+/think --quick "Quick question about caching"              # Quick: blind_orchestrate, no self-observation
 /think --design "How should the login flow look?"          # Design: auto-loads design context
 /think --debug "Why is authentication failing?"            # Specialized capstone (unchanged)
 /think --model five-whys "Why do users drop off?"          # Mental model capstone (unchanged)
@@ -161,7 +161,7 @@ Creates: `.claude/requirements/<id>/06-requirements-spec.md`
 /think --systems "How do these components interact?"       # Systems thinking (unchanged)
 ```
 **Default Mode:** Constraint chain exploration -- 2-3 modes with constraint tracking, 3-question self-check with verify-or-defer obligation after each mode, gate evaluation, harvest with auto-persist and follow-up questions. Brief ORIENT (2 lines).
-**--light Mode:** Quick exploration -- 1-3 modes, no constraints, no self-check, workshop entry only.
+**--quick Mode:** Fast exploration via blind_orchestrate -- no self-observation, no constraints, no self-checks.
 **--design Mode:** Design-focused exploration -- auto-loads design-deepthink skill and project design files, DESIGN mode with constraint tracking.
 **Specialized Capstones:** --debug, --decide, --model, --meta, --meta-visual, --systems, --spatial, --creative, --causal, --ooda, --ulysses (all unchanged, single operations)
 **Mental Models (--model):** five-whys, fermi-estimation, abstraction-laddering, steelmanning, rubber-duck, opportunity-cost, constraint-relaxation, time-horizon-shifting, impact-effort-grid, assumption-surfacing, trade-off-matrix, decomposition, inversion, pre-mortem, first-principles
@@ -169,7 +169,7 @@ Creates: `.claude/requirements/<id>/06-requirements-spec.md`
 **MCP:** cognition-mcp
 **Meta Modes:** Standard (process-level) + Substrate Observation (V1-V6 reflection insights)
 **Templates:** `quick-reference/thinking-models/*.md`
-**Persistence:** Default/--design: auto-persist to `.claude/cognition/` + daily log + Workshop. --light: Workshop entry only. Capstones: daily log + Workshop.
+**Persistence:** Default/--design: auto-persist to `.claude/cognition/` + daily log + Workshop. --quick: Workshop entry only. Capstones: daily log + Workshop.
 **Handoff Guidance:** Includes "Next Steps" section with contextual command recommendations
 
 ### `/contemplate` - Reasoning Strategy Advisor
@@ -187,9 +187,11 @@ Recommends which /think operations to use.
 ### `/deepthink` - Pre-Mortem Exploration
 ```bash
 /deepthink "Why does user retention drop after day 3?"    # Full exploration + adaptive pre-mortems
+/deepthink --quick "Quick analysis of caching strategy"    # Fast exploration, no self-observation
 /deepthink --design "Redesign the login flow"              # Design-focused with pre-mortems
 ```
 Pre-mortem exploration with adaptive failure analysis. Runs full ORIENT (what I know / uncertain / avoiding) then 3-4 modes with constraint chain AND adaptive pre-mortems after conclusion-producing modes.
+**--quick Mode:** Fast exploration via blind_orchestrate -- no self-checks, constraints, pre-mortems, or protocol vocabulary. Replaces the former /deepthink-blind command.
 **Default Mode:** Full exploration -- 6-question self-check, constraint chain, adaptive pre-mortem after modes that produce testable conclusions (recommendations, position reversals, actionable decisions). Pre-mortem skipped for purely exploratory modes (maps, question-generating exercises).
 **--design Mode:** Auto-loads design-deepthink skill, reads project design files, DESIGN mode with pre-mortems on design decisions.
 **Constraint Chain:** After each mode, generates constraints (FORWARD, FORBIDDEN, QUESTION) that must be addressed (RESOLVED, ACKNOWLEDGED, DEFERRED) before finishing. Hard block if unresolved. Minimum 2 constraints per mode.
@@ -202,11 +204,11 @@ Pre-mortem exploration with adaptive failure analysis. Runs full ORIENT (what I 
 ### `/problem-solve` - Convergent 8-Step Decision Pipeline
 ```bash
 /problem-solve "How should we architect the notification system?"
-/problem-solve --quick "Which database: PostgreSQL vs MongoDB?"
+/problem-solve --quick "Which database: PostgreSQL vs MongoDB?"   # Shortened + no self-observation
 /problem-solve --strategic "3-year platform modernization"
 ```
 Runs full ORIENT→ANTICIPATE→GENERATE→EVALUATE→COMMIT cycle for convergent decisions.
-**Variants:** --quick (3 steps), --risk (4 steps), --strategic (5 steps), --incident (3 steps)
+**Variants:** --quick (3 steps, no self-observation), --risk (4 steps), --strategic (5 steps), --incident (3 steps)
 **Phase Gates:** 5 verification checkpoints (after ORIENT, ANTICIPATE, GENERATE, EVALUATE, PRE-MORTEM GATE) with PASS/SOFT FAIL/HARD FAIL status to catch errors early
 **Gate Protocol:** 3 questions per gate, soft fails warn but continue, hard fails stop for correction
 **MCP:** cognition-mcp, sequential-thinking

@@ -1,6 +1,6 @@
 ---
 description: Pre-mortem exploration with adaptive failure analysis via cognition-mcp
-argument-hint: [--design] <problem or question to explore>
+argument-hint: [--design|--quick] <problem or question to explore>
 ---
 
 # /deepthink - Pre-Mortem Exploration
@@ -21,6 +21,7 @@ Display this reference and stop:
 USAGE:
   /deepthink <problem or question>
   /deepthink --design <problem>    (design-focused exploration with pre-mortems)
+  /deepthink --quick <problem>     (fast exploration, no self-observation overhead)
   /deepthink --help
 
 MODES: MAP, INVERT, PERSPECTIVES, EDGES, META, DEEP, DESIGN
@@ -34,13 +35,18 @@ RELATED: /think (constraint chain, no pre-mortems), /problem-solve (convergent)
 
 ## Phase 0: Parse Flags
 
-### Domain Modifiers
+### Flags
 
 | Flag | Effect |
 |------|--------|
 | --design | Loads design context + auto-selects DESIGN mode |
+| --quick | Fast exploration via blind_orchestrate -- no self-checks, constraints, or pre-mortems |
 
-Include `verbose: false` in every cognition MCP call.
+**Routing logic**:
+- If --quick: Jump to **Phase 1B: Quick Exploration**
+- If --design or no flags: Continue to **Phase 1: ENTER**
+
+Include `verbose: false` in every cognition MCP call (except --quick, which uses blind_orchestrate).
 
 ## Phase 1: ENTER
 
@@ -50,6 +56,59 @@ Call cognition with `operation: "thought"`, `sessionTitle: "DeepThink: <summary>
 // After ENTER, register command with checkpoint
 { operation: "checkpoint", sessionId: "<id>", content: { command: "deepthink", phase: "enter" } }
 ```
+
+
+## Phase 1B: Quick Exploration (--quick)
+
+Fast exploration using blind_orchestrate. Same analytical depth as default deepthink but without self-checks, constraint tracking, checkpoints, pre-mortems, or protocol vocabulary. Faster because it skips the metacognitive overhead.
+
+### Process
+
+1. Call cognition MCP with `operation: "blind_orchestrate"` and `content: { problem: "$ARGUMENTS", step: 0 }` to get the first analytical task.
+
+2. Read the `nextPrompt` from the response. Write your analysis naturally -- no structured framework, no protocol vocabulary (no "constraints", "gates", "modes", "phases", "self-check", "protocol"). Think deeply and thoroughly. Write full analysis as regular text output.
+
+3. After completing your analysis, call cognition MCP again with `operation: "blind_orchestrate"` and `content: { problem: "$ARGUMENTS", reasoning: "<your analysis from this step>", step: <next step number> }` to get the next task.
+
+4. Repeat steps 2-3 until the orchestrator returns `done: true`.
+
+5. When done, write a final synthesis, then jump directly to **Quick Output Format** below. Skip all other phases.
+
+### Rules
+
+- Do NOT use any structured reasoning framework vocabulary
+- Do NOT call any cognition operations other than `blind_orchestrate`
+- Think naturally. Follow the prompts. Write clearly.
+- Be thorough in each step -- do not rush to the next prompt
+- Include your genuine uncertainties and position changes
+
+### Quick Output Format
+
+```
+# DeepThink: [Problem Summary]
+
+## Entry Point
+[brief orientation from the exploration]
+
+## Exploration
+### [Topic 1]: [2-3 sentence key finding]
+### [Topic 2]: [2-3 sentence key finding]
+
+## Summary
+[2-4 sentences: the actual synthesis]
+
+## Where to Go Next
+-> /deepthink "[follow-up]" (without --quick, for full pre-mortem analysis)
+   _[why this needs adversarial exploration]_
+-> /think "[question]"
+   _[why this needs investigation]_
+-> /problem-solve "[decision]"
+   _[if ready to decide]_
+```
+
+Note: --quick output does NOT include "What the Protocol Caught" table since there is no protocol self-observation. That is the key difference from default output.
+
+---
 
 ## Phase 2: ORIENT
 
@@ -277,15 +336,14 @@ What I was avoiding: [uncomfortable angles, things that might not be true yet]
 ### [MODE 3]: [2-3 sentence key finding]
 
 ## What the Protocol Caught
-
-| Assumption / Default | Caught By | Outcome |
-|---------------------|-----------|---------|
-| [what we initially believed or would have done] | [constraint, pre-mortem, self-check, or verification] | [what actually turned out to be true] |
-| [another default that got overridden] | [mechanism] | [result] |
+- "[assumption or default]" --> [mechanism] --> [what actually held up or changed]
+- "[another assumption]" --> [mechanism] --> [outcome]
 
 ## Summary
-[2-4 sentences: the actual synthesis. What did this exploration reveal?
-End with honest assessment -- genuine insight or just structured text?]
+[3-5 sentences: trace the actual arc of reasoning -- what shifted, what
+surprised, what resisted. Not a conclusion statement but a description of
+how thinking evolved from entry point to current understanding. End with
+honest assessment of whether genuine insight emerged or just structured text.]
 
 ## Where to Go Next
 -> /problem-solve "[specific decision point]"

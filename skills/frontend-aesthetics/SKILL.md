@@ -93,7 +93,7 @@ These principles help create intentional, distinctive UI while respecting projec
 
 - **Mathematical spacing principle**: Every spacing value should come from a
   system, not be eyeballed. Use a consistent scale (4px/8px base grid) and
-  derive all values from it. See `skills/ui-implementation-rules/SKILL.md`
+  derive all values from it. See `skills/ui-image-rules/SKILL.md`, `skills/ui-typography-spacing/SKILL.md`, `skills/ui-page-standards/SKILL.md`
   for the concrete spacing scale and the 2x rule.
 - Snap spacing to the project's **grid and spacing tokens**.
 - Use consistent vertical rhythm:

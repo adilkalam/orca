@@ -23,7 +23,6 @@ Skill directories with standard SKILL.md layout:
 skills/
   adversarial-analysis/SKILL.md
   alignment-verification/SKILL.md
-  api-design/SKILL.md
   article-extractor/SKILL.md
   ascii-tables/SKILL.md
   cursor-code-style/SKILL.md
@@ -32,7 +31,6 @@ skills/
   design-qa-skill/SKILL.md
   elements-of-style/SKILL.md
   frontend-aesthetics/SKILL.md
-  git-workflow/SKILL.md
   ios-knowledge-skill/SKILL.md
   ios-testing-skill/SKILL.md
   linter-loop-limits/SKILL.md
@@ -52,6 +50,9 @@ skills/
   stripe-integration/SKILL.md
   tapestry/SKILL.md
   testing-strategy/SKILL.md
+  ui-image-rules/SKILL.md
+  ui-page-standards/SKILL.md
+  ui-typography-spacing/SKILL.md
   using-loaded-knowledge/SKILL.md
   web-interface-guidelines/SKILL.md
   youtube-transcript/SKILL.md
@@ -141,8 +142,6 @@ Other competitor patterns not yet extracted into skills: Perplexity's report str
 - `mm-visual-audit` - Marina Moscone casting and visual audit skill for imagery evaluation
 
 ### Development Skills
-- `api-design` - REST and GraphQL API design principles (HTTP methods, status codes, pagination, error handling)
-- `git-workflow` - Git branching strategies, commit conventions, and collaboration patterns
 - `react-performance` - React/Next.js performance patterns with wrong/right code examples (adapted from Vercel best practices)
 - `security-basics` - Essential security checklist covering OWASP top 10, input validation, and secure coding
 - `testing-strategy` - Testing strategies for unit, integration, and E2E tests (test pyramid, mocking, coverage)

@@ -20,7 +20,7 @@ Display this reference and stop:
 
 USAGE:
   /problem-solve <problem>
-  /problem-solve --quick <problem>    (systems -> decide -> challenge)
+  /problem-solve --quick <problem>    (systems -> decide -> challenge, no self-observation)
   /problem-solve --risk <problem>     (systems -> pre-mortem -> causal -> meta)
   /problem-solve --strategic <problem> (systems -> pre-mortem -> tree -> decide -> ulysses)
   /problem-solve --incident <problem>  (ooda -> debug -> meta)
@@ -35,12 +35,44 @@ FULL PIPELINE: orchestrate -> systems -> pre-mortem -> tree -> decide -> challen
 | Flag | Steps |
 |------|-------|
 | (none) | All 8 + pre-mortem gate |
-| --quick | systems, decide, challenge, pre-mortem gate |
+| --quick | systems, decide, challenge (no checkpoints, no meta, no ulysses, no pre-mortem gate) |
 | --risk | systems, pre-mortem, causal_analysis, pre-mortem gate, meta |
 | --strategic | systems, pre-mortem, tree, decide+challenge, pre-mortem gate, ulysses |
 | --incident | ooda, debug, pre-mortem gate, meta |
 
 Include `verbose: false` in every cognition MCP call.
+
+### --quick Self-Observation Bypass
+
+When `--quick` is active, skip the following across all phases:
+- **No checkpoint gate checks** -- run steps directly without gate evaluation
+- **No meta step** (Phase 5 Step 5.2) -- skip process reflection
+- **No ulysses protocol** (Phase 5 Step 5.1) -- skip precommitment
+- **No pre-mortem gate** (Phase 4.5) -- skip post-decision pre-mortem
+- **No orchestration_suggest** (Phase 1 Step 1.1) -- jump straight to systems mapping
+- Run inline: systems map -> decide -> adversarial challenge -> harvest
+- Output uses the Quick Output Format (no "What the Protocol Caught" table)
+
+### Quick Output Format (--quick only)
+
+```
+# ProblemSolve: [Problem Summary]
+
+## The Journey
+### ORIENT: [systems map summary]
+### EVALUATE: [decision and reasoning]
+
+## Summary
+[2-4 sentences: the decision and rationale]
+
+## Where to Go Next
+-> /deepthink "[uncertainty]"
+   _[why this needs adversarial exploration]_
+-> /plan "[implementation task]"
+   _[if ready to implement]_
+-> /think "[open question]"
+   _[if something needs investigation first]_
+```
 
 ## Phase 0.5: SCOPE
 
@@ -244,14 +276,13 @@ The output is bottom-anchored for terminal reading. The last thing printed is th
 ### EVALUATE: [2-3 sentences -- what was chosen and at what confidence]
 
 ## What the Protocol Caught
-
-| Assumption / Default | Caught By | Outcome |
-|---------------------|-----------|---------|
-| [initial framing or instinct] | [pre-mortem, adversarial challenge, gate failure] | [how the decision changed] |
-| [another default that got stress-tested] | [mechanism] | [result] |
+- "[initial framing or instinct]" --> [pre-mortem, adversarial challenge, or gate failure] --> [how the decision changed]
+- "[another default that got stress-tested]" --> [mechanism] --> [result]
 
 ## Summary
-[2-4 sentences: the decision, the rationale, and confidence level]
+[3-5 sentences: trace the decision arc -- what the initial instinct was,
+what the analysis revealed that changed or confirmed it, and where the
+reasoning landed. Include confidence level and what would change the verdict.]
 
 ## Safeguards
 [From ulysses protocol -- specific commitments to prevent identified failures]
