@@ -22,6 +22,7 @@ import { CognitionInputSchema } from './schema.js';
 import type { CognitionRequest } from './types.js';
 import { getSessionManager } from './session/manager.js';
 import { routeOperation } from './handlers/index.js';
+import { buildErrorResponse } from './handlers/shared.js';
 import { ensureDirectories } from './session/persistence.js';
 
 /**
@@ -192,22 +193,17 @@ class CognitionServer {
     // Validate input structure
     const validation = CognitionInputSchema.safeParse(args);
     if (!validation.success) {
-      return {
-        content: [{
-          type: 'text',
-          text: JSON.stringify({
-            status: 'error',
-            error: 'Invalid input: ' + validation.error.message,
-            sessionContext: {
-              sessionId: '',
-              entryCount: 0,
-              totalEntries: 0,
-              sessionDuration: 0,
-              continuation: null,
-            },
-          }),
-        }],
-      };
+      return buildErrorResponse({
+        status: 'error',
+        error: 'Invalid input: ' + validation.error.message,
+        sessionContext: {
+          sessionId: '',
+          entryCount: 0,
+          totalEntries: 0,
+          sessionDuration: 0,
+          continuation: null,
+        },
+      });
     }
 
     const request = validation.data as CognitionRequest;

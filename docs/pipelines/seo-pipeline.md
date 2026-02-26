@@ -1,6 +1,6 @@
 # SEO Domain Pipeline
 
-**Status:** OS 6.3 Pipeline (SEOPipeline)
+**Status:** OS 6.4 Pipeline (SEOPipeline)
 **Last Updated:** 2026-02-13
 
 ## Overview
@@ -11,24 +11,60 @@ The SEO pipeline turns a target keyword + project context into:
 - A structured QA report with explicit gates.
 
 It combines:
-- OS 6.3 primitives (ProjectContextServer, `phase_state.json`, code-index.db, Workshop)
+- OS 6.4 primitives (ProjectContextServer, `phase_state.json`, code-index.db, Workshop)
 - Memory-first context (Workshop + code-index.db before ProjectContext)
+- GA4 (analytics-mcp) and GSC (mcp-gsc) integration for data-driven optimization
 - SEO agents:
-  - `seo-research-specialist` (lead)
+  - `seo-research-specialist` (lead) -- with GSC pre-research check
   - `seo-brief-strategist`
   - `seo-draft-writer`
   - `seo-quality-guardian`
-  - `seo-optimizer` (content optimization against SERP)
+  - `seo-optimizer` (content optimization against SERP + GA4/GSC audit mode)
 
-**Entry Points:**
-- `/seo` command - preferred entry point
-- `/orca` with SEO-detected task - routes to seo-research-specialist
+
 
 The detailed configuration lives in `docs/reference/phase-configs/seo-phase-config.yaml`.
 
 **Note:** The SEO pipeline is specialist-based (no grand-architect). The `/seo` command or `/orca` delegates to `seo-research-specialist` to lead the workflow.
 
 ---
+## Entry Points
+
+- `/seo` command - preferred entry point
+- `/seo --optimize` - content optimization mode
+- `/seo --audit` - quick effectiveness report (GA4/GSC data)
+- `/seo --audit-full` - comprehensive effectiveness analysis
+- `/orca` with SEO-detected task - routes to seo-research-specialist
+
+---
+## GA4/GSC Integration
+
+The SEO pipeline integrates with Google Analytics 4 (analytics-mcp) and Google Search Console (mcp-gsc) for data-driven SEO decisions.
+
+### MCP Requirements
+
+| MCP | npm Package | Type | Purpose |
+|-----|-------------|------|---------|
+| analytics-mcp | `analytics-mcp` | pipx (stdio) | GA4 organic traffic, engagement, conversions |
+| mcp-gsc | `mcp-server-gsc` | npx (stdio) | Search queries, positions, CTR, impressions (~500 tokens for comprehensive audit) |
+
+Both authenticate via service account key file at `GOOGLE_APPLICATION_CREDENTIALS`. See `quick-reference/ORCA-OS/ORCA-mcps.md` for full auth setup.
+
+### Integration Points
+
+1. **Audit Mode (seo-optimizer):** `/seo --audit` and `/seo --audit-full` pull GA4 organic traffic (`run_report`) and GSC query data (`enhanced_search_analytics` with built-in quick wins detection) to generate effectiveness reports saved to `docs/SEO/audit-YYYY-MM-DD.md`.
+
+2. **Auto-Pull During Optimization (seo-optimizer):** When `--optimize url` is used, the optimizer automatically pulls GA4 engagement data (`run_report`) and GSC query positions (`enhanced_search_analytics`) for the target URL to enrich optimization recommendations.
+
+3. **Pre-Research GSC Check (seo-research-specialist):** Before keyword research begins, checks GSC (`enhanced_search_analytics`) for existing rankings. If we already rank for the keyword, shifts strategy from "create new content" to "optimize existing content."
+
+### Graceful Degradation
+
+All GA4/GSC integrations are optional. If MCPs are not configured:
+- `--audit` displays setup instructions instead of failing
+- `--optimize` proceeds with content-only analysis (current behavior)
+- Research specialist skips GSC check silently
+
 ## Scope & Domain
 
 Use this pipeline when:

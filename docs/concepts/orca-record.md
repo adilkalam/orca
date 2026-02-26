@@ -1,15 +1,17 @@
 # ORCA Recording Layer Architecture
 
-**Version:** orca-record v0.3.0
-**Last Updated:** 2026-02-17
+**Version:** orca-record v0.4.0
+**Last Updated:** 2026-02-26
 
 ---
 
 ## Introduction
 
-The ORCA recording layer provides session-level undo capability for Claude Code sessions. It automatically captures checkpoints on every user prompt, enabling instant rollback to any point in the session. Unlike traditional version control, recording captures the *working state* - uncommitted changes, conversation context, and cognitive reasoning chains.
+The ORCA recording layer is a lean event tracker for Claude Code sessions. It automatically captures session events, tool calls, and file changes to a per-project SQLite database (`.orca/recording.db`), enabling session continuity, cognitive fusion through cognition-mcp, and Workshop memory persistence.
 
-**Design Philosophy:** Recording is invisible infrastructure. Users work normally; checkpoints happen automatically. When something goes wrong, they can rewind without losing context.
+**Design Philosophy:** Recording is invisible infrastructure. Users work normally; events are captured automatically via Claude Code hooks. The recording layer powers downstream consumers (Workshop notes, cognition-mcp recording queries, session context injection) without user intervention.
+
+**v0.4.0 Note:** The git shadow branch layer (checkpoints, rewind, condensation) was removed in v0.4.0. The event tracking layer -- hooks, SQLite storage, state machine, and redaction -- is the valuable core that powers all downstream consumers.
 
 ---
 
@@ -17,25 +19,25 @@ The ORCA recording layer provides session-level undo capability for Claude Code 
 
 ```
 Claude Code Session
-        │
-        ▼
-┌─────────────────────────────────────────────────────────────────────┐
-│                         Claude Code Hooks                          │
-│  UserPromptSubmit │ Stop │ PreToolUse[Task] │ PostToolUse[Task]   │
-└─────────────────────────────────────────────────────────────────────┘
-        │
-        ▼
-┌─────────────────────────────────────────────────────────────────────┐
-│                         orca-record CLI                            │
-│  prompt-submit │ stop │ pre-task │ post-task │ status │ rewind    │
-└─────────────────────────────────────────────────────────────────────┘
-        │
-        ├──────────────────────┬──────────────────────┐
-        ▼                      ▼                      ▼
-┌───────────────┐      ┌───────────────┐      ┌───────────────┐
-│ State Machine │      │   SQLite DB   │      │ Git Plumbing  │
-│ .git/orca-*   │      │ .orca/*.db    │      │ Shadow Branch │
-└───────────────┘      └───────────────┘      └───────────────┘
+        |
+        v
++---------------------------------------------------------------------+
+|                         Claude Code Hooks                            |
+|  UserPromptSubmit | Stop | PreToolUse[Task] | PostToolUse[Task/Todo] |
++---------------------------------------------------------------------+
+        |
+        v
++---------------------------------------------------------------------+
+|                         orca-record CLI (v0.4.0)                     |
+|  prompt-submit | stop | pre-task | post-task | post-todo | status   |
++---------------------------------------------------------------------+
+        |
+        +------------------------+
+        v                        v
++-------------------+    +-------------------+
+|   State Machine   |    |    SQLite DB      |
+| .git/orca-sessions|    | .orca/recording.db|
++-------------------+    +-------------------+
 ```
 
 ---
@@ -52,7 +54,7 @@ The session lifecycle follows a finite state machine persisted to `.git/orca-ses
 |-------|-------------|
 | `IDLE` | No active session |
 | `ACTIVE` | Recording in progress |
-| `ACTIVE_COMMITTED` | User committed, awaiting condensation |
+| `ACTIVE_COMMITTED` | Legacy state, handled gracefully for backward compat |
 | `ENDED` | Session terminated |
 
 **Transitions:**
@@ -60,117 +62,31 @@ The session lifecycle follows a finite state machine persisted to `.git/orca-ses
 ```typescript
 const TRANSITIONS = {
   IDLE: {
-    SessionStart: { next: ACTIVE, actions: [] },
-    TurnStart: { next: ACTIVE, actions: [] },
+    SessionStart: { next: ACTIVE },
+    TurnStart: { next: ACTIVE },
   },
   ACTIVE: {
-    TurnEnd: { next: ACTIVE, actions: [] },
-    GitCommit: { next: ACTIVE_COMMITTED, actions: [CondenseIfFilesTouched] },
-    SessionStop: { next: ENDED, actions: [] },
+    TurnEnd: { next: ACTIVE },
+    SessionStop: { next: ENDED },
   },
   ACTIVE_COMMITTED: {
-    TurnEnd: { next: ENDED, actions: [Condense] },
-    TurnStart: { next: ACTIVE, actions: [CondenseIfFilesTouched, MigrateShadowBranch] },
-    SessionStop: { next: ENDED, actions: [Condense] },
+    // Backward compat: if an existing session is in this state
+    TurnEnd: { next: ACTIVE },
+    TurnStart: { next: ACTIVE },
+    SessionStop: { next: ENDED },
   },
   ENDED: {
-    SessionStart: { next: ACTIVE, actions: [] },
-    TurnStart: { next: ACTIVE, actions: [WarnStaleSession] },
+    SessionStart: { next: ACTIVE },
+    TurnStart: { next: ACTIVE },
   },
 };
 ```
 
-**Session State File:**
+### 2. SQLite Storage
 
-```typescript
-interface SessionStateFile {
-  session_id: string;           // sess-<hex-timestamp><rand>
-  state: SessionState;
-  started_at: string;           // ISO timestamp
-  base_commit: string | null;   // Git HEAD at session start
-  git_head: string | null;      // Current HEAD
-  step_count: number;           // Prompts processed
-  files_touched: string[];      // Files modified this session
-  last_snapshot: GitSnapshot;   // For diffing
-  pre_task_snapshots: Record<string, GitSnapshot>;  // Task tracking
-  shadow_branch: string | null; // orca/<hash>-<hash>
-}
-```
+The SQLite database (`.orca/recording.db`) provides fast queries and persistent storage.
 
-### 2. Shadow Branches
-
-Shadow branches are ephemeral git branches that store full working tree snapshots for each checkpoint. They exist alongside the user's working tree but don't interfere with normal git operations.
-
-**Naming Convention:**
-```
-orca/<HEAD[:7]>-<worktree-hash[:6]>
-```
-
-**Example:** `orca/abc1234-def567`
-
-**Creation:**
-
-```typescript
-function createShadowBranch(cwd: string, sessionId: string): string | null {
-  const head = getHead(cwd);
-  const branchName = deriveShadowBranchName(cwd);
-
-  // Create initial commit with current tree, HEAD as parent
-  const treeHash = writeTree(cwd);
-  const commitHash = commitTree(cwd, treeHash, {
-    parentHash: head,
-    message: `orca: session ${sessionId} started`,
-    trailers: {
-      "ORCA-Session": sessionId,
-      "ORCA-Type": "session-start",
-    },
-  });
-
-  updateRef(cwd, branchName, commitHash);
-  return branchName;
-}
-```
-
-**Checkpoint Commits:**
-
-Each checkpoint is a commit on the shadow branch containing:
-- Full working tree snapshot (all files)
-- Commit message trailers with metadata
-- No impact on working directory or HEAD
-
-```
-Commit message format:
-  orca: turn checkpoint: <prompt-summary>
-
-  ORCA-Session: sess-abc123
-  ORCA-Checkpoint: cp-789xyz
-  ORCA-Type: session
-  ORCA-Files: +2 ~5 -0
-```
-
-### 3. Git Plumbing Operations
-
-The recording layer uses low-level git plumbing commands to avoid affecting the working tree:
-
-| Operation | Git Command | Purpose |
-|-----------|-------------|---------|
-| `writeTree` | `git write-tree` | Capture working tree as tree object |
-| `commitTree` | `git commit-tree` | Create commit from tree |
-| `updateRef` | `git update-ref` | Move branch pointer |
-| `readTree` | `git read-tree` | Load tree into index |
-| `checkoutIndex` | `git checkout-index` | Write index to working dir |
-
-**Why Plumbing?**
-- No UI output
-- Atomic operations
-- No working directory side effects (until restore)
-- Precise control over commit structure
-
-### 4. SQLite Storage
-
-The SQLite database (`.orca/recording.db`) provides fast queries and persistent storage for:
-
-**Tables:**
+**Active Tables:**
 
 ```sql
 -- Session metadata
@@ -180,18 +96,18 @@ sessions (
   ended_at TEXT,
   state TEXT,
   base_commit TEXT,
-  shadow_branch TEXT,
+  shadow_branch TEXT,      -- Legacy column, no longer written to
   step_count INTEGER,
   files_touched_json TEXT
 );
 
--- Checkpoints
+-- Checkpoints (event-based, no longer git-backed)
 checkpoints (
   id TEXT PRIMARY KEY,
   session_id TEXT REFERENCES sessions(id),
   created_at TEXT,
   type TEXT,  -- 'session' | 'task'
-  shadow_commit TEXT,
+  shadow_commit TEXT,      -- Legacy column, no longer written to
   prompt_summary TEXT,
   files_modified_json TEXT,
   files_new_json TEXT,
@@ -210,160 +126,46 @@ events (
   git_head TEXT,
   metadata_json TEXT
 );
-
--- Full transcripts (separate for size)
-transcripts (
-  session_id TEXT PRIMARY KEY,
-  transcript_path TEXT,
-  transcript_data TEXT,
-  redacted BOOLEAN
-);
-
--- Permanent storage after condensation
-condensed (
-  checkpoint_id TEXT PRIMARY KEY,
-  session_id TEXT,
-  commit_hash TEXT,  -- User's commit
-  orphan_commit TEXT,
-  condensed_at TEXT,
-  metadata_json TEXT
-);
 ```
 
-### 5. Hook Handlers
+**Legacy Tables (schema preserved, no longer written to):**
 
-Each Claude Code hook maps to a handler:
+```sql
+-- Was used by transcript parser (src/transcript/ deleted in v0.4.0)
+transcripts (session_id, transcript_path, transcript_data, redacted);
 
-**UserPromptSubmit:**
+-- Was used by git condensation layer (src/git/ deleted in v0.4.0)
+condensed (checkpoint_id, session_id, commit_hash, orphan_commit, condensed_at, metadata_json);
+```
+
+### 3. Hook Handlers
+
+Each Claude Code hook maps to a handler. All handlers exit 0 and swallow errors.
+
+**UserPromptSubmit (`prompt-submit`):**
 1. Initialize/continue session
 2. Snapshot git status
 3. Transition state machine (IDLE -> ACTIVE or TurnStart)
-4. Create shadow branch (if new session)
-5. Record event to SQLite
+4. Record event to SQLite
 
-**Stop:**
-1. Parse transcript file
-2. Create final checkpoint
-3. Store transcript (redacted)
-4. Transition to ENDED
-5. Trigger condensation if needed
+**Stop (`stop`):**
+1. Record final event
+2. Update session metadata (step count, files touched)
+3. Transition to ENDED
 
-**PreToolUse[Task]:**
+**PreToolUse[Task] (`pre-task`):**
 1. Snapshot current git state
 2. Store pre-task snapshot keyed by tool_use_id
 
-**PostToolUse[Task]:**
+**PostToolUse[Task] (`post-task`):**
 1. Retrieve pre-task snapshot
 2. Diff files changed during task
-3. Create task checkpoint
-4. Record subagent completion
+3. Record subagent completion event
 
----
+**PostToolUse[TodoWrite] (`post-todo`):**
+1. Record todo update event
 
-## Checkpoint Creation Flow
-
-```
-User submits prompt
-        │
-        ▼
-┌─────────────────────────────────────────────────────────────────────┐
-│                    handlePromptSubmit()                            │
-│  1. initDb(projectRoot)                                            │
-│  2. getGitHead(), getGitStatus() -> snapshot                       │
-│  3. StateMachine.findActiveSession() or createSession()            │
-│  4. StateMachine.transition(TurnStart)                             │
-│  5. createShadowBranch() (if new session)                          │
-│  6. insertEvent()                                                   │
-└─────────────────────────────────────────────────────────────────────┘
-        │
-        ▼
-Claude processes prompt, makes changes
-        │
-        ▼
-┌─────────────────────────────────────────────────────────────────────┐
-│                        handleStop()                                │
-│  1. Get last snapshot from state machine                           │
-│  2. Diff: current files vs snapshot                                │
-│  3. createCheckpointCommit(filesNew, filesModified, filesDeleted)  │
-│  4. Parse & store transcript (redacted)                            │
-│  5. insertCheckpoint() to SQLite                                   │
-│  6. StateMachine.transition(TurnEnd)                               │
-└─────────────────────────────────────────────────────────────────────┘
-```
-
----
-
-## Restore (Rewind) Process
-
-```typescript
-function restoreCheckpoint(cwd: string, checkpointId: string): RestoreResult {
-  // 1. Find checkpoint commit on shadow branch
-  const commitHash = findCheckpointCommit(cwd, checkpointId);
-
-  // 2. Get current files (for deletion tracking)
-  const filesBefore = getWorkingTreeFiles(cwd);
-
-  // 3. Get files in checkpoint
-  const filesInCheckpoint = new Set(listTree(cwd, commitHash));
-
-  // 4. Read checkpoint tree into index
-  readTree(cwd, commitHash);
-
-  // 5. Write index to working directory
-  checkoutIndex(cwd);
-
-  // 6. Delete files not in checkpoint (except .orca/, .git/)
-  for (const file of filesBefore) {
-    if (!filesInCheckpoint.has(file)) {
-      unlinkSync(join(cwd, file));
-    }
-  }
-
-  return { filesCreated, filesModified, filesDeleted };
-}
-```
-
-**Logs-only mode:** Restore transcript without file changes:
-```bash
-orca-record rewind <id> --logs-only
-```
-
-This restores the conversation transcript to `~/.claude/projects/.../<session>.jsonl`, enabling `claude --continue <session>` without modifying code.
-
----
-
-## Condensation
-
-When the user commits their changes, the recording layer condenses checkpoints from the ephemeral shadow branch to permanent storage.
-
-**Process:**
-
-1. **Trigger:** `GitCommit` event transitions to `ACTIVE_COMMITTED`
-2. **Sharding:** Create checkpoint storage on orphan branch
-3. **Linking:** Add trailers to user's commit linking to checkpoint
-4. **Cleanup:** Delete ephemeral shadow branch
-5. **Database:** Record condensation in `condensed` table
-
-**Orphan Branch Structure:**
-```
-refs/heads/orca-storage
-  └── <id[:2]>/<id[2:]>/
-        ├── metadata.json
-        ├── transcript.jsonl
-        ├── reasoning.json (from cognition-mcp)
-        ├── quality.json
-        └── manifest.json
-```
-
-**Commit Trailers (on user's commit):**
-```
-ORCA-Checkpoint: cp-abc123
-ORCA-Session: sess-xyz789
-```
-
----
-
-## Redaction
+### 4. Redaction
 
 All hook inputs are redacted before SQLite storage to prevent secret leakage:
 
@@ -374,12 +176,23 @@ All hook inputs are redacted before SQLite storage to prevent secret leakage:
 - High-entropy strings (potential secrets)
 - Environment variable patterns
 
-**Entropy Detection:**
-```typescript
-function isHighEntropy(str: string): boolean {
-  // Shannon entropy calculation
-  // Threshold: 4.5 bits/char for strings > 16 chars
-}
+---
+
+## CLI Commands
+
+```
+orca-record v0.4.0
+
+Hook Commands:
+  prompt-submit          UserPromptSubmit hook handler
+  stop                   Stop hook handler
+  pre-task               PreToolUse[Task] handler
+  post-task              PostToolUse[Task] handler
+  post-todo              PostToolUse[TodoWrite] handler
+
+User Commands:
+  status                 Show recording session status
+  version                Print version
 ```
 
 ---
@@ -388,10 +201,7 @@ function isHighEntropy(str: string): boolean {
 
 ### Claude Code Hooks
 
-Hooks must:
-- Exit 0 always (never block Claude Code)
-- Handle stdin JSON gracefully
-- Swallow all errors
+Hooks must exit 0 always, handle stdin JSON gracefully, and swallow all errors.
 
 ```json
 // ~/.claude/settings.json
@@ -410,25 +220,25 @@ Hooks must:
 
 ### cognition-mcp Recording Extension
 
-The recording layer exposes operations through cognition-mcp for cognitive fusion queries:
+cognition-mcp reads from recording.db (READ-ONLY) for cognitive fusion queries:
 
-```typescript
-// Example: Compare checkpoints with reasoning context
-{
-  operation: "recording_compare",
-  content: {
-    checkpointA: "cp-123",
-    checkpointB: "cp-456",
-    includeReasoning: true
-  }
-}
-```
+| Operation | What It Does |
+|-----------|-------------|
+| `recording_status` | Current session state |
+| `recording_query` | Find sessions by files touched, state, or time range |
+| `recording_explain` | Narrative summary of a session |
+| `recording_compare` | Diff between two checkpoints |
+| `recording_checkpoint` | Create a manual checkpoint entry |
+| `recording_quality` | Session quality metrics |
+| `recording_rewind` | Query rewind data (code restore no longer available) |
 
-### Git Hooks
+### Workshop Memory
 
-Auto-installed on first prompt:
-- `prepare-commit-msg`: Add ORCA trailers
-- `post-commit`: Trigger condensation
+The session-end hook extracts learnings from sessions and persists them as Workshop notes. This is the primary downstream consumer of recording data.
+
+### Recording Context Injection
+
+Domain commands (`/ios`, `/nextjs`, `/expo`, etc.) query recording.db for prior session context before delegating to agents, bridging sessions automatically.
 
 ---
 
@@ -445,36 +255,27 @@ main().catch(() => {
 **Graceful Degradation:**
 - No git repo? Exit silently.
 - SQLite error? Log and continue.
-- Shadow branch missing? Skip checkpoint.
 - Hook input malformed? Use empty object.
 
 ---
 
-## Performance Considerations
+## What Was Removed in v0.4.0
 
-- `git write-tree`: ~10ms for typical repo
-- `git commit-tree`: ~5ms
-- SQLite insert: ~1ms
-- Total checkpoint: ~20ms overhead
+The following components were removed to simplify the architecture:
 
-**Optimizations:**
-- Incremental tree writes (Phase 4 planned)
-- Background condensation
-- Deferred transcript parsing
+| Removed Component | Files Deleted | Why |
+|-------------------|---------------|-----|
+| Git shadow branches | `src/git/shadow-branch.ts`, `src/git/plumbing.ts` | Complex, never used effectively |
+| Condensation | `src/git/condensation.ts`, `src/git/linking.ts` | Dependent on shadow branches |
+| Git hooks | `src/git/hooks.ts` | prepare-commit-msg/post-commit for condensation |
+| Lockfile management | `src/git/lockfile.ts` | For shadow branch operations |
+| Code rewind | `src/git/rewind.ts` | Restored code from shadow branches |
+| Transcript parser | `src/transcript/parser.ts`, `src/transcript/restore.ts` | Parsed JSONL transcripts |
+| Flush-wait | `src/transcript/flush-wait.ts` | Waited for transcript writes |
+| /checkpoints command | `commands/checkpoints.md` | Listed git-backed checkpoints |
+| /restore command | `commands/restore.md` | Rewound to git checkpoint |
 
----
-
-## Future Phases
-
-**Phase 4: Quality + Memory**
-- Checkpoint quality scoring
-- Memory reference tracking
-- Cognitive chain snapshots
-
-**Phase 5: Distributed Sessions**
-- Cross-machine session transfer
-- Remote checkpoint storage
-- Team collaboration
+The event tracking layer (hooks + SQLite + state machine + redaction) was the valuable core that powers Workshop notes, cognition-mcp, and session context. The git layer added complexity without proportional value.
 
 ---
 
@@ -484,20 +285,18 @@ main().catch(() => {
 |-----------|----------|
 | Binary | `~/.claude/bin/orca-record` |
 | Source | `ORCA-OS/mcp/orca-record/` |
-| Database | `.orca/recording.db` (per-project) |
+| Database | `.orca/recording.db` (per-project, gitignored) |
 | State files | `.git/orca-sessions/*.json` |
-| Shadow branches | `refs/heads/orca/*` |
-| Orphan storage | `refs/heads/orca-storage` |
 
 ---
 
 ## Related Documentation
 
 - Quick reference: `quick-reference/ORCA-OS/ORCA-recording.md`
-- Slash commands: `commands/checkpoints.md`, `commands/restore.md`, `commands/continue.md`, `commands/orca-status.md`
+- Commands: `commands/orca-status.md`, `commands/continue.md`
 - cognition-mcp integration: `docs/concepts/cognition-mcp.md`
 - Memory systems: `docs/concepts/memory-systems.md`
 
 ---
 
-_This document describes the orca-record v0.3.0 architecture as of OS 6.3._
+_This document describes the orca-record v0.4.0 architecture as of OS 6.4._

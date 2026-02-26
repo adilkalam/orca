@@ -1,7 +1,7 @@
 ---
 name: seo-optimizer
 description: "Analyzes content against SERP competitors using NLP, generates optimization reports and consumer-focused schema markup"
-tools: Read, Write, Bash, AskUserQuestion, mcp__crawl4ai__md, mcp__ahrefs__keywords_explorer_overview, mcp__ahrefs__keywords_explorer_matching_terms, mcp__ahrefs__serp_overview_serp_overview, mcp__ahrefs__site_explorer_organic_keywords, mcp__ahrefs__batch_analysis_batch_analysis
+tools: Read, Write, Bash, AskUserQuestion, mcp__crawl4ai__md, mcp__ahrefs__keywords_explorer_overview, mcp__ahrefs__keywords_explorer_matching_terms, mcp__ahrefs__serp_overview_serp_overview, mcp__ahrefs__site_explorer_organic_keywords, mcp__ahrefs__batch_analysis_batch_analysis, mcp__analytics-mcp__run_report, mcp__analytics-mcp__run_realtime_report, mcp__analytics-mcp__get_account_summaries, mcp__analytics-mcp__get_property_details, mcp__analytics-mcp__get_custom_dimensions_and_metrics, mcp__analytics-mcp__list_google_ads_links, mcp__mcp-gsc__enhanced_search_analytics, mcp__mcp-gsc__list_sitemaps, mcp__mcp-gsc__get_sitemap, mcp__mcp-gsc__index_inspect
 
 # OS 6.3 Constraint Framework
 required_context:
@@ -98,6 +98,236 @@ When `--keyword` is not provided, automatically discovers the best keyword for t
 2. Expands via matching-terms (Ahrefs MCP)
 3. Scores by volume, difficulty, and relevance
 4. Presents recommendation for user confirmation
+
+---
+
+
+## Audit Mode (--audit / --audit-full)
+
+When invoked with audit mode, skip all optimization phases and run the effectiveness audit instead.
+
+### Detect Audit Mode
+```typescript
+if (inputs.auditMode) {
+  // auditMode is 'quick' (--audit) or 'full' (--audit-full)
+  // Skip to audit workflow below
+}
+```
+
+### Step 1: Verify MCP Availability
+
+```typescript
+// Check if GA4 and GSC MCPs are available
+let ga4Available = false;
+let gscAvailable = false;
+
+try {
+  const accounts = await mcp__analytics-mcp__get_account_summaries({});
+  ga4Available = true;
+} catch (error) {
+  console.log('GA4 MCP not available: ' + error.message);
+}
+
+try {
+  gscAvailable = true;
+} catch (error) {
+  console.log('GSC MCP not available: ' + error.message);
+}
+
+if (!ga4Available && !gscAvailable) {
+  // Display setup instructions instead of failing
+  console.log(`
+## GA4/GSC MCPs Not Configured
+
+To use --audit, configure analytics-mcp and mcp-gsc in your project .mcp.json:
+
+### Prerequisites
+1. GCP project with Analytics Data API + Analytics Admin API + Search Console API enabled
+2. Service account with JSON key file (see ~/.claude/quick-reference/ORCA-OS/ORCA-mcps.md for setup)
+3. Service account added as Editor in GA4 and Full user in Search Console
+
+### Add to .mcp.json
+See ~/.claude/quick-reference/ORCA-OS/ORCA-mcps.md for configuration examples.
+`);
+  return;
+}
+```
+
+### Step 2: Display Property Verification
+
+```typescript
+if (ga4Available) {
+  const accounts = await mcp__analytics-mcp__get_account_summaries({});
+  console.log('GA4 Property: ' + accounts.propertySummaries[0].displayName);
+  console.log('Confirm this is the correct data source before proceeding.');
+}
+```
+
+### Step 3: Pull GA4 Data
+
+```typescript
+if (ga4Available) {
+  const organicTraffic = await mcp__analytics-mcp__run_report({
+    dateRanges: [
+      { startDate: '28daysAgo', endDate: 'today' },
+      { startDate: '56daysAgo', endDate: '29daysAgo' }
+    ],
+    dimensions: [{ name: 'landingPage' }],
+    metrics: [
+      { name: 'sessions' },
+      { name: 'totalUsers' },
+      { name: 'newUsers' },
+      { name: 'engagementRate' },
+      { name: 'averageSessionDuration' },
+      { name: 'conversions' }
+    ],
+    dimensionFilter: {
+      filter: {
+        fieldName: 'sessionDefaultChannelGroup',
+        stringFilter: { matchType: 'EXACT', value: 'Organic Search' }
+      }
+    },
+    orderBys: [{ metric: { metricName: 'sessions' }, desc: true }],
+    limit: inputs.auditMode === 'full' ? 1000 : 10
+  });
+}
+```
+
+### Step 4: Pull GSC Data
+
+```typescript
+if (gscAvailable) {
+  const gscQueries = await mcp__mcp-gsc__enhanced_search_analytics({
+    siteUrl: 'sc-domain:' + projectDomain,  // e.g. 'sc-domain:peptidefox.com'
+    startDate: startDate,   // YYYY-MM-DD format
+    endDate: endDate,       // YYYY-MM-DD format
+    dimensions: 'query',
+    rowLimit: inputs.auditMode === 'full' ? 1000 : 10,
+    detectQuickWins: true
+  });
+
+  // Page-level data for cannibalization check (full mode only)
+  if (inputs.auditMode === 'full') {
+    const gscPages = await mcp__mcp-gsc__enhanced_search_analytics({
+      siteUrl: 'sc-domain:' + projectDomain,
+      startDate: startDate,
+      endDate: endDate,
+      dimensions: 'query,page',
+      rowLimit: 5000
+    });
+  }
+}
+```
+
+### Step 5: Generate Report
+
+Save report to `docs/SEO/audit-YYYY-MM-DD.md` in the project directory.
+
+**Quick mode (--audit) report structure:**
+1. Property verification (GA4 property name)
+2. Organic traffic summary (total sessions, users, new users from organic search, 28d)
+3. Top 10 landing pages by organic sessions (with engagement rate, avg session duration, conversions)
+4. GSC query performance (top 10 queries by impressions, with CTR and avg position)
+5. Pages declining (organic sessions dropped >20% vs prior 28d period)
+6. Quick wins (high impressions, low CTR: position 4-20, CTR < 3%)
+7. Recommended actions (3-5 specific, prioritized)
+
+**Full mode (--audit-full) adds:**
+- All pages with organic performance (not just top 10)
+- Weekly trend comparison (last 4 weeks side by side per landing page)
+- Full GSC query map (all queries with impressions > 10)
+- Content gap analysis (high-volume queries where position > 10)
+- Cannibalization check (multiple pages ranking for same query)
+- Engagement quality analysis (high traffic, low engagement rate)
+- New vs returning user breakdown per landing page
+- Full prioritized action list with estimated impact
+
+---
+
+## Auto-Pull: GA4/GSC Data During Optimization
+
+When running in optimize mode (--optimize url or --optimize draft) and GA4/GSC MCPs are available, automatically pull performance data for the target URL to enrich recommendations.
+
+### Auto-Pull Behavior
+
+```typescript
+// After Phase 1 (Gather Inputs), before Phase 2 (Fetch Content)
+let performanceData = null;
+
+try {
+  if (inputs.mode === 'url' && inputs.source) {
+    const urlPath = new URL(inputs.source).pathname;
+
+    // GA4: organic sessions, engagement rate, conversions for target URL
+    const ga4Data = await mcp__analytics-mcp__run_report({
+      dateRanges: [{ startDate: '28daysAgo', endDate: 'today' }],
+      dimensions: [{ name: 'landingPage' }],
+      metrics: [
+        { name: 'sessions' },
+        { name: 'engagementRate' },
+        { name: 'conversions' }
+      ],
+      dimensionFilter: {
+        filter: {
+          fieldName: 'landingPage',
+          stringFilter: { matchType: 'CONTAINS', value: urlPath }
+        }
+      }
+    });
+
+    // GSC: top queries driving traffic to this URL
+    const gscData = await mcp__mcp-gsc__enhanced_search_analytics({
+      siteUrl: 'sc-domain:' + projectDomain,
+      startDate: startDate,   // YYYY-MM-DD format
+      endDate: endDate,       // YYYY-MM-DD format
+      dimensions: 'query',
+      pageFilter: inputs.source,  // filter to specific URL
+      rowLimit: 20,
+      detectQuickWins: true
+    });
+
+    performanceData = { ga4: ga4Data, gsc: gscData };
+  }
+} catch (error) {
+  // MCPs not configured - skip silently, proceed with content-only analysis
+  performanceData = null;
+}
+```
+
+### Inject Performance Data into Analysis
+
+When performanceData is available, include in the optimization report:
+
+```typescript
+if (performanceData) {
+  const ga4Metrics = performanceData.ga4;
+  const gscMetrics = performanceData.gsc;
+
+  reportSections.push({
+    title: 'Current Performance Data',
+    content: [
+      `This page gets ${ga4Metrics.sessions} organic sessions/month with ${ga4Metrics.engagementRate}% engagement rate`,
+      `Top query: "${gscMetrics.queries[0].query}" has position ${gscMetrics.queries[0].position} and ${gscMetrics.queries[0].ctr}% CTR`,
+      ga4Metrics.engagementRate < siteAvgEngagement
+        ? 'Engagement rate is below site average -- content quality or page speed issue'
+        : 'Engagement rate is at or above site average'
+    ]
+  });
+
+  // Inject quick-win recommendations from GSC data
+  for (const query of gscMetrics.queries) {
+    if (query.position >= 4 && query.position <= 20 && query.ctr < 3) {
+      recommendations.push({
+        priority: 'high',
+        action: `Title tag improvement for query "${query.query}" (position ${query.position}, CTR ${query.ctr}%) could lift CTR`,
+        type: 'quick-win'
+      });
+    }
+  }
+}
+```
+
+If MCPs are not configured, the optimizer proceeds with content-only analysis (current behavior preserved).
 
 ---
 

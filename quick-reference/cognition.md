@@ -426,7 +426,7 @@ This creates a **compounding loop**: each session's output seeds the next sessio
 
 ## See Also
 
-- `docs/concepts/cognition-mcp.md` - Full reference for all 48 operations
+- `docs/concepts/cognition-mcp.md` - Full reference for all 49 operations
 - `docs/concepts/llm-introspection-analysis.md` - Dual Process model and confabulation research
 - `commands/think.md` - Complete /think specification
 - `commands/problem-solve.md` - Full 8-step pipeline
@@ -434,4 +434,4 @@ This creates a **compounding loop**: each session's output seeds the next sessio
 
 ---
 
-_Version: OS 6.3 | Updated: 2026-02-18 | Cognition is thinking, made visible._
+_Version: OS 6.4 | Updated: 2026-02-18 | Cognition is thinking, made visible._

@@ -1,13 +1,13 @@
 # iOS Domain Pipeline
 
-**Status:** OS 6.3 Core Pipeline (Native iOS)
+**Status:** OS 6.4 Core Pipeline (Native iOS)
 **Last Updated:** 2026-02-13
 
 ## Overview
 
 The iOS pipeline handles **native iOS app development** using Swift 6.x and modern Apple frameworks (SwiftUI, UIKit, Swift Concurrency). It combines:
 
-- OS 6.3 primitives (ProjectContextServer, phase_state.json, code-index.db, Workshop, constraint framework)
+- OS 6.4 primitives (ProjectContextServer, phase_state.json, code-index.db, Workshop, constraint framework)
 - Memory-first context (Workshop + code-index.db before ProjectContext)
 - Four-tier routing (Light/Default/Tweak/Complex)
 - Spec gating (complex tasks require requirements spec)
@@ -20,7 +20,7 @@ Goal: implement and evolve native iOS features with **architecture-aware plans**
 
 ---
 
-## Four-Tier Routing (OS 6.3)
+## Four-Tier Routing (OS 6.4)
 
 The iOS pipeline uses four-tier routing:
 
@@ -67,7 +67,7 @@ Full pipeline with grand-architect planning. Spec required.
 
 ---
 
-## Standards Inputs (OS 6.3 Learning Loop)
+## Standards Inputs (OS 6.4 Learning Loop)
 
 Standards flow into and out of the iOS pipeline:
 
@@ -120,7 +120,7 @@ If the request is for:
 
 ---
 
-### Recording Context (OS 6.3)
+### Recording Context (OS 6.4)
 
 Domain commands inject recording context (recent session history from `.orca/recording.db`) before delegating to agents. This is optional and silently skipped if no recording database exists.
 

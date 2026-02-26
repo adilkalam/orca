@@ -5,7 +5,7 @@ allowed-tools: [Bash]
 
 # /orca-status - Recording Session Status
 
-**PURPOSE**: Show current recording session status including session ID, state, checkpoint count, and shadow branch info.
+**PURPOSE**: Show current recording session status including session ID, state, step count, and files touched.
 
 **EXPECTED OUTCOME**: Quick status overview of the active recording session.
 
@@ -41,13 +41,10 @@ fi
 **Expected CLI output format:**
 ```
 Session: sess-19c6983c46029c7
-State: recording
-Started: 2026-02-17 14:30
+State: ACTIVE
+Started: 2026-02-17T14:30:00.000Z
 Steps: 5
 Files touched: 12
-Shadow branch: orca/abc1234-def567
-Checkpoints on branch: 5
-Latest checkpoint: abc123def456
 ```
 
 ---
@@ -59,22 +56,16 @@ Latest checkpoint: abc123def456
 Recording Status
 
 Session: sess-19c6983c46029c7
-State: recording
+State: ACTIVE
 Started: 2026-02-17 14:30
 Steps: 5
 Files touched: 12
-Shadow branch: orca/abc1234-def567
-Checkpoints: 5
-
-Use /checkpoints to see checkpoint history.
-Use /restore to go back to any checkpoint.
 ```
 
 **State values:**
-- `recording` - Active session, checkpoints being created
-- `idle` - No active session
-- `active_committed` - Session active, user has committed
-- `ended` - Session completed
+- `ACTIVE` - Active session, events being recorded
+- `IDLE` - No active session
+- `ENDED` - Session completed
 
 ---
 
@@ -108,7 +99,7 @@ To install:
 ```
 Not in a git repository.
 
-The recording layer requires git for checkpoint storage.
+The recording layer requires git for session state storage.
 Initialize a git repository to enable recording.
 ```
 
@@ -116,8 +107,6 @@ Initialize a git repository to enable recording.
 
 ## Related Commands
 
-- `/checkpoints` - View checkpoint list
-- `/restore` - Restore to a checkpoint
 - `/continue` - Resume info for previous sessions
 
 ---

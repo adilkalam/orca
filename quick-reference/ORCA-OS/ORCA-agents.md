@@ -1,14 +1,14 @@
-# OS 6.3 Agents Quick Reference
+# OS 6.4 Agents Quick Reference
 
-**Last Updated:** 2026-02-16
-**Version:** OS 6.3
-**Total Agents:** 112
+**Last Updated:** 2026-02-26
+**Version:** OS 6.4
+**Total Agents:** 131
 
-> **Scope Note:** This quick-reference covers all 112 agents across 11 domains. See `docs/reference/os-dependency-graph.yaml` for complete registry.
+> **Scope Note:** This quick-reference covers all 131 agents across 14 domains. See `docs/reference/os-dependency-graph.yaml` for complete registry.
 
 ---
 
-## Agent Architecture (OS 6.3)
+## Agent Architecture (OS 6.4)
 
 **All Agents Use Opus 4.6:**
 - Grand architects (coordination & architecture)
@@ -32,6 +32,7 @@
 | Next.js | 15 | `agents/nextjs/` |
 | Django-React | 13 | `agents/django-react/` |
 | Expo | 12 | `agents/expo/` |
+| RVRY | 7 | `agents/rvry/` |
 | Dev (cross-cutting) | 12 | `agents/dev/` |
 | OS-Dev | 11 | `agents/os-dev/` |
 | Audit | 8 | `agents/audit/` |
@@ -39,7 +40,7 @@
 | Typography | 6 | `agents/typography/` |
 | SEO | 5 | `agents/seo/` |
 | Data | 4 | `agents/data/` |
-| **TOTAL** | **124** | |
+| **TOTAL** | **131** | |
 
 ---
 
@@ -270,6 +271,34 @@ Font library management for glyph editing, TTF export, font selection, and explo
 
 
 
+## RVRY Pipeline (7 Agents)
+
+MCP-native reasoning orchestration engine with escape detection, prompt assembly, BYOK, and web interface.
+
+### Orchestration
+| Agent | Purpose |
+|-------|---------|
+| `rvry-grand-architect` | Tier-S orchestrator for complex mode, routes by complexity tier |
+| `rvry-light-orchestrator` | Default/tweak mode coordination |
+| `rvry-engine-architect` | Plans engine: state machine design, composition rule extraction, escape detection heuristics |
+
+### Implementation
+| Agent | Purpose |
+|-------|---------|
+| `rvry-engine-builder` | Implements engine: Bun+Hono, state machine, escape detection, prompt assembler, BYOK proxy, MCP transport |
+| `rvry-web-builder` | Implements web: Auth.js, Next.js dashboard, streaming UI, Stripe |
+
+### Gates
+| Agent | Purpose | Threshold |
+|-------|---------|-----------|
+| `rvry-protocol-gate` | Code standards + protocol surface compliance | >=90 |
+| `rvry-verification` | Domain gates: delta (divergence score), escape detection (FP <30%), streaming, trace | PASS/FAIL |
+
+**Domain Gates:** delta-gate, escape-detection-gate, streaming-gate, trace-gate
+**Stack:** Bun + Hono (engine), Next.js (web), Supabase Postgres, Auth.js
+
+---
+
 ## OS-Dev + Orca-Pipeline (11 Agents)
 
 Located in `agents/os-dev/`. Includes both OS-Dev (6) and Orca-Pipeline (5) agents.
@@ -390,6 +419,7 @@ Located in `agents/dev/`. These agents work across multiple pipelines:
   django-react/     # 13 agents
   expo/             # 12 agents
   dev/              # 12 agents (cross-cutting)
+  rvry/             # 7 agents
   os-dev/           # 11 agents (os-dev-* + orca-pipeline-*)
   audit/            # 8 agents
   research/         # 7 agents
@@ -425,4 +455,4 @@ $ORCA_OS_PATH/agents/
 ---
 
 _Source of truth: `docs/reference/os-dependency-graph.yaml`_
-_Last sync: 2026-02-13_
+_Last sync: 2026-02-26_

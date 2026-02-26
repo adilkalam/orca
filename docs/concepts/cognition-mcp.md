@@ -3,7 +3,7 @@
 **MCP Server:** `cognition-mcp`
 **Command:** `/think [--flag] <prompt>`, `/audit`
 **Pattern:** Accept-Store-Echo
-**Total Operations:** 48 (38 reasoning + 1 audit + 1 utility + 1 stats + 7 recording)
+**Total Operations:** 49 (38 reasoning + 1 orchestration + 1 audit + 1 utility + 1 stats + 7 recording)
 **Location:** `mcp/cognition-mcp/`
 
 ---
@@ -112,7 +112,7 @@ Content schemas are organized into three tiers based on how much structure they 
 
 ### Tool Description Trim (v2)
 
-The tool description now organizes operations by frequency of use rather than listing all 48 operations equally. Frequently-used operations are shown prominently; rarely-used operations are listed in a parenthetical "(Additional: ...)" section. All operations remain callable -- only the description text was changed, not the enum.
+The tool description now organizes operations by frequency of use rather than listing all 49 operations equally. Frequently-used operations are shown prominently; rarely-used operations are listed in a parenthetical "(Additional: ...)" section. All operations remain callable -- only the description text was changed, not the enum.
 
 **Trimmed from prominent display** (usage count 2 or below): `beam_search`, `mcts`, `graph_of_thought`, `research`, `statistical_reasoning`, `simulation`, `optimization`, `ethical_analysis`, `visual_dashboard`, `visual_reasoning`, `pdr_reasoning`, `custom_framework`, `code_execution`, `notebook_*`.
 
@@ -186,6 +186,7 @@ Criteria: **F**unctionality (1-5), **D**epth (1-5), **U**tility (1-5)
 | `mcts` | `--monte-carlo` | 5 | 4 | 3 | Monte Carlo tree search. Specialized use. |
 | `graph_of_thought` | `--graph` | 5 | 5 | 4 | Non-linear concept connections. |
 | `orchestration_suggest` | `--orchestrate` | 5 | 4 | 4 | Recommends which operations to use. |
+| `blind_orchestrate` | `--blind` | - | - | - | Orchestration without revealing operation names to the user. |
 
 ### Analysis Operations
 
@@ -838,6 +839,8 @@ For full research context, see `/docs/concepts/llm-introspection-analysis.md`.
 
 Cognition-mcp includes 7 recording operations that connect it to the `orca-record` recording layer. This enables **cognitive fusion** -- combining reasoning chains with code change history.
 
+**Note (v0.4.0):** The orca-record git shadow branch layer was removed in v0.4.0. Cognition-mcp recording operations still query `recording.db` for session context, but code restoration (rewind) is no longer available. The recording layer now consists of hooks + SQLite + state machine only.
+
 ### Recording Operations
 
 | Operation | Purpose |
@@ -947,4 +950,4 @@ Follow-up questions are included in the auto-persisted markdown file under a "Fo
 
 ---
 
-_Version: OS 6.3 | Last updated: 2026-02-18_
+_Version: OS 6.4 | Last updated: 2026-02-26_

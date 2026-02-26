@@ -1,11 +1,11 @@
-# OS 6.3 MCP Reference
+# OS 6.4 MCP Reference
 
-**Last Updated:** 2026-02-16
-**Version:** OS 6.3
+**Last Updated:** 2026-02-26
+**Version:** OS 6.4
 
 ---
 
-## MCP Scoping Strategy (OS 6.3)
+## MCP Scoping Strategy (OS 6.4)
 
 MCPs are now project-scoped to reduce token bloat:
 
@@ -23,8 +23,9 @@ Heavy MCPs defined in project `.mcp.json` + enabled via `enabledMcpjsonServers`:
 | Project | MCPs |
 |---------|------|
 | `/peptidefox-ios` | XcodeBuildMCP |
-| `/obsidian-peptides` | chrome-devtools, puppeteer, crawl4ai |
-| `/peptidefox` | chrome-devtools, puppeteer, crawl4ai |
+| `/obsidian-peptides` | chrome-devtools, puppeteer, crawl4ai, analytics-mcp, mcp-gsc |
+| `/peptidefox` | chrome-devtools, puppeteer, crawl4ai, analytics-mcp, mcp-gsc |
+| `/rvry` | analytics-mcp, mcp-gsc |
 
 ---
 
@@ -56,7 +57,7 @@ MCP returns:  { thought: "X" }  <- UNCHANGED
 Checkpoint with protocol fields returns: { protocolState: { activeConstraints, gateStatus, blocked } }
 ```
 
-**Operations (48 total):**
+**Operations (49 total):**
 
 | Category | Operations |
 |----------|------------|
@@ -65,6 +66,7 @@ Checkpoint with protocol fields returns: { protocolState: { activeConstraints, g
 | **Collaborative (3)** | `collaborative_reasoning`, `socratic_method`, `structured_argumentation` |
 | **Analysis (11)** | `research`, `analogical_reasoning`, `causal_analysis`, `statistical_reasoning`, `simulation`, `optimization`, `ethical_analysis`, `visual_dashboard`, `pdr_reasoning`, `custom_framework`, `code_execution` |
 | **Patterns (5)** | `tree_of_thought`, `beam_search`, `mcts`, `graph_of_thought`, `orchestration_suggest` |
+| **Orchestration (1)** | `blind_orchestrate` (agent delegation without context leakage) |
 | **Strategic (2)** | `ooda_loop`, `ulysses_protocol` |
 | **Notebook (4)** | `notebook_create`, `notebook_add_cell`, `notebook_run_cell`, `notebook_export` |
 | **Audit (1)** | `audit` |
@@ -92,7 +94,7 @@ The recording extension connects cognition-mcp to the orca-record recording laye
 | `recording_compare` | Diff two checkpoints: code changes and reasoning chain changes |
 | `recording_quality` | Session quality analytics: gate results, rewind rates, error patterns |
 | `recording_explain` | Human-readable narrative of what happened, why, and how well |
-| `recording_rewind` | Trigger rewind to a specific checkpoint (restores code + cognitive state) |
+| `recording_rewind` | Query rewind data from recording history |
 
 These operations read from `.orca/recording.db` (per-project SQLite) and cross-reference with cognition-mcp session data.
 
@@ -121,7 +123,7 @@ Mandatory context provider for all agents.
 - `reanalyze_project` - Re-analyze project after changes
 - `recall` - Retrieve full archived tool output by ID (ORCA-Mem)
 
-**Implementation (OS 6.3):**
+**Implementation (OS 6.4):**
 - **Reads:** SQLite direct access to `workshop.db` via `better-sqlite3`
 - **Writes:** Workshop CLI for schema migration compatibility
 - **Symlink:** Auto-creates `.workshop -> .claude/memory` on macOS/Linux
@@ -197,7 +199,7 @@ claude mcp add -s user chrome-devtools -- npx chrome-devtools-mcp@latest --headl
 }
 ```
 
-**Used by:** nextjs-design-reviewer, shopify-ui-reviewer
+**Used by:** nextjs-design-reviewer
 **Scope:** Global (user-level)
 
 ### puppeteer (Web) -- DEPRECATED
@@ -336,7 +338,7 @@ inside 3MF ZIP archives via JSZip. Enforces gcode key protection.
 
 ### openscad-mcp (3D Rendering - Experimental)
 
-OpenSCAD 3D rendering capabilities for AI assistants. Provides tools for single and multi-view rendering of OpenSCAD models.
+OpenSCAD 3D rendering and STL analysis capabilities for AI assistants. Provides tools for rendering OpenSCAD models, analyzing STL geometry, and comparing STL files.
 
 ```json
 {
@@ -353,12 +355,114 @@ OpenSCAD 3D rendering capabilities for AI assistants. Provides tools for single 
 
 **Tools:**
 - `render_single` - Render a single view of an OpenSCAD model
-- `render_perspectives` - Render multiple perspective views
 - `check_openscad` - Verify OpenSCAD installation
+- `analyze_stl` - Extract dimensions, volume, cross-sections, and wall thickness from STL files
+- `compare_stl` - Compare two STL files with boolean difference via manifold3d
 
 **Source:** [github.com/quellant/openscad-mcp](https://github.com/quellant/openscad-mcp)
 **Status:** Experimental (project-scoped, no dedicated lane)
 **Location:** `mcp/openscad-mcp/`
+
+### analytics-mcp (SEO/Analytics)
+
+Google Analytics 4 data access for SEO effectiveness reporting. Authenticates via service account key file.
+
+```json
+{
+  "analytics-mcp": {
+    "command": "pipx",
+    "args": ["run", "analytics-mcp"],
+    "env": {
+      "GOOGLE_APPLICATION_CREDENTIALS": "/Users/adilkalam/.config/google/seo-service-account.json",
+      "GOOGLE_PROJECT_ID": "stream-391021"
+    }
+  }
+}
+```
+
+**Auth Setup (Service Account):**
+1. GCP Console -> Enable 3 APIs: Analytics Admin API, Analytics Data API, Search Console API
+2. Create a service account (IAM -> Service Accounts -> Create)
+3. Download the JSON key file to a secure location (e.g., `~/.config/google/seo-service-account.json`)
+4. In GA4 Admin -> Property Access Management -> add the service account email as Editor
+5. `pipx` installed (`brew install pipx && pipx ensurepath`)
+
+**Tools (6):**
+- `run_report` - Run GA4 reports (sessions, users, engagement, conversions)
+- `run_realtime_report` - Real-time GA4 data
+- `get_account_summaries` - List GA4 properties and accounts
+- `get_property_details` - GA4 property metadata
+- `get_custom_dimensions_and_metrics` - Custom GA4 dimensions/metrics
+- `list_google_ads_links` - Google Ads links for the property
+
+**Used by:** seo-optimizer (audit mode + auto-pull during optimization)
+**Projects:** peptidefox, obsidian-peptides, rvry (project-scoped via .mcp.json)
+**Scope:** Project-scoped only (configured in each project's `.mcp.json`, NOT global)
+
+### mcp-gsc (SEO/Search Console)
+
+Google Search Console data for search query performance. npm package is `mcp-server-gsc`, but the key in `.mcp.json` is `"mcp-gsc"` (so tool names are `mcp__mcp-gsc__*`). Authenticates via service account key file. Very token-efficient (~500 tokens for a comprehensive audit).
+
+```json
+{
+  "mcp-gsc": {
+    "command": "npx",
+    "args": ["-y", "mcp-server-gsc"],
+    "env": {
+      "GOOGLE_APPLICATION_CREDENTIALS": "/Users/adilkalam/.config/google/seo-service-account.json"
+    }
+  }
+}
+```
+
+**Auth Setup (Service Account):**
+1. Same service account as analytics-mcp (shared key file)
+2. In Google Search Console -> Settings -> Users and permissions -> add the service account email as Full user
+3. The service account needs Search Console API enabled in GCP (same step as analytics-mcp)
+
+**Tools (4):**
+- `list_sitemaps` - List all sitemaps for a Search Console property
+- `get_sitemap` - Get details for a specific sitemap
+- `enhanced_search_analytics` - Search performance data with built-in quick wins detection (queries, impressions, clicks, CTR, position)
+- `index_inspect` - Inspect URL indexing status
+
+**Used by:** seo-optimizer (audit mode + auto-pull), seo-research-specialist (pre-research check)
+**Projects:** peptidefox, obsidian-peptides, rvry (project-scoped via .mcp.json)
+**Scope:** Project-scoped only (configured in each project's `.mcp.json`, NOT global)
+
+### annotated-mcp (Annotation Tools)
+
+Lightweight annotation MCP for structured tool output annotations. Reduces schema friction in cognition workflows by providing minimal-schema annotation tools.
+
+```json
+{
+  "annotated-mcp": {
+    "type": "stdio",
+    "command": "node",
+    "args": ["/Users/adilkalam/.claude/mcp/annotated-mcp/dist/index.js"]
+  }
+}
+```
+
+**Source:** `mcp/annotated-mcp/`
+**Scope:** Global (user-level)
+
+### mcp-send-email (Email Integration)
+
+Resend-based email sending MCP for transactional and broadcast emails.
+
+```json
+{
+  "mcp-send-email": {
+    "type": "stdio",
+    "command": "npx",
+    "args": ["-y", "mcp-send-email"]
+  }
+}
+```
+
+**Source:** `mcp/mcp-send-email/`
+**Scope:** Project-scoped
 
 ---
 
@@ -371,10 +475,10 @@ OpenSCAD 3D rendering capabilities for AI assistants. Provides tools for single 
 | Django-React | (none) |
 | Expo | (none) |
 | Research | crawl4ai |
-| SEO | ahrefs, crawl4ai |
+| SEO | ahrefs, crawl4ai, analytics-mcp, mcp-gsc |
+| RVRY | analytics-mcp, mcp-gsc |
 | Data | (none) |
 | Audit | cognition-mcp |
-| Shopify | chrome-devtools |
 | Typography | (none) |
 | OS-Dev | (none) |
 | orca-pipeline | (none) |
@@ -434,4 +538,4 @@ Check `enabledMcpjsonServers` in `~/.claude.json` for your project path.
 
 _Source of truth: `docs/reference/os-dependency-graph.yaml`_
 _MCP scoping: `docs/reference/mcp-scoping-strategy.md`_
-_Last sync: 2026-02-13_
+_Last sync: 2026-02-26_

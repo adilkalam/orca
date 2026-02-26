@@ -359,4 +359,4 @@ Both systems feed agents through ProjectContext, so every task starts with both 
 
 ---
 
-_Version: OS 6.3 | Memory is continuity, made persistent._
+_Version: OS 6.4 | Memory is continuity, made persistent._

@@ -1,11 +1,11 @@
-# Visual Design Spec — Quick Reference (OS 6.3)
+# Visual Design Spec — Quick Reference (OS 6.4)
 
-**Version:** OS 6.3
+**Version:** OS 6.4
 **Last Updated:** 2026-02-07
 
-Use this template to define clear, testable acceptance criteria for visual work. In OS 6.3, design QA is **automated** within pipelines via design-reviewer agents.
+Use this template to define clear, testable acceptance criteria for visual work. In OS 6.4, design QA is **automated** within pipelines via design-reviewer agents.
 
-## OS 6.3 Integration
+## OS 6.4 Integration
 
 **Automatic Design QA:**
 - Design QA agents run automatically in Phase 5 (after implementation)
@@ -13,13 +13,13 @@ Use this template to define clear, testable acceptance criteria for visual work.
 - Evidence captured automatically in `.claude/orchestration/evidence/`
 - Design QA gate enforces ≥90 score
 
-**Related commands (OS 6.3):**
+**Related commands (OS 6.4):**
 - `/deepthink --design "problem"` → Explore design problems with auto-loaded context
 - `/plan "feature"` → Include visual acceptance criteria in blueprint
 - `/orca-{domain} "implement"` → Design QA runs automatically
 - `/design-dna init/audit` → Initialize or audit design system
 
-**Evidence locations (OS 6.3):**
+**Evidence locations (OS 6.4):**
 - Screenshots: `.claude/orchestration/evidence/screenshots/`
 - Design QA reports: `.claude/orchestration/evidence/design-qa-*.md`
 - Gate scores: `.claude/orchestration/phase_state.json`
@@ -65,7 +65,7 @@ Use this template to define clear, testable acceptance criteria for visual work.
 
 ---
 
-## Design QA in OS 6.3
+## Design QA in OS 6.4
 
 Design QA is handled automatically by domain pipelines (e.g., `/orca-nextjs`, `/orca-ios`). Use `/design-review` for standalone visual review.
 

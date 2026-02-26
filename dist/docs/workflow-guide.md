@@ -58,8 +58,10 @@ Run the appropriate domain command:
 | React Native/Expo | `/expo <task>` |
 | Next.js | `/nextjs <task>` |
 | Django + React | `/django-react <task>` |
+| RVRY | `/rvry <task>` |
 | Research | `/research <question>` |
 | SEO Content | `/seo <topic>` |
+| Knowledge Graph | `/kg <query>` |
 | Due Diligence Audit | `/audit <scope>` |
 | Typography | `/typography <task>` |
 | OS Development | `/orca-os-dev <task>` |
@@ -321,8 +323,10 @@ Use complex mode for full architect involvement:
 | `/nextjs` | Next.js frontend development |
 | `/expo` | Expo/React Native development |
 | `/django-react` | Django + React full-stack development |
+| `/rvry` | RVRY product orchestration engine |
 | `/research` | Deep, cited research |
 | `/seo` | SEO content pipeline |
+| `/kg` | Knowledge graph mechanism + answer synthesis |
 | `/audit` | Multi-agent due diligence auditing |
 | `/typography` | Typography pipeline (glyph editing, TTF export, font tools) |
 | `/orca-os-dev` | OS/Claude Code configuration development |
@@ -333,9 +337,8 @@ Use complex mode for full architect involvement:
 
 | Command | Purpose |
 |---------|---------|
-| `/think` | Structured reasoning with cognition-mcp (48 operations) |
+| `/think` | Structured reasoning with cognition-mcp (49 operations) |
 | `/deepthink` | Depth-first exploration with constraint chain and self-check |
-| `/ultra-think` | Multi-dimensional deep analysis and problem solving |
 | `/contemplate` | Reasoning strategist (recommends which thinking tools to use) |
 | `/problem-solve` | Convergent 8-step decision pipeline |
 | `/challenge` | Adversarial analysis (attack a proposal to find weaknesses) |
@@ -375,3 +378,5 @@ Use complex mode for full architect involvement:
 | `/reflect` | Self-improvement (learn from interactions) |
 | `/self-improve` | Run the Improvement Bus (route events to agents and gates) |
 | `/root-cause` | Root cause analysis (identify why something is failing) |
+| `/continue` | Resume previous recording sessions |
+| `/orca-status` | Show current ORCA recording session status |

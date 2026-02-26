@@ -1,8 +1,8 @@
 # Memory Systems
 
-**Version:** OS 6.3 | **Last Updated:** 2026-02-13
+**Version:** OS 6.4 | **Last Updated:** 2026-02-26
 
-OS 6.3 uses multiple memory systems to maintain context across sessions and provide relevant information to agents.
+OS 6.4 uses multiple memory systems to maintain context across sessions and provide relevant information to agents.
 
 ## Memory Architecture
 
@@ -112,7 +112,7 @@ The ProjectContext MCP uses a hybrid approach for Workshop integration:
 
 ## Memory-First Pattern
 
-OS 6.3 checks fast, local memory before expensive queries:
+OS 6.4 checks fast, local memory before expensive queries:
 
 ```bash
 # Step 1: Check Workshop for relevant decisions/gotchas
@@ -197,32 +197,30 @@ mcp__project-context__save_standard({
 
 ## Memory Layer 5: Recording Database (.orca/recording.db)
 
-**What:** Per-project SQLite database that records full session activity, git-backed checkpoints, and cognitive state.
+**What:** Per-project SQLite database that records session activity and cognitive state via hooks.
 
 **Overview:**
-The recording layer (added in OS 6.3) provides session-level persistence that goes beyond Workshop's decision/gotcha entries. It captures the full timeline of what happened in each session: prompts, tool calls, file changes, and checkpoints that can be rewound.
+The recording layer (added in OS 6.4) provides session-level persistence that goes beyond Workshop's decision/gotcha entries. It captures the timeline of what happened in each session: prompts, tool calls, file changes, and checkpoints.
 
 **Storage:** `.orca/recording.db` (per-project, gitignored)
 
 **Key Tables:**
 - `sessions` -- Session metadata (start/end, branch, status)
-- `checkpoints` -- Git-backed snapshots with file diffs and cognitive links
+- `checkpoints` -- Per-turn snapshots with file diffs and cognitive links
 - `events` -- Tool calls, prompts, and state transitions
 - `transcripts` -- Session transcript segments
 
-**Git Integration:**
-- Shadow branches (`orca/<hash>-<wt>`) hold per-session checkpoint commits
-- Orphan branch (`orca/checkpoints/v1`) stores condensed permanent checkpoints
-- `ORCA-Checkpoint` commit trailers enable bidirectional linking
+**Architecture (v0.4.0):**
+The recording layer consists of hooks + SQLite + state machine. The git shadow branch layer (`orca/<hash>-<wt>`) and orphan branch (`orca/checkpoints/v1`) were removed in v0.4.0. Code restoration (rewind) is no longer available.
 
 **Cognitive Fusion:**
-Checkpoints link code state to cognition-mcp reasoning chains via 7 recording operations: `recording_status`, `recording_query`, `recording_checkpoint`, `recording_compare`, `recording_quality`, `recording_explain`, `recording_rewind`.
+Checkpoints link session state to cognition-mcp reasoning chains via 7 recording operations: `recording_status`, `recording_query`, `recording_checkpoint`, `recording_compare`, `recording_quality`, `recording_explain`, `recording_rewind`. Note: `recording_rewind` queries checkpoint data but code restoration is no longer available since v0.4.0.
 
-**CLI:** `orca-record` (Bun-compiled binary at `~/.claude/bin/orca-record`) with 16 commands.
+**CLI:** `orca-record` (Bun-compiled binary at `~/.claude/bin/orca-record`) with 7 commands (5 hook + 2 user).
 
 **Supersedes:** Telemetry system (`.claude/telemetry/`) which is now deprecated.
 
-## Recording Context Injection (OS 6.3)
+## Recording Context Injection (OS 6.4)
 
 Commands use the recording layer to inject prior session context before delegating
 to agents. This provides continuity across sessions by surfacing what happened in

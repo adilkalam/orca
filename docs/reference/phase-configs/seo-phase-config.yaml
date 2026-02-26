@@ -1,4 +1,4 @@
-# SEO Pipeline Phase Configuration - OS 6.3
+# SEO Pipeline Phase Configuration - OS 6.4
 # SEO Content Creation and Optimization Workflow
 
 pipeline:
@@ -13,7 +13,7 @@ context:
   query_on_start: true
   memory_first: true
 
-# Four-Tier Routing (OS 6.3)
+# Four-Tier Routing (OS 6.4)
 complexity_tiers:
   default:
     description: Standard SEO content workflow
@@ -97,6 +97,16 @@ phases:
       - quality_score
       - gate_decision
       - issues
+
+  - name: audit
+    agent: seo-optimizer
+    description: GA4/GSC effectiveness audit (--audit or --audit-full flag)
+    standalone: true  # Does not depend on other phases, triggered by flag
+    mcps:
+      - analytics-mcp
+      - mcp-gsc
+    outputs:
+      - audit_report  # docs/SEO/audit-YYYY-MM-DD.md
 
 config:
   briefs_path: .claude/seo/briefs/

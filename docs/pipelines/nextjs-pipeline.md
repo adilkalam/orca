@@ -1,13 +1,13 @@
 # Nextjs Domain Pipeline
 
-**Status:** OS 6.3 Core Pipeline
+**Status:** OS 6.4 Core Pipeline
 **Last Updated:** 2026-02-13
 
 ## Overview
 
 The Nextjs pipeline handles **frontend/web development work** for Next.js apps. It is CSS-agnostic and adapts to the project's styling approach (semantic CSS, Tailwind, CSS Modules, etc.). It combines:
 
-- OS 6.3 primitives (ProjectContextServer, phase_state.json, code-index.db, Workshop, constraint framework)
+- OS 6.4 primitives (ProjectContextServer, phase_state.json, code-index.db, Workshop, constraint framework)
 - Memory-first context (Workshop + code-index.db before ProjectContext)
 - Four-tier routing (Light/Default/Tweak/Complex with default running gates)
 - Spec gating (complex tasks require requirements spec)
@@ -35,7 +35,7 @@ The Nextjs pipeline handles **frontend/web development work** for Next.js apps. 
 
 ---
 
-## Four-Tier Routing (OS 6.3)
+## Four-Tier Routing (OS 6.4)
 
 The Next.js pipeline uses four-tier routing (see `docs/concepts/complexity-routing.md` for details):
 
@@ -80,7 +80,7 @@ Full pipeline with grand-architect planning. Spec required.
 | Tweak | 1-3 | No | Rapid iteration, exploring options |
 | Complex | 5+ | **Required** | Multi-page flow, auth UI, SEO-critical |
 
-### CSS Architecture Refactor Mode (OS 6.3)
+### CSS Architecture Refactor Mode (OS 6.4)
 
 Some Next.js tasks are **structural CSS/layout refactors** rather than simple tweaks:
 
@@ -105,7 +105,7 @@ If the CSS Architecture Gate fails, the task cannot be marked complete even if t
 
 ---
 
-## Standards Inputs (OS 6.3 Learning Loop)
+## Standards Inputs (OS 6.4 Learning Loop)
 
 Standards flow into and out of the Next.js pipeline:
 
@@ -145,7 +145,7 @@ violation → /audit → save_standard → code-index.db → future relatedStand
 
 ---
 
-### Recording Context (OS 6.3)
+### Recording Context (OS 6.4)
 
 Domain commands inject recording context (recent session history from `.orca/recording.db`) before delegating to agents. This is optional and silently skipped if no recording database exists.
 
@@ -988,4 +988,4 @@ As the pipeline runs, it learns:
 ---
 
 _Last updated: 2026-02-13_
-_Version: OS 6.3_
+_Version: OS 6.4_

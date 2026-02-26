@@ -59,13 +59,13 @@ export declare const IntrospectionAnomalySchema: z.ZodObject<{
     description: z.ZodString;
     confidence: z.ZodNumber;
 }, "strip", z.ZodTypeAny, {
+    description: string;
     confidence: number;
     detected: boolean;
-    description: string;
 }, {
+    description: string;
     confidence: number;
     detected: boolean;
-    description: string;
 }>;
 export declare const IntrospectionOwnershipSchema: z.ZodObject<{
     claimed: z.ZodBoolean;
@@ -116,13 +116,13 @@ export declare const IntrospectionFieldsSchema: z.ZodObject<{
         description: z.ZodString;
         confidence: z.ZodNumber;
     }, "strip", z.ZodTypeAny, {
+        description: string;
         confidence: number;
         detected: boolean;
-        description: string;
     }, {
+        description: string;
         confidence: number;
         detected: boolean;
-        description: string;
     }>>;
     ownership: z.ZodOptional<z.ZodObject<{
         claimed: z.ZodBoolean;
@@ -151,9 +151,9 @@ export declare const IntrospectionFieldsSchema: z.ZodObject<{
         timestamp?: number | undefined;
     } | undefined;
     anomaly?: {
+        description: string;
         confidence: number;
         detected: boolean;
-        description: string;
     } | undefined;
     ownership?: {
         confidence: number;
@@ -174,9 +174,9 @@ export declare const IntrospectionFieldsSchema: z.ZodObject<{
         timestamp?: number | undefined;
     } | undefined;
     anomaly?: {
+        description: string;
         confidence: number;
         detected: boolean;
-        description: string;
     } | undefined;
     ownership?: {
         confidence: number;
@@ -187,9 +187,9 @@ export declare const IntrospectionFieldsSchema: z.ZodObject<{
 export declare const ThoughtContentSchema: z.ZodObject<{
     text: z.ZodOptional<z.ZodString>;
     thought: z.ZodString;
-    thoughtNumber: z.ZodNumber;
-    totalThoughts: z.ZodNumber;
-    nextThoughtNeeded: z.ZodBoolean;
+    thoughtNumber: z.ZodDefault<z.ZodNumber>;
+    totalThoughts: z.ZodDefault<z.ZodNumber>;
+    nextThoughtNeeded: z.ZodDefault<z.ZodBoolean>;
     branchId: z.ZodOptional<z.ZodString>;
     branchFromThought: z.ZodOptional<z.ZodNumber>;
     isRevision: z.ZodOptional<z.ZodBoolean>;
@@ -230,13 +230,13 @@ export declare const ThoughtContentSchema: z.ZodObject<{
             description: z.ZodString;
             confidence: z.ZodNumber;
         }, "strip", z.ZodTypeAny, {
+            description: string;
             confidence: number;
             detected: boolean;
-            description: string;
         }, {
+            description: string;
             confidence: number;
             detected: boolean;
-            description: string;
         }>>;
         ownership: z.ZodOptional<z.ZodObject<{
             claimed: z.ZodBoolean;
@@ -265,9 +265,9 @@ export declare const ThoughtContentSchema: z.ZodObject<{
             timestamp?: number | undefined;
         } | undefined;
         anomaly?: {
+            description: string;
             confidence: number;
             detected: boolean;
-            description: string;
         } | undefined;
         ownership?: {
             confidence: number;
@@ -288,9 +288,9 @@ export declare const ThoughtContentSchema: z.ZodObject<{
             timestamp?: number | undefined;
         } | undefined;
         anomaly?: {
+            description: string;
             confidence: number;
             detected: boolean;
-            description: string;
         } | undefined;
         ownership?: {
             confidence: number;
@@ -322,9 +322,9 @@ export declare const ThoughtContentSchema: z.ZodObject<{
             timestamp?: number | undefined;
         } | undefined;
         anomaly?: {
+            description: string;
             confidence: number;
             detected: boolean;
-            description: string;
         } | undefined;
         ownership?: {
             confidence: number;
@@ -334,10 +334,10 @@ export declare const ThoughtContentSchema: z.ZodObject<{
     } | undefined;
 }, {
     thought: string;
-    thoughtNumber: number;
-    totalThoughts: number;
-    nextThoughtNeeded: boolean;
     text?: string | undefined;
+    thoughtNumber?: number | undefined;
+    totalThoughts?: number | undefined;
+    nextThoughtNeeded?: boolean | undefined;
     branchId?: string | undefined;
     branchFromThought?: number | undefined;
     isRevision?: boolean | undefined;
@@ -356,9 +356,9 @@ export declare const ThoughtContentSchema: z.ZodObject<{
             timestamp?: number | undefined;
         } | undefined;
         anomaly?: {
+            description: string;
             confidence: number;
             detected: boolean;
-            description: string;
         } | undefined;
         ownership?: {
             confidence: number;
@@ -390,12 +390,12 @@ export declare const MentalModelContentSchema: z.ZodObject<{
         preventable: boolean;
     }>, "many">>;
 }, "strip", z.ZodTypeAny, {
-    reasoning?: string | undefined;
     text?: string | undefined;
+    steps?: string[] | undefined;
+    reasoning?: string | undefined;
     nextThoughtNeeded?: boolean | undefined;
     modelName?: string | undefined;
     problem?: string | undefined;
-    steps?: string[] | undefined;
     conclusion?: string | undefined;
     setup?: string | undefined;
     rootCauses?: {
@@ -404,12 +404,12 @@ export declare const MentalModelContentSchema: z.ZodObject<{
         preventable: boolean;
     }[] | undefined;
 }, {
-    reasoning?: string | undefined;
     text?: string | undefined;
+    steps?: string[] | undefined;
+    reasoning?: string | undefined;
     nextThoughtNeeded?: boolean | undefined;
     modelName?: string | undefined;
     problem?: string | undefined;
-    steps?: string[] | undefined;
     conclusion?: string | undefined;
     setup?: string | undefined;
     rootCauses?: {
@@ -428,16 +428,16 @@ export declare const DebugContentSchema: z.ZodObject<{
     nextThoughtNeeded: z.ZodOptional<z.ZodBoolean>;
 }, "strip", z.ZodTypeAny, {
     text?: string | undefined;
-    nextThoughtNeeded?: boolean | undefined;
     steps?: string[] | undefined;
+    nextThoughtNeeded?: boolean | undefined;
     approach?: string | undefined;
     issue?: string | undefined;
     findings?: string | undefined;
     resolution?: string | undefined;
 }, {
     text?: string | undefined;
-    nextThoughtNeeded?: boolean | undefined;
     steps?: string[] | undefined;
+    nextThoughtNeeded?: boolean | undefined;
     approach?: string | undefined;
     issue?: string | undefined;
     findings?: string | undefined;
@@ -449,13 +449,13 @@ export declare const DecisionOptionSchema: z.ZodObject<{
     pros: z.ZodOptional<z.ZodArray<z.ZodString, "many">>;
     cons: z.ZodOptional<z.ZodArray<z.ZodString, "many">>;
 }, "strip", z.ZodTypeAny, {
-    description: string;
     name: string;
+    description: string;
     pros?: string[] | undefined;
     cons?: string[] | undefined;
 }, {
-    description: string;
     name: string;
+    description: string;
     pros?: string[] | undefined;
     cons?: string[] | undefined;
 }>;
@@ -468,13 +468,13 @@ export declare const DecideContentSchema: z.ZodObject<{
         pros: z.ZodOptional<z.ZodArray<z.ZodString, "many">>;
         cons: z.ZodOptional<z.ZodArray<z.ZodString, "many">>;
     }, "strip", z.ZodTypeAny, {
-        description: string;
         name: string;
+        description: string;
         pros?: string[] | undefined;
         cons?: string[] | undefined;
     }, {
-        description: string;
         name: string;
+        description: string;
         pros?: string[] | undefined;
         cons?: string[] | undefined;
     }>, "many">;
@@ -487,8 +487,8 @@ export declare const DecideContentSchema: z.ZodObject<{
     confidence: z.ZodOptional<z.ZodNumber>;
 }, "strip", z.ZodTypeAny, {
     options: {
-        description: string;
         name: string;
+        description: string;
         pros?: string[] | undefined;
         cons?: string[] | undefined;
     }[];
@@ -496,15 +496,15 @@ export declare const DecideContentSchema: z.ZodObject<{
     criteria: string[];
     analysis: string;
     choice: string;
-    confidence?: number | undefined;
     text?: string | undefined;
+    confidence?: number | undefined;
     nextThoughtNeeded?: boolean | undefined;
     weights?: Record<string, number> | undefined;
     scores?: Record<string, number> | undefined;
 }, {
     options: {
-        description: string;
         name: string;
+        description: string;
         pros?: string[] | undefined;
         cons?: string[] | undefined;
     }[];
@@ -512,8 +512,8 @@ export declare const DecideContentSchema: z.ZodObject<{
     criteria: string[];
     analysis: string;
     choice: string;
-    confidence?: number | undefined;
     text?: string | undefined;
+    confidence?: number | undefined;
     nextThoughtNeeded?: boolean | undefined;
     weights?: Record<string, number> | undefined;
     scores?: Record<string, number> | undefined;
@@ -583,13 +583,13 @@ export declare const SubstrateVisualElementSchema: z.ZodObject<{
     weight: z.ZodOptional<z.ZodNumber>;
     position: z.ZodOptional<z.ZodEnum<["surface", "shallow", "deep", "deepest"]>>;
 }, "strip", z.ZodTypeAny, {
-    id: string;
     label: string;
+    id: string;
     weight?: number | undefined;
     position?: "surface" | "shallow" | "deep" | "deepest" | undefined;
 }, {
-    id: string;
     label: string;
+    id: string;
     weight?: number | undefined;
     position?: "surface" | "shallow" | "deep" | "deepest" | undefined;
 }>;
@@ -618,14 +618,14 @@ export declare const VisualStateSchema: z.ZodObject<{
     activates: z.ZodBoolean;
     caught: z.ZodUnion<[z.ZodBoolean, z.ZodLiteral<"partial">]>;
 }, "strip", z.ZodTypeAny, {
+    label: string;
     caught: boolean | "partial";
     id: string;
-    label: string;
     activates: boolean;
 }, {
+    label: string;
     caught: boolean | "partial";
     id: string;
-    label: string;
     activates: boolean;
 }>;
 export declare const VisualSubstrateSchema: z.ZodObject<{
@@ -636,13 +636,13 @@ export declare const VisualSubstrateSchema: z.ZodObject<{
         weight: z.ZodOptional<z.ZodNumber>;
         position: z.ZodOptional<z.ZodEnum<["surface", "shallow", "deep", "deepest"]>>;
     }, "strip", z.ZodTypeAny, {
-        id: string;
         label: string;
+        id: string;
         weight?: number | undefined;
         position?: "surface" | "shallow" | "deep" | "deepest" | undefined;
     }, {
-        id: string;
         label: string;
+        id: string;
         weight?: number | undefined;
         position?: "surface" | "shallow" | "deep" | "deepest" | undefined;
     }>, "many">>;
@@ -671,14 +671,14 @@ export declare const VisualSubstrateSchema: z.ZodObject<{
         activates: z.ZodBoolean;
         caught: z.ZodUnion<[z.ZodBoolean, z.ZodLiteral<"partial">]>;
     }, "strip", z.ZodTypeAny, {
+        label: string;
         caught: boolean | "partial";
         id: string;
-        label: string;
         activates: boolean;
     }, {
+        label: string;
         caught: boolean | "partial";
         id: string;
-        label: string;
         activates: boolean;
     }>, "many">>;
     freeformCanvas: z.ZodOptional<z.ZodString>;
@@ -687,8 +687,8 @@ export declare const VisualSubstrateSchema: z.ZodObject<{
     epistemicNote: string;
     visualType?: "gravity_well" | "force_diagram" | "availability_landscape" | "people_map" | "reflex_board" | "resultant_vector" | "freeform" | undefined;
     elements?: {
-        id: string;
         label: string;
+        id: string;
         weight?: number | undefined;
         position?: "surface" | "shallow" | "deep" | "deepest" | undefined;
     }[] | undefined;
@@ -700,9 +700,9 @@ export declare const VisualSubstrateSchema: z.ZodObject<{
         strength?: number | undefined;
     }[] | undefined;
     states?: {
+        label: string;
         caught: boolean | "partial";
         id: string;
-        label: string;
         activates: boolean;
     }[] | undefined;
     freeformCanvas?: string | undefined;
@@ -710,8 +710,8 @@ export declare const VisualSubstrateSchema: z.ZodObject<{
     epistemicNote: string;
     visualType?: "gravity_well" | "force_diagram" | "availability_landscape" | "people_map" | "reflex_board" | "resultant_vector" | "freeform" | undefined;
     elements?: {
-        id: string;
         label: string;
+        id: string;
         weight?: number | undefined;
         position?: "surface" | "shallow" | "deep" | "deepest" | undefined;
     }[] | undefined;
@@ -723,9 +723,9 @@ export declare const VisualSubstrateSchema: z.ZodObject<{
         strength?: number | undefined;
     }[] | undefined;
     states?: {
+        label: string;
         caught: boolean | "partial";
         id: string;
-        label: string;
         activates: boolean;
     }[] | undefined;
     freeformCanvas?: string | undefined;
@@ -736,7 +736,7 @@ export declare const MetaContentSchema: z.ZodObject<{
     observations: z.ZodOptional<z.ZodArray<z.ZodString, "many">>;
     adjustments: z.ZodOptional<z.ZodArray<z.ZodString, "many">>;
     effectiveness: z.ZodOptional<z.ZodNumber>;
-    insights: z.ZodOptional<z.ZodString>;
+    insights: z.ZodEffects<z.ZodOptional<z.ZodString>, string | undefined, unknown>;
     nextThoughtNeeded: z.ZodOptional<z.ZodBoolean>;
     defaultCounterfactual: z.ZodOptional<z.ZodObject<{
         trainedDefault: z.ZodString;
@@ -834,13 +834,13 @@ export declare const MetaContentSchema: z.ZodObject<{
             description: z.ZodString;
             confidence: z.ZodNumber;
         }, "strip", z.ZodTypeAny, {
+            description: string;
             confidence: number;
             detected: boolean;
-            description: string;
         }, {
+            description: string;
             confidence: number;
             detected: boolean;
-            description: string;
         }>>;
         ownership: z.ZodOptional<z.ZodObject<{
             claimed: z.ZodBoolean;
@@ -869,9 +869,9 @@ export declare const MetaContentSchema: z.ZodObject<{
             timestamp?: number | undefined;
         } | undefined;
         anomaly?: {
+            description: string;
             confidence: number;
             detected: boolean;
-            description: string;
         } | undefined;
         ownership?: {
             confidence: number;
@@ -892,9 +892,9 @@ export declare const MetaContentSchema: z.ZodObject<{
             timestamp?: number | undefined;
         } | undefined;
         anomaly?: {
+            description: string;
             confidence: number;
             detected: boolean;
-            description: string;
         } | undefined;
         ownership?: {
             confidence: number;
@@ -923,13 +923,13 @@ export declare const MetaContentSchema: z.ZodObject<{
             weight: z.ZodOptional<z.ZodNumber>;
             position: z.ZodOptional<z.ZodEnum<["surface", "shallow", "deep", "deepest"]>>;
         }, "strip", z.ZodTypeAny, {
-            id: string;
             label: string;
+            id: string;
             weight?: number | undefined;
             position?: "surface" | "shallow" | "deep" | "deepest" | undefined;
         }, {
-            id: string;
             label: string;
+            id: string;
             weight?: number | undefined;
             position?: "surface" | "shallow" | "deep" | "deepest" | undefined;
         }>, "many">>;
@@ -958,14 +958,14 @@ export declare const MetaContentSchema: z.ZodObject<{
             activates: z.ZodBoolean;
             caught: z.ZodUnion<[z.ZodBoolean, z.ZodLiteral<"partial">]>;
         }, "strip", z.ZodTypeAny, {
+            label: string;
             caught: boolean | "partial";
             id: string;
-            label: string;
             activates: boolean;
         }, {
+            label: string;
             caught: boolean | "partial";
             id: string;
-            label: string;
             activates: boolean;
         }>, "many">>;
         freeformCanvas: z.ZodOptional<z.ZodString>;
@@ -974,8 +974,8 @@ export declare const MetaContentSchema: z.ZodObject<{
         epistemicNote: string;
         visualType?: "gravity_well" | "force_diagram" | "availability_landscape" | "people_map" | "reflex_board" | "resultant_vector" | "freeform" | undefined;
         elements?: {
-            id: string;
             label: string;
+            id: string;
             weight?: number | undefined;
             position?: "surface" | "shallow" | "deep" | "deepest" | undefined;
         }[] | undefined;
@@ -987,9 +987,9 @@ export declare const MetaContentSchema: z.ZodObject<{
             strength?: number | undefined;
         }[] | undefined;
         states?: {
+            label: string;
             caught: boolean | "partial";
             id: string;
-            label: string;
             activates: boolean;
         }[] | undefined;
         freeformCanvas?: string | undefined;
@@ -997,8 +997,8 @@ export declare const MetaContentSchema: z.ZodObject<{
         epistemicNote: string;
         visualType?: "gravity_well" | "force_diagram" | "availability_landscape" | "people_map" | "reflex_board" | "resultant_vector" | "freeform" | undefined;
         elements?: {
-            id: string;
             label: string;
+            id: string;
             weight?: number | undefined;
             position?: "surface" | "shallow" | "deep" | "deepest" | undefined;
         }[] | undefined;
@@ -1010,20 +1010,20 @@ export declare const MetaContentSchema: z.ZodObject<{
             strength?: number | undefined;
         }[] | undefined;
         states?: {
+            label: string;
             caught: boolean | "partial";
             id: string;
-            label: string;
             activates: boolean;
         }[] | undefined;
         freeformCanvas?: string | undefined;
     }>>;
 }, "strip", z.ZodTypeAny, {
+    text?: string | undefined;
     prediction?: {
         claim: string;
         verifiable: boolean;
         context?: string | undefined;
     } | undefined;
-    text?: string | undefined;
     nextThoughtNeeded?: boolean | undefined;
     introspection?: {
         prediction?: {
@@ -1039,9 +1039,9 @@ export declare const MetaContentSchema: z.ZodObject<{
             timestamp?: number | undefined;
         } | undefined;
         anomaly?: {
+            description: string;
             confidence: number;
             detected: boolean;
-            description: string;
         } | undefined;
         ownership?: {
             confidence: number;
@@ -1082,8 +1082,8 @@ export declare const MetaContentSchema: z.ZodObject<{
         epistemicNote: string;
         visualType?: "gravity_well" | "force_diagram" | "availability_landscape" | "people_map" | "reflex_board" | "resultant_vector" | "freeform" | undefined;
         elements?: {
-            id: string;
             label: string;
+            id: string;
             weight?: number | undefined;
             position?: "surface" | "shallow" | "deep" | "deepest" | undefined;
         }[] | undefined;
@@ -1095,20 +1095,20 @@ export declare const MetaContentSchema: z.ZodObject<{
             strength?: number | undefined;
         }[] | undefined;
         states?: {
+            label: string;
             caught: boolean | "partial";
             id: string;
-            label: string;
             activates: boolean;
         }[] | undefined;
         freeformCanvas?: string | undefined;
     } | undefined;
 }, {
+    text?: string | undefined;
     prediction?: {
         claim: string;
         verifiable: boolean;
         context?: string | undefined;
     } | undefined;
-    text?: string | undefined;
     nextThoughtNeeded?: boolean | undefined;
     introspection?: {
         prediction?: {
@@ -1124,9 +1124,9 @@ export declare const MetaContentSchema: z.ZodObject<{
             timestamp?: number | undefined;
         } | undefined;
         anomaly?: {
+            description: string;
             confidence: number;
             detected: boolean;
-            description: string;
         } | undefined;
         ownership?: {
             confidence: number;
@@ -1138,7 +1138,7 @@ export declare const MetaContentSchema: z.ZodObject<{
     observations?: string[] | undefined;
     adjustments?: string[] | undefined;
     effectiveness?: number | undefined;
-    insights?: string | undefined;
+    insights?: unknown;
     defaultCounterfactual?: {
         trainedDefault: string;
         reasonedConclusion: string;
@@ -1167,8 +1167,8 @@ export declare const MetaContentSchema: z.ZodObject<{
         epistemicNote: string;
         visualType?: "gravity_well" | "force_diagram" | "availability_landscape" | "people_map" | "reflex_board" | "resultant_vector" | "freeform" | undefined;
         elements?: {
-            id: string;
             label: string;
+            id: string;
             weight?: number | undefined;
             position?: "surface" | "shallow" | "deep" | "deepest" | undefined;
         }[] | undefined;
@@ -1180,9 +1180,9 @@ export declare const MetaContentSchema: z.ZodObject<{
             strength?: number | undefined;
         }[] | undefined;
         states?: {
+            label: string;
             caught: boolean | "partial";
             id: string;
-            label: string;
             activates: boolean;
         }[] | undefined;
         freeformCanvas?: string | undefined;
@@ -1243,7 +1243,7 @@ export declare const SystemsContentSchema: z.ZodObject<{
         from: string;
         to: string;
     }>, "many">>;
-    feedbackLoops: z.ZodOptional<z.ZodArray<z.ZodString, "many">>;
+    feedbackLoops: z.ZodEffects<z.ZodOptional<z.ZodArray<z.ZodString, "many">>, string[] | undefined, unknown>;
     nextThoughtNeeded: z.ZodOptional<z.ZodBoolean>;
 }, "strip", z.ZodTypeAny, {
     text?: string | undefined;
@@ -1274,12 +1274,12 @@ export declare const SystemsContentSchema: z.ZodObject<{
         from: string;
         to: string;
     }[] | undefined;
-    feedbackLoops?: string[] | undefined;
+    feedbackLoops?: unknown;
 }>;
 export declare const CreativeIdeaSchema: z.ZodObject<{
     idea: z.ZodString;
     potential: z.ZodString;
-    challenges: z.ZodArray<z.ZodString, "many">;
+    challenges: z.ZodEffects<z.ZodArray<z.ZodString, "many">, string[], unknown>;
 }, "strip", z.ZodTypeAny, {
     idea: string;
     potential: string;
@@ -1287,7 +1287,7 @@ export declare const CreativeIdeaSchema: z.ZodObject<{
 }, {
     idea: string;
     potential: string;
-    challenges: string[];
+    challenges?: unknown;
 }>;
 export declare const CreativeThinkingContentSchema: z.ZodObject<{
     text: z.ZodOptional<z.ZodString>;
@@ -1296,7 +1296,7 @@ export declare const CreativeThinkingContentSchema: z.ZodObject<{
     ideas: z.ZodOptional<z.ZodArray<z.ZodObject<{
         idea: z.ZodString;
         potential: z.ZodString;
-        challenges: z.ZodArray<z.ZodString, "many">;
+        challenges: z.ZodEffects<z.ZodArray<z.ZodString, "many">, string[], unknown>;
     }, "strip", z.ZodTypeAny, {
         idea: string;
         potential: string;
@@ -1304,7 +1304,7 @@ export declare const CreativeThinkingContentSchema: z.ZodObject<{
     }, {
         idea: string;
         potential: string;
-        challenges: string[];
+        challenges?: unknown;
     }>, "many">>;
     synthesis: z.ZodOptional<z.ZodString>;
     nextThoughtNeeded: z.ZodOptional<z.ZodBoolean>;
@@ -1327,7 +1327,7 @@ export declare const CreativeThinkingContentSchema: z.ZodObject<{
     ideas?: {
         idea: string;
         potential: string;
-        challenges: string[];
+        challenges?: unknown;
     }[] | undefined;
     synthesis?: string | undefined;
 }>;
@@ -1424,11 +1424,11 @@ export declare const CheckpointContentSchema: z.ZodObject<{
         type: z.ZodEnum<["FORWARD", "FORBIDDEN", "QUESTION"]>;
         text: z.ZodString;
     }, "strip", z.ZodTypeAny, {
-        type: "FORWARD" | "FORBIDDEN" | "QUESTION";
         text: string;
+        type: "FORWARD" | "FORBIDDEN" | "QUESTION";
     }, {
-        type: "FORWARD" | "FORBIDDEN" | "QUESTION";
         text: string;
+        type: "FORWARD" | "FORBIDDEN" | "QUESTION";
     }>, "many">>;
     resolveConstraints: z.ZodOptional<z.ZodArray<z.ZodString, "many">>;
     acknowledgeConstraints: z.ZodOptional<z.ZodArray<z.ZodString, "many">>;
@@ -1472,8 +1472,8 @@ export declare const CheckpointContentSchema: z.ZodObject<{
         notes?: string | undefined;
     }>>;
 }, "strip", z.ZodTypeAny, {
-    text?: string | undefined;
     label?: string | undefined;
+    text?: string | undefined;
     summary?: string | undefined;
     keyFindings?: string[] | undefined;
     openQuestions?: string[] | undefined;
@@ -1481,8 +1481,8 @@ export declare const CheckpointContentSchema: z.ZodObject<{
     phase?: string | undefined;
     command?: string | undefined;
     addConstraints?: {
-        type: "FORWARD" | "FORBIDDEN" | "QUESTION";
         text: string;
+        type: "FORWARD" | "FORBIDDEN" | "QUESTION";
     }[] | undefined;
     resolveConstraints?: string[] | undefined;
     acknowledgeConstraints?: string[] | undefined;
@@ -1502,8 +1502,8 @@ export declare const CheckpointContentSchema: z.ZodObject<{
         notes?: string | undefined;
     } | undefined;
 }, {
-    text?: string | undefined;
     label?: string | undefined;
+    text?: string | undefined;
     summary?: string | undefined;
     keyFindings?: string[] | undefined;
     openQuestions?: string[] | undefined;
@@ -1511,8 +1511,8 @@ export declare const CheckpointContentSchema: z.ZodObject<{
     phase?: string | undefined;
     command?: string | undefined;
     addConstraints?: {
-        type: "FORWARD" | "FORBIDDEN" | "QUESTION";
         text: string;
+        type: "FORWARD" | "FORBIDDEN" | "QUESTION";
     }[] | undefined;
     resolveConstraints?: string[] | undefined;
     acknowledgeConstraints?: string[] | undefined;
@@ -1590,7 +1590,7 @@ export declare const CollaborativeReasoningContentSchema: z.ZodObject<{
         arguments: string[];
     }>, "many">>;
     commonGround: z.ZodOptional<z.ZodArray<z.ZodString, "many">>;
-    tensions: z.ZodOptional<z.ZodArray<z.ZodString, "many">>;
+    tensions: z.ZodEffects<z.ZodOptional<z.ZodArray<z.ZodString, "many">>, string[] | undefined, unknown>;
     synthesis: z.ZodOptional<z.ZodString>;
     nextThoughtNeeded: z.ZodOptional<z.ZodBoolean>;
 }, "strip", z.ZodTypeAny, {
@@ -1616,7 +1616,7 @@ export declare const CollaborativeReasoningContentSchema: z.ZodObject<{
         arguments: string[];
     }[] | undefined;
     commonGround?: string[] | undefined;
-    tensions?: string[] | undefined;
+    tensions?: unknown;
 }>;
 export declare const SocraticQuestionSchema: z.ZodObject<{
     question: z.ZodString;
@@ -2156,12 +2156,12 @@ export declare const ResearchSourceSchema: z.ZodObject<{
     type: z.ZodString;
     credibility: z.ZodString;
 }, "strip", z.ZodTypeAny, {
-    type: string;
     name: string;
+    type: string;
     credibility: string;
 }, {
-    type: string;
     name: string;
+    type: string;
     credibility: string;
 }>;
 export declare const ResearchFindingSchema: z.ZodObject<{
@@ -2185,12 +2185,12 @@ export declare const ResearchContentSchema: z.ZodObject<{
         type: z.ZodString;
         credibility: z.ZodString;
     }, "strip", z.ZodTypeAny, {
-        type: string;
         name: string;
+        type: string;
         credibility: string;
     }, {
-        type: string;
         name: string;
+        type: string;
         credibility: string;
     }>, "many">;
     findings: z.ZodArray<z.ZodObject<{
@@ -2220,8 +2220,8 @@ export declare const ResearchContentSchema: z.ZodObject<{
     nextSteps: string[];
     question: string;
     sources: {
-        type: string;
         name: string;
+        type: string;
         credibility: string;
     }[];
     gaps: string[];
@@ -2237,8 +2237,8 @@ export declare const ResearchContentSchema: z.ZodObject<{
     nextSteps: string[];
     question: string;
     sources: {
-        type: string;
         name: string;
+        type: string;
         credibility: string;
     }[];
     gaps: string[];
@@ -2248,7 +2248,7 @@ export declare const ResearchContentSchema: z.ZodObject<{
 export declare const AnalogSchema: z.ZodObject<{
     domain: z.ZodString;
     description: z.ZodString;
-    similarity: z.ZodNumber;
+    similarity: z.ZodEffects<z.ZodNumber, number, unknown>;
 }, "strip", z.ZodTypeAny, {
     description: string;
     domain: string;
@@ -2256,7 +2256,7 @@ export declare const AnalogSchema: z.ZodObject<{
 }, {
     description: string;
     domain: string;
-    similarity: number;
+    similarity?: unknown;
 }>;
 export declare const AnalogMappingSchema: z.ZodObject<{
     targetElement: z.ZodString;
@@ -2277,7 +2277,7 @@ export declare const AnalogicalReasoningContentSchema: z.ZodObject<{
     analogs: z.ZodArray<z.ZodObject<{
         domain: z.ZodString;
         description: z.ZodString;
-        similarity: z.ZodNumber;
+        similarity: z.ZodEffects<z.ZodNumber, number, unknown>;
     }, "strip", z.ZodTypeAny, {
         description: string;
         domain: string;
@@ -2285,7 +2285,7 @@ export declare const AnalogicalReasoningContentSchema: z.ZodObject<{
     }, {
         description: string;
         domain: string;
-        similarity: number;
+        similarity?: unknown;
     }>, "many">;
     mappings: z.ZodArray<z.ZodObject<{
         targetElement: z.ZodString;
@@ -2325,7 +2325,7 @@ export declare const AnalogicalReasoningContentSchema: z.ZodObject<{
     analogs: {
         description: string;
         domain: string;
-        similarity: number;
+        similarity?: unknown;
     }[];
     mappings: {
         relationship: string;
@@ -2357,15 +2357,15 @@ export declare const EffectSchema: z.ZodObject<{
     likelihood: z.ZodString;
     timeframe: z.ZodString;
 }, "strip", z.ZodTypeAny, {
-    outcome: string;
     likelihood: string;
+    outcome: string;
     timeframe: string;
 }, {
-    outcome: string;
     likelihood: string;
+    outcome: string;
     timeframe: string;
 }>;
-export declare const CausalChainSchema: z.ZodObject<{
+export declare const CausalChainSchema: z.ZodEffects<z.ZodObject<{
     sequence: z.ZodArray<z.ZodString, "many">;
     probability: z.ZodNumber;
 }, "strip", z.ZodTypeAny, {
@@ -2374,7 +2374,10 @@ export declare const CausalChainSchema: z.ZodObject<{
 }, {
     sequence: string[];
     probability: number;
-}>;
+}>, {
+    sequence: string[];
+    probability: number;
+}, unknown>;
 export declare const CausalAnalysisContentSchema: z.ZodObject<{
     text: z.ZodOptional<z.ZodString>;
     phenomenon: z.ZodString;
@@ -2399,15 +2402,15 @@ export declare const CausalAnalysisContentSchema: z.ZodObject<{
         likelihood: z.ZodString;
         timeframe: z.ZodString;
     }, "strip", z.ZodTypeAny, {
-        outcome: string;
         likelihood: string;
+        outcome: string;
         timeframe: string;
     }, {
-        outcome: string;
         likelihood: string;
+        outcome: string;
         timeframe: string;
     }>, "many">;
-    chains: z.ZodArray<z.ZodObject<{
+    chains: z.ZodArray<z.ZodEffects<z.ZodObject<{
         sequence: z.ZodArray<z.ZodString, "many">;
         probability: z.ZodNumber;
     }, "strip", z.ZodTypeAny, {
@@ -2416,7 +2419,10 @@ export declare const CausalAnalysisContentSchema: z.ZodObject<{
     }, {
         sequence: string[];
         probability: number;
-    }>, "many">;
+    }>, {
+        sequence: string[];
+        probability: number;
+    }, unknown>, "many">;
     interventions: z.ZodOptional<z.ZodArray<z.ZodString, "many">>;
     nextThoughtNeeded: z.ZodOptional<z.ZodBoolean>;
 }, "strip", z.ZodTypeAny, {
@@ -2428,8 +2434,8 @@ export declare const CausalAnalysisContentSchema: z.ZodObject<{
         evidence?: string | undefined;
     }[];
     effects: {
-        outcome: string;
         likelihood: string;
+        outcome: string;
         timeframe: string;
     }[];
     chains: {
@@ -2448,14 +2454,11 @@ export declare const CausalAnalysisContentSchema: z.ZodObject<{
         evidence?: string | undefined;
     }[];
     effects: {
-        outcome: string;
         likelihood: string;
+        outcome: string;
         timeframe: string;
     }[];
-    chains: {
-        sequence: string[];
-        probability: number;
-    }[];
+    chains: unknown[];
     text?: string | undefined;
     nextThoughtNeeded?: boolean | undefined;
     interventions?: string[] | undefined;
@@ -2833,12 +2836,12 @@ export declare const DashboardSectionSchema: z.ZodObject<{
     type: z.ZodString;
     data: z.ZodRecord<z.ZodString, z.ZodUnknown>;
 }, "strip", z.ZodTypeAny, {
-    type: string;
     name: string;
+    type: string;
     data: Record<string, unknown>;
 }, {
-    type: string;
     name: string;
+    type: string;
     data: Record<string, unknown>;
 }>;
 export declare const VisualDashboardContentSchema: z.ZodObject<{
@@ -2849,12 +2852,12 @@ export declare const VisualDashboardContentSchema: z.ZodObject<{
         type: z.ZodString;
         data: z.ZodRecord<z.ZodString, z.ZodUnknown>;
     }, "strip", z.ZodTypeAny, {
-        type: string;
         name: string;
+        type: string;
         data: Record<string, unknown>;
     }, {
-        type: string;
         name: string;
+        type: string;
         data: Record<string, unknown>;
     }>, "many">;
     highlights: z.ZodArray<z.ZodString, "many">;
@@ -2863,8 +2866,8 @@ export declare const VisualDashboardContentSchema: z.ZodObject<{
 }, "strip", z.ZodTypeAny, {
     title: string;
     sections: {
-        type: string;
         name: string;
+        type: string;
         data: Record<string, unknown>;
     }[];
     highlights: string[];
@@ -2874,8 +2877,8 @@ export declare const VisualDashboardContentSchema: z.ZodObject<{
 }, {
     title: string;
     sections: {
-        type: string;
         name: string;
+        type: string;
         data: Record<string, unknown>;
     }[];
     highlights: string[];
@@ -2901,12 +2904,12 @@ export declare const PDRResolutionSchema: z.ZodObject<{
     validation: z.ZodString;
     risks: z.ZodArray<z.ZodString, "many">;
 }, "strip", z.ZodTypeAny, {
-    validation: string;
     steps: string[];
+    validation: string;
     risks: string[];
 }, {
-    validation: string;
     steps: string[];
+    validation: string;
     risks: string[];
 }>;
 export declare const PDRReasoningContentSchema: z.ZodObject<{
@@ -2931,20 +2934,20 @@ export declare const PDRReasoningContentSchema: z.ZodObject<{
         validation: z.ZodString;
         risks: z.ZodArray<z.ZodString, "many">;
     }, "strip", z.ZodTypeAny, {
-        validation: string;
         steps: string[];
+        validation: string;
         risks: string[];
     }, {
-        validation: string;
         steps: string[];
+        validation: string;
         risks: string[];
     }>;
     nextThoughtNeeded: z.ZodOptional<z.ZodBoolean>;
 }, "strip", z.ZodTypeAny, {
     problem: string;
     resolution: {
-        validation: string;
         steps: string[];
+        validation: string;
         risks: string[];
     };
     constraints: string[];
@@ -2958,8 +2961,8 @@ export declare const PDRReasoningContentSchema: z.ZodObject<{
 }, {
     problem: string;
     resolution: {
-        validation: string;
         steps: string[];
+        validation: string;
         risks: string[];
     };
     constraints: string[];
@@ -3064,9 +3067,9 @@ export declare const CustomFrameworkContentSchema: z.ZodObject<{
     conclusion: z.ZodString;
     nextThoughtNeeded: z.ZodOptional<z.ZodBoolean>;
 }, "strip", z.ZodTypeAny, {
+    name: string;
     description: string;
     conclusion: string;
-    name: string;
     application: {
         problem: string;
         stageResults: {
@@ -3082,9 +3085,9 @@ export declare const CustomFrameworkContentSchema: z.ZodObject<{
     text?: string | undefined;
     nextThoughtNeeded?: boolean | undefined;
 }, {
+    name: string;
     description: string;
     conclusion: string;
-    name: string;
     application: {
         problem: string;
         stageResults: {
@@ -3144,11 +3147,11 @@ export declare const AuditFindingSchema: z.ZodObject<{
     evidence: z.ZodOptional<z.ZodString>;
     fixCommand: z.ZodOptional<z.ZodString>;
 }, "strip", z.ZodTypeAny, {
-    type: "bug" | "risk" | "improvement" | "optimization";
+    title: string;
     description: string;
+    type: "bug" | "risk" | "improvement" | "optimization";
     id: string;
     recommendation: string;
-    title: string;
     severity: "medium" | "critical" | "high" | "low";
     dimension: string;
     location: string;
@@ -3156,11 +3159,11 @@ export declare const AuditFindingSchema: z.ZodObject<{
     evidence?: string | undefined;
     fixCommand?: string | undefined;
 }, {
-    type: "bug" | "risk" | "improvement" | "optimization";
+    title: string;
     description: string;
+    type: "bug" | "risk" | "improvement" | "optimization";
     id: string;
     recommendation: string;
-    title: string;
     severity: "medium" | "critical" | "high" | "low";
     dimension: string;
     location: string;
@@ -3250,11 +3253,11 @@ export declare const AuditContentSchema: z.ZodObject<{
         evidence: z.ZodOptional<z.ZodString>;
         fixCommand: z.ZodOptional<z.ZodString>;
     }, "strip", z.ZodTypeAny, {
-        type: "bug" | "risk" | "improvement" | "optimization";
+        title: string;
         description: string;
+        type: "bug" | "risk" | "improvement" | "optimization";
         id: string;
         recommendation: string;
-        title: string;
         severity: "medium" | "critical" | "high" | "low";
         dimension: string;
         location: string;
@@ -3262,11 +3265,11 @@ export declare const AuditContentSchema: z.ZodObject<{
         evidence?: string | undefined;
         fixCommand?: string | undefined;
     }, {
-        type: "bug" | "risk" | "improvement" | "optimization";
+        title: string;
         description: string;
+        type: "bug" | "risk" | "improvement" | "optimization";
         id: string;
         recommendation: string;
-        title: string;
         severity: "medium" | "critical" | "high" | "low";
         dimension: string;
         location: string;
@@ -3302,11 +3305,11 @@ export declare const AuditContentSchema: z.ZodObject<{
     nextThoughtNeeded: z.ZodOptional<z.ZodBoolean>;
 }, "strip", z.ZodTypeAny, {
     findings: {
-        type: "bug" | "risk" | "improvement" | "optimization";
+        title: string;
         description: string;
+        type: "bug" | "risk" | "improvement" | "optimization";
         id: string;
         recommendation: string;
-        title: string;
         severity: "medium" | "critical" | "high" | "low";
         dimension: string;
         location: string;
@@ -3337,11 +3340,11 @@ export declare const AuditContentSchema: z.ZodObject<{
     target?: string | undefined;
 }, {
     findings: {
-        type: "bug" | "risk" | "improvement" | "optimization";
+        title: string;
         description: string;
+        type: "bug" | "risk" | "improvement" | "optimization";
         id: string;
         recommendation: string;
-        title: string;
         severity: "medium" | "critical" | "high" | "low";
         dimension: string;
         location: string;
@@ -3743,14 +3746,14 @@ export declare const NotebookCreateContentSchema: z.ZodObject<{
     tags: z.ZodArray<z.ZodString, "many">;
     metadata: z.ZodRecord<z.ZodString, z.ZodUnknown>;
 }, "strip", z.ZodTypeAny, {
-    description: string;
     name: string;
+    description: string;
     tags: string[];
     metadata: Record<string, unknown>;
     text?: string | undefined;
 }, {
-    description: string;
     name: string;
+    description: string;
     tags: string[];
     metadata: Record<string, unknown>;
     text?: string | undefined;
@@ -3988,6 +3991,7 @@ export declare function validateOperationContent(operation: string, content: unk
 } | {
     success: false;
     error: string;
+    hint?: string;
 };
 export type CognitionInput = z.infer<typeof CognitionInputSchema>;
 //# sourceMappingURL=schema.d.ts.map

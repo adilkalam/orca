@@ -1,6 +1,6 @@
 # Research Domain Pipeline
 
-**Status:** OS 6.3 Pipeline (Research)  
+**Status:** OS 6.4 Pipeline (Research)  
 **Last Updated:** 2026-02-13
 
 ---
@@ -17,7 +17,7 @@ artifact**, not a code change:
 
 It combines:
 
-- OS 6.3 primitives (`phase_state.json`, Workshop, code-index.db, ProjectContext).
+- OS 6.4 primitives (`phase_state.json`, Workshop, code-index.db, ProjectContext).
 - A dedicated **Research lane** with `/research` as entrypoint.
 - Crawl4AI MCP for web crawling and content extraction.
 - Direct orchestration from `/research` command (flat agent hierarchy).

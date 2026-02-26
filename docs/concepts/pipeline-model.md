@@ -1,8 +1,8 @@
 # Pipeline Model
 
-**Version:** OS 6.3 | **Last Updated:** 2026-01-24
+**Version:** OS 6.4 | **Last Updated:** 2026-02-26
 
-OS 6.3 uses a **multi-lane pipeline architecture** to handle different types of development work. Each "lane" is a domain-specific pipeline with its own agents, phases, and gates.
+OS 6.4 uses a **multi-lane pipeline architecture** to handle different types of development work. Each "lane" is a domain-specific pipeline with its own agents, phases, and gates.
 
 ## Core Concepts
 
@@ -21,6 +21,7 @@ A **lane** is a complete pipeline for a specific development domain:
 | Data | Data analysis and research | (no dedicated command) |
 | OS-Dev | OS configuration (LOCAL only) | `/orca-os-dev` |
 | Orca-Pipeline | Meta-pipeline creation | `/orca-pipeline` |
+| RVRY | Reasoning orchestration engine | `/rvry` |
 | Audit | Due diligence audits | `/audit` |
 | Typography | Font library management | `/typography` |
 
@@ -56,7 +57,7 @@ Parse flags
 
 ### Agent Roles
 
-OS 6.3 enforces strict role separation:
+OS 6.4 enforces strict role separation:
 
 #### Orchestrators (Never Write Code)
 - **Commands**: `/orca`, `/ios`, `/nextjs`, etc.
@@ -189,12 +190,10 @@ canonical workaround for any subagent that needs MCP data.
 
 ## Recording Layer
 
-OS 6.3 pipelines are observed by the **recording layer** (`orca-record` CLI + `.orca/recording.db`). Every pipeline session can be recorded, checkpointed, and rewound:
+OS 6.4 pipelines are observed by the **recording layer** (`orca-record` CLI + `.orca/recording.db`). Recording captures session events to `.orca/recording.db` via hooks. cognition-mcp queries this data for session context injection.
 
-- **Session recording**: `orca-record start` / `orca-record stop` capture tool calls, decisions, and file changes to a per-project SQLite database
-- **Git checkpoints**: `orca-record checkpoint` creates lightweight snapshots on a shadow git branch, enabling `orca-record rewind` to any prior state
+- **Session recording**: Hook-driven capture of tool calls, decisions, and file changes to a per-project SQLite database
 - **Cognitive fusion**: 7 cognition-mcp recording operations (`recording_status`, `recording_query`, `recording_checkpoint`, `recording_compare`, `recording_quality`, `recording_explain`, `recording_rewind`) bridge structured reasoning with session history
-- **Condensation**: `orca-record condense` compresses checkpoint history to the `orca/checkpoints/v1` orphan branch for long-term storage
 - **Recording Context Injection**: Domain commands call `recording_query`/`recording_explain` to inject recent session context before delegation, providing continuity across sessions
 
 Recording is orthogonal to pipeline phases -- it wraps around the entire session, not individual phases.

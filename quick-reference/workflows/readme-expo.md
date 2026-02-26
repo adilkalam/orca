@@ -1,10 +1,10 @@
-# OS 6.3 Expo Lane Readme
+# OS 6.4 Expo Lane Readme
 
 **Lane:** Expo / React Native  
 **Domain:** `expo`  
 **Entrypoints:** `/plan`, `/orca`, `/expo`, `/project-memory`, `/project-code`
 
-This readme explains the Expo lane in OS 6.3:
+This readme explains the Expo lane in OS 6.4:
 
 - Planning & specs for Expo tasks
 - Orchestration via `/orca` and `/expo`
@@ -69,7 +69,7 @@ File: `commands/expo.md`
   /expo "implement requirement <id>"             # With spec
   ```
 
-- **Routing Modes (OS 6.3):**
+- **Routing Modes (OS 6.4):**
 
   | Mode | Flag | Path | Gates |
   |------|------|------|-------|
@@ -195,7 +195,7 @@ Expo pipeline includes:
 
 ## 7. Mental Model
 
-For Expo work in OS 6.3 (routing modes):
+For Expo work in OS 6.4 (routing modes):
 
 | Mode | Command | Path |
 |------|---------|------|

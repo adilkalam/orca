@@ -1,10 +1,10 @@
-# OS 6.3 Next.js Lane Readme
+# OS 6.4 Next.js Lane Readme
 
 **Lane:** Next.js / Frontend  
 **Domain:** `nextjs`  
 **Entrypoints:** `/plan`, `/orca`, `/nextjs`, `/project-memory`, `/project-code`
 
-This document explains how the Next.js lane works in OS 6.3:
+This document explains how the Next.js lane works in OS 6.4:
 
 - How planning and specs work (`/plan`)
 - How orchestration routes (`/orca`, `/nextjs`)
@@ -52,7 +52,7 @@ For **complex** Next.js tasks the spec is **required** before the full lane runs
 
 ### 2.2 Global Orchestrator – `/orca`
 
-`/orca` is the pure OS 6.3 orchestrator:
+`/orca` is the pure OS 6.4 orchestrator:
 
 - Checks Workshop + code-index.db first (memory‑first).
 - Checks for an active requirements spec.
@@ -79,7 +79,7 @@ File: `commands/nextjs.md`
   /nextjs "implement requirement <id>"           # With spec
   ```
 
-- **Routing Modes (OS 6.3):**
+- **Routing Modes (OS 6.4):**
 
   | Mode | Flag | Path | Gates |
   |------|------|------|-------|
@@ -245,7 +245,7 @@ Two primary commands:
 
 Unified memory search:
 
-- The OS 6.3 hooks and scripts provide a unified search that:
+- The OS 6.4 hooks and scripts provide a unified search that:
   - Queries Workshop and code-index.db together.
   - Is used by `/orca` and `/nextjs` before ProjectContext.
 
@@ -268,7 +268,7 @@ promote new standards or adjust defaults.
 
 ## 8. Quick Mental Model
 
-For Next.js work in OS 6.3 (routing modes):
+For Next.js work in OS 6.4 (routing modes):
 
 | Mode | Command | Path |
 |------|---------|------|

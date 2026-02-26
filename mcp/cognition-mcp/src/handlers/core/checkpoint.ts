@@ -13,7 +13,7 @@ import type { CognitionRequest, HandlerResult, CheckpointContent, ProtocolState,
 import { validateOperationContent } from '../../schema.js';
 import { SessionState } from '../../session/state.js';
 import { getSessionManager } from '../../session/manager.js';
-import { buildResponse } from '../shared.js';
+import { buildResponse, buildErrorResponse } from '../shared.js';
 import { writeFileSync, mkdirSync, existsSync } from 'fs';
 import { join } from 'path';
 
@@ -318,22 +318,18 @@ export async function handleCheckpoint(
   // 1. VALIDATE structure (not content)
   const validation = validateOperationContent('checkpoint', args.content);
   if (!validation.success) {
-    return {
-      content: [{
-        type: 'text',
-        text: JSON.stringify({
-          status: 'error',
-          error: validation.error,
-          sessionContext: {
-            sessionId: session.id,
-            entryCount: session.getCount('checkpoints'),
-            totalEntries: session.getTotalCount(),
-            sessionDuration: session.getDuration(),
-            continuation: null,
-          },
-        }),
-      }],
-    };
+    return buildErrorResponse({
+      status: 'error',
+      error: validation.error,
+      hint: validation.hint,
+      sessionContext: {
+        sessionId: session.id,
+        entryCount: session.getCount('checkpoints'),
+        totalEntries: session.getTotalCount(),
+        sessionDuration: session.getDuration(),
+        continuation: null,
+      },
+    });
   }
 
   const checkpointContent = validation.data as CheckpointContent;

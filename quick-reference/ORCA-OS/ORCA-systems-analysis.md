@@ -1,29 +1,29 @@
-# ORCA-OS v6.3 Systems Analysis
+# ORCA-OS v6.4 Systems Analysis
 
-**Generated:** 2026-02-07
+**Generated:** 2026-02-26
 **Source of Truth:** `docs/reference/os-dependency-graph.yaml`
 
 ---
 
 ## Executive Summary
 
-ORCA-OS is a Claude Code configuration system that deploys to `~/.claude`. It consists of **9 architectural layers** working together to provide domain-specific AI-assisted development pipelines. Each layer exists to counteract a specific trained default: specialized agents prevent drift toward generic output, phase configs prevent skipping planning and verification, memory systems compensate for no persistent context, quality gates prevent premature completion, and the cognition system enables substrate-level observation of reasoning. The architecture matches the complexity of the problem it solves -- development orchestration across 11 domains with enforced quality.
+ORCA-OS is a Claude Code configuration system that deploys to `~/.claude`. It consists of **9 architectural layers** working together to provide domain-specific AI-assisted development pipelines. Each layer exists to counteract a specific trained default: specialized agents prevent drift toward generic output, phase configs prevent skipping planning and verification, memory systems compensate for no persistent context, quality gates prevent premature completion, and the cognition system enables substrate-level observation of reasoning. The architecture matches the complexity of the problem it solves -- development orchestration across 14 domains with enforced quality.
 
 | Layer | Count | Purpose |
 |-------|-------|---------|
-| Commands | 35 | User entry points |
-| Agents | 124 | Workers across 11 domains |
-| Pipelines | 14 | Workflow documentation |
+| Commands | 37 | User entry points |
+| Agents | 131 | Workers across 14 domains |
+| Pipelines | 15 | Workflow documentation |
 | Phase Configs | 12 | Machine-readable definitions |
-| MCPs | 10 | Tool integrations (4 global + 6 project-scoped) |
-| Skills | 36 | Knowledge packages |
-| Hooks | 8 | Lifecycle scripts |
+| MCPs | 12 | 6 global + project-scoped + SEO (Ahrefs, GA4, GSC) |
+| Skills | 41 | Knowledge packages |
+| Hooks | 9 | Lifecycle scripts |
 | Memory | 3-layer | Persistent context |
-| Cognition | 48 ops | Structured reasoning, substrate observation, and recording |
+| Cognition | 49 ops | Structured reasoning, substrate observation, and recording |
 
 ---
 
-## Layer 1: Commands (35)
+## Layer 1: Commands (37)
 
 User entry points invoked via `/command`.
 
@@ -31,14 +31,14 @@ User entry points invoked via `/command`.
 
 | Category | Count | Commands |
 |----------|-------|----------|
-| Lane Orchestrators | 10 | `/ios`, `/nextjs`, `/django-react`, `/expo`, `/research`, `/seo`, `/typography`, `/orca-os-dev`, `/orca`, `/orca-pipeline` |
+| Lane Orchestrators | 12 | `/ios`, `/nextjs`, `/django-react`, `/expo`, `/research`, `/seo`, `/typography`, `/rvry`, `/shopify`, `/orca-os-dev`, `/orca`, `/orca-pipeline` |
 | Planning & Audit | 2 | `/plan`, `/audit` |
 | Reasoning | 5 | `/think`, `/contemplate`, `/challenge`, `/deepthink`, `/problem-solve` |
-| Utility | 13 | `/enhance`, `/root-cause`, `/design-dna`, `/design-review`, `/clone-website`, `/session-save`, `/session-resume`, `/project-memory`, `/project-code`, `/reflect`, `/self-improve`, `/memory-search`, `/project-setup` |
+| Utility | 15 | `/enhance`, `/root-cause`, `/design-dna`, `/design-review`, `/design`, `/illustrate`, `/clone-website`, `/session-save`, `/session-resume`, `/continue`, `/orca-status`, `/project-memory`, `/project-code`, `/reflect`, `/self-improve`, `/memory-search`, `/project-setup` |
 
 ### Four-Tier Routing
 
-All lane commands support four execution modes. This is the central routing mechanism of OS 6.3.
+All lane commands support four execution modes. This is the central routing mechanism of OS 6.4.
 
 | Mode | Flag | Path | Gates | Use Case |
 |------|------|------|-------|----------|
@@ -53,7 +53,7 @@ Complex mode requires a requirements spec (created by `/plan`). If one does not 
 
 ---
 
-## Layer 2: Agents (124)
+## Layer 2: Agents (131)
 
 Workers organized by domain with strict role boundaries.
 
@@ -69,11 +69,14 @@ Workers organized by domain with strict role boundaries.
 | OS-Dev | 6 | `agents/os-dev/` | os-dev-grand-architect, os-dev-builder, os-dev-standards-enforcer |
 | Orca-Pipeline | 5 | `agents/os-dev/` | orca-pipeline-orchestrator, orca-pipeline-researcher, orca-pipeline-generator |
 | Audit | 8 | `agents/audit/` | audit-structure-specialist, audit-security-specialist, audit-architecture-specialist |
+| Shopify | 8 | `agents/shopify/` | shopify-grand-architect, shopify-liquid-specialist, shopify-section-builder |
 | Research | 7 | `agents/research/` | research-web-search-subagent, research-answer-writer, research-fact-checker |
+| RVRY | 7 | `agents/rvry/` | rvry-grand-architect, rvry-engine-builder, rvry-web-builder, rvry-protocol-gate |
 | Typography | 6 | `agents/typography/` | typography-orchestrator, glyph-editor, ttf-exporter, path-guardian |
 | SEO | 5 | `agents/seo/` | seo-research-specialist, seo-brief-strategist, seo-draft-writer, seo-optimizer |
+| KG | 4 | `agents/kg/` | kg-lead-agent, kg-query-subagent, kg-mechanism-subagent, kg-answer-writer |
 | Data | 4 | `agents/data/` | data-researcher, python-analytics-expert, competitive-analyst |
-| **TOTAL** | **124** | **13+ dirs** | |
+| **TOTAL** | **131** | **14 dirs** | |
 
 Note: OS-Dev (6) and Orca-Pipeline (5) share the `agents/os-dev/` directory, totaling 11 agents there.
 
@@ -196,7 +199,7 @@ Always available in `~/.claude.json`:
 
 | MCP | Purpose | Key Tools |
 |-----|---------|-----------|
-| cognition-mcp | Sequential thinking storage with 48 operations (incl. 7 recording ops) | `cognition` (accept-store-echo pattern) |
+| cognition-mcp | Sequential thinking storage with 49 operations (incl. 7 recording ops + blind_orchestrate) | `cognition` (accept-store-echo pattern) |
 | project-context | Project context + ORCA-Mem recall | `query_context`, `save_decision`, `save_standard`, `save_task_history`, `index_project`, `reanalyze_project`, `recall` (7 tools) |
 | sequential-thinking | Extended multi-step reasoning | `sequentialthinking` |
 | context7 | Library documentation (disabled by default) | `resolve-library-id`, `get-library-docs` |
@@ -229,9 +232,9 @@ Additionally, openscad-mcp exists as an experimental integration with no dedicat
 
 ---
 
-## Layer 6: Skills (36)
+## Layer 6: Skills (41)
 
-Knowledge packages that agents reference. 36 directories exist in `skills/`; 2 are empty (`ios-simulator-skill`, `react-patterns`).
+Knowledge packages that agents reference. 41 directories exist in `skills/`.
 
 ### Universal Skills (5)
 
@@ -268,7 +271,7 @@ article-extractor, youtube-transcript, pg-style-editor, elements-of-style, ship-
 
 ---
 
-## Layer 7: Hooks (8)
+## Layer 7: Hooks (9)
 
 Lifecycle scripts in `hooks/`.
 
@@ -313,7 +316,7 @@ Three-layer memory system feeding into ProjectContext MCP.
 | code-index.db | .claude/memory/code-index.db | `python3 ~/.claude/scripts/code-index.py <cmd>` |
 | project-meta | MCP cache | ProjectContext MCP auto-detection |
 
-### ProjectContext Implementation (OS 6.3)
+### ProjectContext Implementation (OS 6.4)
 
 The MCP uses a hybrid approach:
 - **Reads:** Direct SQLite queries via `better-sqlite3` (reliable, no CLI parsing)
@@ -356,7 +359,7 @@ MCP returns:   { thought: "X", ... }  <- UNCHANGED
 
 Claude generates the reasoning. The MCP tracks it with session continuity.
 
-### Operations (48 total)
+### Operations (49 total)
 
 | Category | Count | Operations |
 |----------|-------|------------|
@@ -410,7 +413,7 @@ Templates live at `quick-reference/thinking-models/*.md`.
 
 ## Verification System
 
-OS 6.3 uses graduated gate scoring, not binary pass/fail.
+OS 6.4 uses graduated gate scoring, not binary pass/fail.
 
 ### Graduated Gate Labels
 
@@ -485,7 +488,7 @@ Gate agents check RA status from implementation phases and factor unresolved ass
 
 ## Self-Improvement System
 
-OS 6.3 provides learning at three levels, unified by the Improvement Bus.
+OS 6.4 provides learning at three levels, unified by the Improvement Bus.
 
 ### Three Levels
 
@@ -559,7 +562,7 @@ orca/<hash>-<wt>       # Shadow branches (per-session checkpoints)
 orca/checkpoints/v1    # Orphan branch (permanent storage)
 ```
 
-CLI: `orca-record` (16 commands). Supersedes legacy telemetry.
+CLI: `orca-record` v0.4.0 (7 commands: 5 hook + 2 user). Git shadow branch layer removed; event tracking only. Supersedes legacy telemetry.
 
 ---
 
@@ -653,7 +656,7 @@ Cognitive analysis persists as files on disk. When the context window compacts, 
 4. **Graduated scoring**: >=90 PASS, 80-89 WARN, 70-79 ERROR, <70 BLOCK
 5. **Context mandatory**: All agents call ProjectContext MCP first
 6. **State preserved**: phase_state.json enables resumption across sessions
-7. **All Opus 4.6**: Default model across all 112 agents, never specified
+7. **All Opus 4.6**: Default model across all 131 agents, never specified
 8. **Four-tier routing**: --light (fast, no confirmation) / default (fast+gates) / -tweak (builder direct) / --complex (full pipeline)
 9. **User approval required**: Agents never auto-modify; improvements need explicit approval
 
@@ -695,4 +698,4 @@ Cognitive analysis persists as files on disk. When the context window compacts, 
 ---
 
 _Source of truth: `docs/reference/os-dependency-graph.yaml`_
-_Version: OS 6.3 | Generated: 2026-02-07_
+_Version: OS 6.4 | Generated: 2026-02-26_

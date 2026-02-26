@@ -1,8 +1,8 @@
 # Response Awareness (RA)
 
-**Version:** OS 6.3 | **Last Updated:** 2026-01-24
+**Version:** OS 6.4 | **Last Updated:** 2026-02-26
 
-Response Awareness is OS 6.3's system for **making assumptions and decisions explicit** during agent work. RA is **instrumentation**, not a primary scoring mechanism: tags surface where the model is guessing, following bad framing, or making architectural choices so that gates, audits, and humans can react.
+Response Awareness is OS 6.4's system for **making assumptions and decisions explicit** during agent work. RA is **instrumentation**, not a primary scoring mechanism: tags surface where the model is guessing, following bad framing, or making architectural choices so that gates, audits, and humans can react.
 
 ## Why RA?
 
@@ -14,7 +14,7 @@ AI agents make assumptions. Without tracking:
 
 RA makes the implicit explicit but **does not by itself prove correctness**. Tags must be paired with real checks (tests, pixel measurements, code metrics).
 
-## Core RA Tags (OS 6.3)
+## Core RA Tags (OS 6.4)
 
 These tags are the **cross-lane core** used in all dev pipelines.
 
@@ -195,7 +195,7 @@ RA status affects gate decisions:
 - `ra_status: "present_resolved"` - Tags exist but documented/resolved
 - `ra_status: "present_unresolved"` - Unresolved assumptions (flag for review)
 
-**Important (OS 6.3):**
+**Important (OS 6.4):**
 - RA tags are **signals**, not scores. Gates MAY downgrade to CAUTION/FAIL when high‑risk RA tags remain unresolved (e.g., `#COMPLETION_DRIVE` in auth/checkout flows, `#POISON_PATH` ignored).
 - Gates MUST NOT derive standalone “RA accuracy percentages” from tag counts. Final quality judgments come from tests, builds, pixel checks, and domain-specific metrics.
 

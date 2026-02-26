@@ -26,6 +26,7 @@ export async function handleGraphOfThought(
         text: JSON.stringify({
           status: 'error',
           error: validation.error,
+          hint: validation.hint,
           sessionContext: {
             sessionId: session.id,
             entryCount: session.getCount('graph'),

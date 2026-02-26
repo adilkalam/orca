@@ -109,6 +109,67 @@ Follow your agent spec at ~/.claude/agents/seo/seo-optimizer.md
 
 ---
 
+### --audit Mode (Effectiveness Report)
+
+```bash
+# Quick effectiveness report (top 10 pages, 28-day window, recommended actions)
+/seo --audit
+
+# Comprehensive analysis (all pages, 4-week trends, cannibalization, content gaps)
+/seo --audit-full
+```
+
+Both modes auto-detect the project from the current working directory and save reports to `docs/SEO/audit-YYYY-MM-DD.md` in the project.
+
+**If --audit or --audit-full flag detected:**
+
+```typescript
+if (args.includes('--audit') || args.includes('--audit-full')) {
+  const auditMode = args.includes('--audit-full') ? 'full' : 'quick';
+
+  // Route to seo-optimizer agent with audit mode
+  await Task({
+    subagent_type: "seo-optimizer",
+    description: `SEO effectiveness audit (${auditMode}) for current project`,
+    prompt: `
+Perform an SEO effectiveness audit.
+
+Mode: ${auditMode}
+Project: ${process.cwd()}
+
+Follow your agent spec at ~/.claude/agents/seo/seo-optimizer.md
+See the "Audit Mode" section for detailed instructions.
+    `
+  });
+
+  // STOP - do not continue to content pipeline
+  return;
+}
+```
+
+#### --audit (Quick Summary)
+- **Date range:** Last 28 days (default)
+- **GA4 data:** Total organic sessions, users, new users; top 10 landing pages by organic sessions with engagement rate, avg session duration, conversions
+- **GSC data:** Top 10 queries by impressions with CTR and avg position
+- **Declining pages:** Pages where organic sessions dropped >20% vs prior 28-day period
+- **Quick wins:** Pages with high impressions but low CTR (position 4-20, CTR < 3%)
+- **Recommended actions:** 3-5 specific, prioritized actions based on the data
+- **Graceful degradation:** If GA4/GSC MCPs are not configured or auth fails, display setup instructions instead of failing
+
+#### --audit-full (Comprehensive)
+Everything in --audit, plus:
+- All pages (not just top 10) with organic performance
+- Weekly trend comparison (last 4 weeks side by side per landing page)
+- Full GSC query map (all queries with impressions > 10)
+- Content gap analysis (high-volume queries where position > 10)
+- Cannibalization check (multiple pages ranking for the same query)
+- Engagement quality analysis (pages with high traffic but low engagement rate)
+- New vs returning user breakdown per landing page
+- Full prioritized action list with estimated impact
+
+---
+
+
 ## 0.1 Recording Context (OS 6.3)
 
 > Session activity is captured automatically by **orca-record** hooks. Before

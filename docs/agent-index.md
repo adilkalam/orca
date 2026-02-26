@@ -1,8 +1,8 @@
 # ORCA-OS Agent Index
 
-**Total Agents:** 112
-**Categories:** 11
-**Generated:** 2026-02-04 12:48
+**Total Agents:** 131
+**Categories:** 14
+**Generated:** 2026-02-26
 
 ---
 
@@ -152,6 +152,18 @@
 | research-fact-checker          | Optional fact-checking gate for the Research lane. V... | 147   | 2026-01-30   |
 | research-site-crawler-subagent | Crawl4AI-first site mapping and crawling specialist.... | 163   | 2026-02-03   |
 | research-web-search-subagent   | Web search specialist using WebSearch + Crawl4AI wit... | 206   | 2026-02-03   |
+
+## RVRY
+
+| Agent Name              | Function                                                | Lines | Last Updated |
+|-------------------------|---------------------------------------------------------|-------|--------------|
+| rvry-engine-architect   | Architecture and planning specialist for the RVRY or... | -     | 2026-02-20   |
+| rvry-engine-builder     | Implementation specialist for the RVRY orchestration... | -     | 2026-02-20   |
+| rvry-grand-architect    | Tier-S orchestrator for the RVRY product pipeline. R... | -     | 2026-02-20   |
+| rvry-light-orchestrator | Light orchestrator for RVRY tasks. Invoked via --lig... | -     | 2026-02-20   |
+| rvry-protocol-gate      | Combined code standards and protocol surface complia... | -     | 2026-02-20   |
+| rvry-verification       | Domain-specific verification agent for the RVRY pipe... | -     | 2026-02-20   |
+| rvry-web-builder        | Implementation specialist for the RVRY web layer. Bu... | -     | 2026-02-20   |
 
 ## Seo
 

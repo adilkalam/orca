@@ -91,8 +91,9 @@ Fast exploration using blind_orchestrate. Same analytical depth as default deept
 [brief orientation from the exploration]
 
 ## Exploration
-### [Topic 1]: [2-3 sentence key finding]
-### [Topic 2]: [2-3 sentence key finding]
+- [MODE]: [1 sentence -- the pivot or key finding]
+- [MODE]: [1 sentence -- what changed or surprised]
+- [MODE]: [1 sentence -- what resisted or held up]
 
 ## Summary
 [2-4 sentences: the actual synthesis]
@@ -175,16 +176,66 @@ Execute the selected mode. Each mode uses 1-2 cognition operations. Typically ru
 - Accessibility concerns
 Depth gate: Did we find specific, actionable design issues?
 
-**Field hints for operations without full examples above:**
+<!-- SCHEMA_HINTS_START -->
+**Operation schemas (TS-lite notation: ? = optional, [] = array):**
 
-| Operation | Key fields |
-|-----------|-----------|
-| systems | system, components[{name, function}], relationships[{from, to, type}], feedbackLoops |
-| causal_analysis | phenomenon, causes[{factor, type, strength}], effects[{outcome, likelihood, timeframe}], chains |
-| mental_model | modelName, problem, setup, steps, rootCauses[{failure, cause, preventable}], conclusion |
-| collaborative_reasoning | topic, perspectives[{role, viewpoint, arguments}], tensions, synthesis |
-| creative_thinking | challenge, techniques, ideas[{idea, potential, challenges}] |
-| analogical_reasoning | target, analogs[{domain, description, similarity}], mappings, insights, limitations |
+```
+## thought
+{ thought: string, thoughtNumber: number, totalThoughts: number,
+  nextThoughtNeeded: boolean, branchId?: string, isRevision?: boolean }
+
+## mental_model
+{ modelName?: string, problem?: string, steps?: string[], reasoning?: string,
+  conclusion?: string, setup?: string,
+  rootCauses?: {failure: string, cause: string, preventable: boolean}[] }
+# NOTE: all fields optional
+
+## meta
+{ process?: string, observations?: string[], adjustments?: string[],
+  effectiveness?: number, insights?: string, nextThoughtNeeded?: boolean }
+# NOTE: insights is string, not string[] -- string[] auto-coerced to joined string
+
+## systems
+{ system?: string, components?: {name: string, function: string}[],
+  relationships?: {from: string, to: string, type: string}[],
+  feedbackLoops?: string[] }
+# NOTE: feedbackLoops objects auto-coerced to strings
+
+## creative_thinking
+{ prompt?: string, techniques?: string[],
+  ideas?: {idea: string, potential: string, challenges: string[]}[],
+  synthesis?: string }
+# NOTE: challenges is string[], not string -- string auto-coerced to string[]
+
+## analogical_reasoning
+{ target: string,
+  analogs: {domain: string, description: string, similarity: number}[],
+  mappings: {targetElement: string, analogElement: string, relationship: string}[],
+  insights: string[], limitations: string[] }
+# NOTE: similarity is number -- numeric string auto-coerced
+# NOTE: mapping fields are targetElement/analogElement/relationship
+
+## causal_analysis
+{ phenomenon: string,
+  causes: {factor: string, type: string, strength: string, evidence?: string}[],
+  effects: {outcome: string, likelihood: string, timeframe: string}[],
+  chains: {sequence: string[], probability: number}[],
+  interventions?: string[] }
+# NOTE: chains auto-normalized -- string coerced to {sequence: [string], probability: 0.5}
+
+## collaborative_reasoning
+{ topic?: string,
+  perspectives?: {role: string, viewpoint: string, arguments: string[]}[],
+  commonGround?: string[], tensions?: string[], synthesis?: string }
+# NOTE: tensions objects auto-coerced to strings
+
+## checkpoint
+{ summary?: string, keyFindings?: string[], phase?: string, command?: string,
+  addConstraints?: {type: 'FORWARD'|'FORBIDDEN'|'QUESTION', text: string}[],
+  resolveConstraints?: string[], deferConstraints?: {id: string, reason: string}[],
+  gateCheck?: {selfCheckPassed: boolean, depthGatePassed: boolean, notes?: string} }
+```
+<!-- SCHEMA_HINTS_END -->
 
 ---
 
@@ -331,9 +382,11 @@ What I was uncertain about: [gaps, unknowns, open questions]
 What I was avoiding: [uncomfortable angles, things that might not be true yet]
 
 ## Exploration
-### [MODE 1]: [2-3 sentence key finding]
-### [MODE 2]: [2-3 sentence key finding]
-### [MODE 3]: [2-3 sentence key finding]
+- [MODE]: [1 sentence -- the pivot or key finding]
+- [MODE]: [1 sentence -- what changed or surprised]
+- [MODE]: [1 sentence -- what resisted or held up]
+[No ### headers. 1 bullet per mode, 1 sentence each. Just pivots. Detail
+lives in the cognition MCP calls above.]
 
 ## What the Protocol Caught
 - "[assumption or default]" --> [mechanism] --> [what actually held up or changed]

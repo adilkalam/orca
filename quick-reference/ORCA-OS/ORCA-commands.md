@@ -1,8 +1,8 @@
-# OS 6.3 Commands Quick Reference
+# OS 6.4 Commands Quick Reference
 
-**Last Updated:** 2026-02-19
-**Version:** OS 6.3
-**Total Commands:** 37 (+ orca-record CLI with 16 subcommands)
+**Last Updated:** 2026-02-26
+**Version:** OS 6.4
+**Total Commands:** 37 (+ orca-record CLI with 7 subcommands (5 hook + 2 user))
 
 ---
 
@@ -19,7 +19,7 @@ All `/orca-*` lane commands support four execution modes:
 
 ---
 
-## Lane Orchestrator Commands (12)
+## Lane Orchestrator Commands (13)
 
 ### `/ios` - iOS Lane
 ```bash
@@ -69,9 +69,13 @@ All `/orca-*` lane commands support four execution modes:
 
 # Combined: create content then optimize
 /seo --with-optimize "target keyword"
+
+# Effectiveness audit (requires analytics-mcp + mcp-gsc in project .mcp.json)
+/seo --audit                   # Quick: top 10 pages, 28-day window, actions
+/seo --audit-full              # Full: all pages, trends, cannibalization, gaps
 ```
 **Agents:** seo-research-specialist, seo-brief-strategist, seo-draft-writer, seo-quality-guardian, seo-optimizer
-**MCP:** ahrefs, crawl4ai
+**MCP:** ahrefs, crawl4ai, analytics-mcp (audit), mcp-gsc (audit)
 
 ### `/research` - Deep Research Lane
 ```bash
@@ -99,6 +103,15 @@ All `/orca-*` lane commands support four execution modes:
 **Agents:** typography-orchestrator, glyph-editor, ttf-exporter, typography-advisor, typography-explorer-generator, path-guardian
 **Workflows:** glyph editing (fontTools), TTF export (Epson LabelWorks), font selection/pairing, explorer generation
 
+
+### `/rvry` - RVRY Product Pipeline
+```bash
+/rvry "implement hedge-word frequency heuristic"    # Default: light + gates
+/rvry -tweak "adjust escape threshold"              # Tweak: no gates
+/rvry --complex "state machine redesign"            # Complex: full pipeline
+```
+**Agents:** rvry-grand-architect, rvry-engine-architect, rvry-engine-builder, rvry-web-builder, rvry-protocol-gate, rvry-verification
+**Domain Gates:** delta (divergence scoring), escape-detection (FP <30%), streaming, trace
 
 ### `/orca-os-dev` - OS Development Lane
 ```bash
@@ -360,26 +373,9 @@ Guided wizard for project structure decisions. Detects project type (ios, nextjs
 
 ---
 
-## Recording Commands (4)
+## Recording Commands (2)
 
-Slash commands that wrap the orca-record CLI for easy checkpoint navigation.
-
-### `/checkpoints` - Explore Checkpoints
-```bash
-/checkpoints                    # Last 10 checkpoints
-/checkpoints 25                 # Last 25 checkpoints
-/checkpoints --session sess-abc # Filter to specific session
-```
-Shows numbered list of checkpoints with timestamps and file change summaries.
-
-### `/restore` - Restore to Checkpoint
-```bash
-/restore                        # Show checkpoint list
-/restore 2                      # Restore to checkpoint #2
-/restore abc123def456           # Restore by checkpoint ID
-/restore abc123def456 --logs-only  # Transcript only (no file changes)
-```
-Restores working directory files to a checkpoint state. Shows files affected and `claude --continue` hint. Use `--logs-only` to restore only the session transcript for `claude --continue` without modifying files.
+Slash commands for session recording status.
 
 ### `/continue` - Session Resume Info
 ```bash
@@ -392,48 +388,32 @@ Shows `claude --continue` commands for resuming previous sessions.
 ```bash
 /orca-status                    # Current session status
 ```
-Shows session ID, state, checkpoint count, and shadow branch info.
+Shows session ID, state, step count, and files touched.
 
 ## Recording Layer (orca-record CLI)
 
-`orca-record` is a Bun-compiled binary that handles session recording, git-backed checkpoints, and rewind. It runs automatically via Claude Code hooks. Deployed to `~/.claude/bin/orca-record`.
+`orca-record` is a Bun-compiled binary that handles session event tracking. It runs automatically via Claude Code hooks. Deployed to `~/.claude/bin/orca-record`.
 
 ### Hook Commands (invoked automatically)
 
 | Command | Hook | Purpose |
 |---------|------|---------|
 | `orca-record prompt-submit` | UserPromptSubmit (async) | Snapshot git status, start/continue session |
-| `orca-record stop` | Stop | Wait for transcript flush, copy transcript, diff files, create checkpoint |
-| `orca-record pre-task` | PreToolUse[Task] | Capture pre-task file state for subagent checkpoints |
+| `orca-record stop` | Stop | Diff files, create checkpoint, record event |
+| `orca-record pre-task` | PreToolUse[Task] | Capture pre-task file state for subagent tracking |
 | `orca-record post-task` | PostToolUse[Task] | Diff against pre-task state, create task checkpoint |
 | `orca-record post-todo` | PostToolUse[TodoWrite] | Incremental checkpoint within subagent context |
-
-### Git Hook Commands (installed per-project)
-
-| Command | Git Hook | Purpose |
-|---------|----------|---------|
-| `orca-record prepare-commit-msg` | prepare-commit-msg | Inject `ORCA-Checkpoint` trailer into commit message |
-| `orca-record post-commit` | post-commit | Condense shadow branch to `orca/checkpoints/v1` orphan branch |
 
 ### User Commands
 
 | Command | Purpose |
 |---------|---------|
-| `orca-record status` | Show current session recording state (IDLE/ACTIVE/ACTIVE_COMMITTED/ENDED) |
+| `orca-record status` | Show current session recording state |
 | `orca-record version` | Show CLI version |
-| `orca-record checkpoints` | List all checkpoints in current session with timestamps and file changes |
-| `orca-record rewind <id>` | Restore code and cognitive state to a specific checkpoint |
-| `orca-record condense` | Manually trigger shadow branch condensation |
-| `orca-record install-hooks` | Install orca-record git hooks in current project |
-| `orca-record uninstall-hooks` | Remove orca-record git hooks from current project |
-| `orca-record link <commit>` | Show bidirectional commit-to-checkpoint linking |
-| `orca-record history` | Query session history from recording database |
 
 ### Storage
 
 - **Database:** `.orca/recording.db` (per-project SQLite, gitignored)
-- **Shadow branches:** `orca/<HEAD[:7]>-<wt[:6]>` (temporary, per-session)
-- **Orphan branch:** `orca/checkpoints/v1` (permanent checkpoint storage)
 - **Session state:** `.git/orca-sessions/<session-id>.json`
 
 ---
@@ -456,14 +436,14 @@ Measure-place-verify guardrails for Adobe Photoshop and Illustrator MCP work. Pr
 - Only coordinate agents via Task tool
 - Read phase_state.json for resumption
 
-### Recording Context Injection (OS 6.3)
+### Recording Context Injection (OS 6.4)
 
 All lane orchestrator commands inject prior session context from `.orca/recording.db`
 before delegating to agents:
 
 - `/orca` queries centrally via `recording_query` + `recording_explain`, passes
   `RECORDING_CONTEXT` to domain grand-architects in delegation prompts
-- Domain commands (`/nextjs`, `/ios`, `/expo`, `/shopify`, `/django-react`,
+- Domain commands (`/nextjs`, `/ios`, `/expo`, `/django-react`,
   `/orca-os-dev`, `/seo`) check for inherited context first; if invoked directly
   (not via `/orca`), they query `.orca/recording.db` independently
 - All recording context is OPTIONAL -- silently skipped if `.orca/recording.db`
@@ -504,10 +484,11 @@ $ORCA_OS_PATH/commands/
 | `/research` | research-web-search-subagent, research-site-crawler-subagent, research-answer-writer |
 | `/seo` | seo-research-specialist, seo-brief-strategist, seo-draft-writer, seo-optimizer |
 | `/orca-os-dev` | os-dev-architect, os-dev-builder, os-dev-standards-enforcer, os-dev-verification |
+| `/rvry` | rvry-grand-architect, rvry-engine-architect, rvry-engine-builder, rvry-web-builder, rvry-protocol-gate, rvry-verification |
 | `/orca-pipeline` | orca-pipeline-orchestrator, orca-pipeline-researcher, orca-pipeline-generator |
 | `/typography` | typography-orchestrator, glyph-editor, ttf-exporter, typography-advisor, typography-explorer-generator, path-guardian |
 
 ---
 
 _Source of truth: `docs/reference/os-dependency-graph.yaml`_
-_Last sync: 2026-02-16_
+_Last sync: 2026-02-26_

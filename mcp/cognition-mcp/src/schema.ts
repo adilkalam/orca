@@ -11,6 +11,64 @@
 import { z } from 'zod';
 
 // ============================================================================
+// COERCION HELPERS (Schema friction reduction)
+// ============================================================================
+
+/**
+ * Coerce an array of objects to an array of strings.
+ * Accepts string[] (pass-through) or object[] (extract name + description).
+ */
+function coerceStringArray(val: unknown): unknown {
+  if (!Array.isArray(val)) return val;
+  return val.map((item: unknown) => {
+    if (typeof item === 'string') return item;
+    if (typeof item === 'object' && item !== null) {
+      const obj = item as Record<string, unknown>;
+      const name = obj.name ?? obj.loop ?? obj.label ?? obj.title ?? obj.text;
+      const desc = obj.description ?? obj.detail ?? obj.details;
+      if (typeof name === 'string' && typeof desc === 'string') {
+        return `${name}: ${desc}`;
+      }
+      if (typeof name === 'string') return name;
+      // Last resort: stringify
+      return JSON.stringify(item);
+    }
+    return item;
+  });
+}
+
+/**
+ * Normalize causal chain input to {sequence: string[], probability: number}.
+ */
+function normalizeCausalChain(val: unknown): unknown {
+  if (typeof val === 'string') {
+    return { sequence: [val], probability: 0.5 };
+  }
+  if (typeof val === 'object' && val !== null) {
+    const obj = val as Record<string, unknown>;
+    let sequence = obj.sequence ?? obj.chain ?? obj.steps;
+    const probability = obj.probability ?? obj.likelihood ?? obj.confidence ?? 0.5;
+    if (typeof sequence === 'string') {
+      sequence = [sequence];
+    }
+    return { ...obj, sequence, probability };
+  }
+  return val;
+}
+
+/**
+ * Coerce a numeric string to a number.
+ * Accepts number (pass-through) or string that parses to a valid number.
+ */
+function coerceNumeric(val: unknown): unknown {
+  if (typeof val === 'string' && val.trim() !== '' && !isNaN(Number(val))) {
+    return Number(val);
+  }
+  return val;
+}
+
+
+// ============================================================================
 // QUALITY SCHEMA (Claude's self-assessment, stored unchanged)
 // ============================================================================
 
@@ -67,9 +125,9 @@ export const IntrospectionFieldsSchema = z.object({
 export const ThoughtContentSchema = z.object({
   text: z.string().optional(),
   thought: z.string(),
-  thoughtNumber: z.number(),
-  totalThoughts: z.number(),
-  nextThoughtNeeded: z.boolean(),
+  thoughtNumber: z.number().default(1),
+  totalThoughts: z.number().default(1),
+  nextThoughtNeeded: z.boolean().default(true),
   branchId: z.string().optional(),
   branchFromThought: z.number().optional(),
   isRevision: z.boolean().optional(),
@@ -201,7 +259,10 @@ export const MetaContentSchema = z.object({
   observations: z.array(z.string()).optional(),
   adjustments: z.array(z.string()).optional(),
   effectiveness: z.number().optional(),
-  insights: z.string().optional(),
+  insights: z.preprocess(
+    (val) => Array.isArray(val) ? val.join('; ') : val,
+    z.string().optional()
+  ),
   nextThoughtNeeded: z.boolean().optional(),
   // Substrate observation fields (all optional for backward compatibility)
   defaultCounterfactual: DefaultCounterfactualSchema.optional(),
@@ -235,7 +296,10 @@ export const SystemsContentSchema = z.object({
   system: z.string().optional(),
   components: z.array(SystemComponentSchema).optional(),
   relationships: z.array(SystemRelationshipSchema).optional(),
-  feedbackLoops: z.array(z.string()).optional(),
+  feedbackLoops: z.preprocess(
+    coerceStringArray,
+    z.array(z.string()).optional()
+  ),
   nextThoughtNeeded: z.boolean().optional(),
 });
 
@@ -246,7 +310,7 @@ export const SystemsContentSchema = z.object({
 export const CreativeIdeaSchema = z.object({
   idea: z.string(),
   potential: z.string(),
-  challenges: z.array(z.string()),
+  challenges: z.preprocess(coerceStringArray, z.array(z.string())),
 });
 
 export const CreativeThinkingContentSchema = z.object({
@@ -337,7 +401,10 @@ export const CollaborativeReasoningContentSchema = z.object({
   topic: z.string().optional(),
   perspectives: z.array(PerspectiveSchema).optional(),
   commonGround: z.array(z.string()).optional(),
-  tensions: z.array(z.string()).optional(),
+  tensions: z.preprocess(
+    coerceStringArray,
+    z.array(z.string()).optional()
+  ),
   synthesis: z.string().optional(),
   nextThoughtNeeded: z.boolean().optional(),
 });
@@ -527,7 +594,7 @@ export const ResearchContentSchema = z.object({
 export const AnalogSchema = z.object({
   domain: z.string(),
   description: z.string(),
-  similarity: z.number(),
+  similarity: z.preprocess(coerceNumeric, z.number()),
 });
 
 export const AnalogMappingSchema = z.object({
@@ -559,10 +626,13 @@ export const EffectSchema = z.object({
   timeframe: z.string(),
 });
 
-export const CausalChainSchema = z.object({
-  sequence: z.array(z.string()),
-  probability: z.number(),
-});
+export const CausalChainSchema = z.preprocess(
+  normalizeCausalChain,
+  z.object({
+    sequence: z.array(z.string()),
+    probability: z.number(),
+  })
+);
 
 export const CausalAnalysisContentSchema = z.object({
   text: z.string().optional(),
@@ -1066,6 +1136,33 @@ export const CognitionInputSchema = z.object({
   projectPath: z.string().optional(),
 });
 
+
+// ============================================================================
+// SCHEMA HINTS (Error response enhancement)
+// ============================================================================
+
+const SCHEMA_HINTS: Record<string, string> = {
+  thought: '{ thought: string, thoughtNumber: number (default 1), totalThoughts: number (default 1), nextThoughtNeeded: boolean (default true), branchId?: string, isRevision?: boolean, revisesThought?: number }',
+  mental_model: '{ modelName?: string, problem?: string, steps?: string[], reasoning?: string, conclusion?: string, setup?: string, rootCauses?: {failure: string, cause: string, preventable: boolean}[] } NOTE: all fields optional',
+  meta: '{ process?: string, observations?: string[], adjustments?: string[], effectiveness?: number, insights?: string (NOTE: string, not string[] -- coerced from string[] if sent), nextThoughtNeeded?: boolean }',
+  systems: '{ system?: string, components?: {name: string, function: string}[], relationships?: {from: string, to: string, type: string}[], feedbackLoops?: string[] (objects auto-coerced) }',
+  creative_thinking: '{ prompt?: string, techniques?: string[], ideas?: {idea: string, potential: string, challenges: string[]}[] (NOTE: challenges is string[] -- coerced from string if sent), synthesis?: string }',
+  analogical_reasoning: '{ target: string, analogs: {domain: string, description: string, similarity: number}[] (NOTE: similarity is number -- coerced from numeric string), mappings: {targetElement: string, analogElement: string, relationship: string}[], insights: string[], limitations: string[] }',
+  causal_analysis: '{ phenomenon: string, causes: {factor: string, type: string, strength: string}[], effects: {outcome: string, likelihood: string, timeframe: string}[], chains: {sequence: string[], probability: number}[] (strings/objects auto-normalized) }',
+  collaborative_reasoning: '{ topic?: string, perspectives?: {role: string, viewpoint: string, arguments: string[]}[], commonGround?: string[], tensions?: string[] (objects auto-coerced), synthesis?: string }',
+  checkpoint: '{ summary?: string, keyFindings?: string[], phase?: string, command?: string, addConstraints?: {type: FORWARD|FORBIDDEN|QUESTION, text: string}[], gateCheck?: {selfCheckPassed: boolean, depthGatePassed: boolean} }',
+  decide: '{ statement: string, options: {name: string, description: string, pros?: string[], cons?: string[]}[], criteria: string[], analysis: string, choice: string, weights?: Record<string, number>, confidence?: number }',
+  structured_argumentation: '{ claim: string, premises: string[], evidence: {point: string, source?: string, strength: string}[], counterarguments: {point: string, rebuttal: string}[], conclusion: string }',
+  tree_of_thought: '{ branches: {id: string, thought: string, evaluation?: string|object, score?: number}[], bestPath: string[], pruned: string[], root?: string, synthesis?: string }',
+  ulysses_protocol: '{ goal: string, temptations: {trigger: string, temptation: string, risk: string}[], commitments: {commitment: string, enforcement: string, consequences: string}[], safeguards: {safeguard: string, trigger: string, linkedRisk?: string}[], escapeHatch?: string }',
+  orchestration_suggest: '{ task: string, complexity: simple|medium|complex, suggestedOperations: {operation: string, reason: string, order: number}[], alternativeApproaches: {approach: string, tradeoffs: string}[], recommendation: string }',
+  blind_orchestrate: '{ problem: string, reasoning?: string, step: number }',
+};
+
+function getSchemaHint(operation: string): string | undefined {
+  return SCHEMA_HINTS[operation];
+}
+
 // ============================================================================
 // VALIDATION HELPERS
 // ============================================================================
@@ -1073,13 +1170,13 @@ export const CognitionInputSchema = z.object({
 /**
  * Validate content for a specific operation.
  * Returns { success: true, data } or { success: false, error }.
- * 
+ *
  * NOTE: This validates STRUCTURE only, never content quality.
  */
 export function validateOperationContent(
   operation: string,
   content: unknown
-): { success: true; data: unknown } | { success: false; error: string } {
+): { success: true; data: unknown } | { success: false; error: string; hint?: string } {
   const schemas: Record<string, z.ZodType> = {
     thought: ThoughtContentSchema,
     mental_model: MentalModelContentSchema,
@@ -1152,6 +1249,7 @@ export function validateOperationContent(
   return {
     success: false,
     error: `Invalid ${operation} content: ${result.error.message}`,
+    hint: getSchemaHint(operation),
   };
 }
 

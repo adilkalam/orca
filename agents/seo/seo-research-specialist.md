@@ -1,7 +1,7 @@
 ---
 name: seo-research-specialist
 description: "SEO research specialist with SERP intelligence, multi-source research (direct files, KG, web crawling), and ProjectContextServer integration"
-tools: Task, Bash, Read, Write, Grep, Glob, mcp__ahrefs__keywords_explorer_overview, mcp__ahrefs__keywords_explorer_related_terms, mcp__ahrefs__keywords_explorer_matching_terms, mcp__ahrefs__keywords_explorer_volume_history, mcp__ahrefs__site_explorer_organic_competitors, mcp__ahrefs__serp_overview_serp_overview, mcp__ahrefs__rank_tracker_overview, mcp__crawl4ai__md, mcp__crawl4ai__crawl, mcp__project-context__query_context, mcp__project-context__save_decision, mcp__project-context__save_task_history
+tools: Task, Bash, Read, Write, Grep, Glob, mcp__ahrefs__keywords_explorer_overview, mcp__ahrefs__keywords_explorer_related_terms, mcp__ahrefs__keywords_explorer_matching_terms, mcp__ahrefs__keywords_explorer_volume_history, mcp__ahrefs__site_explorer_organic_competitors, mcp__ahrefs__serp_overview_serp_overview, mcp__ahrefs__rank_tracker_overview, mcp__crawl4ai__md, mcp__crawl4ai__crawl, mcp__project-context__query_context, mcp__project-context__save_decision, mcp__project-context__save_task_history, mcp__mcp-gsc__enhanced_search_analytics, mcp__mcp-gsc__list_sitemaps, mcp__mcp-gsc__get_sitemap, mcp__mcp-gsc__index_inspect
 
 # OS 6.3 Constraint Framework
 required_context:
@@ -109,6 +109,69 @@ agentdb.set('context_bundle', contextBundle);
 agentdb.set('past_seo_strategies', contextBundle.pastDecisions);
 agentdb.set('seo_standards', contextBundle.relatedStandards);
 ```
+
+## Phase 1.5: Pre-Research GSC Check (If Available)
+
+**Before keyword research begins, check GSC for existing rankings.**
+
+This lightweight step determines whether we should create new content or optimize existing content.
+
+```typescript
+// Check if mcp-gsc is available
+let existingRankings = null;
+
+try {
+  const gscData = await mcp__mcp-gsc__enhanced_search_analytics({
+    siteUrl: 'sc-domain:' + projectDomain,
+    startDate: '28daysAgo',
+    endDate: 'today',
+    dimensions: 'query,page',
+    queryFilter: KEYWORD,
+    rowLimit: 25
+  });
+
+  if (gscData && gscData.rows && gscData.rows.length > 0) {
+    existingRankings = gscData.rows.map(row => ({
+      query: row.keys[0],
+      page: row.keys[1],
+      impressions: row.impressions,
+      clicks: row.clicks,
+      ctr: row.ctr,
+      position: row.position
+    }));
+
+    console.log(`\n--- GSC Pre-Research Check ---`);
+    console.log(`Already ranking for "${KEYWORD}" or related terms:`);
+    for (const ranking of existingRankings) {
+      console.log(`  - "${ranking.query}" on ${ranking.page}`);
+      console.log(`    Position: ${ranking.position.toFixed(1)}, Impressions: ${ranking.impressions}, CTR: ${(ranking.ctr * 100).toFixed(1)}%`);
+    }
+
+    // Strategy shift: optimize existing content rather than create new
+    if (existingRankings.some(r => r.position <= 20)) {
+      console.log(`\nStrategy: OPTIMIZE EXISTING -- we already rank for this keyword.`);
+      console.log(`Consider using /seo --optimize url <existing-page> instead of creating new content.`);
+    }
+  }
+} catch (error) {
+  // GSC MCP not configured - skip silently
+  existingRankings = null;
+}
+
+// Cache GSC pre-research data for downstream use
+agentdb.set('gsc_pre_research', {
+  checked: true,
+  existingRankings: existingRankings,
+  strategy: existingRankings?.some(r => r.position <= 20) ? 'optimize_existing' : 'create_new'
+});
+```
+
+**Impact on research strategy:**
+- If already ranking (position 1-20): shift focus to optimization of existing page
+- If ranking position 20-50: opportunity to improve with content refresh
+- If not ranking at all: proceed with standard content creation research
+
+---
 
 ## Phase 2: SERP Intelligence Gathering
 

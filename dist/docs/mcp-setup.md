@@ -10,9 +10,9 @@ The installer automatically configures these MCP servers in `~/.claude.json`:
 |------------|---------|---------|
 | context7 | Up-to-date library documentation | `@upstash/context7-mcp` (npx) |
 | sequential-thinking | Multi-step reasoning with revision | `@modelcontextprotocol/server-sequential-thinking` (npx) |
-| cognition-mcp | Structured notepad for reasoning (48 operations) | Custom (bundled) |
+| cognition-mcp | Structured notepad for reasoning (49 operations) | Custom (bundled) |
 | project-context | Project memory and semantic search | Custom (bundled) |
-| orca-record | Session recording -- tool calls, file changes, checkpoints | Custom CLI binary (`~/.claude/bin/orca-record`) |
+| orca-record | Session event tracking -- tool calls, file changes | Custom CLI binary (`~/.claude/bin/orca-record`) |
 | crawl4ai | Web content extraction and research | Docker SSE (`localhost:11235`) |
 
 **Optional (prompted during install):**
@@ -63,7 +63,7 @@ Enables multi-step reasoning with the ability to revise, branch, and backtrack.
 
 ### Cognition MCP (Structured Reasoning)
 
-A structured notepad for Claude's reasoning using the Accept-Store-Echo pattern. Provides 48 reasoning operations.
+A structured notepad for Claude's reasoning using the Accept-Store-Echo pattern. Provides 49 reasoning operations.
 
 **Core Pattern:**
 - **ACCEPT**: Claude provides structured thoughts
@@ -75,7 +75,7 @@ The MCP is a mirror - it never generates, suggests, enhances, or transforms cont
 **Tools:**
 - `cognition` - Single tool with multiple operations
 
-**Operations (48 total):**
+**Operations (49 total):**
 
 Core (7):
 - `thought` - Sequential thinking steps with branching/revision
@@ -128,6 +128,9 @@ Session (3):
 Stats (1):
 - `reasoning_stats` - Session analytics (operation frequency, reflex distribution, etc.)
 
+Orchestration (1):
+- `blind_orchestrate` - Agent delegation without context leakage
+
 Recording (7):
 - `recording_status` - Current session recording state
 - `recording_query` - Query sessions by date range, files touched, quality metrics
@@ -135,7 +138,7 @@ Recording (7):
 - `recording_compare` - Diff two checkpoints: code changes and reasoning chain changes
 - `recording_quality` - Session quality analytics: gate results, rewind rates, error patterns
 - `recording_explain` - Human-readable narrative of what happened, why, and how well
-- `recording_rewind` - Trigger rewind to a specific checkpoint (restores code + cognitive state)
+- `recording_rewind` - Query rewind data from recording history
 
 **Usage:**
 Used by `/think` command for persistent thought tracking.
@@ -159,24 +162,25 @@ Automatically invoked by orchestrators to load project context before any work.
 
 ---
 
-### orca-record (Session Recording)
+### orca-record (Session Event Tracking)
 
-Bun-compiled CLI binary that captures session history -- every tool call, file change, and checkpoint. Hooks fire it on session events; cognition-mcp reads the database it writes.
+Bun-compiled CLI binary (v0.4.0) that captures session events -- tool calls, file changes, and session lifecycle. Hooks fire it on session events; cognition-mcp reads the database it writes.
 
 **Location:** `~/.claude/bin/orca-record`
 
 **Database:** `.orca/recording.db` (per-project, gitignored)
 
-**Commands:**
+**Commands (7 total: 5 hook + 2 user):**
 - `orca-record prompt-submit` - Git status snapshot, start/continue session
-- `orca-record stop` - Transcript capture, file diff, checkpoint creation
-- `orca-record pre-task` - Pre-task file state capture
-- `orca-record post-task` - Subagent checkpoint
-- `orca-record post-todo` - Incremental checkpoint
-- `orca-record rewind` - Restore code + cognitive state to a checkpoint
+- `orca-record stop` - Session end event
+- `orca-record pre-task` - Pre-task file state snapshot
+- `orca-record post-task` - Subagent completion event
+- `orca-record post-todo` - Todo update event
+- `orca-record status` - Show current recording session status
+- `orca-record version` - Print version
 
 **Integration with cognition-mcp:**
-The cognition-mcp recording operations (`recording_status`, `recording_query`, `recording_checkpoint`, `recording_compare`, `recording_quality`, `recording_explain`, `recording_rewind`) read from the database that orca-record writes. This enables cognitive fusion -- combining reasoning chains with code change history.
+The cognition-mcp recording operations (`recording_status`, `recording_query`, `recording_checkpoint`, `recording_compare`, `recording_quality`, `recording_explain`, `recording_rewind`) read from the database that orca-record writes. This enables cognitive fusion -- combining reasoning chains with session history.
 
 **Requirements:**
 - Bun (for building from source) or pre-built binary from installer

@@ -1,4 +1,4 @@
-# OS 6.3 OS-Dev Lane Readme
+# OS 6.4 OS-Dev Lane Readme
 
 **Lane:** OS / Tooling Configuration  
 **Domain:** `os-dev`  
@@ -6,7 +6,7 @@
 
 This readme explains the OS-Dev lane, which manages changes to:
 
-- OS 6.3 orchestration behavior
+- OS 6.4 orchestration behavior
 - Claude Code commands, agents, skills, MCPs, hooks
 - Memory integration behavior
 
@@ -20,7 +20,7 @@ application code:
 - Add/modify lanes and phase configs
 - Add or reconfigure MCPs
 - Add OS‑level skills or adjust their usage
-- Tweak hooks, scripts, and safety defaults for OS 6.3
+- Tweak hooks, scripts, and safety defaults for OS 6.4
 
 **Routing Modes:**
 

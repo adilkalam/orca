@@ -1,9 +1,9 @@
-# Verification & Evidence Quick Reference (OS 6.3)
+# Verification & Evidence Quick Reference (OS 6.4)
 
-**Version:** OS 6.3
+**Version:** OS 6.4
 **Last Updated:** 2026-02-07
 
-Verification in OS 6.3 is **automated** within pipelines. Gates use graduated scoring (PASS/WARN/ERROR/BLOCK), not binary pass/fail.
+Verification in OS 6.4 is **automated** within pipelines. Gates use graduated scoring (PASS/WARN/ERROR/BLOCK), not binary pass/fail.
 
 ### Research Backing
 
@@ -235,4 +235,4 @@ Tags recorded automatically in `/plan` output and scanned by standards enforcers
 
 ---
 
-_OS 6.3 verification is automatic, graduated, and evidence-based. Manual verification is rarely needed._
+_OS 6.4 verification is automatic, graduated, and evidence-based. Manual verification is rarely needed._

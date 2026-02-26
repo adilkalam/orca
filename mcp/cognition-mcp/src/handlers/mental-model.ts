@@ -9,7 +9,7 @@ import type { CognitionRequest, HandlerResult, MentalModelContent } from '../typ
 import { validateOperationContent } from '../schema.js';
 import { SessionState } from '../session/state.js';
 import { getSessionManager } from '../session/manager.js';
-import { buildResponse } from './shared.js';
+import { buildResponse, buildErrorResponse } from './shared.js';
 
 export async function handleMentalModel(
   args: CognitionRequest,
@@ -20,22 +20,18 @@ export async function handleMentalModel(
   // 1. VALIDATE structure (not content)
   const validation = validateOperationContent('mental_model', args.content);
   if (!validation.success) {
-    return {
-      content: [{
-        type: 'text',
-        text: JSON.stringify({
-          status: 'error',
-          error: validation.error,
-          sessionContext: {
-            sessionId: session.id,
-            entryCount: session.getCount('mentalModels'),
-            totalEntries: session.getTotalCount(),
-            sessionDuration: session.getDuration(),
-            continuation: null,
-          },
-        }),
-      }],
-    };
+    return buildErrorResponse({
+      status: 'error',
+      error: validation.error,
+      hint: validation.hint,
+      sessionContext: {
+        sessionId: session.id,
+        entryCount: session.getCount('mentalModels'),
+        totalEntries: session.getTotalCount(),
+        sessionDuration: session.getDuration(),
+        continuation: null,
+      },
+    });
   }
 
   const modelContent = validation.data as MentalModelContent;

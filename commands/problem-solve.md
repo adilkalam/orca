@@ -58,12 +58,10 @@ When `--quick` is active, skip the following across all phases:
 ```
 # ProblemSolve: [Problem Summary]
 
-## The Journey
-### ORIENT: [systems map summary]
-### EVALUATE: [decision and reasoning]
-
-## Summary
-[2-4 sentences: the decision and rationale]
+## The Decision
+**[Decision statement]** (confidence: X.X)
+[2-3 sentences: problem framing, initial instinct, what analysis showed,
+why this choice.]
 
 ## Where to Go Next
 -> /deepthink "[uncertainty]"
@@ -264,25 +262,26 @@ If workshop fails, display warning and continue.
 
 ## Final Output Format
 
-The output is bottom-anchored for terminal reading. The last thing printed is the most important.
+The output is decision-first. The reader gets the answer immediately, then supporting evidence. This reflects convergent thinking: narrow toward commitment, not expand toward synthesis.
 
 ```
 # ProblemSolve: [Problem Summary]
 
-## The Journey
-### ORIENT: [2-3 sentences -- what the systems map revealed]
-### ANTICIPATE: [2-3 sentences -- key failure modes from pre-mortem]
-### GENERATE: [2-3 sentences -- options considered, what was pruned and why]
-### EVALUATE: [2-3 sentences -- what was chosen and at what confidence]
+## The Decision
+**[Decision statement]** (confidence: X.X)
 
-## What the Protocol Caught
-- "[initial framing or instinct]" --> [pre-mortem, adversarial challenge, or gate failure] --> [how the decision changed]
-- "[another default that got stress-tested]" --> [mechanism] --> [result]
+The problem was [1-2 sentence framing]. Initial instinct said [gut reaction].
+[2-3 sentences: decision arc -- what the analysis revealed that confirmed,
+redirected, or complicated the instinct. Where the reasoning turned. Include
+what would change the verdict.]
 
-## Summary
-[3-5 sentences: trace the decision arc -- what the initial instinct was,
-what the analysis revealed that changed or confirmed it, and where the
-reasoning landed. Include confidence level and what would change the verdict.]
+## Why Not the Alternatives
+- **[Option B]** ([what it was]): eliminated because [reason from ANTICIPATE/GENERATE/EVALUATE]
+- **[Option C]** ([what it was]): eliminated because [reason]
+
+## What Tried to Kill It
+- "[risk from pre-mortem]" --> [stress test mechanism] --> [survived because / adapted by]
+- "[adversarial challenge]" --> [gate that caught it] --> [how decision adapted]
 
 ## Safeguards
 [From ulysses protocol -- specific commitments to prevent identified failures]
@@ -310,15 +309,57 @@ reasoning landed. Include confidence level and what would change the verdict.]
 
 ## Operation Field Hints
 
-| Operation | Key fields |
-|-----------|-----------|
-| orchestration_suggest | task, complexity, suggestedOperations[{operation, reason, order}], recommendation |
-| systems | system, components[{name, function}], relationships[{from, to, type}], feedbackLoops |
-| mental_model | modelName, problem, setup, steps, rootCauses[{failure, cause, preventable}], conclusion |
-| tree_of_thought | branches[{id, thought, evaluation}], bestPath, pruned, synthesis |
-| decide | statement, options[{name, description, pros, cons}], criteria, weights, scores, choice, confidence |
-| ulysses_protocol | goal, temptations, commitments, safeguards, escapeHatch |
-| meta | process, observations, adjustments, effectiveness, insights |
+<!-- SCHEMA_HINTS_START -->
+**Operation schemas (TS-lite notation: ? = optional, [] = array):**
+
+```
+## orchestration_suggest
+{ task: string, complexity: 'simple' | 'medium' | 'complex',
+  suggestedOperations: {operation: string, reason: string, order: number}[],
+  alternativeApproaches: {approach: string, tradeoffs: string}[],
+  recommendation: string }
+
+## systems
+{ system?: string, components?: {name: string, function: string}[],
+  relationships?: {from: string, to: string, type: string}[],
+  feedbackLoops?: string[] }
+# NOTE: feedbackLoops objects auto-coerced to strings
+
+## mental_model
+{ modelName?: string, problem?: string, steps?: string[], reasoning?: string,
+  conclusion?: string, setup?: string,
+  rootCauses?: {failure: string, cause: string, preventable: boolean}[] }
+# NOTE: all fields optional
+
+## tree_of_thought
+{ branches: {id: string, thought: string, evaluation?: string | {score?: number, strengths?: string[], weaknesses?: string[], feasibility?: string}, score?: number}[],
+  bestPath: string[], pruned: string[], root?: string, synthesis?: string }
+
+## decide
+{ statement: string,
+  options: {name: string, description: string, pros?: string[], cons?: string[]}[],
+  criteria: string[], analysis: string, choice: string,
+  weights?: Record<string, number>, scores?: Record<string, number>,
+  confidence?: number }
+
+## ulysses_protocol
+{ goal: string,
+  temptations: {trigger: string, temptation: string, risk: string}[],
+  commitments: {commitment: string, enforcement: string, consequences: string}[],
+  safeguards: {safeguard: string, trigger: string, linkedRisk?: string}[],
+  escapeHatch?: string, reviewPoints?: {milestone: string, criteria: string}[] }
+
+## meta
+{ process?: string, observations?: string[], adjustments?: string[],
+  effectiveness?: number, insights?: string, nextThoughtNeeded?: boolean }
+# NOTE: insights is string, not string[] -- string[] auto-coerced to joined string
+
+## checkpoint
+{ summary?: string, keyFindings?: string[], phase?: string, command?: string,
+  addConstraints?: {type: 'FORWARD'|'FORBIDDEN'|'QUESTION', text: string}[],
+  gateCheck?: {selfCheckPassed: boolean, depthGatePassed: boolean, notes?: string} }
+```
+<!-- SCHEMA_HINTS_END -->
 
 ---
 

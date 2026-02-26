@@ -1,7 +1,7 @@
 # ORCA-OS Documentation
 
-**Version:** OS 6.3
-**Last Updated:** 2026-02-13
+**Version:** OS 6.4
+**Last Updated:** 2026-02-26
 
 Welcome to the ORCA-OS documentation. This document serves as the entry point and navigation hub for all ORCA-OS documentation.
 
@@ -57,6 +57,7 @@ Each development lane has its own pipeline with specific agents, phases, and gat
 |------|-------------|---------------|
 | OS Development | [os-dev-pipeline.md](pipelines/os-dev-pipeline.md) | `/orca-os-dev` |
 | Requirements | [requirements-pipeline.md](pipelines/requirements-pipeline.md) | `/plan` |
+| RVRY | [rvry-pipeline.md](pipelines/rvry-pipeline.md) | `/rvry` |
 | Research | [research-pipeline.md](pipelines/research-pipeline.md) | `/research` |
 | SEO Content | [seo-pipeline.md](pipelines/seo-pipeline.md) | `/seo` |
 | SEO Optimizer | [seo-optimizer-pipeline.md](pipelines/seo-optimizer-pipeline.md) | via `/seo` |
@@ -86,8 +87,8 @@ Technical specifications and standards:
 
 For day-to-day usage, see the quick-reference guides:
 
-- **[ORCA Commands](../quick-reference/ORCA-OS/ORCA-commands.md)** - All 36 commands
-- **[ORCA Agents](../quick-reference/ORCA-OS/ORCA-agents.md)** - All 112 agents
+- **[ORCA Commands](../quick-reference/ORCA-OS/ORCA-commands.md)** - All 37 commands
+- **[ORCA Agents](../quick-reference/ORCA-OS/ORCA-agents.md)** - All 131 agents
 - **[ORCA Architecture](../quick-reference/ORCA-OS/ORCA-architecture.md)** - System architecture overview
 - **[ORCA MCPs](../quick-reference/ORCA-OS/ORCA-mcps.md)** - MCP server reference
 - **[ORCA Verification](../quick-reference/ORCA-OS/ORCA-verification.md)** - Verification patterns
@@ -113,7 +114,7 @@ For day-to-day usage, see the quick-reference guides:
 
 ## Agent Roster
 
-See [agent-index.md](agent-index.md) for the complete agent inventory. 112 agents across 11 domains:
+See [agent-index.md](agent-index.md) for the complete agent inventory. 131 agents across 14 domains:
 
 | Domain | Count | Directory |
 |--------|-------|-----------|
@@ -125,6 +126,7 @@ See [agent-index.md](agent-index.md) for the complete agent inventory. 112 agent
 | OS-Dev | 11 | `agents/os-dev/` |
 | Audit | 8 | `agents/audit/` |
 | Research | 7 | `agents/research/` |
+| RVRY | 7 | `agents/rvry/` |
 | Typography | 6 | `agents/typography/` |
 | SEO | 5 | `agents/seo/` |
 | Data | 4 | `agents/data/` |
@@ -144,11 +146,11 @@ docs/
 +-- DOCUMENTATION.md       <- You are here
 +-- agent-index.md         <- Agent roster
 +-- changelog.md           <- Version history
-+-- concepts/              <- Core concepts (11 docs)
-+-- pipelines/             <- Lane-specific pipelines (14 docs)
++-- concepts/              <- Core concepts (13 docs)
++-- pipelines/             <- Lane-specific pipelines (15 docs)
 +-- reference/             <- Technical specifications
 ```
 
 ---
 
-_ORCA-OS v6.0 | See [quick-reference/](../quick-reference/) for day-to-day guides_
+_ORCA-OS v6.4 | See [quick-reference/](../quick-reference/) for day-to-day guides_

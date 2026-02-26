@@ -14,7 +14,7 @@ import type { CognitionRequest, HandlerResult, ThoughtContent } from '../types.j
 import { validateOperationContent } from '../schema.js';
 import { SessionState } from '../session/state.js';
 import { getSessionManager } from '../session/manager.js';
-import { buildResponse } from './shared.js';
+import { buildResponse, buildErrorResponse } from './shared.js';
 
 export async function handleThought(
   args: CognitionRequest,
@@ -25,22 +25,18 @@ export async function handleThought(
   // 1. VALIDATE structure (not content)
   const validation = validateOperationContent('thought', args.content);
   if (!validation.success) {
-    return {
-      content: [{
-        type: 'text',
-        text: JSON.stringify({
-          status: 'error',
-          error: validation.error,
-          sessionContext: {
-            sessionId: session.id,
-            entryCount: session.getCount('thoughts'),
-            totalEntries: session.getTotalCount(),
-            sessionDuration: session.getDuration(),
-            continuation: null,
-          },
-        }),
-      }],
-    };
+    return buildErrorResponse({
+      status: 'error',
+      error: validation.error,
+      hint: validation.hint,
+      sessionContext: {
+        sessionId: session.id,
+        entryCount: session.getCount('thoughts'),
+        totalEntries: session.getTotalCount(),
+        sessionDuration: session.getDuration(),
+        continuation: null,
+      },
+    });
   }
 
   const thoughtContent = validation.data as ThoughtContent;

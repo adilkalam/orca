@@ -1,4 +1,4 @@
-# Research Pipeline Phase Configuration - OS 6.3
+# Research Pipeline Phase Configuration - OS 6.4
 # Multi-agent deep research workflow (Crawl4AI + memory + writers)
 
 pipeline:
@@ -221,7 +221,7 @@ phase_state:
     - tool_status           # e.g. { crawl4ai: "ok" | "error" | "unavailable" }
     - tool_error_events     # array of structured Crawl4AI/WebSearch error events
 
-  # Research-specific workflow control (OS 6.3)
+  # Research-specific workflow control (OS 6.4)
   research:
     time_budget:
       total_minutes: number | null    # null = unlimited

@@ -143,17 +143,14 @@ mcp__cognition-mcp__cognition
 ```markdown
 # Challenge (Quick): [Proposal Summary]
 
+## Entry Point
+The proposal: [what's being challenged, 1 sentence]
+What seems appealing: [surface appeal]
+Initial suspicion: [gut-level concern]
+
 ## Causal Map
 [cause] -> [intermediate] -> [effect] (P: X%)
 Root causes: [2-3 most critical, one line each]
-
-## What the Analysis Found
-
-| Risk | Likelihood | Impact | Mitigation |
-|------|-----------|--------|------------|
-| [risk from causal analysis] | H/M/L | [what breaks] | [intervention] |
-| [assumption risk] | H/M/L | [if wrong] | [validation step] |
-| [edge case risk] | H/M/L | [blast radius] | [detection] |
 
 ## Quick Verdict
 [Proceed with caution / Needs more analysis / Red flags present]
@@ -297,22 +294,28 @@ mcp__cognition-mcp__cognition
 ```markdown
 # Challenge: [Proposal Summary]
 
+## Entry Point
+The proposal: [what's being challenged]
+Surface appeal: [why this seems like a good idea]
+What I'm suspicious of: [initial red flags or areas of concern]
+
 ## The Attack
-### Causal Failure Map: [2-3 sentence summary of root causes and cascade effects]
-### Assumption Audit: [2-3 sentence summary of weakest assumptions]
-### Counter-Arguments: [2-3 sentence summary of strongest case against]
+### Causal Failure Map: [1 sentence -- root causes and where they cascade]
+### Assumption Audit: [1 sentence -- weakest assumption and what breaks if wrong]
+### Counter-Arguments: [1 sentence -- strongest case against the proposal]
 
 ## What the Analysis Caught
+- "[proposal seemed safe because X]" --> [causal analysis / assumption audit] --> [cascade risk Y discovered]
+- "[assumption Z felt solid]" --> [edge case storm / failure mode catalog] --> [breaks under condition W]
+- "[counter-argument seemed weak]" --> [steel-man + rebuttal] --> [stronger than expected / dismissed]
 
-| Weakness | Source | Severity | Mitigation |
-|----------|--------|----------|------------|
-| [critical weakness 1] | [causal/assumption/edge/failure mode/counter-arg] | Critical/High/Medium | [specific action] |
-| [critical weakness 2] | [source phase] | Critical/High/Medium | [specific action] |
-| [weakness 3] | [source phase] | Critical/High/Medium | [specific action] |
+## Summary
+[3-5 sentences: trace the adversarial arc -- what seemed strong initially,
+where the attack found real weakness, what survived scrutiny. Honest about
+whether genuine vulnerabilities emerged or the proposal held up.]
 
 ## Verdict
 **[GO / CONDITIONAL GO / NO GO]** (confidence: X.X)
-[2-4 sentences: the synthesis -- what's the real risk picture? What would change the verdict?]
 
 **Required Mitigations (if CONDITIONAL GO):**
 1. [mitigation 1]
@@ -393,12 +396,12 @@ mcp__cognition-mcp__cognition
 
 ### Output Format
 
-Same as Default Mode output above, with two additional sections inserted before the Verdict:
+Same as Default Mode output above, with two additional subsections in The Attack (inserted before What the Analysis Caught):
 
 ### Failure Simulation: [2-3 sentence summary -- what broke and at which step]
 ### Ethical Analysis: [2-3 sentence summary -- stakeholder impacts and recommendation]
 
-And the Verdict section becomes "Revised Verdict" incorporating simulation + ethics findings.
+The Summary and Verdict sections incorporate simulation + ethics findings. Verdict becomes "Revised Verdict" if simulation changed the assessment.
 
 ---
 

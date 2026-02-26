@@ -1,15 +1,13 @@
-# OS 6.3 Recording Layer Reference
+# OS 6.4 Recording Layer Reference
 
-**Last Updated:** 2026-02-17
-**Version:** orca-record v0.3.0
+**Last Updated:** 2026-02-26
+**Version:** orca-record v0.4.0
 
 ---
 
 ## Overview
 
-The recording layer (`orca-record`) captures session activity automatically via Claude Code hooks. Every prompt creates a checkpoint - a full working tree snapshot stored on a git shadow branch. Users can rewind to any checkpoint, restoring both code and conversation context.
-
-**Key concept:** Shadow branches are ephemeral git branches that store checkpoints alongside your working tree. They're invisible to normal git operations but enable instant rollback.
+The recording layer (`orca-record`) captures session activity automatically via Claude Code hooks. Every prompt records an event and creates a checkpoint tracking which files changed. This data powers Workshop session notes, cognition-mcp recording reads, and session-start context.
 
 ---
 
@@ -17,9 +15,6 @@ The recording layer (`orca-record`) captures session activity automatically via 
 
 | Command | Purpose |
 |---------|---------|
-| `/checkpoints` | List recent checkpoints with file changes |
-| `/restore N` | Restore to checkpoint #N |
-| `/restore N --logs-only` | Restore transcript only (no file changes) |
 | `/orca-status` | Current session status |
 | `/continue` | Resume info for previous sessions |
 
@@ -35,27 +30,6 @@ The binary lives at `~/.claude/bin/orca-record`.
 # Session status
 orca-record status
 
-# List checkpoints
-orca-record checkpoints
-orca-record checkpoints --session sess-abc123
-
-# Restore to checkpoint
-orca-record rewind <checkpoint-id>
-orca-record rewind <checkpoint-id> --logs-only
-
-# Condensation (after git commit)
-orca-record condense
-orca-record condense --session sess-abc123
-
-# Git hook management
-orca-record install-hooks
-orca-record uninstall-hooks
-
-# Commit-checkpoint linking
-orca-record link <commit-hash>
-orca-record link --checkpoint <checkpoint-id>
-orca-record history [commit-range]
-
 # Version
 orca-record version
 ```
@@ -68,8 +42,6 @@ orca-record stop            # Stop hook
 orca-record pre-task        # PreToolUse[Task] handler
 orca-record post-task       # PostToolUse[Task] handler
 orca-record post-todo       # PostToolUse[TodoWrite] handler
-orca-record prepare-commit-msg  # Git hook
-orca-record post-commit     # Git hook
 ```
 
 ---
@@ -77,22 +49,21 @@ orca-record post-commit     # Git hook
 ## Session States
 
 ```
-IDLE ──────────────────────────────────────────────────────────────────
-  │ SessionStart/TurnStart
+IDLE
+  | SessionStart/TurnStart
   v
-ACTIVE ────────────────────────────────────────────────────────────────
-  │ GitCommit               │ SessionStop
-  v                         v
-ACTIVE_COMMITTED            ENDED
-  │ TurnStart                 │ SessionStart
-  │ (new turn after commit)   v
-  └─────> ACTIVE            ACTIVE (new session)
+ACTIVE
+  | TurnEnd -> ACTIVE (same turn continues)
+  | SessionStop
+  v
+ENDED
+  | SessionStart -> ACTIVE (new session)
 ```
 
 **States:**
 - `IDLE` - No active session
-- `ACTIVE` - Recording in progress, checkpoints being created
-- `ACTIVE_COMMITTED` - User committed changes, awaiting next turn or session end
+- `ACTIVE` - Session in progress, events being recorded
+- `ACTIVE_COMMITTED` - Legacy state (backward compat with existing DBs)
 - `ENDED` - Session completed
 
 ---
@@ -103,8 +74,6 @@ ACTIVE_COMMITTED            ENDED
 |----------|----------|
 | `.orca/recording.db` | SQLite database (per-project, gitignored) |
 | `.git/orca-sessions/<id>.json` | Session state files |
-| `orca/<HEAD[:7]>-<worktree[:6]>` | Shadow branch (ephemeral) |
-| `orca-storage` | Orphan branch (permanent, after condensation) |
 
 ---
 
@@ -120,62 +89,14 @@ checkpoints (id, session_id, type, shadow_commit, prompt_summary, files_*)
 -- Events (full hook log)
 events (id, session_id, event_type, hook_input_json, git_head, ...)
 
--- Transcripts (conversation history)
+-- Transcripts (legacy table, no longer written to)
 transcripts (session_id, transcript_path, transcript_data, redacted)
 
--- Condensed (permanent storage after commit)
+-- Condensed (legacy table, no longer written to)
 condensed (checkpoint_id, session_id, commit_hash, orphan_commit, ...)
 ```
 
----
-
-## Shadow Branch Anatomy
-
-Shadow branches capture full working tree snapshots as git commits:
-
-```
-refs/heads/orca/abc1234-def567
-  │
-  ├── Commit: "orca: session sess-abc started"
-  │     ORCA-Session: sess-abc
-  │     ORCA-Type: session-start
-  │
-  ├── Commit: "orca: turn checkpoint: Fix login redirect"
-  │     ORCA-Session: sess-abc
-  │     ORCA-Checkpoint: cp-123
-  │     ORCA-Type: session
-  │     ORCA-Files: +2 ~5 -0
-  │
-  └── Commit: "orca: task checkpoint: Authentication"
-        ORCA-Session: sess-abc
-        ORCA-Checkpoint: cp-456
-        ORCA-Type: task
-        ORCA-Files: +3 ~2 -1
-```
-
-**Naming:** `orca/<HEAD[:7]>-<worktree-hash[:6]>`
-
----
-
-## Checkpoint Types
-
-| Type | Created When | Contains |
-|------|--------------|----------|
-| `session` | Each user prompt | Full tree + prompt metadata |
-| `task` | Subagent completion | Full tree + task metadata |
-
----
-
-## Condensation
-
-When the user commits, the recording layer condenses checkpoints:
-
-1. Creates sharded storage on orphan branch
-2. Links user commit to checkpoint via trailers
-3. Deletes ephemeral shadow branch
-4. Preserves checkpoint metadata in SQLite
-
-**Trigger:** `ACTIVE -> ACTIVE_COMMITTED` on `GitCommit` event
+Schema is preserved for cognition-mcp backward compatibility (READ-ONLY queries).
 
 ---
 
@@ -218,17 +139,18 @@ In `~/.claude/settings.json`:
 
 ## Integration with cognition-mcp
 
-The recording layer integrates with cognition-mcp for cognitive fusion:
+The recording layer integrates with cognition-mcp for session queries:
 
 | cognition-mcp Operation | Purpose |
 |-------------------------|---------|
 | `recording_status` | Current session state |
-| `recording_query` | Query sessions by date/files/quality |
-| `recording_checkpoint` | Get checkpoint with cognitive context |
-| `recording_compare` | Diff checkpoints: code + reasoning |
+| `recording_query` | Query sessions by date/files |
+| `recording_checkpoint` | Get checkpoint details |
+| `recording_compare` | Diff checkpoints |
 | `recording_quality` | Session quality analytics |
 | `recording_explain` | Human-readable narrative |
-| `recording_rewind` | Trigger rewind with cognitive state |
+
+These operations READ from `.orca/recording.db` -- they require no changes.
 
 ---
 
@@ -248,14 +170,10 @@ cp dist/orca-record ~/.claude/bin/orca-record
 
 ## Troubleshooting
 
-**No checkpoints found:**
+**No active session:**
 - Check if recording is active: `orca-record status`
 - Verify git repository exists
 - Check `.orca/recording.db` exists
-
-**Restore failed:**
-- Shadow branch may have been deleted after condensation
-- Use `--session <id>` to specify exact session
 
 **Hooks not firing:**
 - Check `~/.claude/settings.json` hook configuration
@@ -265,4 +183,4 @@ cp dist/orca-record ~/.claude/bin/orca-record
 ---
 
 _Source: `mcp/orca-record/`_
-_Slash commands: `/checkpoints`, `/restore`, `/continue`, `/orca-status`_
+_Slash commands: `/continue`, `/orca-status`_

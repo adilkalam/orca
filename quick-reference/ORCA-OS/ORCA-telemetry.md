@@ -1,7 +1,7 @@
-# Quick Reference: Telemetry and Recording (OS 6.3)
+# Quick Reference: Telemetry and Recording (OS 6.4)
 
-**Last Updated:** 2026-02-16
-**Version:** OS 6.3
+**Last Updated:** 2026-02-26
+**Version:** OS 6.4
 **Status:** ACTIVE via recording layer (manual telemetry deprecated)
 
 ## Recording Layer (Active)
@@ -12,7 +12,7 @@ history, prompts, file changes, and checkpoints.
 
 ### Recording Context Injection in Commands
 
-OS 6.3 commands inject prior session context from the recording layer before
+OS 6.4 commands inject prior session context from the recording layer before
 delegating to agents. This follows **Pattern A (command-layer injection)**:
 
 **Flow:**
@@ -21,7 +21,7 @@ delegating to agents. This follows **Pattern A (command-layer injection)**:
 3. The narrative summary (max 500 chars) is passed as `RECORDING_CONTEXT`
 4. Domain grand-architects receive this context in their delegation prompt
 
-**Domain commands** (`/nextjs`, `/ios`, `/expo`, `/shopify`, `/django-react`,
+**Domain commands** (`/nextjs`, `/ios`, `/expo`, `/django-react`,
 `/orca-os-dev`, `/seo`) check for inherited `RECORDING_CONTEXT` first. If not
 present (direct invocation without `/orca`), they query `.orca/recording.db`
 independently.
@@ -184,4 +184,4 @@ The following features were planned for Phase 2. Most are now fulfilled by the r
 
 ---
 
-*Part of ORCA OS 6.3*
+*Part of ORCA OS 6.4*
