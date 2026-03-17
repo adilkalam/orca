@@ -2,7 +2,7 @@
 
 **Last Updated:** 2026-03-16
 **Version:** OS 7.0
-**Total Commands:** 38 (+ orca-record CLI with 7 subcommands (5 hook + 2 user))
+**Total Commands:** 37 (+ orca-record CLI with 7 subcommands (5 hook + 2 user))
 
 ---
 
@@ -160,7 +160,7 @@ Creates: `.claude/requirements/<id>/06-requirements-spec.md`
 
 ---
 
-## Reasoning Commands (6)
+## Reasoning Commands (5)
 
 ### `/think` - Constraint Chain Exploration
 ```bash
@@ -204,18 +204,6 @@ Creates: `.claude/requirements/<id>/06-requirements-spec.md`
 **MCP:** cognition-mcp
 **Persistence:** Creates `.claude/cognition/YYYYMMDD-HHMM-meta-<slug>.md` + Workshop entry
 **See also:** `/think --meta` (quick single-shot), `/think --meta-visual` (with ASCII diagrams)
-
-
-### `/contemplate` - Reasoning Strategy Advisor
-```bash
-/contemplate "Should we use microservices?"
-/contemplate "How to debug this failure?"
-```
-Recommends which /think operations to use.
-**NEW: Problem-Type Detection:** Classifies problems (EXPLORATION, COMPOSITIONAL, AGGREGATION, ARITHMETIC, CODE, DECISION, RISK, STRATEGIC) with evidence-backed routing table
-**Routing:** Maps problem types to optimal techniques (e.g., Tree-of-Thought for exploration: 74% vs 4%)
-**Persistence:** Appends to daily log `.claude/cognition/YYYYMMDD-daily.md` + Workshop entry
-**Handoff Guidance:** Includes "Next Steps" section with contextual command recommendations
 
 
 ### `/deepthink` - Pre-Mortem Exploration

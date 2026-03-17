@@ -387,7 +387,7 @@ mcp__project-context__recall({
 
 **What:** File-based persistence for cognitive command outputs.
 
-**Purpose:** Heavyweight cognitive commands (`/problem-solve`, `/deepthink`, `/challenge`, `/root-cause`) and lightweight commands (`/think`, `/contemplate`) produce extensive analysis that can be lost when context window compacts. This directory preserves key insights.
+**Purpose:** Heavyweight cognitive commands (`/problem-solve`, `/deepthink`, `/challenge`, `/root-cause`) and lightweight commands (`/think`) produce extensive analysis that can be lost when context window compacts. This directory preserves key insights.
 
 **File Patterns:**
 
@@ -441,7 +441,6 @@ workshop why "topic from analysis"
 - `/challenge` - Heavyweight (individual files)
 - `/root-cause` - Heavyweight (individual files)
 - `/think` - Lightweight (daily log)
-- `/contemplate` - Lightweight (daily log)
 
 **Location:** `.claude/cognition/`
 

@@ -1,1 +1,0 @@
-{"version":3,"file":"optimization.d.ts","sourceRoot":"","sources":["../../../src/handlers/analysis/optimization.ts"],"names":[],"mappings":"AAAA;;;;;GAKG;AAEH,OAAO,KAAK,EAAE,gBAAgB,EAAE,aAAa,EAAuB,MAAM,gBAAgB,CAAC;AAE3F,OAAO,EAAE,YAAY,EAAE,MAAM,wBAAwB,CAAC;AAItD,wBAAsB,kBAAkB,CACtC,IAAI,EAAE,gBAAgB,EACtB,OAAO,EAAE,YAAY,GACpB,OAAO,CAAC,aAAa,CAAC,CAuDxB"}

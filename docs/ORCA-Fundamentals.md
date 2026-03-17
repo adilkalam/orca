@@ -114,7 +114,7 @@ Apply these rules learned from past failures.
 ## Part 2: What Actually Works
 
 ### 2.1 Thinking Tools
-Commands: `/deepthink`, `/think`, `/problem-solve`, `/challenge`, `/contemplate`
+Commands: `/deepthink`, `/think`, `/problem-solve`, `/challenge`
 
 Single agent, single session, structured prompts. cognition-mcp stores intermediate reasoning. Forces exploration that default Claude skips.
 

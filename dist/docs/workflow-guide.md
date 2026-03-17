@@ -329,7 +329,6 @@ Use complex mode for full architect involvement:
 |---------|---------|
 | `/think` | Structured reasoning with cognition-mcp (49 operations) |
 | `/deepthink` | Depth-first exploration with constraint chain and self-check |
-| `/contemplate` | Reasoning strategist (recommends which thinking tools to use) |
 | `/problem-solve` | Convergent 8-step decision pipeline |
 | `/challenge` | Adversarial analysis (attack a proposal to find weaknesses) |
 

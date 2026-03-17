@@ -2,7 +2,7 @@
 name: ios-testing-skill
 description: >
   Skill describing modern iOS testing patterns: Swift Testing vs XCTest,
-  XCUITest best practices, and OS 6.3 expectations for coverage and flakiness.
+  XCUITest best practices, and OS 7.0 expectations for coverage and flakiness.
 ---
 
 # iOS Testing Skill – Swift Testing, XCTest, XCUITest

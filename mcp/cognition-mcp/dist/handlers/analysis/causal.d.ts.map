@@ -1,1 +1,0 @@
-{"version":3,"file":"causal.d.ts","sourceRoot":"","sources":["../../../src/handlers/analysis/causal.ts"],"names":[],"mappings":"AAAA;;;;;GAKG;AAEH,OAAO,KAAK,EAAE,gBAAgB,EAAE,aAAa,EAAyB,MAAM,gBAAgB,CAAC;AAE7F,OAAO,EAAE,YAAY,EAAE,MAAM,wBAAwB,CAAC;AAItD,wBAAsB,oBAAoB,CACxC,IAAI,EAAE,gBAAgB,EACtB,OAAO,EAAE,YAAY,GACpB,OAAO,CAAC,aAAa,CAAC,CAuDxB"}

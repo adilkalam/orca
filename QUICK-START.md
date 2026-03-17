@@ -88,8 +88,6 @@ claude
 ### Thinking & Reasoning
 | Command | Description |
 |---------|-------------|
-| `/think` | Sequential thinking with 49 cognition operations |
-| `/contemplate` | Reasoning strategy advisor - recommends which /think ops to use |
 | `/deepthink` | Depth-first exploration with route-based modes (via RVRY) |
 | `/problem-solve` | Convergent 8-step decision pipeline (via RVRY) |
 | `/challenge` | Adversarial analysis of proposals |

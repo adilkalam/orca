@@ -48,7 +48,7 @@ It is used by:
 
 ---
 
-## CSS Comment Format (OS 6.3)
+## CSS Comment Format (OS 7.0)
 
 For projects without JSON design-dna, tokens and rules can be embedded in CSS comments.
 

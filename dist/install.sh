@@ -206,7 +206,6 @@ install_orca_files() {
         "scripts/utilities"
         "bin"
         "mcp/project-context-server"
-        "mcp/cognition-mcp"
         "mcp/bambu-3mf"
         "mcp/bambu-mcp-agent"
         "docs/pipelines"
@@ -247,7 +246,7 @@ install_orca_files() {
     for cmd in "$ORCA_ROOT/commands/"*.md; do
         local filename=$(basename "$cmd")
         case "$filename" in
-            trading-*.md|kg.md|seo.md|rvry.md|shopify.md|deepthink-local.md|problem-solve-local.md)
+            trading-*.md|kg.md|seo.md|rvry.md|shopify.md|deepthink-local.md|problem-solve-local.md|think.md|deepthink.md|problem-solve.md|challenge.md|meta.md|contemplate.md)
                 # Skip private/excluded commands
                 ;;
             *)
@@ -344,14 +343,6 @@ install_orca_files() {
     cp "$ORCA_ROOT/mcp/project-context-server/package.json" "$CLAUDE_DIR/mcp/project-context-server/" 2>/dev/null || true
     cp "$ORCA_ROOT/mcp/project-context-server/tsconfig.json" "$CLAUDE_DIR/mcp/project-context-server/" 2>/dev/null || true
     success "ProjectContext MCP installed"
-
-    # Copy Cognition MCP
-    info "Installing Cognition MCP..."
-    cp -r "$ORCA_ROOT/mcp/cognition-mcp/src" "$CLAUDE_DIR/mcp/cognition-mcp/" 2>/dev/null || true
-    cp -r "$ORCA_ROOT/mcp/cognition-mcp/dist" "$CLAUDE_DIR/mcp/cognition-mcp/" 2>/dev/null || true
-    cp "$ORCA_ROOT/mcp/cognition-mcp/package.json" "$CLAUDE_DIR/mcp/cognition-mcp/" 2>/dev/null || true
-    cp "$ORCA_ROOT/mcp/cognition-mcp/tsconfig.json" "$CLAUDE_DIR/mcp/cognition-mcp/" 2>/dev/null || true
-    success "Cognition MCP installed"
 
     # Copy Bambu 3MF MCP
     info "Installing Bambu 3MF MCP..."
@@ -497,28 +488,6 @@ install_mcp_dependencies() {
         cd - > /dev/null
     else
         warn "ProjectContext MCP package.json not found - skipping"
-    fi
-
-    # Install Cognition MCP dependencies
-    if [ -f "$CLAUDE_DIR/mcp/cognition-mcp/package.json" ]; then
-        info "Installing Cognition MCP dependencies..."
-        cd "$CLAUDE_DIR/mcp/cognition-mcp"
-
-        if npm install 2>&1 | tee /tmp/npm-install.log | grep -q "error"; then
-            error "Failed to install Cognition MCP dependencies"
-            warn "Check /tmp/npm-install.log for details"
-            ((mcp_errors++))
-        else
-            # Build if needed
-            if [ -f "tsconfig.json" ] && [ ! -d "dist" ]; then
-                info "Building Cognition MCP..."
-                npm run build 2>&1 || npx tsc 2>&1
-            fi
-            success "Cognition MCP ready"
-        fi
-        cd - > /dev/null
-    else
-        warn "Cognition MCP package.json not found - skipping"
     fi
 
     # Install Bambu 3MF MCP dependencies (if user opted in)
@@ -742,12 +711,6 @@ core_servers = {
         "args": [f"{claude_dir}/mcp/project-context-server/dist/index.js"],
         "env": {}
     },
-    "cognition-mcp": {
-        "type": "stdio",
-        "command": "node",
-        "args": [f"{claude_dir}/mcp/cognition-mcp/dist/index.js"],
-        "env": {}
-    },
     "crawl4ai": {
         "type": "sse",
         "url": "http://localhost:11235/mcp/sse"
@@ -882,7 +845,6 @@ print_completion() {
     echo -e "  ${BOLD}Core MCPs installed:${NC}"
     echo "     - context7 (library documentation)"
     echo "     - project-context (memory & semantic search)"
-    echo "     - cognition-mcp (49 reasoning operations)"
     echo "     - sequential-thinking (multi-step reasoning)"
     echo "     - crawl4ai (web scraping for /research)"
     echo "     - RVRY (/deepthink, /problem-solve)"

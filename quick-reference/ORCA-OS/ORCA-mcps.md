@@ -11,7 +11,6 @@ MCPs are now project-scoped to reduce token bloat:
 
 ### Global MCPs (Always Available)
 Core MCPs in `~/.claude.json` global mcpServers (user-scoped):
-- `cognition-mcp` - Sequential thinking storage (accept-store-echo pattern)
 - `project-context` - Project context queries
 - `crawl4ai` - Web content extraction (SSE, Docker at localhost:11235)
 - `sequential-thinking` - Multi-step reasoning with revision
@@ -27,6 +26,12 @@ Heavy MCPs defined in project `.mcp.json` + enabled via `enabledMcpjsonServers`:
 | `/obsidian-peptides` | chrome-devtools, puppeteer, crawl4ai, analytics-mcp, mcp-gsc |
 | `/peptidefox` | chrome-devtools, puppeteer, crawl4ai, analytics-mcp, mcp-gsc |
 | `/rvry` | analytics-mcp, mcp-gsc |
+
+---
+
+### Private MCPs (Not Distributed)
+These MCPs are used internally but excluded from public distribution:
+- `cognition-mcp` - Sequential thinking storage (49 operations). Moving to RVRY.
 
 ---
 

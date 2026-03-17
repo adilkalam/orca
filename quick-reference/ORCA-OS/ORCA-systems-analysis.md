@@ -112,7 +112,7 @@ One phase config per lane: ios, nextjs, django-react, expo, research, seo, rvry,
 ```yaml
 pipeline:
   name: "{lane}-pipeline"
-  version: "6.0"
+  version: "7.0"
 
 complexity_tiers:
   default:
@@ -362,7 +362,7 @@ Templates live at `quick-reference/thinking-models/*.md`.
 
 ```
 .claude/cognition/
-  YYYYMMDD-daily.md              # Daily log (/think, /contemplate)
+  YYYYMMDD-daily.md              # Daily log (/think)
   YYYYMMDD-HHMM-<slug>.md       # Per-session (/deepthink, /problem-solve, /challenge, /root-cause)
 
 ~/.orca-cognition/

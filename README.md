@@ -266,7 +266,7 @@ This changes both sides of the interaction. Claude produces output shaped by evi
 
 ### The 49 operations
 
-Beyond default observation, the cognition-mcp provides 49 structured reasoning operations that Claude can execute but doesn't reach for unprompted. Read the [full guide on cognition](quick-reference/cognition.md).
+Beyond default observation, ORCA provides 49 structured reasoning operations via RVRY that Claude can execute but doesn't reach for unprompted. Read the [full guide on cognition](quick-reference/cognition.md).
 
 | Category | Example |
 |----------|---------|
@@ -503,7 +503,7 @@ Claude Desktop gives you a capable one-pass analysis from training data. ORCA gi
 
 | Component | What it enables |
 |-----------|----------------|
-| **cognition-mcp** | 49 structured reasoning operations. Accept-store-echo: the MCP stores thinking, never generates it. |
+| **RVRY** | 49 structured reasoning operations via `/deepthink`, `/problem-solve`, `/challenge`. Stores thinking externally, never generates it. |
 | **project-context** | Memory across sessions. Decisions, gotchas, preferences. Semantic code search. Context bundles per task. |
 | **sequential-thinking** | Multi-step reasoning with revision and backtracking. |
 | **context7** | Up-to-date library documentation instead of stale training data. |
