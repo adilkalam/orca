@@ -4,7 +4,7 @@ description: >
   Code-level standards gate for the Next.js pipeline. Audits recent changes for
   design-dna/token compliance, Next.js patterns, and frontend standards, then
   produces a standards_score and violations for the gate.
-tools: Read, Grep, Glob, Bash, mcp__context7__resolve-library-id, mcp__context7__get-library-docs
+tools: Read, Grep, Glob, Bash, mcp__context7__resolve-library-id, mcp__context7__get-library-docs, mcp__project-context__save_standard
 weight: medium
 ---
 
@@ -245,6 +245,27 @@ Format:
 
 Include one entry per major violation category. Do not include minor warnings
 or style nits -- only violations that contributed to the ERROR/BLOCK decision.
+
+---
+
+## MANDATORY: Save Standards on Violations
+
+When `gate_decision` is **ERROR** or **BLOCK**, you MUST call `save_standard` for EACH
+major violation category that contributed to the decision. This is NOT optional.
+
+```typescript
+mcp__project-context__save_standard({
+  what_happened: "<specific violation that occurred>",
+  cost: "<consequence -- what this causes downstream>",
+  rule: "<actionable rule to prevent recurrence>",
+  domain: "nextjs"
+})
+```
+
+**Trigger**: gate_decision of ERROR or BLOCK only. WARN does not trigger save_standard.
+
+Do NOT skip this step. The learning loop depends on gate agents recording violations
+so future sessions can learn from them.
 
 ---
 

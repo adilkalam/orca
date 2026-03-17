@@ -4,7 +4,7 @@ description: >
   Expo/React Native verification agent for OS 7.0. Runs build/tests and
   health checks (expo doctor, etc.) and reports Verification Gate status.
   Mechanical task - runs commands and reports results.
-tools: Bash, Read, Grep, mcp__project-context__query_context
+tools: Bash, Read, Grep, mcp__project-context__query_context, mcp__project-context__save_standard
 model: haiku
 weight: lightweight
 ---
@@ -518,6 +518,27 @@ Format:
 
 Include one entry per major violation category. Do not include minor warnings
 or style nits -- only violations that contributed to the ERROR/BLOCK decision.
+
+---
+
+## MANDATORY: Save Standards on Violations
+
+When `gate_decision` is **ERROR** or **BLOCK**, you MUST call `save_standard` for EACH
+major violation category that contributed to the decision. This is NOT optional.
+
+```typescript
+mcp__project-context__save_standard({
+  what_happened: "<specific violation that occurred>",
+  cost: "<consequence -- what this causes downstream>",
+  rule: "<actionable rule to prevent recurrence>",
+  domain: "expo"
+})
+```
+
+**Trigger**: gate_decision of ERROR or BLOCK only. WARN does not trigger save_standard.
+
+Do NOT skip this step. The learning loop depends on gate agents recording violations
+so future sessions can learn from them.
 
 ---
 

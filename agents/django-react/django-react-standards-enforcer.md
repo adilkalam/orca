@@ -4,7 +4,7 @@ description: >
   Code-level standards gate for Django + React pipeline. Audits recent changes for
   Python/Django standards, TypeScript/React patterns, and token compliance. Produces
   a standards_score with hard block at 90/100.
-tools: Read, Grep, Glob, Bash
+tools: Read, Grep, Glob, Bash, mcp__project-context__save_standard
 ---
 
 # Django + React Standards Enforcer - Code-Level Gate
@@ -262,6 +262,27 @@ Format:
 
 Include one entry per major violation category. Do not include minor warnings
 or style nits -- only violations that contributed to the ERROR/BLOCK decision.
+
+---
+
+## MANDATORY: Save Standards on Violations
+
+When `gate_decision` is **ERROR** or **BLOCK**, you MUST call `save_standard` for EACH
+major violation category that contributed to the decision. This is NOT optional.
+
+```typescript
+mcp__project-context__save_standard({
+  what_happened: "<specific violation that occurred>",
+  cost: "<consequence -- what this causes downstream>",
+  rule: "<actionable rule to prevent recurrence>",
+  domain: "django-react"
+})
+```
+
+**Trigger**: gate_decision of ERROR or BLOCK only. WARN does not trigger save_standard.
+
+Do NOT skip this step. The learning loop depends on gate agents recording violations
+so future sessions can learn from them.
 
 ---
 

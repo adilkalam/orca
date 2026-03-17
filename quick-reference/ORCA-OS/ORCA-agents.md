@@ -396,6 +396,8 @@ Located in `agents/cross-domain/`. These agents are spawned by light orchestrato
 
 **MCP Requirements:** project-context (save_standard + query_context)
 
+**Note:** As of OS 7.0, all 12 gate agents also call `save_standard` directly on ERROR/BLOCK decisions. The standards-persistence-agent serves as a backup deduplication layer. See `gate_agents_with_save_standard` in `os-dependency-graph.yaml` for the full list.
+
 ---
 
 ## 3D Printing (MCP+Skill Driven, 0 Agents)

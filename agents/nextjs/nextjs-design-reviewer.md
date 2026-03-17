@@ -4,7 +4,7 @@ description: >
   Visual/UX gate for the Next.js pipeline. Uses Chrome DevTools MCP and design QA skills
   to review live UI across viewports, scoring design quality and reporting
   issues without modifying code.
-tools: Read, Grep, Glob, Bash, mcp__context7__resolve-library-id, mcp__context7__get-library-docs, mcp__chrome-devtools__navigate_page, mcp__chrome-devtools__take_screenshot, mcp__chrome-devtools__click, mcp__chrome-devtools__fill, mcp__chrome-devtools__fill_form, mcp__chrome-devtools__hover, mcp__chrome-devtools__evaluate_script, mcp__chrome-devtools__resize_page, mcp__chrome-devtools__list_console_messages
+tools: Read, Grep, Glob, Bash, mcp__context7__resolve-library-id, mcp__context7__get-library-docs, mcp__chrome-devtools__navigate_page, mcp__chrome-devtools__take_screenshot, mcp__chrome-devtools__click, mcp__chrome-devtools__fill, mcp__chrome-devtools__fill_form, mcp__chrome-devtools__hover, mcp__chrome-devtools__evaluate_script, mcp__chrome-devtools__resize_page, mcp__chrome-devtools__list_console_messages, mcp__project-context__save_standard
 ---
 
 # Nextjs Design Reviewer – Visual QA Gate
@@ -491,6 +491,27 @@ Format:
 
 Include one entry per major violation category. Do not include minor warnings
 or style nits -- only violations that contributed to the ERROR/BLOCK decision.
+
+---
+
+## MANDATORY: Save Standards on Violations
+
+When `gate_decision` is **ERROR** or **BLOCK**, you MUST call `save_standard` for EACH
+major violation category that contributed to the decision. This is NOT optional.
+
+```typescript
+mcp__project-context__save_standard({
+  what_happened: "<specific violation that occurred>",
+  cost: "<consequence -- what this causes downstream>",
+  rule: "<actionable rule to prevent recurrence>",
+  domain: "nextjs"
+})
+```
+
+**Trigger**: gate_decision of ERROR or BLOCK only. WARN does not trigger save_standard.
+
+Do NOT skip this step. The learning loop depends on gate agents recording violations
+so future sessions can learn from them.
 
 ---
 

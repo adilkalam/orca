@@ -4,7 +4,7 @@ description: >
   UI/interaction gate (code review). Evaluates SwiftUI/UIKit patterns, design
   token usage, accessibility labels, and state handling in code. For visual
   verification with simulator screenshots, see ios-verification.
-tools: Read, Grep, Glob, Bash, AskUserQuestion
+tools: Read, Grep, Glob, Bash, AskUserQuestion, mcp__project-context__save_standard
 ---
 
 # iOS UI Reviewer – Code-Based UI/UX Gate
@@ -307,6 +307,27 @@ Format:
 
 Include one entry per major violation category. Do not include minor warnings
 or style nits -- only violations that contributed to the ERROR/BLOCK decision.
+
+---
+
+## MANDATORY: Save Standards on Violations
+
+When `gate_decision` is **ERROR** or **BLOCK**, you MUST call `save_standard` for EACH
+major violation category that contributed to the decision. This is NOT optional.
+
+```typescript
+mcp__project-context__save_standard({
+  what_happened: "<specific violation that occurred>",
+  cost: "<consequence -- what this causes downstream>",
+  rule: "<actionable rule to prevent recurrence>",
+  domain: "ios"
+})
+```
+
+**Trigger**: gate_decision of ERROR or BLOCK only. WARN does not trigger save_standard.
+
+Do NOT skip this step. The learning loop depends on gate agents recording violations
+so future sessions can learn from them.
 
 ---
 

@@ -406,7 +406,9 @@ Every pipeline follows:
 - **Reflexion** (Shinn et al., NeurIPS 2023): Gate failures generate verbal reflections stored in Workshop, feeding future runs. Achieves 88% pass@1 vs 67% baseline.
 - **Chain of Verification (CoVe)** (Dhuliawala et al., Meta AI 2023): Verification agents generate 3-5 questions and answer them independently, doubling factual precision. CoVe tables are mandatory in all verification output.
 
-### Gate Agents (8)
+### Gate Agents (12)
+
+All 12 gate agents call `save_standard` directly on ERROR/BLOCK decisions and emit `VIOLATIONS_JSON` blocks for the standards-persistence-agent fallback.
 
 | Gate | Domain | Type |
 |------|--------|------|
@@ -415,11 +417,13 @@ Every pipeline follows:
 | ios-standards-enforcer | iOS | Standards |
 | ios-ui-reviewer | iOS | Design |
 | expo-standards-enforcer | Expo | Standards |
+| expo-verification-agent | Expo | Verification |
 | django-react-standards-enforcer | Django-React | Standards |
 | os-dev-standards-enforcer | OS-Dev | Standards |
-| design-dna-guardian | Cross-cutting | Design system |
+| seo-quality-guardian | SEO | Quality |
+| typography-orchestrator | Typography | Orchestration |
 
-All 8 gate agents implement Reflexion-on-failure and store lessons via Workshop save_standard.
+All 12 gate agents implement Reflexion-on-failure and store lessons via save_standard.
 
 ---
 

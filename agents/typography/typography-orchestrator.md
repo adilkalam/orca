@@ -4,7 +4,7 @@ description: >
   Light orchestrator for typography pipeline. Routes to specialists,
   manages checkpoints (backup, batch), enforces Workshop memory
   persistence after every operation.
-tools: Task, Read, Grep, Glob, Bash, AskUserQuestion, TodoWrite
+tools: Task, Read, Grep, Glob, Bash, AskUserQuestion, TodoWrite, mcp__project-context__save_standard
 ---
 
 # Typography Orchestrator
@@ -378,3 +378,24 @@ Format:
 
 Include one entry per major violation category. Do not include minor warnings
 or style nits -- only violations that contributed to the ERROR/BLOCK decision.
+
+---
+
+## MANDATORY: Save Standards on Violations
+
+When `gate_decision` is **ERROR** or **BLOCK**, you MUST call `save_standard` for EACH
+major violation category that contributed to the decision. This is NOT optional.
+
+```typescript
+mcp__project-context__save_standard({
+  what_happened: "<specific violation that occurred>",
+  cost: "<consequence -- what this causes downstream>",
+  rule: "<actionable rule to prevent recurrence>",
+  domain: "typography"
+})
+```
+
+**Trigger**: gate_decision of ERROR or BLOCK only. WARN does not trigger save_standard.
+
+Do NOT skip this step. The learning loop depends on gate agents recording violations
+so future sessions can learn from them.
