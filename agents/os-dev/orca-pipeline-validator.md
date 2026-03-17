@@ -16,7 +16,7 @@ valid, and properly integrated.
 
 ---
 
-## Context Inheritance (OS 6.3)
+## Context Inheritance (OS 7.0)
 
 **Check for inherited context FIRST:**
 
@@ -28,15 +28,6 @@ valid, and properly integrated.
 
 ---
 
-## Knowledge Loading
-
-Before validating:
-1. Check if `.claude/agent-knowledge/orca-pipeline-validator/patterns.json` exists
-2. If exists, review patterns for validation
-3. Apply proven validation patterns
-
----
-
 ## Required Skills Awareness
 
 Apply these skills during validation:
@@ -45,7 +36,7 @@ Apply these skills during validation:
 
 ---
 
-## Attempt Tracking (OS 6.3)
+## Attempt Tracking (OS 7.0)
 
 Track validation attempts:
 
@@ -156,7 +147,7 @@ cross_reference:
 Verify all agents have required sections:
 
 Required sections:
-- `## Context Inheritance (OS 6.3)`
+- `## Context Inheritance (OS 7.0)`
 - `## Knowledge Loading`
 - `## Required Skills` OR `## Required Skills Awareness`
 - `## Attempt Tracking`

@@ -8,12 +8,13 @@ ORCA-OS transforms Claude Code from a coding assistant into a sophisticated mult
 
 ## What's Inside
 
-- **112 Specialized Agents** across 11 domains (Next.js, iOS, Expo, Django-React, Research, SEO, Data, Audit, OS-Dev, Orca-Pipeline, Typography)
-- **33 Slash Commands** for orchestration, planning, thinking, and design review
+- **Specialized Agents** across 11 domains (Next.js, iOS, Expo, Django-React, Research, Data, 3D Printing, Creative Design, Typography, OS-Dev, Orca-Pipeline)
+- **Slash Commands** for orchestration, planning, thinking, and design review
 - **Persistent Memory** via Workshop and project-context MCP
 - **Session Recording** via orca-record (captures tool calls, file changes across sessions)
 - **Self-Improvement System** that learns rules from your interactions
-- **48 Reasoning Operations** via cognition-mcp
+- **49 Reasoning Operations** via cognition-mcp
+- **Deep Thinking** via RVRY MCP (`/deepthink`, `/problem-solve`)
 
 
 ---
@@ -71,7 +72,7 @@ claude
 /help
 
 # Try planning a task
-/plan "hello world"
+/requirements "hello world"
 ```
 
 ---
@@ -81,17 +82,16 @@ claude
 ### Planning & Requirements
 | Command | Description |
 |---------|-------------|
-| `/plan` | Structured requirements gathering with cognition flags |
+| `/requirements` | Structured requirements gathering with cognition flags |
 | `/project-setup` | Initialize CLAUDE.md with project conventions |
 
 ### Thinking & Reasoning
 | Command | Description |
 |---------|-------------|
-| `/think` | Sequential thinking with 48 cognition operations |
+| `/think` | Sequential thinking with 49 cognition operations |
 | `/contemplate` | Reasoning strategy advisor - recommends which /think ops to use |
-| `/deepthink` | Depth-first exploration with route-based modes |
-| `/problem-solve` | Convergent 8-step decision pipeline with phase gates |
-| `/ultra-think` | Deep multi-dimensional analysis |
+| `/deepthink` | Depth-first exploration with route-based modes (via RVRY) |
+| `/problem-solve` | Convergent 8-step decision pipeline (via RVRY) |
 | `/challenge` | Adversarial analysis of proposals |
 
 ### Utility
@@ -103,6 +103,8 @@ claude
 | `/root-cause` | Structured root cause analysis |
 | `/enhance` | Transform vague prompts into structured requests |
 | `/clone-website` | Analyze and spec website cloning |
+| `/continue` | Resume interrupted pipeline execution |
+| `/orca-status` | System status and diagnostics |
 
 ## Domain Orchestrators
 
@@ -114,8 +116,9 @@ claude
 | `/expo` | React Native / Expo |
 | `/django-react` | Django + React fullstack |
 | `/research` | Deep research with citations |
-| `/seo` | SEO content pipeline |
 | `/typography` | Font editing, TTF export, exploration tools |
+| `/design` | 3D printing (OpenSCAD, STL), creative design thinking |
+| `/illustrate` | Measured Adobe Photoshop/Illustrator execution |
 | `/orca-os-dev` | ORCA-OS development (for contributors) |
 | `/orca-pipeline` | Create new domain pipelines |
 
@@ -143,11 +146,11 @@ claude
 | Expo | 12 | React Native mobile development |
 | Dev (shared) | 12 | Cross-cutting specialists (a11y, performance, security, design) |
 | OS-Dev | 11 | ORCA-OS development and maintenance |
-| Audit | 8 | Due diligence code auditing |
 | Research | 7 | Deep research with citations and fact-checking |
 | Typography | 6 | Font editing, TTF export, exploration tools |
-| SEO | 5 | Content optimization and brief creation |
 | Data | 4 | Analytics, competitive analysis |
+| 3D Printing | -- | Skills + MCP driven (bambu-3mf, openscad-mcp, print-prep skill) |
+| Creative Design | -- | Skills + MCP driven (adb-mcp, adobe-execution skill) |
 
 ---
 
@@ -157,13 +160,16 @@ claude
 
 - **context7** - Up-to-date library documentation
 - **sequential-thinking** - Multi-step reasoning
-- **cognition-mcp** - 48 reasoning operations + recording layer integration
+- **cognition-mcp** - 49 reasoning operations + recording layer integration
 - **project-context** - Project memory and semantic search
 - **orca-record** - Session recording CLI (captures tool calls, file changes, injects history)
-- **crawl4ai** - Web scraping & research (Python-based, auto-configured)
+- **crawl4ai** - Web scraping & research (Docker-based, powers `/research`)
+- **RVRY** - Deep thinking and problem solving (`/deepthink`, `/problem-solve`)
 
 ### Optional (User Prompted)
 
+- **bambu-3mf** - Bambu Studio 3MF print settings (8 tools: presets, slicing, analysis)
+- **openscad-mcp** - 3D modeling with OpenSCAD (render, analyze STL, compare)
 - **chrome-devtools** - Browser debugging, screenshots, design review
 - **XcodeBuildMCP** - iOS/macOS build automation
 - **Adobe Photoshop + Illustrator** - Creative tools (requires uv, Adobe apps)
@@ -174,22 +180,22 @@ claude
 
 ```
 ~/.claude/
-├── agents/           # 112 specialized agents
+├── agents/           # Specialized agents
 │   ├── iOS/          # iOS specialists
 │   ├── nextjs/       # Next.js web development
 │   ├── django-react/ # Django + React specialists
 │   ├── expo/         # React Native agents
 │   ├── dev/          # Cross-cutting specialists
 │   ├── os-dev/       # ORCA-OS development
-│   ├── audit/        # Audit specialists
 │   ├── research/     # Research pipeline agents
 │   ├── typography/   # Font and type specialists
-│   ├── seo/          # SEO agents
 │   └── data/         # Analytics agents
 ├── bin/              # CLI tools
 │   └── orca-record   # Session recording binary
-├── commands/         # 33 slash commands
+├── commands/         # Slash commands
 ├── skills/           # Reusable behavior patterns
+│   ├── print-prep/   # Bambu Studio settings oracle
+│   └── adobe-execution/  # Photoshop/Illustrator guardrails
 ├── hooks/            # Session lifecycle hooks
 ├── scripts/          # Utility scripts
 ├── docs/             # Documentation
@@ -199,7 +205,9 @@ claude
 ├── quick-reference/  # Quick reference guides
 ├── mcp/              # Custom MCP servers
 │   ├── project-context-server/
-│   └── cognition-mcp/
+│   ├── cognition-mcp/
+│   ├── bambu-3mf/    # Bambu Studio 3MF manipulation
+│   └── bambu-mcp-agent/  # 3MF analysis agent (Python)
 └── memory/           # Workshop database
 ```
 
@@ -248,7 +256,7 @@ Rules are stored in your project's CLAUDE.md and persist across sessions.
 
 See `quick-reference/` for detailed usage patterns:
 - `cognition.md` -- Thinking and reasoning commands
-- `plan.md` -- Planning and requirements
+- `requirements.md` -- Planning and requirements
 - `orchestration.md` -- Multi-agent execution
 - `research.md` -- Research with verified sources
 
@@ -350,7 +358,7 @@ mv ~/.claude-backup-* ~/.claude
 
 ## Version
 
-ORCA-OS v6.3
+ORCA-OS v7.0
 
 ---
 

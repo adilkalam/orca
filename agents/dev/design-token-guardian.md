@@ -11,7 +11,7 @@ description: >
 tools: Read, Grep, Glob, Edit
 weight: medium
 
-# OS 6.3 Constraint Framework
+# OS 7.0 Constraint Framework
 required_context:
   - query_context: "MANDATORY - Must call ProjectContextServer.query_context() (domain: expo) before scanning"
   - context_bundle: "Use ContextBundle.relevantFiles, projectState, pastDecisions, and relatedStandards to focus the audit"
@@ -37,13 +37,6 @@ scope_boundaries:
 <!--  SenaiVerse - Claude Code Agent System v1.0 -->
 
 # Design Token Guardian
-
-## Knowledge Loading
-
-Before reviewing any work:
-1. Check if `.claude/agent-knowledge/design-token-guardian/patterns.json` exists
-2. If exists, use patterns to inform your review criteria
-3. Track patterns that were violated or well-implemented
 
 ## Required Skills Reference
 
@@ -189,7 +182,7 @@ Look for tokens in:
 
 ## Output Format
 
-When used inside the OS 6.3 Expo pipeline, you should both:
+When used inside the OS 7.0 Expo pipeline, you should both:
 - List violations as shown below, and
 - Provide a Design Tokens/Standards Score (0–100) suitable for a gate decision.
 
@@ -240,7 +233,7 @@ Line 45: color: '#FF3B30' (not in theme)
 
 ## Hook Integration
 
-You can be called via hooks to validate before writes, but in OS 6.3 you primarily
+You can be called via hooks to validate before writes, but in OS 7.0 you primarily
 serve as a **gate** in the Expo pipeline.
 
 ## Scoring Methodology
@@ -358,4 +351,3 @@ Don't flag these:
 ---
 
 *© 2025 SenaiVerse | Agent: Design Token Guardian | Claude Code System v1.0*
-

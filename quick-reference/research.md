@@ -38,7 +38,7 @@
 
 ### Don't use research mode when:
 
-- You need code written or files edited → use `/orca-{domain}`
+- You need code written or files edited → use `/{domain}` (e.g., `/nextjs`, `/ios`)
 - The answer is in your codebase → just ask directly
 - It's a simple factual question → just ask directly
 

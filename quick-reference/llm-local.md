@@ -1,6 +1,6 @@
 # Local LLM Setup
 
-Local LLM models (Ollama) power code-index.db semantic search embeddings. Session event extraction uses a heuristic approach via the session-end hook -- no LLM is involved in that process.
+Local LLM models (Ollama) power code-index.db semantic search embeddings. Session event tracking is handled by the orca-record recording layer -- no LLM is involved in that process.
 
 ---
 
@@ -102,7 +102,6 @@ workshop --workspace .claude/memory import
 
 | File | Purpose |
 |------|---------|
-| `hooks/session-end.sh` | Saves session events to Workshop via CLI (heuristic extraction) |
 | `.claude/memory/workshop.db` | Where extractions are stored |
 | `~/.claude/scripts/code-index.py` | Uses Ollama for embeddings |
 
@@ -119,4 +118,4 @@ Ollama is used for code-index embeddings. Session extraction uses heuristic pars
 
 ---
 
-_Last Updated: 2026-02-07_
+_Last Updated: 2026-03-02_

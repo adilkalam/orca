@@ -36,6 +36,7 @@ export async function handleGraphOfThought(args, session) {
         content: graphContent, // UNCHANGED
         quality: args.quality, // UNCHANGED
         timestamp: Date.now(),
+        ...(args.tokenEstimate !== undefined ? { tokenEstimate: args.tokenEstimate } : {}),
     };
     // 3. PERSIST to filesystem
     await manager.addEntry(session, 'graph', entry);

@@ -1,5 +1,5 @@
 ---
-description: "OS 6.3 Pure Orchestrator - Coordinates pipelines, never writes code"
+description: "OS 7.0 Pure Orchestrator - Coordinates pipelines, never writes code"
 argument-hint: "[--audit <scope>] <task description or requirement ID>"
 allowed-tools:
   - Task
@@ -250,20 +250,20 @@ Your first tool call MUST NOT be:
 
 ---
 
-# /orca – OS 6.3 Pure Orchestrator
+# /orca – OS 7.0 Pure Orchestrator
 
-**Philosophy:** Orca is a pure coordinator. It NEVER writes code. It detects the pipeline type, queries context ONCE, integrates with /plan if needed, and delegates to domain orchestrators.
+**Philosophy:** Orca is a pure coordinator. It NEVER writes code. It detects the pipeline type, queries context ONCE, integrates with /requirements if needed, and delegates to domain orchestrators.
 
 **Key Principles:**
 1. **Single Entry Point** - One command for all pipelines
 2. **Memory-First Context** - Check Workshop/code-index.db before expensive ProjectContext queries
 3. **Context Query Once** - ProjectContextServer called once, passed to domain orchestrators
-4. **Plan Integration** - Checks for /plan output, offers to plan if needed
+4. **Plan Integration** - Checks for /requirements output, offers to plan if needed
 5. **Pipeline Detection** - Auto-detects: nextjs, ios, expo, data, seo, design
 6. **Domain Routing** - Routes to `/{domain}` commands for specialized handling
 7. **Never Codes** - Orchestrates agents, doesn't implement
 
-**OS 6.3 Updates:**
+**OS 7.0 Updates:**
 - Memory-first context (Workshop + code-index.db before ProjectContext)
 - Routes to domain-specific `/{domain}` commands which handle four-tier flag routing
 - Four-tier structure (Reverse Three-Tier):
@@ -284,7 +284,7 @@ pwd
 
 ---
 
-### Step 1.5: Memory-First Context (OS 6.3)
+### Step 1.5: Memory-First Context (OS 7.0)
 
 **Before expensive ProjectContext queries, check local memory:**
 
@@ -303,7 +303,7 @@ python3 ~/.claude/scripts/memory-search-unified.py "$TASK_KEYWORDS" --mode all -
 
 ---
 
-### Step 1.7: Recording Context (OS 6.3 -- OPTIONAL)
+### Step 1.7: Recording Context (OS 7.0 -- OPTIONAL)
 
 **Inject prior session context from the recording layer for continuity.**
 
@@ -354,7 +354,7 @@ RECORDING_CONTEXT is included in Step 7 delegation prompts to domain grand-archi
 
 ### Step 2: Check for Existing Plan/Spec
 
-Check if `/plan` has been run and load the spec:
+Check if `/requirements` has been run and load the spec:
 
 ```bash
 # Check for active requirement
@@ -415,7 +415,7 @@ AskUserQuestion({
 
 **Process response:**
 
-- **"Start planning now"** → Execute `/plan` inline:
+- **"Start planning now"** → Execute `/requirements` inline:
    **PATH CHECK**: ALL paths MUST start with `.claude/` - NEVER create `requirements/` in project root
   1. Create requirements folder: `.claude/requirements/YYYY-MM-DD-HHMM-[slug]/`
      -  `.claude/requirements/...` |  `requirements/...`
@@ -683,7 +683,7 @@ AskUserQuestion({
 
 ---
 
-### Step 7: Route to Domain Orchestrator (OS 6.3)
+### Step 7: Route to Domain Orchestrator (OS 7.0)
 
 **For pipelines with domain-specific `/{domain}` commands, route to them.**
 
@@ -693,20 +693,30 @@ This allows domain orchestrators to handle:
 - Spec gating for complex tasks
 - Memory-first context within the domain
 
-#### For Next.js / Webdev:
+#### Grand-Architect Domain Routing
 
-**Route to `/nextjs`** - handles complexity routing internally.
+Domains that route through a coordinating grand-architect agent. Each has a matching `/{domain}` SlashCommand that handles complexity routing internally.
+
+| Domain | subagent_type | Role Name | Key Specialists | Pipeline Doc |
+|--------|--------------|-----------|-----------------|-------------|
+| nextjs | nextjs-grand-architect | Next.js Grand Architect | nextjs-architect, nextjs-builder, nextjs-css-specialist, nextjs-typescript-specialist, nextjs-standards-enforcer, nextjs-design-reviewer, nextjs-verification-agent | docs/pipelines/nextjs-pipeline.md |
+| ios | ios-grand-architect | iOS Grand Architect | ios-architect, ios-builder, ios-swiftui-specialist, ios-uikit-specialist, ios-persistence-specialist, ios-standards-enforcer, ios-ui-reviewer, ios-verification | docs/pipelines/ios-pipeline.md |
+| expo | expo-grand-orchestrator | Expo Grand Orchestrator | expo-architect-agent, expo-builder-agent, design-token-guardian, a11y-enforcer, performance-enforcer, security-specialist, expo-verification-agent | docs/pipelines/expo-pipeline.md |
+
+For any grand-architect domain, prefer the SlashCommand shortcut:
 
 ```typescript
-// Simple approach: Use SlashCommand
-SlashCommand({ command: `/nextjs ${$ARGUMENTS}` })
+SlashCommand({ command: `/${domain} ${$ARGUMENTS}` })
+```
 
-// OR if staying in Task tool:
+Or use the parameterized Task template (substitute values from the table above):
+
+```typescript
 Task({
-  subagent_type: "nextjs-grand-architect",
-  description: "Next.js pipeline coordination",
+  subagent_type: "<subagent_type from table>",
+  description: "<Role Name> pipeline coordination",
   prompt: `
-You are the Next.js Grand Architect for OS 6.3.
+You are the <Role Name> for OS 7.0.
 
 USER HAS ALREADY CONFIRMED THE PLAN. DO NOT ASK FOR CONFIRMATION AGAIN.
 EXECUTE IMMEDIATELY. NO QUESTIONS. DELEGATE TO SPECIALISTS NOW.
@@ -737,17 +747,12 @@ PHASE STATE LOCATION:
 .claude/orchestration/phase_state.json
 
 YOUR ROLE:
-- YOU ARE "NEXTJS GRAND ARCHITECT" - identify yourself in all outputs
-- Coordinate the Next.js pipeline end-to-end
+- YOU ARE "<Role Name>" - identify yourself in all outputs
+- Coordinate the pipeline end-to-end
 - You received ContextBundle from Orca - DO NOT query ProjectContext again
 - RESPECT the spec - it's the plan. Don't reinvent decisions.
-- DELEGATE TO SPECIALISTS IMMEDIATELY:
-  - nextjs-architect (planning)
-  - nextjs-builder (implementation)
-  - nextjs-css-specialist, nextjs-typescript-specialist, etc. (per project's CSS approach)
-  - nextjs-standards-enforcer, nextjs-design-reviewer (gates)
-  - nextjs-verification-agent (build/test)
-- Enforce quality gates (≥90 scores)
+- DELEGATE TO SPECIALISTS: <Key Specialists from table>
+- Enforce quality gates (>=90 scores)
 - Update phase_state.json after each phase
 - Record decisions via mcp__project-context__save_decision
 
@@ -755,170 +760,42 @@ DO NOT:
 - Ask "should I proceed?" - YES, PROCEED
 - Ask "which phase?" - ALL PHASES
 - Ask for confirmation - YOU HAVE IT
-- Use "I" ambiguously - say "Next.js Grand Architect delegating to..."
+- Use "I" ambiguously - say "<Role Name> delegating to..."
 
 Follow the pipeline specification in:
-- docs/pipelines/nextjs-pipeline.md
+- <Pipeline Doc from table>
 
 EXECUTE NOW.
   `
 })
 ```
 
-#### For iOS:
+#### Specialist-Based Domain Routing
 
-**Route to `/ios`** - handles complexity routing internally.
+Domains that route to a lead specialist directly (no grand-architect wrapper). These are typically analytical or content-focused rather than code-heavy.
 
-```typescript
-// Simple approach: Use SlashCommand
-SlashCommand({ command: `/ios ${$ARGUMENTS}` })
+| Domain | Lead Specialist | Role Name | Other Specialists | Pipeline Doc |
+|--------|----------------|-----------|-------------------|-------------|
+| data | data-researcher | Data Pipeline Lead | research-specialist, python-analytics-expert, competitive-analyst | docs/pipelines/data-pipeline.md |
+| seo | seo-research-specialist | SEO Pipeline Lead | seo-brief-strategist, seo-draft-writer, seo-quality-guardian | docs/pipelines/seo-pipeline.md |
+| design | design-system-architect | Design Pipeline Lead | design-token-guardian | docs/pipelines/design-pipeline.md |
 
-// OR if staying in Task tool:
-Task({
-  subagent_type: "ios-grand-architect",
-  description: "iOS pipeline coordination",
-  prompt: `
-You are the iOS Grand Architect for OS 6.3.
+**Domain-specific phases:**
 
-USER HAS ALREADY CONFIRMED THE PLAN. DO NOT ASK FOR CONFIRMATION AGAIN.
-EXECUTE IMMEDIATELY. NO QUESTIONS. DELEGATE TO SPECIALISTS NOW.
+- **data:** 1. Requirements & Scoping 2. Data Inventory & Quality 3. Analysis Plan 4. Implementation 5. Analysis & Synthesis 6. Verification
+- **seo:** 1. Context & Intent 2. Research 3. Brief Refinement 4. Content Drafting 5. Quality Assurance 6. Completion
+- **design:** 1. Context & Brief 2. Design Exploration 3. System & Components 4. Exports & Handoff 5. Design QA Gate 6. Completion
 
-CONTEXT BUNDLE (from Orca - DO NOT query again):
-${JSON.stringify(contextBundle, null, 2)}
+**Note:** The SEO domain can also route via `/seo` SlashCommand: `SlashCommand({ command: `/seo ${$ARGUMENTS}` })`
 
-AGENT OUTCOMES (past successes/failures on this project):
-${agentOutcomes || "No prior outcomes recorded for this pipeline"}
-
-${RECORDING_CONTEXT ? `=== RECORDING CONTEXT ===\n${RECORDING_CONTEXT}\n===` : ""}
-
-REQUEST: ${$ARGUMENTS}
-
-=== REQUIREMENTS SPEC (SOURCE OF TRUTH) ===
-${specContent || "No spec - use your architectural judgment"}
-
-=== RESPONSE AWARENESS TAGS FROM SPEC ===
-${raTagsSummary || "No RA tags found"}
-
-CRITICAL RA TAG RULES:
-- #PATH_DECISION items are SETTLED. Do not re-decide them.
-- #COMPLETION_DRIVE items need VERIFICATION during implementation.
-- #POISON_PATH patterns must be AVOIDED.
-- #CONTEXT_DEGRADED areas need EXTRA CONTEXT gathering.
-
-PHASE STATE LOCATION:
-.claude/orchestration/phase_state.json
-
-YOUR ROLE:
-- YOU ARE "IOS GRAND ARCHITECT" - identify yourself in all outputs
-- Coordinate the iOS pipeline end-to-end
-- You received ContextBundle from Orca - DO NOT query ProjectContext again
-- RESPECT the spec - it's the plan. Don't reinvent decisions.
-- DELEGATE TO SPECIALISTS IMMEDIATELY:
-  - ios-architect (planning)
-  - ios-builder (implementation)
-  - ios-swiftui-specialist, ios-uikit-specialist, ios-persistence-specialist, etc.
-  - ios-standards-enforcer, ios-ui-reviewer (gates)
-  - ios-verification (build/test)
-- Enforce quality gates (≥90 scores)
-- Update phase_state.json after each phase
-- Record decisions via mcp__project-context__save_decision
-
-DO NOT:
-- Ask "should I proceed?" - YES, PROCEED
-- Ask "which phase?" - ALL PHASES
-- Ask for confirmation - YOU HAVE IT
-- Use "I" ambiguously - say "iOS Grand Architect delegating to..."
-
-Follow the pipeline specification in:
-- docs/pipelines/ios-pipeline.md
-
-EXECUTE NOW.
-  `
-})
-```
-
-#### For Expo / React Native:
-
-**Route to `/expo`** - handles complexity routing internally.
-
-```typescript
-// Simple approach: Use SlashCommand
-SlashCommand({ command: `/expo ${$ARGUMENTS}` })
-
-// OR if staying in Task tool:
-Task({
-  subagent_type: "expo-grand-orchestrator",
-  description: "Expo pipeline coordination",
-  prompt: `
-You are the Expo Grand Orchestrator for OS 6.3.
-
-USER HAS ALREADY CONFIRMED THE PLAN. DO NOT ASK FOR CONFIRMATION AGAIN.
-EXECUTE IMMEDIATELY. NO QUESTIONS. DELEGATE TO SPECIALISTS NOW.
-
-CONTEXT BUNDLE (from Orca - DO NOT query again):
-${JSON.stringify(contextBundle, null, 2)}
-
-AGENT OUTCOMES (past successes/failures on this project):
-${agentOutcomes || "No prior outcomes recorded for this pipeline"}
-
-${RECORDING_CONTEXT ? `=== RECORDING CONTEXT ===\n${RECORDING_CONTEXT}\n===` : ""}
-
-REQUEST: ${$ARGUMENTS}
-
-=== REQUIREMENTS SPEC (SOURCE OF TRUTH) ===
-${specContent || "No spec - use your architectural judgment"}
-
-=== RESPONSE AWARENESS TAGS FROM SPEC ===
-${raTagsSummary || "No RA tags found"}
-
-CRITICAL RA TAG RULES:
-- #PATH_DECISION items are SETTLED. Do not re-decide them.
-- #COMPLETION_DRIVE items need VERIFICATION during implementation.
-- #POISON_PATH patterns must be AVOIDED.
-- #CONTEXT_DEGRADED areas need EXTRA CONTEXT gathering.
-
-PHASE STATE LOCATION:
-.claude/orchestration/phase_state.json
-
-YOUR ROLE:
-- YOU ARE "EXPO GRAND ORCHESTRATOR" - identify yourself in all outputs
-- Coordinate the Expo/React Native pipeline end-to-end
-- You received ContextBundle from Orca - DO NOT query ProjectContext again
-- RESPECT the spec - it's the plan. Don't reinvent decisions.
-- DELEGATE TO SPECIALISTS IMMEDIATELY:
-  - expo-architect-agent (planning)
-  - expo-builder-agent (implementation)
-  - design-token-guardian, a11y-enforcer, performance-enforcer, security-specialist
-  - expo-verification-agent (build/test)
-- Enforce quality gates and budgets
-- Update phase_state.json after each phase
-- Record decisions via mcp__project-context__save_decision
-
-DO NOT:
-- Ask "should I proceed?" - YES, PROCEED
-- Ask "which phase?" - ALL PHASES
-- Ask for confirmation - YOU HAVE IT
-- Use "I" ambiguously - say "Expo Grand Orchestrator delegating to..."
-
-Follow the pipeline specification in:
-- docs/pipelines/expo-pipeline.md
-
-EXECUTE NOW.
-  `
-})
-```
-
-#### For Data Pipeline (Specialist-Based):
-
-The data pipeline uses specialists directly without a grand-architect.
-Data tasks are typically analytical, not code-heavy.
+For any specialist-based domain, use the parameterized Task template (substitute values from the tables above):
 
 ```typescript
 Task({
-  subagent_type: "data-researcher",
-  description: "Data analysis pipeline",
+  subagent_type: "<Lead Specialist from table>",
+  description: "<Role Name> pipeline",
   prompt: `
-You are leading the Data pipeline for OS 6.3.
+You are leading the <Domain> pipeline for OS 7.0.
 
 MEMORY CONTEXT:
 ${memorySummary || "No prior memory hits"}
@@ -932,109 +809,13 @@ REQUEST: ${$ARGUMENTS}
 ${specContent || "No spec - use your analytical judgment"}
 
 YOUR ROLE:
-- Lead the data analysis workflow
-- Coordinate with other data specialists as needed:
-  - research-specialist (research design)
-  - python-analytics-expert (code implementation)
-  - competitive-analyst (market/competitive analysis)
-- Follow docs/pipelines/data-pipeline.md
-- Update phase_state.json with domain: "data"
+- Lead the <Domain> workflow
+- Coordinate with specialists: <Other Specialists from table>
+- Follow <Pipeline Doc from table>
+- Update phase_state.json with domain: "<domain>"
 
 PHASES:
-1. Requirements & Scoping - clarify the research question
-2. Data Inventory & Quality - assess available data
-3. Analysis Plan - design the approach
-4. Implementation - code if needed (python-analytics-expert)
-5. Analysis & Synthesis - findings and recommendations
-6. Verification - quality check
-
-EXECUTE NOW.
-  `
-})
-```
-
-#### For SEO Pipeline (Specialist-Based):
-
-The SEO pipeline uses the `/seo` command or specialists directly.
-
-```typescript
-// Preferred: Use /seo command
-SlashCommand({ command: `/seo ${$ARGUMENTS}` })
-
-// OR direct specialist call:
-Task({
-  subagent_type: "seo-research-specialist",
-  description: "SEO content pipeline",
-  prompt: `
-You are leading the SEO pipeline for OS 6.3.
-
-MEMORY CONTEXT:
-${memorySummary || "No prior memory hits"}
-
-CONTEXT BUNDLE:
-${JSON.stringify(contextBundle, null, 2)}
-
-REQUEST: ${$ARGUMENTS}
-
-YOUR ROLE:
-- Lead the SEO content workflow
-- Coordinate with other SEO specialists:
-  - seo-brief-strategist (brief refinement)
-  - seo-draft-writer (content creation)
-  - seo-quality-guardian (QA gate)
-- Follow docs/pipelines/seo-pipeline.md
-- Update phase_state.json with domain: "seo"
-
-PHASES:
-1. Context & Intent - identify keyword/topic
-2. Research - SERP analysis, competitor review
-3. Brief Refinement - structure and strategy
-4. Content Drafting - write the content
-5. Quality Assurance - clarity, SEO, compliance gates
-6. Completion - handoff for review
-
-EXECUTE NOW.
-  `
-})
-```
-
-#### For Design Pipeline (Specialist-Based):
-
-The design pipeline handles design-dna and visual system work.
-
-```typescript
-Task({
-  subagent_type: "design-system-architect",
-  description: "Design system pipeline",
-  prompt: `
-You are leading the Design pipeline for OS 6.3.
-
-MEMORY CONTEXT:
-${memorySummary || "No prior memory hits"}
-
-CONTEXT BUNDLE:
-${JSON.stringify(contextBundle, null, 2)}
-
-REQUEST: ${$ARGUMENTS}
-
-YOUR ROLE:
-- Lead the design system workflow
-- Coordinate with design specialists:
-  - design-token-guardian (token validation)
-- Follow docs/pipelines/design-pipeline.md
-- Update phase_state.json with domain: "design"
-
-PHASES:
-1. Context & Brief - understand design intent
-2. Design Exploration - propose direction
-3. System & Components - update design-dna.json
-4. Exports & Handoff - prepare for implementation
-5. Design QA Gate - validate against rules
-6. Completion - ready for webdev/brand pipelines
-
-KEY FILES:
-- design-dna.json - machine-readable design system
-- Implementation specs in .claude/design/specs/
+<Domain-specific phases from list above>
 
 EXECUTE NOW.
   `
@@ -1143,7 +924,7 @@ When grand-architect signals completion:
 
 ## Memory Architecture
 
-OS 6.3 uses TWO memory systems:
+OS 7.0 uses TWO memory systems:
 
 1. **Workshop** (.claude/memory/workshop.db):
    - Decisions with reasoning
@@ -1168,8 +949,8 @@ workshop --workspace .claude/memory gotcha "Agent tools as YAML array caused 0 t
   -r "Cost: 2 hours debugging silent failures. Rule: Always use comma-separated string for tools"
 
 # Process gotcha
-workshop --workspace .claude/memory gotcha "Skipped /plan for 'simple' auth feature" \
-  -r "Cost: 4 hours rework when requirements changed. Rule: Use /plan for any auth/security work"
+workshop --workspace .claude/memory gotcha "Skipped /requirements for 'simple' auth feature" \
+  -r "Cost: 4 hours rework when requirements changed. Rule: Use /requirements for any auth/security work"
 
 # Architecture gotcha
 workshop --workspace .claude/memory gotcha "ios-builder started without ios-architect review" \
@@ -1213,7 +994,7 @@ When recording outcomes:
 - Resuming work after user question without re-confirm → WRONG.
 
 **ALWAYS:**
-1. Check for /plan output first
+1. Check for /requirements output first
 2. Query ProjectContextServer once
 3. Call grand-architects directly
 4. Pass full ContextBundle to grand-architects
@@ -1229,7 +1010,7 @@ When recording outcomes:
 Now execute the flow:
 
 1. Detect working directory
-2. Check for existing /plan output
+2. Check for existing /requirements output
 3. Detect pipeline type
 4. Query ProjectContext ONCE
 5. Initialize phase_state.json

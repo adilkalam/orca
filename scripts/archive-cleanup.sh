@@ -1,9 +1,9 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # scripts/archive-cleanup.sh
 # ORCA-Mem: Remove archives older than 7 days
 # Run via cron: 0 3 * * * ~/.claude/scripts/archive-cleanup.sh
 
-set -uo pipefail
+set -euo pipefail
 
 ARCHIVE_DIR="${HOME}/.claude/archives"
 RETENTION_DAYS=7

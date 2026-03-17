@@ -1,8 +1,8 @@
 # Pipeline Model
 
-**Version:** OS 6.4 | **Last Updated:** 2026-02-26
+**Version:** OS 7.0 | **Last Updated:** 2026-02-26
 
-OS 6.4 uses a **multi-lane pipeline architecture** to handle different types of development work. Each "lane" is a domain-specific pipeline with its own agents, phases, and gates.
+OS 7.0 uses a **multi-lane pipeline architecture** to handle different types of development work. Each "lane" is a domain-specific pipeline with its own agents, phases, and gates.
 
 ## Core Concepts
 
@@ -57,7 +57,7 @@ Parse flags
 
 ### Agent Roles
 
-OS 6.4 enforces strict role separation:
+OS 7.0 enforces strict role separation:
 
 #### Orchestrators (Never Write Code)
 - **Commands**: `/orca`, `/ios`, `/nextjs`, etc.
@@ -190,7 +190,7 @@ canonical workaround for any subagent that needs MCP data.
 
 ## Recording Layer
 
-OS 6.4 pipelines are observed by the **recording layer** (`orca-record` CLI + `.orca/recording.db`). Recording captures session events to `.orca/recording.db` via hooks. cognition-mcp queries this data for session context injection.
+OS 7.0 pipelines are observed by the **recording layer** (`orca-record` CLI + `.orca/recording.db`). Recording captures session events to `.orca/recording.db` via hooks. cognition-mcp queries this data for session context injection.
 
 - **Session recording**: Hook-driven capture of tool calls, decisions, and file changes to a per-project SQLite database
 - **Cognitive fusion**: 7 cognition-mcp recording operations (`recording_status`, `recording_query`, `recording_checkpoint`, `recording_compare`, `recording_quality`, `recording_explain`, `recording_rewind`) bridge structured reasoning with session history

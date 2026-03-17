@@ -1,8 +1,8 @@
 # Memory Systems
 
-**Version:** OS 6.4 | **Last Updated:** 2026-02-26
+**Version:** OS 7.0 | **Last Updated:** 2026-02-26
 
-OS 6.4 uses multiple memory systems to maintain context across sessions and provide relevant information to agents.
+OS 7.0 uses multiple memory systems to maintain context across sessions and provide relevant information to agents.
 
 ## Memory Architecture
 
@@ -43,11 +43,14 @@ workshop context                  # Session summary
 workshop decision "text" -r "reasoning"
 workshop gotcha "text" -t tag1 -t tag2
 workshop preference "text" --category code_style
-workshop note "text"
 workshop goal add "text"
 ```
 
+**NEVER call `workshop note` directly** -- only commands (deepthink, think, problem-solve, etc.) write notes to Workshop via their harvest phase.
+
 **Location:** `.claude/memory/workshop.db`
+
+**Retention:** Workshop enforces a `maxEntries=500` cap with prune-on-write. When the cap is reached, unpinned entries are pruned oldest-first. Entries tagged as preferences or antipatterns are auto-pinned to survive pruning.
 
 ## code-index.db
 
@@ -95,7 +98,7 @@ mcp__project-context__query_context({
 **Also provides:**
 - `save_decision` - record architectural decisions
 - `save_standard` - codify recurring rules
-- `save_task_history` - log task outcomes
+- `save_task_history` - log task outcomes (writes 1 merged entry per task)
 - `index_project` - index project files for semantic search
 - `reanalyze_project` - re-analyze project state
 - `recall` - retrieve archived content by ID
@@ -112,7 +115,7 @@ The ProjectContext MCP uses a hybrid approach for Workshop integration:
 
 ## Memory-First Pattern
 
-OS 6.4 checks fast, local memory before expensive queries:
+OS 7.0 checks fast, local memory before expensive queries:
 
 ```bash
 # Step 1: Check Workshop for relevant decisions/gotchas
@@ -200,7 +203,7 @@ mcp__project-context__save_standard({
 **What:** Per-project SQLite database that records session activity and cognitive state via hooks.
 
 **Overview:**
-The recording layer (added in OS 6.4) provides session-level persistence that goes beyond Workshop's decision/gotcha entries. It captures the timeline of what happened in each session: prompts, tool calls, file changes, and checkpoints.
+The recording layer (added in OS 7.0) provides session-level persistence that goes beyond Workshop's decision/gotcha entries. It captures the timeline of what happened in each session: prompts, tool calls, file changes, and checkpoints.
 
 **Storage:** `.orca/recording.db` (per-project, gitignored)
 
@@ -208,7 +211,6 @@ The recording layer (added in OS 6.4) provides session-level persistence that go
 - `sessions` -- Session metadata (start/end, branch, status)
 - `checkpoints` -- Per-turn snapshots with file diffs and cognitive links
 - `events` -- Tool calls, prompts, and state transitions
-- `transcripts` -- Session transcript segments
 
 **Architecture (v0.4.0):**
 The recording layer consists of hooks + SQLite + state machine. The git shadow branch layer (`orca/<hash>-<wt>`) and orphan branch (`orca/checkpoints/v1`) were removed in v0.4.0. Code restoration (rewind) is no longer available.
@@ -220,7 +222,7 @@ Checkpoints link session state to cognition-mcp reasoning chains via 7 recording
 
 **Supersedes:** Telemetry system (`.claude/telemetry/`) which is now deprecated.
 
-## Recording Context Injection (OS 6.4)
+## Recording Context Injection (OS 7.0)
 
 Commands use the recording layer to inject prior session context before delegating
 to agents. This provides continuity across sessions by surfacing what happened in
@@ -262,7 +264,6 @@ Memory is automatically managed via hooks:
 | Hook | Trigger | Purpose |
 |------|---------|---------|
 | `session-start.sh` | SessionStart | Loads context, Workshop summary, active task |
-| `session-end.sh` | SessionEnd | Captures session summary to Workshop |
 | `post-tool-use.sh` | PostToolUse | ORCA-Mem truncation, auto-deploy |
 | `file-location-guard.sh` | PostToolUse | Enforces artifacts in `.claude/` |
 | `gate-enforcement.sh` | PreToolUse | Enforces quality gate requirements |
@@ -334,7 +335,6 @@ ORCA-Mem manages context window efficiently by:
 | Component | Location | Purpose |
 |-----------|----------|---------|
 | PostToolUse Hook | `hooks/post-tool-use.sh` | Truncates large outputs, archives originals |
-| Session End Hook | `hooks/session-end.sh` | Captures session summary on exit |
 | Recall Tool | ProjectContextServer MCP | Retrieves archived content by archive ID |
 | Archive Cleanup | `scripts/archive-cleanup.sh` | Removes archives older than 7 days |
 
@@ -382,7 +382,6 @@ mcp__project-context__recall({
 - PostToolUse hook runs after every tool call
 - Archives are keyed by date directory and a unique timestamp-random ID (e.g., ~/.claude/archives/2026-02-07/1707312456-a8b3c9d1.txt)
 - ProjectContextServer provides `recall` tool for retrieval
-- Session end hook ensures summaries are captured
 
 ## Cognition Persistence (.claude/cognition/)
 

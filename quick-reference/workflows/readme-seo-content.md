@@ -1,4 +1,4 @@
-# OS 6.4 SEO Lane Quick Reference
+# OS 7.0 SEO Lane Quick Reference
 
 **Lane:** SEO Content
 **Domain:** `seo`
@@ -114,4 +114,4 @@ Use for:
 
 ---
 
-_Version: OS 6.4_
+_Version: OS 7.0_

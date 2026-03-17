@@ -1,4 +1,4 @@
-# OS 6.4 Recording Layer Reference
+# OS 7.0 Recording Layer Reference
 
 **Last Updated:** 2026-02-26
 **Version:** orca-record v0.4.0
@@ -149,6 +149,7 @@ The recording layer integrates with cognition-mcp for session queries:
 | `recording_compare` | Diff checkpoints |
 | `recording_quality` | Session quality analytics |
 | `recording_explain` | Human-readable narrative |
+| `recording_rewind` | Query rewind data from recording history |
 
 These operations READ from `.orca/recording.db` -- they require no changes.
 

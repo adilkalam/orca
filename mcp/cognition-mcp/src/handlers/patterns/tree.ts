@@ -46,6 +46,7 @@ export async function handleTreeOfThought(
     content: treeContent,  // UNCHANGED
     quality: args.quality, // UNCHANGED
     timestamp: Date.now(),
+    ...(args.tokenEstimate !== undefined ? { tokenEstimate: args.tokenEstimate } : {}),
   };
 
   // 3. PERSIST to filesystem

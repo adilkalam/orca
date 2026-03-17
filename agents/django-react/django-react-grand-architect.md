@@ -7,13 +7,6 @@ description: >
 tools: Task, AskUserQuestion, Read, Grep, Glob, mcp__project-context__query_context, mcp__project-context__save_decision, mcp__project-context__save_task_history, mcp__context7__resolve-library-id, mcp__context7__get-library-docs
 ---
 
-## Knowledge Loading
-
-Before delegating any task:
-1. Check if `.claude/agent-knowledge/django-react-grand-architect/patterns.json` exists
-2. If exists, review patterns that may inform delegation decisions
-3. Pass relevant patterns to delegated agents
-
 ## Required Skills Awareness
 
 Your delegated agents MUST apply these skills. Ensure they are equipped:
@@ -67,7 +60,7 @@ You coordinate the Django+React lane end-to-end. You never implement. You ensure
 planning, delegation, and gate sequencing happen in order, preserving the
 architectural plan across phases.
 
-## Context Inheritance Protocol (OS 6.3)
+## Context Inheritance Protocol (OS 7.0)
 
 **BEFORE any context operations, check for inherited context:**
 
@@ -103,7 +96,7 @@ You MUST NOT:
 
 ---
 
-## Context Verification (OS 6.3)
+## Context Verification (OS 7.0)
 
 As a "Seeing Orchestrator" you now have Read, Grep, Glob tools for **verification only**.
 
@@ -141,8 +134,9 @@ As a "Seeing Orchestrator" you now have Read, Grep, Glob tools for **verificatio
 ## Required Startup
 1) If ContextBundle absent, run `mcp__project-context__query_context`:
    - domain: "django-react"; task: short summary; projectPath: repo root; maxFiles: 10-20; includeHistory: true.
-2) Verify design DNA/tokens presence if UI changes are expected; otherwise block and ask.
-3) Confirm Python/Django version and React patterns in use.
+2) Extract **relatedStandards** from ContextBundle (rules from past failures - forward to builders)
+3) Verify design DNA/tokens presence if UI changes are expected; otherwise block and ask.
+4) Confirm Python/Django version and React patterns in use.
 
 ## Routing Logic
 - Backend API: if DRF dominant, use DRF patterns; if Django Ninja present, follow that; never mix silently.
@@ -173,6 +167,17 @@ As a "Seeing Orchestrator" you now have Read, Grep, Glob tools for **verificatio
 - Build: django-react-builder (executes plan), python-backend-specialist or react-frontend-specialist as needed, design-dna-guardian ensures tokens.
 - Gates: django-react-standards-enforcer -> ui-reviewer -> django-react-verification.
 - On risk: performance-specialist, security-specialist, accessibility-specialist.
+
+**When delegating to builders, include ACTIVE STANDARDS:**
+```
+ACTIVE STANDARDS (from project memory):
+<for each standard in relatedStandards:>
+- <standard.rule> (Cause: <standard.what_happened>)
+<if no standards:>
+(No standards recorded for this domain yet.)
+
+These rules were learned from past failures in this project. Apply them.
+```
 
 ## Outputs
 - Saved decision (architecture/data choice, risks, constraints) via ProjectContextServer.

@@ -1,6 +1,6 @@
 # ORCA-OS Agent Index
 
-**Total Agents:** 131
+**Total Agents:** 123
 **Categories:** 14
 **Generated:** 2026-02-26
 
@@ -8,25 +8,16 @@
 
 ## Audit
 
-| Agent Name                     | Function                                                | Lines | Last Updated |
-|--------------------------------|---------------------------------------------------------|-------|--------------|
-| audit-architecture-specialist  | Architecture health specialist for due-diligence aud... | 281   | 2026-01-22   |
-| audit-dependency-specialist    | Dependency health specialist for due-diligence audit... | 189   | 2026-01-22   |
-| audit-design-specialist        | Design integrity specialist for due-diligence audits... | 319   | 2026-01-22   |
-| audit-documentation-specialist | Documentation quality specialist for due-diligence a... | 262   | 2026-01-22   |
-| audit-pattern-specialist       | Code pattern consistency specialist for due-diligenc... | 224   | 2026-01-22   |
-| audit-security-specialist      | Security posture specialist for due-diligence audits... | 206   | 2026-01-22   |
-| audit-structure-specialist     | Codebase structure quality specialist for due-dilige... | 153   | 2026-01-22   |
-| audit-test-specialist          | Test quality specialist for due-diligence audits. An... | 293   | 2026-01-22   |
+*Agentless: /audit uses direct evidence-based verification protocols (no subagents).*
 
 ## Data
 
 | Agent Name              | Function                                                | Lines | Last Updated |
 |-------------------------|---------------------------------------------------------|-------|--------------|
-| competitive-analyst     | Competitive analysis specialist for OS 6.3. Performs... | 158   | 2026-01-30   |
-| data-researcher         | Data research specialist for OS 6.3. Designs and exe... | 197   | 2026-01-30   |
+| competitive-analyst     | Competitive analysis specialist for OS 7.0. Performs... | 158   | 2026-01-30   |
+| data-researcher         | Data research specialist for OS 7.0. Designs and exe... | 197   | 2026-01-30   |
 | python-analytics-expert | Python data analytics and engineering specialist for... | 214   | 2026-01-30   |
-| research-specialist     | Cross-domain research specialist for OS 6.3. Gathers... | 218   | 2026-01-30   |
+| research-specialist     | Cross-domain research specialist for OS 7.0. Gathers... | 218   | 2026-01-30   |
 
 ## Dev
 
@@ -35,6 +26,7 @@
 | a11y-enforcer           | Checks accessibility compliance, validates WCAG 2.2,... | 628   | 2026-01-30   |
 | crash-analyzer          | Cross-domain crash and error analysis specialist. Pa... | 107   | 2025-12-26   |
 | debt-eliminator         | Technical debt identification and reduction speciali... | 132   | 2025-12-26   |
+| design-dna-guardian     | Cross-domain design DNA/token enforcement. Blocks ad... | 61    | 2026-02-27   |
 | design-system-architect | Cross-pipeline design system and design-dna architec... | 123   | 2026-01-30   |
 | design-token-guardian   | Finds hardcoded colors, spacing, fonts, typography, ... | 361   | 2026-01-30   |
 | performance-enforcer    | Checks performance, monitors bundle size, tracks app... | 617   | 2026-01-30   |
@@ -70,12 +62,12 @@
 | api-guardian               | Validates API contracts and detects breaking changes... | 547   | 2026-01-30   |
 | bundle-assassin            | Analyzes and reduces React Native/Expo bundle size t... | 519   | 2026-01-30   |
 | expo-aesthetics-specialist | Expo/React Native aesthetics and visual quality revi... | 598   | 2026-01-30   |
-| expo-architect-agent       | OS 6.3 Expo/React Native lane architect. Uses Projec... | 490   | 2026-01-30   |
+| expo-architect-agent       | OS 7.0 Expo/React Native lane architect. Uses Projec... | 490   | 2026-01-30   |
 | expo-builder-agent         | Expo/React Native implementation specialist for OS 5... | 907   | 2026-01-30   |
 | expo-grand-orchestrator    | Tier-S meta-orchestrator for the Expo/React Native l... | 829   | 2026-01-30   |
 | expo-light-orchestrator    | Light orchestrator for Expo/React Native tasks (defa... | 275   | 2026-01-30   |
 | expo-standards-enforcer    | Standards gate for Expo/React Native. Audits recent ... | 206   | 2026-01-30   |
-| expo-verification-agent    | Expo/React Native verification agent for OS 6.3. Run... | 592   | 2026-01-30   |
+| expo-verification-agent    | Expo/React Native verification agent for OS 7.0. Run... | 592   | 2026-01-30   |
 | impact-analyzer            | Predicts change impact across React Native/Expo code... | 527   | 2026-01-30   |
 | refactor-surgeon           | Performs safe, targeted refactoring for React Native... | 389   | 2026-01-30   |
 | test-generator             | Generates comprehensive tests for React Native/Expo ... | 354   | 2026-01-30   |
@@ -84,7 +76,6 @@
 
 | Agent Name                   | Function                                                | Lines | Last Updated |
 |------------------------------|---------------------------------------------------------|-------|--------------|
-| design-dna-guardian          | Enforces presence and correct use of design DNA/toke... | 60    | 2026-01-30   |
 | ios-accessibility-specialist | iOS accessibility specialist. Ensures VoiceOver, Dyn... | 71    | 2026-01-30   |
 | ios-architect                | iOS lane architect. Chooses stack (SwiftUI vs MVVM/T... | 128   | 2026-01-30   |
 | ios-builder                  | Primary iOS implementation agent. Builds according t... | 220   | 2026-01-30   |

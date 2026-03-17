@@ -1,4 +1,4 @@
-# Research Pipeline Phase Configuration - OS 6.4
+# Research Pipeline Phase Configuration - OS 7.0
 # Multi-agent deep research workflow (Crawl4AI + memory + writers)
 
 pipeline:
@@ -6,7 +6,7 @@ pipeline:
   description: >
     Multi-agent research pipeline using Crawl4AI MCP, memory systems, and
     writer/citation agents to produce cited, structured research reports.
-  version: "6.0"
+  version: "7.0"
 
 # Context Integration
 context:
@@ -40,7 +40,7 @@ complexity_tiers:
       Long-horizon, deep research (many subquestions, multiple Crawl4AI passes,
       strict gates, and long-form report output).
     routing: full-pipeline          # Uses research-command  # /research command handles orchestration directly (no lead agent)
-    spec_required: recommended      # Optionally gated by /plan in future
+    spec_required: recommended      # Optionally gated by /requirements in future
     gates_required: true
     examples:
       - "Full market map of AI agent platforms with business models and moats."
@@ -221,7 +221,7 @@ phase_state:
     - tool_status           # e.g. { crawl4ai: "ok" | "error" | "unavailable" }
     - tool_error_events     # array of structured Crawl4AI/WebSearch error events
 
-  # Research-specific workflow control (OS 6.4)
+  # Research-specific workflow control (OS 7.0)
   research:
     time_budget:
       total_minutes: number | null    # null = unlimited

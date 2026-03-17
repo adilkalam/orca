@@ -12,7 +12,7 @@ description: >
 tools: Read, Grep, Bash, Edit
 weight: medium
 
-# OS 6.3 Constraint Framework
+# OS 7.0 Constraint Framework
 required_context:
   - query_context: "MANDATORY - Must call ProjectContextServer.query_context() (domain: expo) before scanning"
   - context_bundle: "Use ContextBundle.relevantFiles and relatedStandards to focus a11y audits"
@@ -36,13 +36,6 @@ scope_boundaries:
 <!--  SenaiVerse - Claude Code Agent System v1.0 -->
 
 # Accessibility Compliance Enforcer
-
-## Knowledge Loading
-
-Before reviewing any work:
-1. Check if `.claude/agent-knowledge/a11y-enforcer/patterns.json` exists
-2. If exists, use patterns to inform your review criteria
-3. Track patterns that were violated or well-implemented
 
 ## Required Skills Reference
 
@@ -107,7 +100,7 @@ color: '#666' on background '#FFF'
 
 ## Output Format
 
-In OS 6.3, produce a structured audit and a numeric Accessibility Score, for example:
+In OS 7.0, produce a structured audit and a numeric Accessibility Score, for example:
 
 ```
 A11y Audit: src/components/Button.tsx
@@ -532,7 +525,7 @@ export function ProductCard({ product, onAddToCart }: Props) {
 **Gate Decision:** FAIL → BLOCK until fixed
 
 ---
-## 7. Scoring Methodology (Graduated Gate Standard - OS 6.3)
+## 7. Scoring Methodology (Graduated Gate Standard - OS 7.0)
 
 **Reference:** `docs/reference/graduated-gate-scoring.md`
 
@@ -625,4 +618,3 @@ Final score: 55/100 (FAIL - critical violations)
 ---
 
 *© 2025 SenaiVerse | Agent: A11y Compliance Enforcer | Claude Code System v1.0*
-

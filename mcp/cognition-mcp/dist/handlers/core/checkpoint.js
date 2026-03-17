@@ -10,9 +10,12 @@
  */
 import { validateOperationContent } from '../../schema.js';
 import { getSessionManager } from '../../session/manager.js';
+import { saveProtocolState } from '../../session/persistence.js';
 import { buildResponse, buildErrorResponse } from '../shared.js';
+import { renderRichHarvest } from './harvest-renderer.js';
 import { writeFileSync, mkdirSync, existsSync } from 'fs';
 import { join } from 'path';
+import { homedir } from 'os';
 /**
  * Check if checkpoint content includes any protocol state fields.
  */
@@ -22,6 +25,7 @@ function hasProtocolFields(content) {
         content.addConstraints ||
         content.resolveConstraints ||
         content.acknowledgeConstraints ||
+        content.markAsked ||
         content.deferConstraints ||
         content.gateCheck);
 }
@@ -81,16 +85,31 @@ function processProtocolState(session, content) {
             }
         }
     }
+    // Mark BLOCKING_UNKNOWN constraints as having been asked to user
+    if (content.markAsked) {
+        for (const id of content.markAsked) {
+            const constraint = state.constraints.get(id);
+            if (constraint && constraint.type === 'BLOCKING_UNKNOWN') {
+                constraint.userAsked = true;
+            }
+        }
+    }
     // Build response summary
     const allConstraints = Array.from(state.constraints.values());
     const activeConstraints = allConstraints.filter(c => c.status === 'active');
     const resolvedCount = allConstraints.filter(c => c.status === 'resolved').length;
     const deferredCount = allConstraints.filter(c => c.status === 'deferred').length;
+    // Check for BLOCKING_UNKNOWN constraints that require user input
+    const blockingUnknowns = activeConstraints.filter(c => c.type === 'BLOCKING_UNKNOWN' && !c.userAsked);
+    const mustAskUser = blockingUnknowns.length > 0;
     // Evaluate gate if requested
     const gateStatus = evaluateGate(state, content);
     // Generate next suggestion
     let nextSuggestion;
-    if (activeConstraints.length > 0 && content.phase === 'harvest') {
+    if (mustAskUser) {
+        nextSuggestion = `STOP: ${blockingUnknowns.length} BLOCKING unknown(s) require user clarification before proceeding. Call AskUserQuestion, then resolve constraints.`;
+    }
+    else if (activeConstraints.length > 0 && content.phase === 'harvest') {
         nextSuggestion = `${activeConstraints.length} active constraint(s) remain. Address before harvest.`;
     }
     else if (activeConstraints.length > 0) {
@@ -107,9 +126,14 @@ function processProtocolState(session, content) {
             resolvedCount,
             deferredCount,
             gateStatus: gateStatus.status,
-            blocked: gateStatus.blocked,
+            blocked: gateStatus.blocked || mustAskUser, // Block if unknowns need asking
             phasesCompleted: [...state.phasesCompleted],
             ...(nextSuggestion ? { nextSuggestion } : {}),
+            // CRITICAL: Tell Claude explicitly to ask user
+            ...(mustAskUser ? {
+                mustAskUser: true,
+                blockingUnknowns: blockingUnknowns.map(c => ({ id: c.id, text: c.text })),
+            } : {}),
         },
     };
 }
@@ -143,52 +167,108 @@ function evaluateGate(state, content) {
     }
     return { status: 'PASS', blocked: false };
 }
+// ============================================================================
+// STORE KEY TO OPERATION NAME MAPPING (FR-3, TR-2)
+// ============================================================================
+const STORE_TO_OPERATION = {
+    thoughts: 'thought',
+    mentalModels: 'mental_model',
+    debugging: 'debug',
+    decisions: 'decide',
+    meta: 'meta',
+    systems: 'systems',
+    creative: 'creative_thinking',
+    visual: 'visual_reasoning',
+    checkpoints: 'checkpoint',
+    scientific: 'scientific_method',
+    collaborative: 'collaborative_reasoning',
+    socratic: 'socratic_method',
+    argumentation: 'structured_argumentation',
+    tree: 'tree_of_thought',
+    beam: 'beam_search',
+    mcts: 'mcts',
+    graph: 'graph_of_thought',
+    orchestration: 'orchestration_suggest',
+    research: 'research',
+    analogical: 'analogical_reasoning',
+    causal: 'causal_analysis',
+    statistical: 'statistical_reasoning',
+    simulation: 'simulation',
+    optimization: 'optimization',
+    ethical: 'ethical_analysis',
+    dashboard: 'visual_dashboard',
+    pdr: 'pdr_reasoning',
+    customFramework: 'custom_framework',
+    codeExecution: 'code_execution',
+    ooda: 'ooda_loop',
+    ulysses: 'ulysses_protocol',
+    notebookCreate: 'notebook_create',
+    notebookCell: 'notebook_add_cell',
+    notebookRun: 'notebook_run_cell',
+    notebookExport: 'notebook_export',
+    audit: 'audit',
+};
+/**
+ * Render raw JSON export of session data (FR-3, TR-2).
+ * Returns JSON string with format_version, metadata, stores, and protocolState.
+ */
+function renderRawJSON(session, harvestContent) {
+    const stores = {};
+    for (const storeKey of Object.keys(session.stores)) {
+        const entries = session.stores[storeKey];
+        if (!entries || entries.length === 0)
+            continue;
+        const operationName = STORE_TO_OPERATION[storeKey] || storeKey;
+        stores[storeKey] = entries.map(entry => ({
+            operation: operationName,
+            request: { operation: operationName, ...entry.content },
+            stored: entry,
+        }));
+    }
+    // Build protocol state for export
+    let protocolExport;
+    if (session.protocolState) {
+        const constraints = [];
+        for (const [, c] of session.protocolState.constraints) {
+            constraints.push({
+                id: c.id,
+                type: c.type,
+                text: c.text,
+                status: c.status,
+                deferReason: c.deferReason,
+            });
+        }
+        protocolExport = {
+            constraints,
+            phasesCompleted: [...session.protocolState.phasesCompleted],
+        };
+    }
+    const raw = {
+        format_version: 1,
+        sessionId: session.id,
+        metadata: {
+            title: session.metadata.title,
+            tags: session.metadata.tags,
+            command: session.protocolState?.command || 'session',
+            projectPath: session.metadata.projectPath || null,
+            createdAt: session.metadata.createdAt,
+            duration: session.getDuration(),
+        },
+        stores,
+        protocolState: protocolExport || null,
+    };
+    return JSON.stringify(raw, null, 2);
+}
 /**
  * Auto-persist session summary when phase is 'harvest'.
- * Writes a markdown file to .claude/cognition/ in the project directory.
+ * Writes 99-harvest.md to sessionFolder (human-readable).
+ * Writes 99-raw.json to ~/.orca-cognition/sessions/{sessionId}/ (machine-readable).
+ * No flat file backup -- session folder is the single human-readable location.
  */
-function autoPersistHarvest(session, content, projectPath) {
+function autoPersistHarvest(session, content, _projectPath) {
     if (content.phase !== 'harvest')
         return null;
     try {
-        const basePath = projectPath || process.cwd();
-        const cogDir = join(basePath, '.claude', 'cognition');
-        if (!existsSync(cogDir)) {
-            mkdirSync(cogDir, { recursive: true });
-        }
-        // Generate filename
-        const now = new Date();
-        const dateStr = now.toISOString().slice(0, 10).replace(/-/g, '');
-        const timeStr = now.toISOString().slice(11, 16).replace(':', '');
-        const command = session.protocolState?.command || 'session';
-        const summaryText = content.summary || content.text || 'analysis';
-        const slug = summaryText
-            .toLowerCase()
-            .replace(/[^a-z0-9]+/g, '-')
-            .slice(0, 30)
-            .replace(/-+$/, '');
-        const filename = `${dateStr}-${timeStr}-${slug}.md`;
-        const filepath = join(cogDir, filename);
-        // Aggregate key findings from all checkpoints
-        const allCheckpoints = session.getAll('checkpoints');
-        const allFindings = [];
-        for (const cp of allCheckpoints) {
-            if (cp.content?.keyFindings) {
-                allFindings.push(...cp.content.keyFindings);
-            }
-        }
-        if (content.keyFindings) {
-            allFindings.push(...content.keyFindings);
-        }
-        // Collect deferred constraints
-        const deferred = [];
-        if (session.protocolState) {
-            for (const c of session.protocolState.constraints.values()) {
-                if (c.status === 'deferred') {
-                    deferred.push(`- ${c.id}: ${c.text}${c.deferReason ? ` (${c.deferReason})` : ''}`);
-                }
-            }
-        }
         // Collect follow-up questions from content + auto-extract deferred constraints
         const followUpQuestions = [];
         // Explicit follow-ups from harvest content
@@ -206,7 +286,6 @@ function autoPersistHarvest(session, content, projectPath) {
         if (session.protocolState) {
             for (const c of session.protocolState.constraints.values()) {
                 if (c.status === 'deferred') {
-                    // Check if not already covered by explicit follow-ups
                     const alreadyCovered = followUpQuestions.some(fq => fq.question.toLowerCase().includes(c.text.toLowerCase().slice(0, 30)));
                     if (!alreadyCovered) {
                         followUpQuestions.push({
@@ -219,43 +298,34 @@ function autoPersistHarvest(session, content, projectPath) {
                 }
             }
         }
-        const dateFormatted = `${now.toISOString().slice(0, 10)} ${now.toISOString().slice(11, 16)}`;
-        const commandLabel = command === 'deepthink' ? 'DeepThink' : command === 'problem-solve' ? 'ProblemSolve' : command;
-        const md = [
-            `# ${commandLabel}: ${summaryText.slice(0, 80)}`,
-            '',
-            `**Date**: ${dateFormatted}`,
-            `**Session ID**: ${session.id}`,
-            `**Command**: /${command}`,
-            '',
-            '## Executive Summary',
-            '',
-            content.summary || '(No summary provided)',
-            '',
-            '## Key Findings',
-            '',
-            ...(allFindings.length > 0 ? allFindings.map(f => `- ${f}`) : ['- (none)']),
-            '',
-            ...(deferred.length > 0
-                ? ['## Deferred Constraints', '', ...deferred, '']
-                : []),
-            ...(followUpQuestions.length > 0
-                ? [
-                    '## Follow-Up Questions (for compounding)',
-                    '',
-                    ...followUpQuestions.map((fq, i) => `${i + 1}. \`${fq.command} "${fq.question}"\`\n   _${fq.source === 'deferred-constraint' ? 'From deferred constraint' : 'Rationale'}: ${fq.rationale || 'See findings above'}_`),
-                    '',
-                ]
-                : []),
-            '## Recovery',
-            '',
-            'To resume full analysis:',
-            '```',
-            `/think --import ${session.id}`,
-            '```',
-        ].join('\n');
-        writeFileSync(filepath, md, 'utf-8');
-        return { persisted: true, file: filepath, followUpQuestions: followUpQuestions.length > 0 ? followUpQuestions : undefined };
+        // Render rich harvest using the dedicated renderer
+        const md = renderRichHarvest(session, content, followUpQuestions.length > 0 ? followUpQuestions : undefined);
+        // Write 99-raw.json to global session dir (machine-readable)
+        const globalSessionDir = join(homedir(), '.orca-cognition', 'sessions', session.id);
+        if (!existsSync(globalSessionDir)) {
+            mkdirSync(globalSessionDir, { recursive: true });
+        }
+        const rawJson = renderRawJSON(session, content);
+        writeFileSync(join(globalSessionDir, '99-raw.json'), rawJson, 'utf-8');
+        // Write 99-harvest.md to sessionFolder (human-readable) or fallback to global
+        let harvestFile;
+        let sessionFolderFile;
+        if (content.sessionFolder && existsSync(content.sessionFolder)) {
+            harvestFile = join(content.sessionFolder, '99-harvest.md');
+            writeFileSync(harvestFile, md, 'utf-8');
+            sessionFolderFile = harvestFile;
+        }
+        else {
+            // Fallback: write harvest to global session dir
+            harvestFile = join(globalSessionDir, '99-harvest.md');
+            writeFileSync(harvestFile, md, 'utf-8');
+        }
+        return {
+            persisted: true,
+            file: harvestFile,
+            sessionFolderFile,
+            followUpQuestions: followUpQuestions.length > 0 ? followUpQuestions : undefined,
+        };
     }
     catch {
         // Auto-persist errors must not crash the checkpoint operation
@@ -286,6 +356,7 @@ export async function handleCheckpoint(args, session) {
         content: checkpointContent, // UNCHANGED
         quality: args.quality, // UNCHANGED
         timestamp: Date.now(),
+        ...(args.tokenEstimate !== undefined ? { tokenEstimate: args.tokenEstimate } : {}),
     };
     // 3. PERSIST to filesystem
     await manager.addEntry(session, 'checkpoints', entry);
@@ -293,6 +364,8 @@ export async function handleCheckpoint(args, session) {
     let extra;
     if (hasProtocolFields(checkpointContent)) {
         const protocolResult = processProtocolState(session, checkpointContent);
+        // CRITICAL: Persist protocol state to disk so it survives session reload
+        saveProtocolState(session);
         // Auto-persist at harvest
         const persistResult = autoPersistHarvest(session, checkpointContent, args.projectPath);
         if (persistResult) {

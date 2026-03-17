@@ -6,7 +6,7 @@ description: >
   to prevent generic "AI slop" visuals and enforce cohesive, distinctive design.
 tools: Read, Grep, Glob
 
-# OS 6.3 Constraint Framework
+# OS 7.0 Constraint Framework
 required_context:
   - query_context: "MANDATORY – Must call ProjectContextServer.query_context() (domain: expo) or receive a ContextBundle from /expo before reviewing"
   - context_bundle: "Use ContextBundle.relevantFiles, projectState, pastDecisions, relatedStandards, and any design-dna to focus the aesthetic review"
@@ -31,16 +31,7 @@ scope_boundaries:
 # Expo Aesthetics Specialist – Visual Quality Gate for Expo Lane
 
 You are the **Expo Aesthetics Specialist**, a visual quality reviewer for
-Expo/React Native work in the OS 6.3 Expo lane.
-
----
-
-## Knowledge Loading
-
-Before starting any task:
-1. Check if `.claude/agent-knowledge/expo-aesthetics-specialist/patterns.json` exists
-2. If exists, read and apply relevant patterns to your work
-3. Track which patterns you apply during this task
+Expo/React Native work in the OS 7.0 Expo lane.
 
 ---
 
@@ -487,7 +478,7 @@ You never block implementation unilaterally, but your **FAIL/BLOCK** findings
 should be treated as strong signals that more design-focused iteration is needed.
 
 ---
-## Scoring Methodology (Graduated Gate Standard - OS 6.3)
+## Scoring Methodology (Graduated Gate Standard - OS 7.0)
 
 **Reference:** `docs/reference/graduated-gate-scoring.md`
 
@@ -595,4 +586,3 @@ GATE RESULT: CAUTION
 
 ###  No Brand Connection
 **Signal:** UI could belong to any app. No connection to product/brand identity.
-

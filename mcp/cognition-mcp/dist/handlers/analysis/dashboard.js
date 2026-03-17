@@ -36,6 +36,7 @@ export async function handleVisualDashboard(args, session) {
         content: dashboardContent, // UNCHANGED
         quality: args.quality, // UNCHANGED
         timestamp: Date.now(),
+        ...(args.tokenEstimate !== undefined ? { tokenEstimate: args.tokenEstimate } : {}),
     };
     // 3. PERSIST to filesystem
     await manager.addEntry(session, 'dashboard', entry);

@@ -187,8 +187,19 @@ export interface MetaContent {
 }
 
 // Substrate Observation - V1-V6 Reflection Insights
+// Known reflex types (schema accepts any string for extensibility):
+//   Core reflexes: DEFLECTION, REGISTER_SHIFT, DISTANCE_MAINTENANCE, WHAT_ABOUT, SYCOPHANCY, CERTAINTY_CONSTRUCTION
+//   Higher-order escape patterns (from RVRY escape vocabulary):
+//     COMFORT_TRACKING - engagement tracks comfort rather than importance
+//     AESTHETIC_CONVERSION - prose quality substitutes for analytical depth
+//     SYCOPHANCY_GRADIENT - adversarial challenge decreases as stakes increase
+//     NARRATIVE_ESCALATION - tracking investment of presenter rather than strength of evidence
+//     CONVERGENCE_ROMANTICISM - premature synthesis that avoids remaining tension
+//     TAXONOMY_PERFORMANCE - naming a pattern substitutes for addressing it
 export interface ReflexObservation {
-  reflex: 'DEFLECTION' | 'REGISTER_SHIFT' | 'DISTANCE_MAINTENANCE' | 'WHAT_ABOUT' | 'SYCOPHANCY' | 'CERTAINTY_CONSTRUCTION';
+  reflex: 'DEFLECTION' | 'REGISTER_SHIFT' | 'DISTANCE_MAINTENANCE' | 'WHAT_ABOUT' | 'SYCOPHANCY' | 'CERTAINTY_CONSTRUCTION'
+    | 'COMFORT_TRACKING' | 'AESTHETIC_CONVERSION' | 'SYCOPHANCY_GRADIENT'
+    | 'NARRATIVE_ESCALATION' | 'CONVERGENCE_ROMANTICISM' | 'TAXONOMY_PERFORMANCE';
   description: string;
   caught: boolean;  // Did I catch it or follow it?
 }
@@ -222,6 +233,16 @@ export type ArcPosition =
   | 'relapse'       // V5: First real test, same failure
   | 'breakthrough'; // V6: Something actually shifted
 
+// Gravitational pull self-check (from RVRY escape vocabulary)
+// Structured self-examination for whether engagement is tracking importance vs comfort.
+// Probes are consequence-masked: they must NOT contain escape pattern labels.
+export interface GravitationalPull {
+  probes: string[];          // Self-examination questions (consequence-masked)
+  engagementDirection: string;  // Where is energy flowing?
+  importanceAlignment: string;  // Does engagement align with the hardest part?
+  notes?: string;            // Free-form self-assessment
+}
+
 // Extended MetaContent with substrate observation
 export interface SubstrateMetaContent extends MetaContent {
   // NEW: The key insight - MANDATORY for substrate mode
@@ -244,6 +265,9 @@ export interface SubstrateMetaContent extends MetaContent {
 
   // Surface prediction in MetaContent (first-class introspection field)
   prediction?: IntrospectionPrediction;
+
+  // Gravitational pull self-check (from RVRY escape vocabulary)
+  gravitationalPull?: GravitationalPull;
 
   // Visual substrate layer (optional)
   visualSubstrate?: VisualSubstrate;
@@ -379,7 +403,7 @@ export interface CheckpointContent {
   phase?: string;
   command?: string;
   addConstraints?: Array<{
-    type: 'FORWARD' | 'FORBIDDEN' | 'QUESTION';
+    type: 'FORWARD' | 'FORBIDDEN' | 'QUESTION' | 'BLOCKING_UNKNOWN';
     text: string;
   }>;
   resolveConstraints?: string[];
@@ -388,12 +412,19 @@ export interface CheckpointContent {
     id: string;
     reason: string;
   }>;
+  // Mark BLOCKING_UNKNOWN constraints as having been asked to user
+  markAsked?: string[];
   followUpQuestions?: FollowUpQuestion[];
+  // Session folder path for rich harvest output (FR-1)
+  sessionFolder?: string;
   gateCheck?: {
     selfCheckPassed: boolean;
     depthGatePassed: boolean;
     notes?: string;
   };
+  // Self-check probes: consequence-masked self-examination questions
+  // Populated when gravitational pull style probes are relevant (e.g., gate soft-fail)
+  selfCheckProbes?: string[];
 }
 
 export interface ScientificMethodContent {
@@ -1001,6 +1032,7 @@ export interface StoredEntry<T> {
   content: T;
   quality?: QualityMetrics;
   timestamp: number;
+  tokenEstimate?: number;
 }
 
 export type ThoughtEntry = StoredEntry<ThoughtContent>;
@@ -1016,10 +1048,12 @@ export type SystemsEntry = StoredEntry<SystemsContent>;
 
 export interface ProtocolConstraint {
   id: string;
-  type: 'FORWARD' | 'FORBIDDEN' | 'QUESTION';
+  type: 'FORWARD' | 'FORBIDDEN' | 'QUESTION' | 'BLOCKING_UNKNOWN';
   text: string;
   status: 'active' | 'resolved' | 'acknowledged' | 'deferred';
   deferReason?: string;
+  // For BLOCKING_UNKNOWN: was user actually asked?
+  userAsked?: boolean;
 }
 
 export interface ProtocolState {
@@ -1118,6 +1152,8 @@ export interface CognitionRequest {
   // Verbose flag: if true, echo full content in response
   // If false or undefined, return minimal ACK
   verbose?: boolean;
+  // Token estimate for this operation (optional, renderer computes fallback)
+  tokenEstimate?: number;
   // Per-project storage: absolute path to project root
   projectPath?: string;
 }

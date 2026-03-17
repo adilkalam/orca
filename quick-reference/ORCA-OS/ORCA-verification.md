@@ -1,15 +1,15 @@
-# Verification & Evidence Quick Reference (OS 6.4)
+# Verification & Evidence Quick Reference (OS 7.0)
 
-**Version:** OS 6.4
+**Version:** OS 7.0
 **Last Updated:** 2026-02-07
 
-Verification in OS 6.4 is **automated** within pipelines. Gates use graduated scoring (PASS/WARN/ERROR/BLOCK), not binary pass/fail.
+Verification in OS 7.0 is **automated** within pipelines. Gates use graduated scoring (PASS/WARN/ERROR/BLOCK), not binary pass/fail.
 
 ### Research Backing
 
 The verification system draws on two research-backed patterns:
 
-- **Reflexion** (Shinn et al., NeurIPS 2023): Agents that reflect on task feedback and persist lessons achieve 88% pass@1 on HumanEval vs 67% baseline. ORCA's gate-failure-to-Workshop-gotcha-to-improvement-bus loop implements this pattern.
+- **Reflexion** (Shinn et al., NeurIPS 2023): Agents that reflect on task feedback and persist lessons achieve 88% pass@1 on HumanEval vs 67% baseline. ORCA's gate-failure-to-Workshop-gotcha-to-save_standard loop implements this pattern.
 - **Chain-of-Verification (CoVe)** (Dhuliawala et al., Meta AI 2023): Generating verification questions and answering them independently doubles factual precision. ORCA's standards-enforcer agents operate independently from builders -- they score without fixing, preventing self-confirming verification.
 
 ---
@@ -213,7 +213,7 @@ Pipeline stops. Must fix issues before continuing. No user override.
 
 ## Response Awareness Tags
 
-Tags recorded automatically in `/plan` output and scanned by standards enforcers:
+Tags recorded automatically in `/requirements` output and scanned by standards enforcers:
 
 - `#COMPLETION_DRIVE` -- Assumptions made without explicit requirements
 - `#CARGO_CULT` -- Patterns followed without clear justification
@@ -231,8 +231,8 @@ Tags recorded automatically in `/plan` output and scanned by standards enforcers
 - **Commands:** `quick-reference/ORCA-OS/ORCA-commands.md`
 - **Agents:** `quick-reference/ORCA-OS/ORCA-agents.md`
 - **Architecture:** `quick-reference/ORCA-OS/ORCA-architecture.md`
-- **Telemetry:** `quick-reference/ORCA-OS/ORCA-telemetry.md`
+- **Recording:** `quick-reference/ORCA-OS/ORCA-recording.md`
 
 ---
 
-_OS 6.4 verification is automatic, graduated, and evidence-based. Manual verification is rarely needed._
+_OS 7.0 verification is automatic, graduated, and evidence-based. Manual verification is rarely needed._

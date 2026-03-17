@@ -1,12 +1,12 @@
-# iOS Pipeline Phase Configuration - OS 6.4
+# iOS Pipeline Phase Configuration - OS 7.0
 # Native iOS Development Workflow
 
 pipeline:
   name: ios
   description: Native iOS development pipeline with Swift/SwiftUI/UIKit
-  version: "6.0"
+  version: "7.0"
 
-# Phase State Schema (OS 6.4)
+# Phase State Schema (OS 7.0)
 phase_state:
   # Top-level fields
   domain: ios
@@ -16,14 +16,14 @@ phase_state:
   current_phase: string
   memory_summary: string | null           # Hits from memory-first search
 
-  # Mode Tracking (OS 6.4)
+  # Mode Tracking (OS 7.0)
   current_mode: planning | execution      # NEW: Explicit mode tracking
   mode_history:                           # NEW: Track mode transitions
     - mode: string
       timestamp: string
       reason: string
 
-  # Attempt Tracking (OS 6.4)
+  # Attempt Tracking (OS 7.0)
   current_phase_attempts: 0               # NEW: Track retry attempts
   max_attempts: 3                         # NEW: Hard limit per spec
 
@@ -38,7 +38,7 @@ phase_state:
     implementation_pass2: object | null   # Only if gate failed
     verification: object
 
-# Four-Tier Routing (OS 6.4)
+# Four-Tier Routing (OS 7.0)
 # Default now runs gates. -tweak skips gates. --complex forces full pipeline.
 complexity_tiers:
   default:
@@ -307,6 +307,19 @@ optional_phases:
       - voiceover_compliance
       - dynamic_type_support
       - wcag_score
+
+
+# Design-First Gate (Phase 0)
+design_gate:
+  position: "before planning"
+  agent: design-system-architect
+  gate_type: structural
+  tiering:
+    tweak: priming_only
+    default: soft_gate
+    complex: hard_gate
+  output: design-dna.json
+  manifesto_priming: universal
 
 # Configuration
 config:

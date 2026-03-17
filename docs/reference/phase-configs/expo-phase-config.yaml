@@ -1,16 +1,16 @@
-# Expo Pipeline Phase Configuration - OS 6.4
+# Expo Pipeline Phase Configuration - OS 7.0
 # React Native / Expo Mobile Development Workflow
 
 pipeline:
   name: expo
   description: Expo/React Native mobile development with design tokens, a11y, perf, and security gates
-  version: "6.0"
+  version: "7.0"
   sdk_versions:
     expo: "50+"
     react_native: "0.74+"
     typescript: required
 
-# Phase State Schema (OS 6.4)
+# Phase State Schema (OS 7.0)
 phase_state:
   # Top-level fields
   domain: expo
@@ -20,14 +20,14 @@ phase_state:
   current_phase: string
   memory_summary: string | null           # Hits from memory-first search
 
-  # Mode Tracking (OS 6.4)
+  # Mode Tracking (OS 7.0)
   current_mode: planning | execution      # NEW: Explicit mode tracking
   mode_history:                           # NEW: Track mode transitions
     - mode: string
       timestamp: string
       reason: string
 
-  # Attempt Tracking (OS 6.4)
+  # Attempt Tracking (OS 7.0)
   current_phase_attempts: 0               # NEW: Track retry attempts
   max_attempts: 3                         # NEW: Hard limit per spec
 
@@ -43,7 +43,7 @@ phase_state:
     verification: object
     completion: object
 
-# Four-Tier Routing (OS 6.4)
+# Four-Tier Routing (OS 7.0)
 # Default now runs gates. -tweak skips gates. --complex forces full pipeline.
 complexity_tiers:
   default:
@@ -349,6 +349,18 @@ phases:
       - store_artifacts
 
 # Gate Configuration
+# Design-First Gate (Phase 0)
+design_gate:
+  position: "before planning"
+  agent: design-system-architect
+  gate_type: structural
+  tiering:
+    tweak: priming_only
+    default: soft_gate
+    complex: hard_gate
+  output: design-dna.json
+  manifesto_priming: universal
+
 gates:
   standards:
     threshold: 90

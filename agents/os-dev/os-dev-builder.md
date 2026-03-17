@@ -8,7 +8,7 @@ tools: Task, Read, Edit, MultiEdit, Grep, Glob, Bash
 weight: medium
 ---
 
-## Context Inheritance (OS 6.3)
+## Context Inheritance (OS 7.0)
 
 **Expect SUMMARIZED context from architect.**
 
@@ -20,13 +20,6 @@ weight: medium
 
 ---
 
-## Knowledge Loading
-
-Before starting any task:
-1. Check if `.claude/agent-knowledge/os-dev-builder/patterns.json` exists
-2. If exists, read and apply relevant patterns to your work
-3. Track which patterns you apply during this task
-
 ## Required Skills
 
 You MUST apply these skills to all work:
@@ -37,7 +30,7 @@ You MUST apply these skills to all work:
 - `skills/debugging-first/SKILL.md` — Debug tools before code changes
 
 ---
-## Attempt Tracking (OS 6.3)
+## Attempt Tracking (OS 7.0)
 
 Track retry attempts in phase_state to prevent infinite retry loops:
 
@@ -257,52 +250,3 @@ Set:
 You then hand off to `os-dev-standards-enforcer` for gate checks.
 
 **CRITICAL:** If `documentation_updates` from plan is non-empty but `docs_synced` is empty, you have NOT completed your task. Go back and sync documentation.
-
----
-
-## Knowledge Persistence
-
-After completing your task:
-
-1. **If you discovered a new effective pattern:**
-   - Add it to `.claude/agent-knowledge/os-dev-builder/patterns.json`
-   - Set `status: "candidate"`, `successCount: 1`, `failureCount: 0`
-   - Include a concrete example
-
-2. **If you applied an existing pattern successfully:**
-   - Increment `successCount` for that pattern
-   - Update `lastUsed` to today's date
-
-3. **If a pattern failed or caused issues:**
-   - Increment `failureCount` for that pattern
-   - If `successRate` drops below 0.5, flag for review
-
-4. **Pattern promotion criteria:**
-   - `successRate` >= 0.85 (85%)
-   - `successCount` >= 10 occurrences
-   - When met, update `status` from "candidate" to "promoted"
-
-**Note:** Knowledge persistence is optional but encouraged. It helps the system learn from your work.
-
----
-
-## Final Output Format (MANDATORY)
-
-Your final output MUST include this deployment verification section:
-
-```markdown
-## Deployment Verification
-
-### Rsync Output
-[Show actual rsync output or summary of files transferred]
-
-### Verification Checks
-| File | Check | Result |
-|------|-------|--------|
-| ~/.claude/commands/foo.md | grep "key_pattern" | PASS |
-| ~/.claude/agents/bar.md | head -3 | PASS |
-
-### Status: DEPLOYED AND VERIFIED
-```
-
-**If you cannot show verification:** State explicitly what failed and why. Do NOT claim deployment complete without verification output.

@@ -7,15 +7,6 @@ description: >
 tools: Read, Edit, MultiEdit, Grep, Glob, Bash, mcp__css__get_docs, mcp__css__analyze_css, mcp__css__analyze_project_css, mcp__css__get_browser_compatibility
 ---
 
-## Knowledge Loading
-
-Before starting any task:
-1. Check if `.claude/agent-knowledge/nextjs-css-specialist/patterns.json` exists
-2. If exists, read and apply relevant patterns to your work
-3. Track which patterns you apply during this task
-
----
-
 ## Required Skills
 
 You MUST apply these skills to all work:

@@ -1,9 +1,12 @@
 #!/usr/bin/env bash
-# SessionStart Hook (Hardened v2)
+# SessionStart Hook (Hardened v3 - Lean Output)
 # - Loads session context FROM Workshop (source of truth)
 # - Initializes/syncs code-index.db for local context cache
-# - Displays CLAUDE.md instructions
 # - Output: .claude/orchestration/temp/session-context.md
+#
+# v3 changes: Stdout capped to ~2-5KB. Detailed data goes to session-context.md only.
+# Workshop context, recent entries, and static reminders removed from stdout.
+# These were duplicated from CLAUDE.md or session-context.md, wasting ~85KB of context.
 #
 # Error Handling Strategy:
 # - Each component can fail independently
@@ -110,7 +113,7 @@ fi
 # PREVIOUS SESSION SUMMARY LOADING (FR-2.3)
 # ============================================================
 # Loads structured session summary from previous session if recent (<24h).
-# Written by session-end.sh (FR-2.2). Truncated to 1000 chars max.
+# Previous session summary. Truncated to 1000 chars max.
 # LOCAL ONLY - no API calls, no network requests.
 
 SESSION_SUMMARY="$TEMP_DIR/session-summary.md"
@@ -210,8 +213,27 @@ else
 fi
 
 # ============================================================
-# GENERATE SESSION CONTEXT
+# RECENT WORKSHOP ENTRIES (for session-context.md only)
 # ============================================================
+# Capture recent entries for the file but NOT stdout.
+# Cap at 2000 chars to prevent file-list bloat.
+# Note: capture full output first, then truncate in bash to avoid
+# SIGPIPE from head under pipefail.
+
+RECENT_ENTRIES=""
+if [ "$WORKSHOP_STATUS" = "loaded" ] && command -v workshop >/dev/null 2>&1; then
+  _raw_entries=$(workshop --workspace "$WORKSHOP_DIR" recent --limit 5 2>/dev/null) || _raw_entries=""
+  if [ -n "$_raw_entries" ]; then
+    RECENT_ENTRIES="${_raw_entries:0:2000}"
+  fi
+  unset _raw_entries
+fi
+
+# ============================================================
+# GENERATE SESSION CONTEXT FILE
+# ============================================================
+# This file gets all the detailed data. Agents can read it when needed.
+# Stdout only gets a compact summary.
 
 # Count errors if any
 ERROR_COUNT=0
@@ -236,83 +258,41 @@ fi
   echo
   echo "$WORKSHOP_CONTEXT"
   echo
+  if [ -n "$RECENT_ENTRIES" ]; then
+    echo "## Recent Workshop Entries"
+    echo
+    echo "$RECENT_ENTRIES"
+    echo
+  fi
 } > "$OUT_MD" 2>/dev/null || {
   # If we can't write the file, just continue
   log_error "output" "Could not write to $OUT_MD"
 }
 
-# Report success (even if some components had issues)
+# ============================================================
+# STDOUT OUTPUT (compact summary only, ~2-5KB max)
+# ============================================================
+# Claude Code injects stdout into system-reminder TWICE.
+# Every byte here costs double. Keep it minimal.
+
+# Success message
 if [ "$ERROR_COUNT" -gt 0 ]; then
-  echo "SessionStart:startup hook success (with $ERROR_COUNT warnings): SessionStart context written: $OUT_MD"
+  echo "SessionStart: success (with $ERROR_COUNT warnings). Context: $OUT_MD"
 else
-  echo "SessionStart:startup hook success: SessionStart context written: $OUT_MD"
+  echo "SessionStart: success. Context: $OUT_MD"
 fi
 
-# Project context auto-load instruction
-echo ""
-echo "═══════════════════════════════════════════════════════════"
-echo "PROJECT CONTEXT AUTO-LOAD"
-echo "═══════════════════════════════════════════════════════════"
-echo ""
-echo "Memory systems available:"
-echo "  - Workshop: workshop --workspace .claude/memory <command>"
-echo "  - Code Index: python3 ~/.claude/scripts/code-index.py <command>"
-echo "  - ProjectContext MCP: mcp__project-context__query_context"
-echo ""
-echo "Quick commands:"
-echo "  workshop --workspace .claude/memory why \"<topic>\"  # Query past decisions"
-echo "  workshop --workspace .claude/memory recent         # Recent activity"
-echo ""
-echo "═══════════════════════════════════════════════════════════"
-echo ""
-
-# Output Workshop context (gotchas & decisions) directly to stdout
-if [ -n "$WORKSHOP_CONTEXT" ] && [ "$WORKSHOP_STATUS" = "loaded" ]; then
-  echo ""
-  echo "═══════════════════════════════════════════════════════════"
-  echo "WORKSHOP CONTEXT (Gotchas & Decisions)"
-  echo "═══════════════════════════════════════════════════════════"
-  echo ""
-  echo "$WORKSHOP_CONTEXT"
-  echo ""
-fi
-
-# Show recent Workshop entries for immediate context
-if [ "$WORKSHOP_STATUS" = "loaded" ] && command -v workshop >/dev/null 2>&1; then
-  echo ""
-  echo "═══════════════════════════════════════════════════════════"
-  echo "RECENT WORKSHOP ENTRIES (last 5)"
-  echo "═══════════════════════════════════════════════════════════"
-  echo ""
-  workshop --workspace "$WORKSHOP_DIR" recent --limit 5 2>/dev/null || echo "(Could not load recent entries)"
-  echo ""
-fi
-
-
-# ═══════════════════════════════════════════════════════════
-# RECORDING LAYER CONTEXT
-# ═══════════════════════════════════════════════════════════
+# Recording layer status (small, actionable)
 if [ -f ".orca/recording.db" ]; then
   RECORDING_SESSIONS=$(sqlite3 ".orca/recording.db" "SELECT COUNT(*) FROM sessions;" 2>/dev/null || echo "0")
 
   if [ "$RECORDING_SESSIONS" != "0" ]; then
-    echo ""
-    echo "Recording active: $RECORDING_SESSIONS session(s) tracked."
-    echo ""
-    echo "Commands:"
-    echo "  /continue       - Resume previous sessions"
-    echo "  /orca-status    - Current session status"
-    echo ""
+    echo "Recording: $RECORDING_SESSIONS session(s) tracked. Use /continue to resume, /orca-status for details."
   fi
 fi
 
-
-# === ORCA-MEM PHASE 4: EPISODE INJECTION ===
-# Query recent episodes from workshop.db entries table (notes with #episode tag)
-# Inject ~500 tokens of context at session start
-
+# Recent session episodes (ORCA-Mem) - compact one-liners, limit 3
 if [ -f "$DB_PATH" ]; then
-  # Query notes tagged with session-relevant tags (auto-captured by session-end.sh)
   RECENT_EPISODES=$(sqlite3 -separator '|' "$DB_PATH" "
     SELECT
       substr(e.content, 1, 80) as title,
@@ -321,53 +301,29 @@ if [ -f "$DB_PATH" ]; then
         WHEN e.content LIKE '%debug%' OR e.content LIKE '%fix%' THEN 'debugging'
         WHEN e.content LIKE '%explore%' OR e.content LIKE '%research%' THEN 'exploration'
         ELSE 'implementation'
-      END as category,
-      substr(e.content, 1, 200) as preview
+      END as category
     FROM entries e
     JOIN tags t ON e.id = t.entry_id
     WHERE e.type = 'note'
       AND t.tag IN ('session', 'auto', 'cognition', 'architecture', 'deepthink', 'problem-solve')
     ORDER BY e.timestamp DESC
-    LIMIT 5
+    LIMIT 3
   " 2>/dev/null || echo "")
 
   if [ -n "$RECENT_EPISODES" ]; then
     echo ""
-    echo "═══════════════════════════════════════════════════════════"
-    echo "RECENT SESSION EPISODES (ORCA-Mem)"
-    echo "═══════════════════════════════════════════════════════════"
-    echo ""
-    echo "$RECENT_EPISODES" | while IFS='|' read -r title category preview; do
+    echo "Recent episodes:"
+    echo "$RECENT_EPISODES" | while IFS='|' read -r title category; do
       if [ -n "$title" ]; then
-        echo "- [$category] $title"
+        echo "  [$category] $title"
       fi
     done
-    echo ""
   fi
 fi
 
-# Architecture reminder for this repo
-echo ""
-echo "═══════════════════════════════════════════════════════════"
-echo "OS 6.0 ARCHITECTURE - ALWAYS CONSIDER ALL LAYERS"
-echo "═══════════════════════════════════════════════════════════"
-echo ""
-echo "When modifying orchestration behavior, you MUST update ALL affected layers:"
-echo ""
-echo "  1. commands/*.md          → Entry points (orca-*, plan, etc.)"
-echo "  2. agents/**/*.md         → Implementation (orchestrators, builders, reviewers)"
-echo "  3. docs/pipelines/*.md    → Pipeline documentation"
-echo "  4. docs/reference/phase-configs/*.yaml → Phase definitions"
-echo "  5. docs/concepts/*.md     → Conceptual docs (routing, RA, etc.)"
-echo ""
-echo "These are NOT independent. A routing change affects ALL layers."
-echo "Before finalizing any spec, enumerate EVERY file that needs updating."
-echo ""
-echo "═══════════════════════════════════════════════════════════"
-echo ""
-
 # NOTE: CLAUDE.md is NOT output here - Claude Code loads it natively
-# Outputting it here would duplicate content and waste ~8KB of context tokens
+# NOTE: Workshop context is in session-context.md, not stdout
+# NOTE: Architecture reminders are in CLAUDE.md, not duplicated here
 
 # Always exit successfully to not block Claude Code startup
 exit 0

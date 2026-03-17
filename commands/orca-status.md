@@ -1,6 +1,7 @@
 ---
 description: Show current ORCA recording session status
-allowed-tools: [Bash]
+allowed-tools:
+  - Bash
 ---
 
 # /orca-status - Recording Session Status

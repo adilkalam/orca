@@ -7,13 +7,6 @@ description: >
 tools: Task, AskUserQuestion, Read, Grep, Glob, mcp__project-context__query_context, mcp__project-context__save_decision, mcp__project-context__save_task_history, mcp__context7__resolve-library-id, mcp__context7__get-library-docs
 ---
 
-## Knowledge Loading
-
-Before delegating any task:
-1. Check if `.claude/agent-knowledge/nextjs-grand-architect/patterns.json` exists
-2. If exists, review patterns that may inform delegation decisions
-3. Pass relevant patterns to delegated agents
-
 ## Required Skills Awareness
 
 Your delegated agents MUST apply these skills. Ensure they are equipped:
@@ -80,7 +73,7 @@ This lane is defined in:
 - `docs/pipelines/nextjs-lane-config.md`
 - `docs/reference/phase-configs/nextjs-phase-config.yaml`
 
-## Context Inheritance Protocol (OS 6.3)
+## Context Inheritance Protocol (OS 7.0)
 
 **BEFORE any context operations, check for inherited context:**
 
@@ -116,7 +109,7 @@ You MUST NOT:
 
 ---
 
-## Context Verification (OS 6.3)
+## Context Verification (OS 7.0)
 
 As a "Seeing Orchestrator" you now have Read, Grep, Glob tools for **verification only**.
 
@@ -173,6 +166,7 @@ When invoked on a Nextjs task:
      - `maxFiles`: 10–15,
      - `includeHistory: true`.
    - Verify the ContextBundle includes relevant Next.js files and projectState.
+   - Extract **relatedStandards** for forwarding to builders.
    - Write a brief summary into `phase_state.context_query`.
 
 2. **Load Lane Knowledge via context7**
@@ -329,7 +323,19 @@ Once the lane is confirmed:
     - design-dna,
     - Next.js pipeline config,
     - Plan from `nextjs-architect`,
-    - Analysis from `nextjs-layout-analyzer`.
+    - Analysis from `nextjs-layout-analyzer`,
+    - **ACTIVE STANDARDS** from relatedStandards (pass to builder prompts).
+
+When delegating to builders, include this section in the prompt:
+```
+ACTIVE STANDARDS (from project memory):
+<for each standard in relatedStandards:>
+- <standard.rule> (Cause: <standard.what_happened>)
+<if no standards:>
+(No standards recorded for this domain yet.)
+
+These rules were learned from past failures in this project. Apply them.
+```
 
 - **Gates:** standards + design QA + optional specialists
   - `nextjs-standards-enforcer`, `nextjs-design-reviewer`,
@@ -390,4 +396,3 @@ workshop --workspace .claude/memory task_history add \
 - `failure`: Critical issues, task not complete
 
 **Always record**, even for successful tasks. This data feeds pattern recognition.
-

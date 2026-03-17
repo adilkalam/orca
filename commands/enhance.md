@@ -1,6 +1,11 @@
 ---
 description: Transform vague requests into well-structured prompts using intelligent step selection and Claude 4 best practices. Supports clarify-only mode with -clarify flag.
-allowed-tools: [exit_plan_mode, Read, Glob, Task, AskUserQuestion]
+allowed-tools:
+  - exit_plan_mode
+  - Read
+  - Glob
+  - Task
+  - AskUserQuestion
 argument-hint: [--debug] [-clarify] <request to enhance>
 ---
 

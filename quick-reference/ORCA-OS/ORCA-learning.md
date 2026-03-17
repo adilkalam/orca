@@ -1,4 +1,4 @@
-# Learning: Improvement Without Weight Updates
+# Learning: The OS 7.0 Standards Loop
 
 ---
 
@@ -27,85 +27,62 @@ Without learning, you're the only quality memory in the system. You catch the sa
 
 ---
 
+## The v7.0 Learning Loop
+
+ORCA-OS v7.0 implements a closed-loop learning system based on gate failures flowing back to builders. No phantom infrastructure -- just the actual flow:
+
+```
+Gate detects failure
+    |
+    v
+Gate calls mcp__project-context__save_standard({
+  what_happened: "Used NavigationStack without iOS 16 check",
+  cost: "Gate failed, required manual fix",
+  rule: "Check deployment target before using iOS 16+ APIs",
+  domain: "ios"
+})
+    |
+    v
+Standard stored in Workshop DB
+    |
+    v
+Next task: lane command calls query_context(domain, task)
+    |
+    v
+query_context returns ContextBundle with relatedStandards
+    |
+    v
+Orchestrator extracts relatedStandards
+    |
+    v
+Orchestrator includes "ACTIVE STANDARDS" section in Task prompt to builder
+    |
+    v
+Builder sees and applies standards
+    |
+    v
+Fewer failures --> fewer new standards needed
+```
+
+This is a genuine feedback loop: failures create standards, standards prevent future failures.
+
+---
+
 ## What Learning Provides
 
-ORCA learns at three levels -- all file-based, no weight updates, no fine-tuning.
+ORCA learns at the gate level -- file-based, no weight updates, no fine-tuning.
 
 | Level | What it learns from | What it produces | Storage |
 |-------|-------------------|-----------------|---------|
-| **Agent-level** | Task outcomes | Pattern knowledge per agent | `.claude/agent-knowledge/*/patterns.json` |
-| **Gate-level** | CAUTION/FAIL decisions | Reflexions (what failed and why) | Workshop + improvement bus |
-| **Conversation-level** | Your corrections and instructions | Permanent rules in CLAUDE.md | CLAUDE.md + Workshop |
+| **Gate-level** | CAUTION/FAIL decisions | Standards (what failed and how to prevent) | Workshop DB via `save_standard` MCP |
 
-The research backing: Reflexion (Shinn et al., NeurIPS 2023) achieved 88% pass@1 on HumanEval -- compared to GPT-4's 67% -- through verbal feedback stored in episodic memory. Chain of Verification (Dhuliawala et al., Meta AI 2023) showed 2x precision improvement through structured verification questions. ORCA implements both, adapted for multi-agent pipelines.
+The research backing: Reflexion (Shinn et al., NeurIPS 2023) achieved 88% pass@1 on HumanEval -- compared to GPT-4's 67% -- through verbal feedback stored in episodic memory. ORCA implements this pattern via the standards loop.
 
 ---
 
-## Agent-Level Learning
+## Gate-Level Learning (Standards)
 
-Agents track patterns that work and patterns that fail.
-
-### How It Works
-
-```
-Agent completes task
-    |
-    v
-Did a pattern succeed?  -->  Increment successCount
-Did a pattern fail?     -->  Increment failureCount
-New effective pattern?  -->  Add as candidate
-    |
-    v
-Over time: patterns accumulate statistics
-    |
-    v
-successRate >= 85% AND 10+ uses  -->  PROMOTED (permanent knowledge)
-successRate < 50%                 -->  Flagged for deprecation
-```
-
-### What It Looks Like
-
-```
-.claude/agent-knowledge/
-  nextjs-builder/
-    patterns.json        # Patterns for Next.js builder
-  ios-builder/
-    patterns.json        # Patterns for iOS builder
-  expo-builder-agent/
-    patterns.json        # Patterns for Expo builder
-```
-
-Each pattern tracks:
-
-```json
-{
-  "id": "pattern-001",
-  "description": "Use Suspense boundaries around async components",
-  "category": "architecture",
-  "successCount": 12,
-  "failureCount": 1,
-  "successRate": 0.92,
-  "status": "promoted",
-  "lastUsed": "2026-01-15"
-}
-```
-
-### Agent Integration
-
-Every agent checks for learned patterns before starting work:
-
-1. Read `.claude/agent-knowledge/{agent-name}/patterns.json`
-2. Apply relevant promoted patterns
-3. Track which patterns were used
-4. Update success/failure counts after task completion
-
-Success is tracked through: user accepting changes, build/test passing, gate scores, and whether corrections were needed.
-
----
-
-## Gate-Level Learning (Reflexion)
-
-When a gate reports CAUTION or FAIL, it generates a reflexion: what failed, why, and what would have prevented it.
+When a gate reports CAUTION or FAIL, it calls `save_standard` with structured failure information.
 
 ### How It Works
 
@@ -113,148 +90,57 @@ When a gate reports CAUTION or FAIL, it generates a reflexion: what failed, why,
 Gate runs  -->  CAUTION or FAIL
     |
     v
-Generate reflexion:
-  "NavigationStack used without checking iOS 16+ deployment target"
+Gate calls save_standard MCP:
+  what_happened: "NavigationStack used without checking iOS 16+ deployment target"
+  cost: "Gate failed, required 2 fix iterations"
+  rule: "Check deployment target before using iOS 16+ APIs"
+  domain: "ios"
     |
     v
-Store in Workshop (tagged #reflexion)
+Workshop stores standard with domain tag
     |
     v
-Emit to improvement bus
+Future runs: orchestrator calls query_context(domain, task)
     |
     v
-Future runs: orchestrator loads past reflexions BEFORE delegating
+ContextBundle.relatedStandards populated from Workshop
     |
     v
-Builder receives: "Active constraints from past failures:
-  - iOS 16+ API check required before using NavigationStack"
+Orchestrator includes in builder delegation prompt:
+  "ACTIVE STANDARDS (from past failures):
+   - Check deployment target before using iOS 16+ APIs"
 ```
 
-The reflexion becomes a constraint for future work. The builder that caused the failure gets the constraint. Other builders in different domains don't -- this prevents context bloat.
+The standard becomes a constraint for future work. Builders in the same domain see it. Builders in different domains don't -- this prevents context bloat.
 
-### Reflexion-as-Constraint
+### Standards Flow
 
-Past reflexions are synthesized into constraint bullets and injected into the plan for the relevant agent:
+The key mechanism is the `relatedStandards` field in ContextBundle:
 
-```markdown
-## Active Constraints (from past failures)
-
-These constraints are derived from past failures by this agent. Apply them:
-
-- iOS 16+ API check required before using NavigationStack
-- No force unwraps in async closures
-- Verify Tailwind classes exist before using
-
-Failure to apply these constraints will result in gate failure.
+```typescript
+interface ContextBundle {
+  projectState: { ... }
+  relatedDecisions: Decision[]
+  relatedStandards: Standard[]  // <-- Learning loop output
+  codeContext: { ... }
+}
 ```
 
-This is based on Reflexion (Shinn et al., NeurIPS 2023): verbal feedback stored in episodic memory enables improvement without weight updates. The agent doesn't need to "understand" why the constraint exists. It just needs to follow it.
+Orchestrators are responsible for extracting `relatedStandards` and injecting them into builder prompts.
 
 ---
 
-## Conversation-Level Learning (/reflect)
+## Workshop Memory
 
-Your interactions generate implicit learnings:
-- Corrections: "No, use strict mode instead"
-- Instructions: "Always run lint before committing"
-- Feedback: "That broke the build"
-
-`/reflect` extracts these signals from conversation transcripts and promotes them to permanent rules.
-
-### Commands
+Workshop provides structured storage for decisions, gotchas, and preferences:
 
 ```bash
-/reflect                     # Analyze transcripts, review patterns
-/reflect --source recording  # Analyze from recording.db instead of JSONL
-/reflect status              # Show learning journal summary
-/reflect learn <rule>        # Explicitly add a rule to CLAUDE.md
-/reflect learn <rule> --soft # Add as Workshop preference (softer)
-/reflect unlearn <rule>      # Archive or remove a rule
-/reflect history             # Show all rules (active + archived)
+workshop decision "Use Tailwind for styling" -r "Consistent with existing codebase"
+workshop gotcha "iOS 16+ APIs require deployment target check"
+workshop gotcha "Performance budget: 100ms first paint"
 ```
 
-### Signal Detection
-
-| Type | Detection Pattern | Threshold |
-|------|-------------------|-----------|
-| Correction | "no", "don't", "instead", "wrong" | 1 occurrence |
-| Instruction | "always", "never", "make sure" | 2 occurrences |
-| Positive feedback | "perfect", "great", "exactly" | 3+ occurrences |
-| Negative feedback | "broke", "failed", "error" | 1 occurrence |
-
-### Where Rules Live
-
-Promoted rules go to your project's CLAUDE.md:
-
-```markdown
-## Learned Rules (via /reflect)
-<!-- Auto-managed by /reflect -->
-
-### Active Rules
-- **[rule-001]** Always use TypeScript strict mode
-- **[rule-002]** Run lint before committing
-
-### Archived Rules
-- **[rule-003]** Use npm not yarn (archived: switched to bun)
-```
-
-Soft learnings go to Workshop preferences, which agents load via ProjectContext.
-
----
-
-## The Improvement Bus
-
-All three levels feed a unified event stream. A learning at one level can propagate to others.
-
-```
-Sources                    Improvement Bus              Sinks
--------                    ---------------              -----
-Reflexion (gates)    -->                          -->  Agent patterns
-CoVe failures        -->   improvement_event.jsonl -->  CLAUDE.md rules
-/reflect rules       -->          |               -->  Workshop standards
-/audit proposals     -->          v               -->  Gate checklists
-Agent discoveries    -->   /self-improve          -->  phase_state constraints
-```
-
-### How Events Flow
-
-A single gate failure can cascade:
-
-```
-Gate failure: "NavigationStack used without checking iOS 16+"
-    |
-    +---> Agent constraint (ios-builder checks deployment target next time)
-    +---> Workshop standard (all iOS agents load this)
-    +---> Mandatory verification question (future gates must check)
-```
-
-### CoVe Question Mining
-
-Verification questions that fail repeatedly become mandatory checks. If "Are 'use client' directives correct?" fails 2+ times across different tasks, it becomes a required question in all future Next.js verification runs.
-
-```
-CoVe question fails  -->  Count failures across tasks
-    |
-    v
-Failed 2+ times  -->  Emit to improvement bus
-    |
-    v
-Route to gate_checklist
-    |
-    v
-Future verification: "Mandatory Questions (from past failures):
-  1. Are 'use client' / 'use server' directives correct? (failed 3 times)"
-```
-
-This turns verification from a one-time check into a cumulative system where past failures inform future checks.
-
-### Running the Bus
-
-```bash
-/self-improve              # Process pending events, show report
-/self-improve --dry-run    # Show what would be routed without applying
-/self-improve --domain ios # Only process events for iOS domain
-```
+These entries surface in `ContextBundle.relatedDecisions` when relevant to the current task.
 
 ---
 
@@ -262,17 +148,15 @@ This turns verification from a one-time check into a cumulative system where pas
 
 ### Session 1
 
-Agent knows nothing project-specific. Uses general knowledge. Makes mistakes. Gates catch some. You catch others.
+Agent knows nothing project-specific. Uses general knowledge. Makes mistakes. Gates catch some and save standards.
 
 ### Session 10
 
-Agent has learned: your TypeScript preferences, 3 project patterns, 2 reflexion constraints. Gates have 4 mandatory verification questions from past failures. Fewer corrections needed.
+Agent has learned: your TypeScript preferences (CLAUDE.md rules), 3 domain standards (Workshop). Gates contribute new standards only for novel failure modes. Fewer corrections needed.
 
 ### Session 50
 
-Agent has promoted patterns with 85%+ success rates. Reflexion constraints cover known failure modes. `/reflect` rules encode your accumulated preferences. Verification catches what it missed before.
-
-Session 50 is different from session 1.
+Standards cover known failure modes across domains. CLAUDE.md rules encode your accumulated preferences. Session 50 is different from session 1.
 
 ---
 
@@ -281,54 +165,34 @@ Session 50 is different from session 1.
 ### See What's Been Learned
 
 ```bash
-# Check learned rules
-/reflect status
+# See past decisions/gotchas
+workshop why "styling approach"
 
-# See agent patterns
-/reflect history
-
-# Check improvement bus health
-/self-improve --dry-run
+# Check recent Workshop entries
+workshop recent
 ```
 
 ### Teach Explicitly
 
 ```bash
-# Add a hard rule (goes to CLAUDE.md)
-/reflect learn "Always check deployment target before using new APIs"
+# Record a decision with reasoning
+workshop decision "Use React Query for data fetching" -r "Better caching than SWR"
 
-# Add a soft preference (goes to Workshop)
-/reflect learn "Prefer functional components" --soft
-```
-
-### Remove Bad Rules
-
-```bash
-# Archive a rule that no longer applies
-/reflect unlearn rule-003
-```
-
-### Trigger Pattern Analysis
-
-```bash
-# Run improvement analysis across recent work
-/audit
-
-# Process pending improvement events
-/self-improve
+# Record a gotcha
+workshop gotcha "Always check deployment target before using new APIs"
 ```
 
 ---
 
 ## Design Principles
 
-**File-based, not weight-based.** All learning is stored in JSON files and markdown. Nothing modifies the model itself. This means learnings are inspectable, editable, and portable.
+**File-based, not weight-based.** All learning is stored in SQLite (Workshop) and markdown (CLAUDE.md). Nothing modifies the model itself. This means learnings are inspectable, editable, and portable.
 
-**User approval required.** No auto-modifying agents. You review and approve all promoted rules and patterns. Rejected proposals are recorded for learning.
+**Gate-to-builder flow.** Standards flow from gates (who detect failures) to builders (who prevent them). The orchestrator is the bridge.
 
-**Threshold-based detection.** 3+ occurrences trigger a pattern proposal. This balances signal vs noise and prevents one-off issues from polluting agent knowledge.
+**Scoped injection.** Standards are tagged by domain. `nextjs-builder` doesn't see iOS standards. This prevents context bloat.
 
-**Scoped injection.** Constraints go to the agent that needs them. `nextjs-builder` doesn't see iOS constraints. This prevents context bloat.
+**User-visible standards.** All learning is stored in Workshop DB and inspectable via `workshop` CLI. Standards accumulate automatically from gate failures.
 
 ---
 
@@ -336,22 +200,17 @@ Session 50 is different from session 1.
 
 | Data | Location |
 |------|----------|
-| Agent patterns | `.claude/agent-knowledge/{agent}/patterns.json` |
-| Gate checklists | `.claude/agent-knowledge/{agent}/mandatory_checks.json` |
-| Improvement events | `.claude/improvement-events/improvement_event.jsonl` |
-| Learning journal | `.claude/orchestration/temp/reflect-journal.json` |
-| Learned rules | Project CLAUDE.md |
-| Soft preferences | Workshop entries |
+| Domain standards | Workshop DB (via `save_standard` MCP) |
+| Decisions/gotchas | Workshop DB (via `workshop` CLI) |
+| Learned rules | Project CLAUDE.md `Learned Rules` section |
 
 ---
 
 ## See Also
 
-- `docs/concepts/self-improvement.md` - Full technical reference
-- `docs/concepts/improvement-bus.md` - Event routing specification
-- `commands/self-improve.md` - /self-improve command spec
-- `commands/reflect.md` - /reflect command specification
+- `quick-reference/ORCA-OS/ORCA-memory.md` - Memory systems reference
+- `docs/concepts/memory-systems.md` - Full memory architecture
 
 ---
 
-_Version: OS 6.4 | Learning is improvement, made cumulative._
+_Version: OS 7.0 | Learning is standards, made cumulative._

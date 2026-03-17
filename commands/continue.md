@@ -1,6 +1,8 @@
 ---
 description: Show resume info for previous recording sessions
-allowed-tools: [Bash, Read]
+allowed-tools:
+  - Bash
+  - Read
 ---
 
 # /continue - Session Resume Info
@@ -56,10 +58,8 @@ SELECT
   s.started_at,
   s.ended_at,
   s.state,
-  (SELECT COUNT(*) FROM events e WHERE e.session_id = s.id AND e.type = 'checkpoint') as checkpoint_count,
-  (SELECT COUNT(DISTINCT json_each.value)
-   FROM events e, json_each(e.files_new || e.files_modified || e.files_deleted)
-   WHERE e.session_id = s.id) as files_touched
+  s.step_count,
+  json_array_length(COALESCE(s.files_touched_json, '[]')) as files_touched
 FROM sessions s
 ORDER BY s.started_at DESC
 LIMIT 5;
@@ -75,15 +75,15 @@ LIMIT 5;
 Recent sessions:
 
   [1] sess-19c6983c46029c7 (today, 14:30)
-      5 checkpoints, 12 files touched
+      5 steps, 12 files touched
       > claude --continue sess-19c6983c46029c7
 
   [2] sess-abc123def456 (yesterday, 16:45)
-      12 checkpoints, 28 files touched
+      12 steps, 28 files touched
       > claude --continue sess-abc123def456
 
   [3] sess-def789ghi012 (2 days ago, 10:15)
-      8 checkpoints, 15 files touched
+      8 steps, 15 files touched
       > claude --continue sess-def789ghi012
 
 To continue a session, run the command shown above.
@@ -159,8 +159,6 @@ If this is a new project, sessions will be recorded on next use.
 
 ## Related Commands
 
-- `/checkpoints` - View checkpoint list
-- `/restore` - Restore to a checkpoint
 - `/orca-status` - Current recording session status
 
 ---

@@ -1,5 +1,5 @@
 ---
-description: "OS 6.3 Research lane entrypoint for deep, cited research"
+description: "OS 7.0 Research lane entrypoint for deep, cited research"
 argument-hint: "[--deep] [--time N] <research question>"
 allowed-tools:
   - Task
@@ -91,12 +91,7 @@ Example for "What are the best practices for LLM structured reasoning?":
 
 Save plan to Workshop:
 ```bash
-workshop note "Research plan: {topic}
-Subquestions:
-1. {sq1}
-2. {sq2}
-...
-Time budget: {minutes}min" -t research -t plan
+workshop decision "Research plan: {topic} - {minutes}min budget, {N} subquestions" -r "Subquestions: {sq1}; {sq2}; ..."
 ```
 
 ---

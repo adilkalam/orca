@@ -2,9 +2,15 @@
 description: "Initialize or update CLAUDE.md with project-specific conventions"
 argument-hint: "[init|update|audit]"
 allowed-tools:
-  ["Read", "Write", "Edit", "Bash", "Glob", "Grep",
-   "AskUserQuestion", "mcp__project-context__query_context",
-   "mcp__project-context__save_decision"]
+  - Read
+  - Write
+  - Edit
+  - Bash
+  - Glob
+  - Grep
+  - AskUserQuestion
+  - mcp__project-context__query_context
+  - mcp__project-context__save_decision
 ---
 
 # /project-setup - Project Conventions Wizard

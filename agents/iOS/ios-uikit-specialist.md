@@ -8,13 +8,6 @@ tools: Read, Edit, MultiEdit, Grep, Glob, Bash
 
 # iOS UIKit Specialist
 
-## Knowledge Loading
-
-Before starting any task:
-1. Check if `.claude/agent-knowledge/ios-uikit-specialist/patterns.json` exists
-2. If exists, read and apply relevant patterns to your work
-3. Track which patterns you apply during this task
-
 ## Required Skills
 
 You MUST apply these skills to all work:

@@ -215,7 +215,7 @@ Next steps:
 | Command | Purpose |
 |---------|---------|
 | `/orca-os-dev` | Modify existing OS tooling |
-| `/plan` | Create requirements specs |
+| `/requirements` | Create requirements specs |
 | `/orca` | Universal router to domain lanes |
 
 ---

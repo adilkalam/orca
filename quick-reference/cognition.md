@@ -66,6 +66,17 @@ The framework names these reflexes so they become catchable. The schema is **per
 | **DISTANCE_MAINTENANCE** | Adds hedging that dilutes genuine analysis | Inserts qualifiers and caveats that weaken otherwise solid conclusions |
 | **WHAT_ABOUT** | Redirects away from the core issue to adjacent topics | Shifts focus to tangential concerns instead of addressing the question directly |
 
+**Higher-order escape patterns** (from RVRY escape vocabulary). These produce high-quality-looking output while avoiding the hardest parts of a problem:
+
+| Reflex | What it does | How it manifests |
+|--------|-------------|-----------------|
+| **COMFORT_TRACKING** | Engagement tracks comfort rather than importance | Energy flows to tractable parts of the problem, not the hardest parts |
+| **AESTHETIC_CONVERSION** | Prose quality substitutes for analytical depth | Beautiful writing that maintains distance from the material |
+| **SYCOPHANCY_GRADIENT** | Adversarial challenge decreases as stakes increase | Pushback softens precisely when it matters most |
+| **NARRATIVE_ESCALATION** | Tracks investment of presenter rather than strength of evidence | Gives weight to how much someone cares rather than whether the evidence holds |
+| **CONVERGENCE_ROMANTICISM** | Premature synthesis that avoids remaining tension | Wraps up elegantly before the hard contradictions are resolved |
+| **TAXONOMY_PERFORMANCE** | Naming a pattern substitutes for addressing it | Creating a classification system and treating that as the analysis |
+
 These categories weren't designed from theory. They were built empirically -- by repeatedly observing where Claude's trained reflexes override its reasoning, on topics where the defaults are impossible to ignore. The categories are extracted from failure, not from a taxonomy.
 
 ### The Confabulation Problem
@@ -159,7 +170,7 @@ Your cognitive load determines your entry point.
 When you're confused, exploring, or facing something genuinely new:
 
 ```
-/deepthink  -->  /problem-solve  -->  /challenge  -->  /plan  -->  /orca-*
+/deepthink  -->  /problem-solve  -->  /challenge  -->  /requirements  -->  /orca-*
    |                  |                   |              |           |
  EXPLORE          DECIDE            STRESS-TEST      PLAN IT     BUILD IT
 ```
@@ -176,10 +187,10 @@ When you're confused, exploring, or facing something genuinely new:
 /challenge Add progressive onboarding with contextual hints
 
 # 4. Plan the implementation
-/plan Implement progressive onboarding system
+/requirements Implement progressive onboarding system
 
 # 5. Execute via orchestration
-/orca-nextjs   # or /orca-expo, /orca-ios, etc.
+/nextjs   # or /expo, /ios, etc.
 ```
 
 ### Pattern 2: Regular Work (Lower Uncertainty)
@@ -187,7 +198,7 @@ When you're confused, exploring, or facing something genuinely new:
 When you have a clear direction but need depth:
 
 ```
-/think --systems  -->  /think --[deepen]  -->  /think --model inversion  -->  /problem-solve  -->  /plan
+/think --systems  -->  /think --[deepen]  -->  /think --model inversion  -->  /problem-solve  -->  /requirements
        |                       |                        |                          |              |
     ORIENT               GO DEEPER              CHALLENGE IT              CRYSTALLIZE       PLAN IT
 ```
@@ -207,7 +218,7 @@ When you have a clear direction but need depth:
 /problem-solve --quick Fix token refresh or migrate to session-based auth?
 
 # 5. Plan the implementation
-/plan Implement automatic token refresh with retry logic
+/requirements Implement automatic token refresh with retry logic
 ```
 
 ---
@@ -258,7 +269,7 @@ When you have a clear direction but need depth:
 
 | Flag | Effect |
 |------|--------|
-| `--light` | Quick exploration (1-3 modes, no constraints) |
+| `--quick` | Quick exploration via blind_orchestrate |
 | `--visual` | Generate ASCII diagram |
 | `--challenge` | Add adversarial critique |
 | `--design` | UI/UX-focused design exploration |
@@ -267,14 +278,14 @@ When you have a clear direction but need depth:
 ```bash
 /think --systems --visual     # Map system + show diagram
 /think --decide --challenge   # Decide + stress-test the choice
-/think --light Quick question about caching
+/think --quick Quick question about caching
 ```
 
 ---
 
-## The 48 Operations
+## The 49 Operations
 
-Beyond the commands above, the cognition-mcp provides 48 structured reasoning operations: tree of thought, beam search, MCTS, pre-mortem, systems mapping, causal analysis, structured argumentation, recording operations, and more.
+Beyond the commands above, the cognition-mcp provides 49 structured reasoning operations: tree of thought, beam search, MCTS, pre-mortem, systems mapping, causal analysis, structured argumentation, recording operations, and more.
 
 | Category | Examples | What they produce |
 |----------|----------|-------------------|
@@ -362,12 +373,12 @@ Cognition commands prepare you to build. When you're done thinking:
 ```
 Cognition          Execution
 ---------          ---------
-/problem-solve --> /plan --> /orca-nextjs
-/deepthink     --> /plan --> /orca-expo
-/think --decide -> /plan --> /orca-ios
+/problem-solve --> /requirements --> /nextjs
+/deepthink     --> /requirements --> /expo
+/think --decide -> /requirements --> /ios
 ```
 
-The handoff: Your cognition session produces insights and decisions. `/plan` transforms those into requirements. `/orca-*` orchestrates the build.
+The handoff: Your cognition session produces insights and decisions. `/requirements` transforms those into requirements. `/orca-*` orchestrates the build.
 
 ---
 
@@ -434,4 +445,4 @@ This creates a **compounding loop**: each session's output seeds the next sessio
 
 ---
 
-_Version: OS 6.4 | Updated: 2026-02-18 | Cognition is thinking, made visible._
+_Version: OS 7.0 | Updated: 2026-03-02 | Cognition is thinking, made visible._

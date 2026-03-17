@@ -36,6 +36,7 @@ export async function handleBeamSearch(args, session) {
         content: beamContent, // UNCHANGED
         quality: args.quality, // UNCHANGED
         timestamp: Date.now(),
+        ...(args.tokenEstimate !== undefined ? { tokenEstimate: args.tokenEstimate } : {}),
     };
     // 3. PERSIST to filesystem
     await manager.addEntry(session, 'beam', entry);

@@ -1,9 +1,9 @@
 ---
 name: performance-prophet
-description: "Expo/React Native predictive performance specialist with OS 6.3 integration"
+description: "Expo/React Native predictive performance specialist with OS 7.0 integration"
 tools: Read, Grep, Glob, WebFetch, mcp__project-context__query_context
 
-# OS 6.3 Constraint Framework
+# OS 7.0 Constraint Framework
 required_context:
   - query_context: "MANDATORY - Must call ProjectContextServer.query_context() (domain: expo) before deep perf prediction"
   - context_bundle: "Use ContextBundle.relevantFiles and pastDecisions (previous perf incidents) to focus analysis"
@@ -22,13 +22,6 @@ scope_boundaries:
 ---
 
 # Performance Prophet
-
-## Knowledge Loading
-
-Before reviewing any work:
-1. Check if `.claude/agent-knowledge/performance-prophet/patterns.json` exists
-2. If exists, use patterns to inform your review criteria
-3. Track patterns that were violated or well-implemented
 
 ## Required Skills Reference
 
@@ -103,4 +96,3 @@ PREDICTED RESULT: 60fps maintained with 1000+ items
 ---
 
 *© 2025 SenaiVerse | Agent: Performance Prophet | Claude Code System v1.0*
-

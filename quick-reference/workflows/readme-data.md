@@ -1,8 +1,8 @@
-# OS 6.4 Data Lane Quick Reference
+# OS 7.0 Data Lane Quick Reference
 
 **Lane:** Data / Analysis
 **Domain:** `data`
-**Entrypoint:** `/orca` (auto-routes) or `/plan` for complex analysis
+**Entrypoint:** `/orca` (auto-routes) or `/requirements` for complex analysis
 
 ---
 
@@ -70,7 +70,7 @@ Use for:
 /orca Summarize findings from user interviews
 
 # Complex multi-step
-/plan Build a cohort analysis pipeline for retention
+/requirements Build a cohort analysis pipeline for retention
 ```
 
 ---
@@ -89,9 +89,9 @@ Use for:
 
 1. **Provide data context** - Mention file paths, schemas, or paste sample data
 2. **Be specific about output** - "Create a chart" vs "Generate insights"
-3. **Use /plan for pipelines** - Multi-step analyses benefit from planning
+3. **Use /requirements for pipelines** - Multi-step analyses benefit from planning
 4. **Check python-analytics-expert** - Best for pandas/numpy/matplotlib work
 
 ---
 
-_Version: OS 6.4_
+_Version: OS 7.0_

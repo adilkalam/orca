@@ -144,4 +144,3 @@ When invoked:
 6. Return decision and any RA tags
 
 **Time limit:** Spend no more than 5-10 minutes on spot-checking. You're a quality gate, not a peer reviewer. Focus on obvious errors and high-risk claims.
-

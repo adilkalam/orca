@@ -1,12 +1,12 @@
-# OS 6.4 OS-Dev Lane Readme
+# OS 7.0 OS-Dev Lane Readme
 
 **Lane:** OS / Tooling Configuration  
 **Domain:** `os-dev`  
-**Entrypoints:** `/plan`, `/orca-os-dev [-tweak | --complex]`, `/project-memory`, `/project-code`
+**Entrypoints:** `/requirements`, `/orca-os-dev [-tweak | --complex]`, `/project-memory`, `/project-code`
 
 This readme explains the OS-Dev lane, which manages changes to:
 
-- OS 6.4 orchestration behavior
+- OS 7.0 orchestration behavior
 - Claude Code commands, agents, skills, MCPs, hooks
 - Memory integration behavior
 
@@ -20,7 +20,7 @@ application code:
 - Add/modify lanes and phase configs
 - Add or reconfigure MCPs
 - Add OS‑level skills or adjust their usage
-- Tweak hooks, scripts, and safety defaults for OS 6.4
+- Tweak hooks, scripts, and safety defaults for OS 7.0
 
 **Routing Modes:**
 

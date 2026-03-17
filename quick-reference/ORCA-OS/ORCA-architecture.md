@@ -1,7 +1,7 @@
-# OS 6.4 Architecture Quick Reference
+# OS 7.0 Architecture Quick Reference
 
-**Last Updated:** 2026-02-26
-**Version:** OS 6.4
+**Last Updated:** 2026-03-16
+**Version:** OS 7.0
 
 ---
 
@@ -9,7 +9,7 @@
 
 ORCA-OS is a Claude Code orchestration system that counteracts trained defaults -- the tendency toward quick, shallow, agreeable output that LLM training optimizes for casual users rather than agentic development workflows. The architecture provides structure that prevents bypassing the capability that already exists in the model.
 
-- **131 agents** across 14 domains
+- **100 agents** across 10 domains
 - **37 commands** (13 lane orchestrators + utilities) + orca-record CLI
 - **Project-scoped MCPs** to minimize token usage
 - **Recording layer** for session event tracking and observability
@@ -21,22 +21,24 @@ ORCA-OS is a Claude Code orchestration system that counteracts trained defaults 
 
 ## Lane Architecture
 
-### Active Lanes (12)
+### Active Lanes (14)
 
 | Lane | Command | Agents | MCPs |
 |------|---------|--------|------|
-| iOS | `/ios` | 19 | XcodeBuildMCP |
-| Next.js | `/nextjs` | 15 | chrome-devtools, puppeteer |
+| iOS | `/ios` | 18 | XcodeBuildMCP |
+| Next.js | `/nextjs` | 15 | chrome-devtools |
 | Django-React | `/django-react` | 13 | (none) |
 | Expo | `/expo` | 12 | (none) |
-| Dev (cross-cutting) | - | 12 | - |
+| Dev (cross-cutting) | - | 13 | - |
 | OS-Dev | `/orca-os-dev` | 11 | (none) |
-| Audit | `/audit` | 8 | cognition-mcp |
+| Audit | `/audit` | 0 (agentless) | cognition-mcp |
 | RVRY | `/rvry` | 7 | (none) |
 | Research | `/research` | 7 | crawl4ai |
 | Typography | `/typography` | 6 | (none) |
-| SEO | `/seo` | 5 | ahrefs, crawl4ai |
+| SEO | `/seo` | 5 | ahrefs, crawl4ai, cognition-mcp (--think) |
 | Data | (none) | 4 | (none) |
+| 3D Printing | `/design` | 0 (MCP+skill) | bambu-3mf, openscad-mcp |
+| Creative Design | `/design`, `/illustrate` | 0 (MCP+skill) | adb-mcp (Photoshop, Illustrator) |
 
 ---
 
@@ -130,7 +132,7 @@ No gates, no architect, user verifies.
 **code-index.db:** Code chunks, symbols, embeddings (`.claude/memory/code-index.db`)
 **project-meta:** Project type, dependencies, tokens (MCP cache)
 
-### ProjectContext Implementation (OS 6.4)
+### ProjectContext Implementation (OS 7.0)
 
 The MCP uses a hybrid approach:
 - **Reads:** Direct SQLite queries via `better-sqlite3` (reliable, no CLI parsing)
@@ -139,12 +141,13 @@ The MCP uses a hybrid approach:
 
 ### Local LLM Stack (Ollama)
 
-Both memory systems use Ollama running on port 11434:
+code-index.db uses Ollama running on port 11434 for embeddings:
 
 | Component | Ollama Model | Purpose |
 |-----------|--------------|---------|
 | code-index.db | `nomic-embed-text` | Code embeddings for semantic search |
-| Workshop | `mistral` | Quality extraction from session transcripts |
+
+Workshop uses heuristic parsing for session extraction -- no LLM dependency.
 
 See `quick-reference/llm-local.md` for setup.
 
@@ -177,15 +180,15 @@ User prompt
 ### Source (ORCA-OS Repo)
 ```
 $ORCA_OS_PATH/
-  agents/             # 131 agent definitions
-    iOS/              # 19 agents
+  agents/             # 124 agent definitions
+    iOS/              # 18 agents
     nextjs/           # 15 agents
     django-react/     # 13 agents
     expo/             # 12 agents
-    dev/              # 12 agents (cross-cutting)
+    dev/              # 13 agents (cross-cutting)
     os-dev/           # 11 agents (os-dev-* + orca-pipeline-*)
     rvry/             # 7 agents
-    audit/            # 8 agents
+    audit/            # (agentless)
     research/         # 7 agents
     typography/       # 6 agents
     seo/              # 5 agents
@@ -299,19 +302,6 @@ Changes must trace the dependency graph (`os-dependency-graph.yaml`):
 
 Hooks run at key moments in Claude Code lifecycle.
 
-### Critical Project Protection
-
-These hooks enforce git tracking for critical projects.
-Configure your projects in the hook files:
-- `~/ORCA-OS` (default)
-- Add your other projects as needed
-
-| Hook | Trigger | Purpose |
-|------|---------|---------|
-| `session-end.sh` | SessionEnd | Saves session summary to Workshop + session-summary.md |
-
-### Other Hooks
-
 | Hook | Trigger | Purpose |
 |------|---------|---------|
 | `session-start.sh` | SessionStart | Loads context, Workshop summary |
@@ -347,4 +337,4 @@ Configure your projects in the hook files:
 ---
 
 _Source of truth: `docs/reference/os-dependency-graph.yaml`_
-_Last sync: 2026-02-26_
+_Last sync: 2026-03-16_

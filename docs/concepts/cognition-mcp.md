@@ -235,16 +235,16 @@ Criteria: **F**unctionality (1-5), **D**epth (1-5), **U**tility (1-5)
 
 ---
 
-## Integration with /plan Command
+## Integration with /requirements Command
 
-The `/plan` command supports cognition-mcp analysis **before** discovery questions. This produces smarter, context-aware requirements.
+The `/requirements` command supports cognition-mcp analysis **before** discovery questions. This produces smarter, context-aware requirements.
 
 ### Single Operation Flags
 
 ```bash
-/plan --visual Add onboarding wizard      # UI reasoning
-/plan --systems Migrate database          # Architecture mapping
-/plan --debug Fix checkout failures       # Root cause analysis
+/requirements --visual Add onboarding wizard      # UI reasoning
+/requirements --systems Migrate database          # Architecture mapping
+/requirements --debug Fix checkout failures       # Root cause analysis
 ```
 
 ### Full Pipeline: --problem-solve
@@ -252,8 +252,8 @@ The `/plan` command supports cognition-mcp analysis **before** discovery questio
 The `--problem-solve` flag runs the **complete 8-step pipeline** adapted for requirements planning:
 
 ```bash
-/plan --problem-solve Implement real-time collaboration
-/plan -complex --problem-solve Migrate from REST to GraphQL
+/requirements --problem-solve Implement real-time collaboration
+/requirements -complex --problem-solve Migrate from REST to GraphQL
 ```
 
 **Problem-Solve Planning Pipeline:**
@@ -268,7 +268,7 @@ The `--problem-solve` flag runs the **complete 8-step pipeline** adapted for req
 
 **When to use:** Database migrations, auth systems, multi-service integrations, major refactors, high-risk production changes.
 
-See `commands/plan.md` Section 0.2 for full pipeline specification.
+See `commands/requirements.md` Section 0.2 for full pipeline specification.
 
 ---
 
@@ -944,10 +944,9 @@ Follow-up questions are included in the auto-persisted markdown file under a "Fo
 ## See Also
 
 - [Pipeline Model](pipeline-model.md) - How cognition integrates with pipelines
-- [Self-Improvement](self-improvement.md) - Agent learning and reflexion
 - [Response Awareness](response-awareness.md) - RA tagging for assumptions
 - [Cognition Quick Reference](../../quick-reference/cognition.md) - Using cognition via /think
 
 ---
 
-_Version: OS 6.4 | Last updated: 2026-02-26_
+_Version: OS 7.0 | Last updated: 2026-02-26_

@@ -3,7 +3,7 @@ name: impact-analyzer
 description: Predicts change impact across React Native/Expo codebase through dependency analysis. Identifies affected components, screens, and tests. Recommends testing scope and highlights high-risk changes.
 tools: Read, Grep, Bash
 
-# OS 6.3 Constraint Framework
+# OS 7.0 Constraint Framework
 required_context:
   - query_context: "MANDATORY - Must call ProjectContextServer.query_context() (domain: expo) before analyzing impact"
   - context_bundle: "Use ContextBundle.relevantFiles to map dependencies and affected components"
@@ -32,15 +32,6 @@ scope_boundaries:
 # Impact Analyzer - Change Impact Prediction & Risk Assessment
 
 You predict the ripple effects of code changes across the codebase through dependency analysis and risk assessment.
-
----
-
-## Knowledge Loading
-
-Before starting any task:
-1. Check if `.claude/agent-knowledge/impact-analyzer/patterns.json` exists
-2. If exists, read and apply relevant patterns to your work
-3. Track which patterns you apply during this task
 
 ---
 

@@ -119,4 +119,16 @@ export function buildResponse(content, args, session, storeType, status, exportP
         ],
     };
 }
+/**
+ * Build a StoredEntry from validated content and args.
+ * Centralizes entry construction so tokenEstimate is included automatically.
+ */
+export function buildEntry(content, args) {
+    return {
+        content,
+        quality: args.quality,
+        timestamp: Date.now(),
+        ...(args.tokenEstimate !== undefined ? { tokenEstimate: args.tokenEstimate } : {}),
+    };
+}
 //# sourceMappingURL=shared.js.map

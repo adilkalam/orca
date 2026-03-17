@@ -35,6 +35,7 @@ export async function handleNotebookExport(args, session) {
         content: exportContent, // UNCHANGED
         quality: args.quality, // UNCHANGED
         timestamp: Date.now(),
+        ...(args.tokenEstimate !== undefined ? { tokenEstimate: args.tokenEstimate } : {}),
     };
     // 3. PERSIST to filesystem
     await manager.addEntry(session, 'notebookExport', entry);

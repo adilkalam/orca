@@ -1,8 +1,8 @@
 # Complexity Routing - Four-Tier Structure
 
-**Version:** OS 6.4 | **Last Updated:** 2026-02-26
+**Version:** OS 7.0 | **Last Updated:** 2026-02-26
 
-OS 6.4 uses **four-tier routing** to optimize for speed while maintaining quality gates.
+OS 7.0 uses **four-tier routing** to optimize for speed while maintaining quality gates.
 
 ## Four-Tier Routing Table
 
@@ -166,7 +166,7 @@ Complex tasks are blocked without a requirements spec:
  BLOCKED: Complex task requires a spec.
 
 Run first:
-  /plan "description of the feature"
+  /requirements "description of the feature"
 
 Then return with:
   /ios "implement requirement <id>"
@@ -174,7 +174,7 @@ Then return with:
 
 Specs live at: `.claude/requirements/<id>/06-requirements-spec.md`
 
-Created by `/plan`, consumed by domain orchestrators.
+Created by `/requirements`, consumed by domain orchestrators.
 
 ## Routing Flow
 
@@ -199,7 +199,7 @@ Parse Arguments
                 
                  Has spec? → Grand-Architect (full pipeline)
                 
-                 No spec? → BLOCKED (run /plan first)
+                 No spec? → BLOCKED (run /requirements first)
 ```
 
 ## Light Orchestrators

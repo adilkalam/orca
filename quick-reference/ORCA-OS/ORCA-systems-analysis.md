@@ -1,6 +1,7 @@
-# ORCA-OS v6.4 Systems Analysis
+# ORCA-OS Systems Analysis
 
-**Generated:** 2026-02-26
+**Generated:** 2026-03-02
+**Version:** OS 7.0
 **Source of Truth:** `docs/reference/os-dependency-graph.yaml`
 
 ---
@@ -11,13 +12,13 @@ ORCA-OS is a Claude Code configuration system that deploys to `~/.claude`. It co
 
 | Layer | Count | Purpose |
 |-------|-------|---------|
-| Commands | 37 | User entry points |
+| Commands | 36 | User entry points |
 | Agents | 131 | Workers across 14 domains |
 | Pipelines | 15 | Workflow documentation |
-| Phase Configs | 12 | Machine-readable definitions |
-| MCPs | 12 | 6 global + project-scoped + SEO (Ahrefs, GA4, GSC) |
-| Skills | 41 | Knowledge packages |
-| Hooks | 9 | Lifecycle scripts |
+| Phase Configs | 13 | Machine-readable definitions |
+| MCPs | 6 global + project-scoped | Core infra + domain-specific |
+| Skills | 40 | Knowledge packages |
+| Hooks | 7 | Lifecycle scripts |
 | Memory | 3-layer | Persistent context |
 | Cognition | 49 ops | Structured reasoning, substrate observation, and recording |
 
@@ -31,52 +32,11 @@ User entry points invoked via `/command`.
 
 | Category | Count | Commands |
 |----------|-------|----------|
-| Lane Orchestrators | 12 | `/ios`, `/nextjs`, `/django-react`, `/expo`, `/research`, `/seo`, `/typography`, `/rvry`, `/shopify`, `/orca-os-dev`, `/orca`, `/orca-pipeline` |
-| Planning & Audit | 2 | `/plan`, `/audit` |
-| Reasoning | 5 | `/think`, `/contemplate`, `/challenge`, `/deepthink`, `/problem-solve` |
-| Utility | 15 | `/enhance`, `/root-cause`, `/design-dna`, `/design-review`, `/design`, `/illustrate`, `/clone-website`, `/session-save`, `/session-resume`, `/continue`, `/orca-status`, `/project-memory`, `/project-code`, `/reflect`, `/self-improve`, `/memory-search`, `/project-setup` |
-
-### Four-Tier Routing
-
-All lane commands support four execution modes. This is the central routing mechanism of OS 6.4.
-
-| Mode | Flag | Path | Gates | Use Case |
-|------|------|------|-------|----------|
-| **Light** | `--light` | Light orchestrator | YES | Confident users, skip confirmation |
-| **Default** | (none) | Light + Confirmation | YES | Most work -- fast with quality |
-| **Tweak** | `-tweak` | Builder direct | NO | Speed iteration, user verifies |
-| **Complex** | `--complex` | Full pipeline | YES | Architecture, multi-file, specs |
-
-Key inversion from earlier versions: Default mode now runs gates. Tweak is the explicit opt-out.
-
-Complex mode requires a requirements spec (created by `/plan`). If one does not exist, the pipeline blocks and directs the user to run `/plan` first.
-
----
-
-## Layer 2: Agents (131)
-
-Workers organized by domain with strict role boundaries.
-
-### Domain Breakdown
-
-| Domain | Count | Directory | Key Agents |
-|--------|-------|-----------|------------|
-| iOS | 19 | `agents/iOS/` | ios-grand-architect, ios-builder, ios-swiftui-specialist, ios-verification |
-| Next.js | 15 | `agents/nextjs/` | nextjs-grand-architect, nextjs-builder, nextjs-css-specialist, nextjs-design-reviewer |
-| Django-React | 13 | `agents/django-react/` | django-react-grand-architect, django-master, react-typescript-wizard, api-contract-specialist |
-| Expo | 12 | `agents/expo/` | expo-grand-orchestrator, expo-builder-agent, bundle-assassin, impact-analyzer |
-| Dev (cross-cutting) | 12 | `agents/dev/` | a11y-enforcer, design-system-architect, security-specialist, performance-enforcer |
-| OS-Dev | 6 | `agents/os-dev/` | os-dev-grand-architect, os-dev-builder, os-dev-standards-enforcer |
-| Orca-Pipeline | 5 | `agents/os-dev/` | orca-pipeline-orchestrator, orca-pipeline-researcher, orca-pipeline-generator |
-| Audit | 8 | `agents/audit/` | audit-structure-specialist, audit-security-specialist, audit-architecture-specialist |
-| Shopify | 8 | `agents/shopify/` | shopify-grand-architect, shopify-liquid-specialist, shopify-section-builder |
 | Research | 7 | `agents/research/` | research-web-search-subagent, research-answer-writer, research-fact-checker |
 | RVRY | 7 | `agents/rvry/` | rvry-grand-architect, rvry-engine-builder, rvry-web-builder, rvry-protocol-gate |
 | Typography | 6 | `agents/typography/` | typography-orchestrator, glyph-editor, ttf-exporter, path-guardian |
 | SEO | 5 | `agents/seo/` | seo-research-specialist, seo-brief-strategist, seo-draft-writer, seo-optimizer |
-| KG | 4 | `agents/kg/` | kg-lead-agent, kg-query-subagent, kg-mechanism-subagent, kg-answer-writer |
-| Data | 4 | `agents/data/` | data-researcher, python-analytics-expert, competitive-analyst |
-| **TOTAL** | **131** | **14 dirs** | |
+| **TOTAL** | **119** | **12 dirs** | |
 
 Note: OS-Dev (6) and Orca-Pipeline (5) share the `agents/os-dev/` directory, totaling 11 agents there.
 
@@ -107,7 +67,7 @@ Grand-Architect (coordination, NEVER writes code)
 
 ---
 
-## Layer 3: Pipelines (14)
+## Layer 3: Pipelines (15)
 
 Workflow documentation in `docs/pipelines/`.
 
@@ -141,11 +101,11 @@ State persisted to `.claude/orchestration/phase_state.json` for resumption acros
 
 ---
 
-## Layer 4: Phase Configs (12)
+## Layer 4: Phase Configs (13)
 
 Machine-readable YAML definitions in `docs/reference/phase-configs/`.
 
-One phase config per lane: ios, nextjs, django-react, expo, research, seo, data, os-dev, orca-pipeline, audit, requirements, typography.
+One phase config per lane: ios, nextjs, django-react, expo, research, seo, rvry, data, os-dev, orca-pipeline, audit, requirements, typography.
 
 ### Structure
 
@@ -189,52 +149,54 @@ specialist_triggers:
 
 ---
 
-## Layer 5: MCPs (10)
+## Layer 5: MCPs
 
-Model Context Protocol integrations. Project-scoped by default to minimize token bloat.
+Model Context Protocol integrations. Global MCPs are always available; project-scoped MCPs minimize token bloat.
 
-### Global MCPs (4)
+### Global MCPs (6)
 
-Always available in `~/.claude.json`:
+Always available in `~/.claude.json` (user-scoped):
 
 | MCP | Purpose | Key Tools |
 |-----|---------|-----------|
 | cognition-mcp | Sequential thinking storage with 49 operations (incl. 7 recording ops + blind_orchestrate) | `cognition` (accept-store-echo pattern) |
 | project-context | Project context + ORCA-Mem recall | `query_context`, `save_decision`, `save_standard`, `save_task_history`, `index_project`, `reanalyze_project`, `recall` (7 tools) |
+| crawl4ai | Web content extraction (SSE, Docker) | `md`, `crawl`, `html`, `screenshot`, `pdf`, `execute_js`, `ask` |
 | sequential-thinking | Extended multi-step reasoning | `sequentialthinking` |
+| chrome-devtools | Browser automation and visual QA (headless, isolated) | `navigate_page`, `take_screenshot`, `click`, `fill`, etc. |
 | context7 | Library documentation (disabled by default) | `resolve-library-id`, `get-library-docs` |
 
-### Project-Scoped MCPs (6)
+### Project-Scoped MCPs
 
 Defined in project `.mcp.json`, enabled via `enabledMcpjsonServers` in `~/.claude.json`:
 
 | MCP | Lanes | Type |
 |-----|-------|------|
 | XcodeBuildMCP | iOS | stdio/npx |
-| chrome-devtools | Next.js | stdio/npx |
-| puppeteer | Next.js | stdio/node |
-| crawl4ai | Research, SEO | SSE (requires manual server start) |
 | ahrefs | SEO | stdio/npx |
+| analytics-mcp | SEO (audit) | pipx |
+| mcp-gsc | SEO (audit) | stdio/npx |
 | adb-mcp | (project-specific) | stdio (requires UXP plugin + proxy) |
-
-Additionally, openscad-mcp exists as an experimental integration with no dedicated lane.
+| bambu-3mf | 3D Printing | stdio/node |
+| openscad-mcp | 3D Rendering (experimental) | stdio/uv |
+| mcp-send-email | Email | stdio/npx |
 
 ### Lane-MCP Matrix
 
 | Lane | MCPs Required |
 |------|---------------|
 | iOS | XcodeBuildMCP |
-| Next.js | chrome-devtools, puppeteer |
-| SEO | ahrefs, crawl4ai |
+| Next.js | chrome-devtools |
+| SEO | ahrefs, crawl4ai, analytics-mcp (audit), mcp-gsc (audit) |
 | Research | crawl4ai |
 | Audit | cognition-mcp (global) |
 | All others | (none beyond globals) |
 
 ---
 
-## Layer 6: Skills (41)
+## Layer 6: Skills (40)
 
-Knowledge packages that agents reference. 41 directories exist in `skills/`.
+Knowledge packages that agents reference. 40 directories exist in `skills/`.
 
 ### Universal Skills (5)
 
@@ -271,14 +233,13 @@ article-extractor, youtube-transcript, pg-style-editor, elements-of-style, ship-
 
 ---
 
-## Layer 7: Hooks (9)
+## Layer 7: Hooks (7)
 
 Lifecycle scripts in `hooks/`.
 
 | Hook | Trigger | Purpose |
 |------|---------|---------|
 | session-start.sh | SessionStart | Load context, Workshop summary, active task |
-| session-end.sh | SessionEnd | Extract learnings from JSONL transcripts via Ollama |
 | auto-deploy.sh | PostToolUse (Edit/Write) | Sync ORCA-OS to ~/.claude |
 | file-location-guard.sh | PostToolUse (*) | Enforce .claude/ for artifacts |
 | gate-enforcement.sh | PreToolUse (Write/Edit) | Enforce quality thresholds |
@@ -316,7 +277,7 @@ Three-layer memory system feeding into ProjectContext MCP.
 | code-index.db | .claude/memory/code-index.db | `python3 ~/.claude/scripts/code-index.py <cmd>` |
 | project-meta | MCP cache | ProjectContext MCP auto-detection |
 
-### ProjectContext Implementation (OS 6.4)
+### ProjectContext Implementation (OS 7.0)
 
 The MCP uses a hybrid approach:
 - **Reads:** Direct SQLite queries via `better-sqlite3` (reliable, no CLI parsing)
@@ -334,12 +295,13 @@ Large tool outputs are truncated intelligently by the `post-tool-use.sh` hook:
 
 ### Local LLM Stack (Ollama)
 
-Both memory systems use Ollama running on port 11434:
+code-index.db uses Ollama running on port 11434 for embeddings:
 
 | Component | Model | Purpose |
 |-----------|-------|---------|
 | code-index.db | `nomic-embed-text` | Code embeddings for semantic search |
-| Workshop | `mistral` | Quality extraction from session transcripts |
+
+Workshop uses heuristic parsing for session extraction -- no LLM dependency.
 
 ---
 
@@ -413,7 +375,7 @@ Templates live at `quick-reference/thinking-models/*.md`.
 
 ## Verification System
 
-OS 6.4 uses graduated gate scoring, not binary pass/fail.
+OS 7.0 uses graduated gate scoring, not binary pass/fail.
 
 ### Graduated Gate Labels
 
@@ -455,9 +417,9 @@ Every pipeline follows:
 | expo-standards-enforcer | Expo | Standards |
 | django-react-standards-enforcer | Django-React | Standards |
 | os-dev-standards-enforcer | OS-Dev | Standards |
-| design-dna-guardian | iOS | Design system |
+| design-dna-guardian | Cross-cutting | Design system |
 
-All 8 gate agents implement Reflexion-on-failure and emit to the Improvement Bus.
+All 8 gate agents implement Reflexion-on-failure and store lessons via Workshop save_standard.
 
 ---
 
@@ -488,28 +450,25 @@ Gate agents check RA status from implementation phases and factor unresolved ass
 
 ## Self-Improvement System
 
-OS 6.4 provides learning at three levels, unified by the Improvement Bus.
+OS 7.0 provides learning at two levels, unified by Workshop memory.
 
-### Three Levels
+### Two Levels
 
 | Level | Mechanism | Storage | Trigger |
 |-------|-----------|---------|---------|
-| Agent-level | Pattern tracking per agent | `.claude/agent-knowledge/*/patterns.json` | Task completion |
-| Pipeline-level | Improvement loop | task_history -> patterns -> proposals -> agent defs | `/audit`, `/self-improve` |
-| Conversation-level | Transcript analysis | `/reflect` -> CLAUDE.md rules + Workshop preferences | `/reflect` |
+| Agent-level | Workshop standards per agent | Workshop gotchas + save_standard | Task completion |
+| Pipeline-level | Standards loop | gate failure -> save_standard -> query_context -> orchestrator injection | `/audit`, `/self-improve` |
 
-### Improvement Bus
+### Workshop Memory Loop
 
-All improvement sources write to `.claude/improvement-events/improvement_event.jsonl`:
+All improvement sources feed back through Workshop memory:
 
 ```
-Sources                    Improvement Bus              Sinks
+Sources                    Workshop Memory              Sinks
 -------                    ---------------              -----
-Reflexion (gates)    -->                          -->  Agent patterns
-CoVe failures        -->   improvement_event.jsonl -->  CLAUDE.md rules
-/reflect rules       -->          |               -->  Workshop standards
-/audit proposals     -->          v               -->  Gate checklists
-Agent discoveries    -->   /self-improve          -->  phase_state constraints
+Reflexion (gates)    -->   save_standard            -->  Orchestrator constraints
+CoVe failures        -->   Workshop gotchas         -->  Gate checklists
+/audit proposals     -->   query_context retrieval   -->  Builder context
 ```
 
 ### Reflexion-as-Constraint
@@ -518,15 +477,15 @@ Gate failure reflexions are synthesized into constraint bullets and injected int
 
 ### CoVe Question Mining
 
-Verification questions that fail 2+ times become mandatory checks in `.claude/agent-knowledge/{agent}/mandatory_checks.json`. Future verification runs load these automatically.
+Verification questions that fail 2+ times are stored as Workshop gotchas. Future verification runs retrieve these via query_context.
 
-### Agent Pattern Lifecycle
+### Learning Lifecycle
 
-1. **Discovery**: Agent finds effective pattern during task
-2. **Candidate**: Added with `status: "candidate"`, `successCount: 1`
-3. **Tracking**: Success/failure counts updated each use
-4. **Promotion**: When `successRate >= 0.85` AND `successCount >= 10`, status becomes `"promoted"`
-5. **Deprecation**: If success rate drops below 0.5, flagged for review
+1. **Discovery**: Gate agent identifies failure pattern during verification
+2. **Storage**: Reflexion stored as Workshop gotcha via save_standard
+3. **Retrieval**: Next orchestrator run calls query_context, gets relatedStandards
+4. **Injection**: Standard injected as constraint in builder prompt
+5. **Reinforcement**: Repeated failures strengthen the pattern in Workshop memory
 
 ---
 
@@ -609,10 +568,10 @@ CLI: `orca-record` v0.4.0 (7 commands: 5 hook + 2 user). Git shadow branch layer
 ### 1. Reflexion Loop
 
 ```
-Gate failure -> Workshop gotcha -> Improvement Bus -> agent patterns.json -> improved gate checks
+Gate failure -> Workshop gotcha -> save_standard -> query_context -> orchestrator constraints
 ```
 
-Gates that score WARN/ERROR/BLOCK generate verbal reflections, store them in Workshop, and emit events to the Improvement Bus. When `/self-improve` runs, these become agent patterns or constraint injections.
+Gates that score WARN/ERROR/BLOCK generate verbal reflections, store them in Workshop via save_standard. On subsequent runs, query_context retrieves these as relatedStandards for orchestrator injection.
 
 ### 2. Context Loop
 
@@ -633,7 +592,7 @@ The PostToolUse hook detects edits to deployable directories and syncs to `~/.cl
 ### 4. CoVe Accumulation Loop
 
 ```
-CoVe question fails -> Improvement Bus event -> /self-improve -> mandatory_checks.json -> future CoVe runs include it
+CoVe question fails -> Workshop gotcha -> query_context retrieval -> future CoVe runs include it
 ```
 
 Verification questions that repeatedly fail become permanent mandatory checks, turning CoVe from a one-time check into a cumulative verification system.
@@ -656,7 +615,7 @@ Cognitive analysis persists as files on disk. When the context window compacts, 
 4. **Graduated scoring**: >=90 PASS, 80-89 WARN, 70-79 ERROR, <70 BLOCK
 5. **Context mandatory**: All agents call ProjectContext MCP first
 6. **State preserved**: phase_state.json enables resumption across sessions
-7. **All Opus 4.6**: Default model across all 131 agents, never specified
+7. **All Opus 4.6**: Default model across all 100 agents, never specified
 8. **Four-tier routing**: --light (fast, no confirmation) / default (fast+gates) / -tweak (builder direct) / --complex (full pipeline)
 9. **User approval required**: Agents never auto-modify; improvements need explicit approval
 
@@ -690,12 +649,10 @@ Cognitive analysis persists as files on disk. When the context window compacts, 
     temp/                   # Working files (clean up after)
   requirements/             # Planning outputs
   cognition/                # Cognitive analysis persistence
-  improvement-events/       # Improvement Bus event log
-  agent-knowledge/          # Per-agent pattern files
   audit/                    # Audit reports and index
 ```
 
 ---
 
 _Source of truth: `docs/reference/os-dependency-graph.yaml`_
-_Version: OS 6.4 | Generated: 2026-02-26_
+_Version: OS 7.0 | Generated: 2026-03-02_

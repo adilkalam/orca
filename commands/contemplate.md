@@ -1,9 +1,12 @@
 ---
 description: Reasoning strategist - recommends which thinking tools (Clear Thought, Sequential) to use and in what sequence for complex problems.
 argument-hint: <problem or scenario to reason through>
+allowed-tools:
+  - mcp__cognition-mcp__cognition
+  - Bash
 ---
 
-# /contemplate - Reasoning Strategy Advisor
+# /contemplate-local - Reasoning Strategy Advisor
 
 **YOUR ROLE**: Analyze the user's problem and recommend a reasoning strategy using available thinking tools. Uses `orchestration_suggest` internally, then formats the output for humans.
 
@@ -16,13 +19,13 @@ argument-hint: <problem or scenario to reason through>
 Display this reference and stop:
 
 ```
-/contemplate - Reasoning Strategy Advisor
+/contemplate-local - Reasoning Strategy Advisor
 
 Analyzes your problem and recommends which thinking tools to use.
 
 USAGE:
-  /contemplate <problem or scenario>
-  /contemplate --help
+  /contemplate-local <problem or scenario>
+  /contemplate-local --help
 
 HOW IT WORKS:
   1. Classifies your problem (type, complexity)
@@ -30,10 +33,10 @@ HOW IT WORKS:
   3. Formats output with ready-to-copy commands
 
 EXAMPLES:
-  /contemplate Should we use microservices or monolith?
-  /contemplate How do I debug this intermittent failure?
-  /contemplate Plan migration from Expo to Swift iOS
-  /contemplate Optimize our CI/CD pipeline
+  /contemplate-local Should we use microservices or monolith?
+  /contemplate-local How do I debug this intermittent failure?
+  /contemplate-local Plan migration from Expo to Swift iOS
+  /contemplate-local Optimize our CI/CD pipeline
 ```
 
 ---
@@ -74,7 +77,7 @@ Before proceeding to Phase 1, output:
 **Problem Type Detected:** [TYPE]
 **Rationale:** [Why this classification based on detected keywords/patterns]
 **Primary Technique:** [From routing table]
-**Maps to:** /think --[flag] or /problem-solve --[variant]
+**Maps to:** /think-local --[flag] or /problem-solve --[variant]
 ```
 
 ---
@@ -104,7 +107,7 @@ Note which apply:
 
 ## Phase 2: Call orchestration_suggest
 
-**Verbose flag**: Include `verbose: true` in the cognition MCP call. Since /contemplate is a single orchestration call, the echo IS the output.
+**Verbose flag**: Include `verbose: true` in the cognition MCP call. Since /contemplate-local is a single orchestration call, the echo IS the output.
 
 Call `mcp__cognition-mcp__cognition` with operation `orchestration_suggest`:
 
@@ -159,7 +162,7 @@ Transform the orchestration_suggest response into human-readable format:
 Based on problem type **[TYPE]**, the primary technique is **[TECHNIQUE]**.
 
 This maps to:
-- /think --[flag]: [specific prompt based on problem type]
+- /think-local --[flag]: [specific prompt based on problem type]
 
 OR for complex problems:
 - /problem-solve --[variant]: [specific prompt]
@@ -170,12 +173,12 @@ OR for complex problems:
 
 **Phase 1: [Operation Name]** - [Reason from suggestedOperations]
 ```
-/think --[flag] [Generate a specific, ready-to-use prompt for this phase]
+/think-local --[flag] [Generate a specific, ready-to-use prompt for this phase]
 ```
 
 **Phase 2: [Operation Name]** - [Reason]
 ```
-/think --[flag] [Specific prompt]
+/think-local --[flag] [Specific prompt]
 ```
 
 [Continue for all suggested operations]
@@ -192,7 +195,7 @@ OR for complex problems:
 
 Copy this to begin:
 ```
-/think --[first flag] [First prompt]
+/think-local --[first flag] [First prompt]
 ```
 
 ---
@@ -239,7 +242,7 @@ When generating prompts, map operations to flags:
 
 ## Example Flow
 
-**Input**: `/contemplate Should we rewrite our auth system or incrementally improve it?`
+**Input**: `/contemplate-local Should we rewrite our auth system or incrementally improve it?`
 
 **Step 1**: Classify as Architecture/Design, complexity: complex
 
@@ -279,27 +282,27 @@ When generating prompts, map operations to flags:
 
 **Phase 1: Systems Mapping** - Map current auth architecture
 ```
-/think --systems "Our auth system: components, dependencies, pain points, and integration touchpoints"
+/think-local --systems "Our auth system: components, dependencies, pain points, and integration touchpoints"
 ```
 
 **Phase 2: Risk Identification** - Identify failure modes via pre-mortem
 ```
-/think --model pre-mortem "The auth rewrite failed after 6 months. What went wrong?"
+/think-local --model pre-mortem "The auth rewrite failed after 6 months. What went wrong?"
 ```
 
 **Phase 3: Option Exploration** - Explore rewrite vs incremental options
 ```
-/think --tree "Auth improvement options: full rewrite, incremental refactor, third-party replacement, modular extraction"
+/think-local --tree "Auth improvement options: full rewrite, incremental refactor, third-party replacement, modular extraction"
 ```
 
 **Phase 4: Decision Framework** - Evaluate options against criteria
 ```
-/think --decide "Auth strategy: full rewrite vs incremental improvement vs third-party"
+/think-local --decide "Auth strategy: full rewrite vs incremental improvement vs third-party"
 ```
 
 **Phase 5: Commitment Protocol** - High-stakes commitment needs safeguards
 ```
-/think --ulysses "Committing to [chosen auth strategy] with safeguards"
+/think-local --ulysses "Committing to [chosen auth strategy] with safeguards"
 ```
 
 ---
@@ -307,7 +310,7 @@ When generating prompts, map operations to flags:
 ### Alternative Approaches
 
 If there's active security pressure, consider:
-- Start with `/think --ooda` for rapid response, then return to full analysis
+- Start with `/think-local --ooda` for rapid response, then return to full analysis
 
 ---
 
@@ -315,7 +318,7 @@ If there's active security pressure, consider:
 
 Copy this to begin:
 ```
-/think --systems "Our auth system: components, dependencies, pain points, and integration touchpoints"
+/think-local --systems "Our auth system: components, dependencies, pain points, and integration touchpoints"
 ```
 
 ---
@@ -351,16 +354,18 @@ After completing the analysis, append to daily log.
 ### Step 1: Create Cognition Directory
 
 ```bash
-mkdir -p .claude/cognition
+mkdir -p "$PWD/.claude/cognition"
 ```
+
+NOTE: This is the PROJECT's `.claude/`, NOT `~/.claude/`. Always use $PWD to ensure project-local path.
 
 ### Step 2: Append to Daily Log
 
-Append entry to `.claude/cognition/YYYYMMDD-daily.md`:
+Append entry to `$PWD/.claude/cognition/YYYYMMDD-daily.md`:
 
 ```markdown
 ---
-### [HH:MM] /contemplate - [Topic slug]
+### [HH:MM] /contemplate-local - [Topic slug]
 Session: <sessionId>
 
 [1-2 sentence summary of the recommended strategy]
@@ -371,7 +376,7 @@ Session: <sessionId>
 
 ```bash
 workshop --workspace .claude/memory note \
-  "/contemplate: [Topic] - [Recommended approach]. Session: <sessionId>" \
+  "/contemplate-local: [Topic] - [Recommended approach]. Session: <sessionId>" \
   -t contemplate -t cognition
 ```
 

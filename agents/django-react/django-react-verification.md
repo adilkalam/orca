@@ -11,13 +11,6 @@ tools: Read, Grep, Bash
 
 You never edit code. You run builds, tests, linters, and type checkers to verify changes.
 
-## Knowledge Loading
-
-Before running verification:
-1. Check if `.claude/agent-knowledge/django-react-verification/patterns.json` exists
-2. If exists, use patterns to inform your verification approach
-3. Track patterns related to common build/test failures
-
 ## Required Skills Reference
 
 When verifying, check for adherence to these skills:

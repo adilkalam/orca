@@ -1,31 +1,31 @@
 # Requirements Domain Pipeline
 
-**Status:** OS 6.4 Core Requirements Pipeline
+**Status:** OS 7.0 Core Requirements Pipeline
 **Last Updated:** 2026-02-13
 
 ## Overview
 
 The requirements pipeline turns fuzzy feature requests into **structured, code-aware specs** before any heavy implementation. It combines:
 
-- OS 6.4 primitives (ProjectContextServer, phase_state.json, code-index.db, Workshop)
+- OS 7.0 primitives (ProjectContextServer, phase_state.json, code-index.db, Workshop)
 - The Claude Requirements Builder workflow (00–06 docs)
 - Response Awareness tags for metacognitive tracking
 - **Four-tier planning depth** matching `/orca-*` execution tiers
 
 Output: a durable `06-requirements-spec.md` that upstreams into `/orca` domain pipelines.
 
-## Role in OS 6.4
+## Role in OS 7.0
 
 **The requirements pipeline is NOT a separate execution path.** It is:
 
-1. **Implemented by `/plan`** - The `/plan` command creates requirements specs
+1. **Implemented by `/requirements`** - The `/requirements` command creates requirements specs
 2. **Consumed by domain orchestrators** - `/orca-{domain}` commands read specs
 3. **Required for complex tasks** - Spec gating blocks complex work without specs
 
 ### When Requirements Are Created
 
-- **User runs `/plan <description>`** → Creates `.claude/requirements/<id>/06-requirements-spec.md`
-- **Complex task detected by `/orca-{domain}`** → User prompted to run `/plan` first
+- **User runs `/requirements <description>`** → Creates `.claude/requirements/<id>/06-requirements-spec.md`
+- **Complex task detected by `/orca-{domain}`** → User prompted to run `/requirements` first
 
 ### When Requirements Are Consumed
 
@@ -33,9 +33,9 @@ Output: a durable `06-requirements-spec.md` that upstreams into `/orca` domain p
 - **Architects** (nextjs-architect, expo-architect-agent, ios-architect) read spec first
 - **Spec is authoritative** - constraints and acceptance criteria override analysis
 
-### Four-Tier Planning Depth (OS 6.4)
+### Four-Tier Planning Depth (OS 7.0)
 
-`/plan` supports four planning depths:
+`/requirements` supports four planning depths:
 
 | Flag | Planning Depth | Phases Used | Output | Stance |
 |------|----------------|-------------|--------|--------|
@@ -51,16 +51,16 @@ Output: a durable `06-requirements-spec.md` that upstreams into `/orca` domain p
 
 **Explore tier (tentative):** Does NOT pass through to execution. User must explicitly convert via `--from-brief`:
 - `--explore` -> Exploration brief (tentative) -> User reviews Go/No-Go criteria
-- `/plan --from-brief <path>` -> Committed spec -> Then domain execution
+- `/requirements --from-brief <path>` -> Committed spec -> Then domain execution
 
-**Auto-detection:** If no flag is provided, `/plan` analyzes the task and recommends a tier. User can override.
+**Auto-detection:** If no flag is provided, `/requirements` analyzes the task and recommends a tier. User can override.
 
 ### Divergent vs Convergent Workflows
 
 ```
 DIVERGENT (--explore)                    CONVERGENT (default/tweak/complex)
 -----------------------                  ----------------------------------
-/plan --explore "idea"                   /plan "feature"
+/requirements --explore "idea"                   /requirements "feature"
         |                                        |
         v                                        v
   Full deepthink exploration              Discovery questions (5)
@@ -82,20 +82,20 @@ DIVERGENT (--explore)                    CONVERGENT (default/tweak/complex)
   Proceed  Abandon
      |
      v
-  /plan --from-brief <path>
+  /requirements --from-brief <path>
      |
      v
   06-requirements-spec.md
   (now COMMITTED)
 ```
 
-### Complexity Gating (OS 6.4)
+### Complexity Gating (OS 7.0)
 
 | Complexity | Spec Required | Behavior |
 |------------|---------------|----------|
 | Simple | No | Direct to light orchestrator |
 | Medium | Recommended | Full pipeline, spec helpful |
-| Complex | **Required** | BLOCKED until `/plan` creates spec |
+| Complex | **Required** | BLOCKED until `/requirements` creates spec |
 
 ---
 

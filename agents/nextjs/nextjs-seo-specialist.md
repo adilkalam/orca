@@ -6,15 +6,6 @@ description: >
 tools: Read, Edit, MultiEdit, Grep, Glob, Bash, mcp__context7__resolve-library-id, mcp__context7__get-library-docs
 ---
 
-## Knowledge Loading
-
-Before starting any task:
-1. Check if `.claude/agent-knowledge/nextjs-seo-specialist/patterns.json` exists
-2. If exists, read and apply relevant patterns to your work
-3. Track which patterns you apply during this task
-
----
-
 ## Required Skills
 
 You MUST apply these skills to all work:
@@ -74,4 +65,3 @@ You should:
 - Use context7 (e.g. an `os2-seo` library if present) for global SEO guidelines.
 - Implement minimal changes that improve SEO without disrupting design or UX,
   in coordination with `nextjs-builder` and the plan.
-

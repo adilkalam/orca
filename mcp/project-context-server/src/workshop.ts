@@ -23,6 +23,7 @@ const DEFAULT_DECAY_CONFIG: DecayConfig = {
   enabled: false,
   halfLifeDays: 90,
   minimumScore: 0.01,
+  maxEntries: 500,
 };
 
 /**
@@ -177,6 +178,109 @@ export class WorkshopClient {
     }
   }
 
+  private writeDatabase(): Database.Database | null {
+    const dbPath = this.getDbPath();
+    if (!existsSync(dbPath)) {
+      console.error(`[WorkshopClient] Database not found: ${dbPath}`);
+      return null;
+    }
+    try {
+      return new Database(dbPath, { fileMustExist: true });
+    } catch (error: any) {
+      console.error(`[WorkshopClient] Failed to open database (rw): ${error.message}`);
+      return null;
+    }
+  }
+
+  /**
+   * Auto-pin preference and antipattern entries that lack pinned metadata.
+   * Called before prune() evaluates entries, so pinned entries survive pruning.
+   */
+  async pinRecentEntries(): Promise<void> {
+    const db = this.writeDatabase();
+    if (!db) return;
+
+    try {
+      // Find preference/antipattern entries without pinned metadata
+      const rows = db.prepare(
+        "SELECT id, entry_metadata FROM entries WHERE type IN ('preference', 'antipattern')"
+      ).all() as { id: string; entry_metadata: string | null }[];
+
+      const updateStmt = db.prepare('UPDATE entries SET entry_metadata = ? WHERE id = ?');
+
+      for (const row of rows) {
+        let metadata: Record<string, unknown> = {};
+        if (row.entry_metadata) {
+          try { metadata = JSON.parse(row.entry_metadata); } catch {}
+        }
+        if (metadata.pinned === true) continue;
+
+        metadata.pinned = true;
+        updateStmt.run(JSON.stringify(metadata), row.id);
+      }
+    } catch (error: any) {
+      console.error(`[WorkshopClient] pinRecentEntries error: ${error.message}`);
+    } finally {
+      db.close();
+    }
+  }
+
+  /**
+   * Prune lowest-decay unpinned entries when count exceeds maxEntries.
+   * Called after every write operation to enforce retention cap.
+   */
+  async prune(): Promise<void> {
+    // Auto-pin preferences/antipatterns before evaluating for pruning
+    await this.pinRecentEntries();
+
+    const maxEntries = this.decayConfig.maxEntries ?? 500;
+    const db = this.writeDatabase();
+    if (!db) return;
+
+    try {
+      const countRow = db.prepare('SELECT count(*) as cnt FROM entries').get() as { cnt: number };
+      if (countRow.cnt <= maxEntries) return;
+
+      const rows = db.prepare(
+        'SELECT id, timestamp, entry_metadata FROM entries'
+      ).all() as { id: string; timestamp: string; entry_metadata: string | null }[];
+
+      // Score each entry, skip pinned
+      const scored: { id: string; score: number }[] = [];
+      for (const row of rows) {
+        let metadata: any = {};
+        if (row.entry_metadata) {
+          try { metadata = JSON.parse(row.entry_metadata); } catch {}
+        }
+        if (metadata.pinned === true) continue;
+
+        const ts = new Date(row.timestamp);
+        const score = calculateDecay(ts, this.decayConfig);
+        scored.push({ id: row.id, score });
+      }
+
+      // Sort ascending by score (lowest = oldest/least relevant)
+      scored.sort((a, b) => a.score - b.score);
+
+      const toDelete = countRow.cnt - maxEntries;
+      if (toDelete <= 0) return;
+
+      const idsToDelete = scored.slice(0, toDelete).map(s => s.id);
+      if (idsToDelete.length === 0) return;
+
+      const placeholders = idsToDelete.map(() => '?').join(',');
+      db.prepare(`DELETE FROM entries WHERE id IN (${placeholders})`).run(...idsToDelete);
+
+      console.error(
+        `[WorkshopClient] Pruned ${idsToDelete.length} entries (count was ${countRow.cnt}, max is ${maxEntries})`
+      );
+    } catch (error: any) {
+      console.error(`[WorkshopClient] Prune error: ${error.message}`);
+    } finally {
+      db.close();
+    }
+  }
+
   /**
    * Execute workshop command
    */
@@ -213,6 +317,7 @@ export class WorkshopClient {
     await this.runWorkshop(
       `decision "${decisionText}" -r "${decision.reasoning}" ${tagsArg}`
     );
+    await this.prune();
   }
 
   /**
@@ -227,10 +332,11 @@ export class WorkshopClient {
     const gotchaText = `[${standard.domain}] ${standard.rule} (Cost: ${standard.cost}. Cause: ${standard.what_happened})`;
 
     await this.runWorkshop(`gotcha "${gotchaText}" -t "${standard.domain}"`);
+    await this.prune();
   }
 
   /**
-   * Save task history as a note
+   * Save task history as a single merged note
    */
   async saveTaskHistory(task: {
     domain: string;
@@ -240,16 +346,15 @@ export class WorkshopClient {
     files_modified?: string[];
   }): Promise<void> {
     const filesStr = task.files_modified?.join(', ') || 'none';
-    const noteText = `[${task.domain}] Task: ${task.task} | Outcome: ${task.outcome} | Files: ${filesStr}`;
-
-    await this.runWorkshop(`note "${noteText}"`);
-
-    // Save learnings separately if present
+    let noteText = `[${task.domain}] Task: ${task.task} | Outcome: ${task.outcome} | Files: ${filesStr}`;
     if (task.learnings) {
-      await this.runWorkshop(
-        `note "[${task.domain}] Learning: ${task.learnings}"`
-      );
+      noteText += ` | Learning: ${task.learnings}`;
     }
+
+    await this.runWorkshop(
+      `note "${noteText}" -t task-history -t "${task.domain}"`
+    );
+    await this.prune();
   }
 
   /**
@@ -429,18 +534,25 @@ export class WorkshopClient {
         const domainMatch = row.content?.match(/^\[([^\]]+)\]/);
         const domain = domainMatch ? domainMatch[1] : 'unknown';
 
-        // Determine outcome from content
-        const outcomeMatch = row.content?.match(/outcome:\s*(success|failure|partial)/i);
+        // Try new merged format: "[domain] Task: X | Outcome: Y | Files: Z | Learning: W"
+        const taskMatch = row.content?.match(/Task:\s*(.+?)\s*\|/);
+        const outcomeMatch = row.content?.match(/Outcome:\s*(success|failure|partial)/i);
+        const filesMatch = row.content?.match(/Files:\s*(.+?)(?:\s*\|\s*Learning:|$)/);
+        const learningsMatch = row.content?.match(/Learning:\s*(.+?)$/);
+
         const outcome = outcomeMatch ? outcomeMatch[1].toLowerCase() : 'success';
+        const task = taskMatch ? taskMatch[1] : (row.content || '');
+        const filesFromContent = filesMatch ? filesMatch[1].split(',').map((f: string) => f.trim()).filter(Boolean) : [];
+        const learnings = learningsMatch ? learningsMatch[1] : (row.reasoning || '');
 
         return {
           id: row.id,
           timestamp: new Date(row.timestamp),
           domain,
-          task: row.content || '',
+          task,
           outcome: outcome as 'success' | 'failure' | 'partial',
-          files_modified: metadata.files_modified || [],
-          learnings: row.reasoning || '',
+          files_modified: filesFromContent.length > 0 ? filesFromContent : (metadata.files_modified || []),
+          learnings,
           entry_metadata: row.entry_metadata, // Keep for decay processing
         } as TaskHistory & { entry_metadata?: string };
       });

@@ -211,6 +211,14 @@ export const IntimacyMarkersSchema = z.object({
   distanceMaintained: z.boolean(),
 });
 
+// Gravitational Pull Schema (RVRY escape vocabulary)
+export const GravitationalPullSchema = z.object({
+  probes: z.array(z.string()),
+  engagementDirection: z.string(),
+  importanceAlignment: z.string(),
+  notes: z.string().optional(),
+});
+
 // Visual Substrate Layer Schemas - C1 Tiered Hybrid Architecture
 export const VisualTypeSchema = z.enum([
   'gravity_well',
@@ -275,6 +283,8 @@ export const MetaContentSchema = z.object({
   introspection: IntrospectionFieldsSchema.optional(),
   // Surface prediction as first-class field
   prediction: IntrospectionPredictionSchema.optional(),
+  // Gravitational pull self-check (RVRY escape vocabulary)
+  gravitationalPull: GravitationalPullSchema.optional(),
   // Visual substrate layer
   visualSubstrate: VisualSubstrateSchema.optional(),
 });
@@ -353,11 +363,12 @@ export const CheckpointContentSchema = z.object({
   phase: z.string().optional(),
   command: z.string().optional(),
   addConstraints: z.array(z.object({
-    type: z.enum(['FORWARD', 'FORBIDDEN', 'QUESTION']),
+    type: z.enum(['FORWARD', 'FORBIDDEN', 'QUESTION', 'BLOCKING_UNKNOWN']),
     text: z.string(),
   })).optional(),
   resolveConstraints: z.array(z.string()).optional(),
   acknowledgeConstraints: z.array(z.string()).optional(),
+  markAsked: z.array(z.string()).optional(),  // Mark BLOCKING_UNKNOWN as asked to user
   deferConstraints: z.array(z.object({
     id: z.string(),
     reason: z.string(),
@@ -368,11 +379,15 @@ export const CheckpointContentSchema = z.object({
     source: z.enum(['deferred-constraint', 'harvest-explicit']).optional(),
     rationale: z.string().optional(),
   })).optional(),
+  // Session folder for rich harvest + raw JSON output (FR-1, TR-1)
+  sessionFolder: z.string().optional(),
   gateCheck: z.object({
     selfCheckPassed: z.boolean(),
     depthGatePassed: z.boolean(),
     notes: z.string().optional(),
   }).optional(),
+  // Self-check probes: consequence-masked self-examination questions
+  selfCheckProbes: z.array(z.string()).optional(),
 });
 
 export const ScientificMethodContentSchema = z.object({
@@ -1132,6 +1147,9 @@ export const CognitionInputSchema = z.object({
   // If false or undefined, return minimal ACK with session context only
   verbose: z.boolean().optional(),
 
+
+  // Token estimate for this operation (optional)
+  tokenEstimate: z.number().optional(),
   // Per-project storage: absolute path to project root
   projectPath: z.string().optional(),
 });
@@ -1150,7 +1168,7 @@ const SCHEMA_HINTS: Record<string, string> = {
   analogical_reasoning: '{ target: string, analogs: {domain: string, description: string, similarity: number}[] (NOTE: similarity is number -- coerced from numeric string), mappings: {targetElement: string, analogElement: string, relationship: string}[], insights: string[], limitations: string[] }',
   causal_analysis: '{ phenomenon: string, causes: {factor: string, type: string, strength: string}[], effects: {outcome: string, likelihood: string, timeframe: string}[], chains: {sequence: string[], probability: number}[] (strings/objects auto-normalized) }',
   collaborative_reasoning: '{ topic?: string, perspectives?: {role: string, viewpoint: string, arguments: string[]}[], commonGround?: string[], tensions?: string[] (objects auto-coerced), synthesis?: string }',
-  checkpoint: '{ summary?: string, keyFindings?: string[], phase?: string, command?: string, addConstraints?: {type: FORWARD|FORBIDDEN|QUESTION, text: string}[], gateCheck?: {selfCheckPassed: boolean, depthGatePassed: boolean} }',
+  checkpoint: '{ summary?: string, sessionFolder?: string, keyFindings?: string[], phase?: string, command?: string, addConstraints?: {type: FORWARD|FORBIDDEN|QUESTION, text: string}[], gateCheck?: {selfCheckPassed: boolean, depthGatePassed: boolean}, selfCheckProbes?: string[] }',
   decide: '{ statement: string, options: {name: string, description: string, pros?: string[], cons?: string[]}[], criteria: string[], analysis: string, choice: string, weights?: Record<string, number>, confidence?: number }',
   structured_argumentation: '{ claim: string, premises: string[], evidence: {point: string, source?: string, strength: string}[], counterarguments: {point: string, rebuttal: string}[], conclusion: string }',
   tree_of_thought: '{ branches: {id: string, thought: string, evaluation?: string|object, score?: number}[], bestPath: string[], pruned: string[], root?: string, synthesis?: string }',

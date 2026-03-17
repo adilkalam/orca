@@ -146,3 +146,19 @@ export function buildResponse(
     ],
   } as any;
 }
+
+/**
+ * Build a StoredEntry from validated content and args.
+ * Centralizes entry construction so tokenEstimate is included automatically.
+ */
+export function buildEntry<T>(
+  content: T,
+  args: CognitionRequest,
+): { content: T; quality?: import('../types.js').QualityMetrics; timestamp: number; tokenEstimate?: number } {
+  return {
+    content,
+    quality: args.quality,
+    timestamp: Date.now(),
+    ...(args.tokenEstimate !== undefined ? { tokenEstimate: args.tokenEstimate } : {}),
+  };
+}

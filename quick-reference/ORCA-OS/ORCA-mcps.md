@@ -1,18 +1,19 @@
-# OS 6.4 MCP Reference
+# OS 7.0 MCP Reference
 
-**Last Updated:** 2026-02-26
-**Version:** OS 6.4
+**Last Updated:** 2026-03-16
+**Version:** OS 7.0
 
 ---
 
-## MCP Scoping Strategy (OS 6.4)
+## MCP Scoping Strategy (OS 7.0)
 
 MCPs are now project-scoped to reduce token bloat:
 
 ### Global MCPs (Always Available)
-Core MCPs in `~/.claude.json` global mcpServers:
+Core MCPs in `~/.claude.json` global mcpServers (user-scoped):
 - `cognition-mcp` - Sequential thinking storage (accept-store-echo pattern)
 - `project-context` - Project context queries
+- `crawl4ai` - Web content extraction (SSE, Docker at localhost:11235)
 - `sequential-thinking` - Multi-step reasoning with revision
 - `chrome-devtools` - Browser automation and visual QA (headless, isolated)
 - `context7` - Library documentation (disabled by default)
@@ -34,6 +35,7 @@ Heavy MCPs defined in project `.mcp.json` + enabled via `enabledMcpjsonServers`:
 ### cognition-mcp
 
 Sequential thinking storage with accept-store-echo pattern and protocol state management.
+Session storage: `~/.orca-cognition/sessions/` (global, all sessions regardless of project).
 
 ```json
 {
@@ -123,7 +125,7 @@ Mandatory context provider for all agents.
 - `reanalyze_project` - Re-analyze project after changes
 - `recall` - Retrieve full archived tool output by ID (ORCA-Mem)
 
-**Implementation (OS 6.4):**
+**Implementation (OS 7.0):**
 - **Reads:** SQLite direct access to `workshop.db` via `better-sqlite3`
 - **Writes:** Workshop CLI for schema migration compatibility
 - **Symlink:** Auto-creates `.workshop -> .claude/memory` on macOS/Linux
@@ -202,32 +204,7 @@ claude mcp add -s user chrome-devtools -- npx chrome-devtools-mcp@latest --headl
 **Used by:** nextjs-design-reviewer
 **Scope:** Global (user-level)
 
-### puppeteer (Web) -- DEPRECATED
-
-Browser automation and visual testing. **DEPRECATED** -- use chrome-devtools instead.
-
-```json
-{
-  "puppeteer": {
-    "type": "stdio",
-    "command": "node",
-    "args": ["~/.claude/mcp/puppeteer-mcp-server/dist/index.js"]
-  }
-}
-```
-
-**Tools:**
-- `puppeteer_connect_active_tab` - Connect to existing Chrome with remote debugging
-- `puppeteer_navigate` - Navigate to URL
-- `puppeteer_screenshot` - Take screenshot (with optional width/height)
-- `puppeteer_click` - Click element by CSS selector
-- `puppeteer_fill` - Fill input field
-- `puppeteer_select` - Select dropdown option
-- `puppeteer_hover` - Hover over element
-- `puppeteer_evaluate` - Execute JavaScript in browser
-
-**Used by:** nextjs-design-reviewer
-**Projects:** /obsidian-peptides, /peptidefox
+**puppeteer-mcp-server** -- Deprecated in OS 7.0. Use chrome-devtools-mcp instead.
 
 ### crawl4ai (Research)
 
@@ -248,7 +225,7 @@ crawl-server  # alias for ~/.crawl4ai-server/bin/python server.py
 ```
 
 **Used by:** research-* agents, seo-* agents
-**Projects:** Project-scoped (configured in project `.mcp.json` + `enabledMcpjsonServers`)
+**Scope:** Global (user-scoped), disabled per-project via `disabledMcpServers` where not needed
 
 ### ahrefs (SEO)
 
@@ -313,16 +290,24 @@ AI control of Adobe Photoshop and Illustrator via MCP protocol. Python-based MCP
 
 ### bambu-3mf (3D Printing)
 
-Programmatic Bambu Studio 3MF print settings manipulation. Reads and writes settings
-inside 3MF ZIP archives via JSZip. Enforces gcode key protection.
+Programmatic Bambu Studio 3MF print settings manipulation and OrcaSlicer CLI analysis.
+Reads and writes settings inside 3MF ZIP archives via JSZip. Runs headless slicing for
+time/cost estimates. Enforces gcode key protection.
 
-**Tools:**
+**Settings Tools (4):**
 - `list_presets` - Scan ~/3D-Models/_presets/ for available filament and process presets
 - `read_settings` - Extract settings from a 3MF file (excludes gcode blocks)
 - `apply_preset` - Merge a preset into a 3MF at a specific filament slot
 - `update_settings` - Surgical key-value override on a 3MF file
 
+**Slicer Tools (4) -- require OrcaSlicer CLI:**
+- `slice_analyze` - Run slicer on current settings for baseline time/cost/weight metrics
+- `slice_compare` - Compare current settings against preset profiles via actual slicing
+- `slice_batch` - Calculate batch production estimates for N units
+- `read_orca_config` - Parse Orca_print.config XML metadata (no CLI needed)
+
 **Safety:** 6 gcode keys are SACRED and never modified.
+**Slicer:** OrcaSlicer CLI auto-discovered at /Applications/OrcaSlicer.app or via ORCASLICER_PATH env var. Tools return helpful install instructions when CLI is absent.
 **Source:** `mcp/bambu-3mf/`
 **Scope:** Project-scoped (3D-Models)
 
@@ -430,22 +415,7 @@ Google Search Console data for search query performance. npm package is `mcp-ser
 **Projects:** peptidefox, obsidian-peptides, rvry (project-scoped via .mcp.json)
 **Scope:** Project-scoped only (configured in each project's `.mcp.json`, NOT global)
 
-### annotated-mcp (Annotation Tools)
-
-Lightweight annotation MCP for structured tool output annotations. Reduces schema friction in cognition workflows by providing minimal-schema annotation tools.
-
-```json
-{
-  "annotated-mcp": {
-    "type": "stdio",
-    "command": "node",
-    "args": ["/Users/adilkalam/.claude/mcp/annotated-mcp/dist/index.js"]
-  }
-}
-```
-
-**Source:** `mcp/annotated-mcp/`
-**Scope:** Global (user-level)
+**annotated-mcp** -- Removed in OS 7.0.
 
 ### mcp-send-email (Email Integration)
 
@@ -468,20 +438,22 @@ Resend-based email sending MCP for transactional and broadcast emails.
 
 ## Lane-MCP Matrix
 
-| Lane | MCPs Required |
+| Lane | MCPs Required (beyond globals) |
 |------|---------------|
 | iOS | XcodeBuildMCP |
-| Next.js | chrome-devtools |
+| Next.js | chrome-devtools (global) |
 | Django-React | (none) |
 | Expo | (none) |
-| Research | crawl4ai |
-| SEO | ahrefs, crawl4ai, analytics-mcp, mcp-gsc |
+| Research | crawl4ai (global) |
+| SEO | ahrefs, crawl4ai (global), cognition-mcp (--think, global), analytics-mcp, mcp-gsc |
 | RVRY | analytics-mcp, mcp-gsc |
 | Data | (none) |
-| Audit | cognition-mcp |
+| Audit | cognition-mcp (global) |
 | Typography | (none) |
 | OS-Dev | (none) |
 | orca-pipeline | (none) |
+| 3D Printing | bambu-3mf, openscad-mcp |
+| Creative Design | adb-mcp (adobe-photoshop, adobe-illustrator) |
 
 ---
 
@@ -538,4 +510,4 @@ Check `enabledMcpjsonServers` in `~/.claude.json` for your project path.
 
 _Source of truth: `docs/reference/os-dependency-graph.yaml`_
 _MCP scoping: `docs/reference/mcp-scoping-strategy.md`_
-_Last sync: 2026-02-26_
+_Last sync: 2026-03-16_

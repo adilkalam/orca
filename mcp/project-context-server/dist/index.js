@@ -247,7 +247,42 @@ export class ProjectContextServer {
             ],
         };
     }
+    /**
+     * Validate that required string fields are present and non-empty.
+     * Throws a descriptive error if validation fails.
+     */
+    validateRequiredStrings(args, fields, handlerName) {
+        for (const field of fields) {
+            if (typeof args[field] !== 'string' || args[field].trim() === '') {
+                throw new Error(`${handlerName}: '${field}' is required and must be a non-empty string`);
+            }
+        }
+    }
+    /**
+     * Validate that a field, if present, is a string.
+     */
+    validateOptionalString(args, field, handlerName) {
+        if (args[field] !== undefined && args[field] !== null && typeof args[field] !== 'string') {
+            throw new Error(`${handlerName}: '${field}' must be a string if provided`);
+        }
+    }
+    /**
+     * Validate that a field, if present, is an array of strings.
+     */
+    validateOptionalStringArray(args, field, handlerName) {
+        if (args[field] !== undefined && args[field] !== null) {
+            if (!Array.isArray(args[field]) || !args[field].every((item) => typeof item === 'string')) {
+                throw new Error(`${handlerName}: '${field}' must be an array of strings if provided`);
+            }
+        }
+    }
     async handleSaveDecision(args) {
+        // Validate required fields
+        this.validateRequiredStrings(args, ['domain', 'decision', 'reasoning'], 'save_decision');
+        // Validate optional fields
+        this.validateOptionalString(args, 'projectPath', 'save_decision');
+        this.validateOptionalString(args, 'context', 'save_decision');
+        this.validateOptionalStringArray(args, 'tags', 'save_decision');
         const projectPath = this.detectProjectPath(args.projectPath);
         // Use Workshop for session memory (decisions, gotchas, learnings)
         const workshop = new WorkshopClient(projectPath);
@@ -263,6 +298,10 @@ export class ProjectContextServer {
         };
     }
     async handleSaveStandard(args) {
+        // Validate required fields
+        this.validateRequiredStrings(args, ['what_happened', 'cost', 'rule', 'domain'], 'save_standard');
+        // Validate optional fields
+        this.validateOptionalString(args, 'projectPath', 'save_standard');
         const projectPath = this.detectProjectPath(args.projectPath);
         // Use Workshop for gotchas (standards/rules)
         const workshop = new WorkshopClient(projectPath);
@@ -277,6 +316,17 @@ export class ProjectContextServer {
         };
     }
     async handleSaveTaskHistory(args) {
+        // Validate required fields
+        this.validateRequiredStrings(args, ['domain', 'task', 'outcome'], 'save_task_history');
+        // Validate outcome enum
+        const validOutcomes = ['success', 'failure', 'partial'];
+        if (!validOutcomes.includes(args.outcome)) {
+            throw new Error(`save_task_history: 'outcome' must be one of: ${validOutcomes.join(', ')}`);
+        }
+        // Validate optional fields
+        this.validateOptionalString(args, 'projectPath', 'save_task_history');
+        this.validateOptionalString(args, 'learnings', 'save_task_history');
+        this.validateOptionalStringArray(args, 'files_modified', 'save_task_history');
         const projectPath = this.detectProjectPath(args.projectPath);
         // Use Workshop for task history
         const workshop = new WorkshopClient(projectPath);
@@ -323,6 +373,10 @@ Cache updated at .claude/memory/state.json`;
      * Retrieves full content that was truncated by post-tool-use hook
      */
     async handleRecall(args) {
+        // Validate archive ID to prevent path traversal
+        if (args.id.includes('/') || args.id.includes('..') || args.id.includes('\\')) {
+            throw new Error('Invalid archive ID');
+        }
         const baseDir = `${process.env.HOME}/.claude/archives`;
         const fs = await import('fs');
         const path = await import('path');

@@ -1,6 +1,6 @@
 # Skills
 
-**Version:** OS 6.4 | **Last Updated:** 2026-02-26 | **Total:** See quick-reference for current count
+**Version:** OS 7.0 | **Last Updated:** 2026-02-26 | **Total:** See quick-reference for current count
 
 Skills are reusable knowledge packages that provide domain expertise to agents.
 
@@ -151,7 +151,7 @@ Other competitor patterns not yet extracted into skills: Perplexity's report str
 ### Domain Knowledge Skills
 - `ios-knowledge-skill` - iOS/Swift patterns and conventions
 - `nextjs-knowledge-skill` - Next.js patterns and conventions
-- `os-dev-knowledge-skill` - OS 6.4 configuration knowledge (LOCAL)
+- `os-dev-knowledge-skill` - OS 7.0 configuration knowledge (LOCAL)
 
 ### Content/Writing Skills
 - `elements-of-style` - Classic writing guide by William Strunk Jr. (1918) for clarity, conciseness, and grammar
@@ -222,7 +222,7 @@ Skills inform agents; agents do work.
 
 ## Skill Wiring to Agents
 
-All 131 agents now have explicit skill references in their definitions:
+All 123 agents now have explicit skill references in their definitions:
 
 ```markdown
 ## Required Skills
@@ -241,4 +241,3 @@ This ensures skills are consistently applied rather than only loaded on demand.
 
 - [Pipeline Model](pipeline-model.md) - How skills fit into pipelines
 - [Memory Systems](memory-systems.md) - Other sources of agent context
-- [Self-Improvement](self-improvement.md) - Agent learning system

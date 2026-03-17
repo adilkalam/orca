@@ -1,4 +1,4 @@
-# Typography Pipeline Phase Configuration - OS 6.4
+# Typography Pipeline Phase Configuration - OS 7.0
 # Global pipeline for font library management
 
 pipeline:
@@ -7,7 +7,7 @@ pipeline:
     Font library management pipeline for glyph editing, TTF export,
     and typography selection. Glyph-heavy workflow with interactive
     checkpoints and Workshop memory persistence.
-  version: "6.0"
+  version: "7.0"
   deployment: global
 
 # Context Integration

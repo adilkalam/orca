@@ -1,13 +1,13 @@
 # Nextjs Domain Pipeline
 
-**Status:** OS 6.4 Core Pipeline
+**Status:** OS 7.0 Core Pipeline
 **Last Updated:** 2026-02-13
 
 ## Overview
 
 The Nextjs pipeline handles **frontend/web development work** for Next.js apps. It is CSS-agnostic and adapts to the project's styling approach (semantic CSS, Tailwind, CSS Modules, etc.). It combines:
 
-- OS 6.4 primitives (ProjectContextServer, phase_state.json, code-index.db, Workshop, constraint framework)
+- OS 7.0 primitives (ProjectContextServer, phase_state.json, code-index.db, Workshop, constraint framework)
 - Memory-first context (Workshop + code-index.db before ProjectContext)
 - Four-tier routing (Light/Default/Tweak/Complex with default running gates)
 - Spec gating (complex tasks require requirements spec)
@@ -35,7 +35,7 @@ The Nextjs pipeline handles **frontend/web development work** for Next.js apps. 
 
 ---
 
-## Four-Tier Routing (OS 6.4)
+## Four-Tier Routing (OS 7.0)
 
 The Next.js pipeline uses four-tier routing (see `docs/concepts/complexity-routing.md` for details):
 
@@ -80,7 +80,7 @@ Full pipeline with grand-architect planning. Spec required.
 | Tweak | 1-3 | No | Rapid iteration, exploring options |
 | Complex | 5+ | **Required** | Multi-page flow, auth UI, SEO-critical |
 
-### CSS Architecture Refactor Mode (OS 6.4)
+### CSS Architecture Refactor Mode (OS 7.0)
 
 Some Next.js tasks are **structural CSS/layout refactors** rather than simple tweaks:
 
@@ -105,7 +105,7 @@ If the CSS Architecture Gate fails, the task cannot be marked complete even if t
 
 ---
 
-## Standards Inputs (OS 6.4 Learning Loop)
+## Standards Inputs (OS 7.0 Learning Loop)
 
 Standards flow into and out of the Next.js pipeline:
 
@@ -145,7 +145,7 @@ violation → /audit → save_standard → code-index.db → future relatedStand
 
 ---
 
-### Recording Context (OS 6.4)
+### Recording Context (OS 7.0)
 
 Domain commands inject recording context (recent session history from `.orca/recording.db`) before delegating to agents. This is optional and silently skipped if no recording database exists.
 
@@ -183,6 +183,37 @@ Decision Point:
     ↓
 [Phase 9: Completion]
 ```
+
+---
+
+
+### Phase 0: Design-First (Pre-Implementation)
+
+**Agent:** `design-system-architect` (invoked as subagent via Task delegation)
+
+**Purpose:** Enforce design approach quality before any implementation begins. Research from Nov 2025 identified design-first architecture as the top quality driver -- gates exist post-implementation but catch output violations, not approach failures.
+
+**Two Components:**
+
+1. **Manifesto Priming (ALL tiers including tweak)**
+   A DESIGN_AWARENESS context block containing five verified LLM failure modes with CSS is injected into ALL delegation prompts. This ensures every agent working on UI has metacognitive awareness of how LLMs actually fail with styling.
+
+2. **Design-DNA Gate (tiered by complexity)**
+
+   | Tier | Gate Behavior |
+   |------|---------------|
+   | **Tweak** | Manifesto priming only. No file check, no blocking. |
+   | **Default** | Check `design-dna.json` existence. If missing, invoke design-system-architect to create it. If exists, inject path. |
+   | **Complex** | Always invoke design-system-architect (even if file exists). Block implementation until confirmed. |
+
+**Output:** `design-dna.json` with `methodology` field:
+- `"semantic-css"`: includes `roles` + `role_mappings`
+- `"tailwind"`: includes `components` + `allowed_utilities`
+
+**Methodology Detection:**
+- `tailwind.config.*` or `@import 'tailwindcss'` -> Tailwind mode
+- `@layer`, `.module.css`, semantic class naming -> Semantic CSS mode
+- No methodology detected -> Default to semantic CSS guidance
 
 ---
 
@@ -988,4 +1019,4 @@ As the pipeline runs, it learns:
 ---
 
 _Last updated: 2026-02-13_
-_Version: OS 6.4_
+_Version: OS 7.0_

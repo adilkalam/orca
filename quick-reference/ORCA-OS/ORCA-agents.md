@@ -1,14 +1,14 @@
-# OS 6.4 Agents Quick Reference
+# OS 7.0 Agents Quick Reference
 
-**Last Updated:** 2026-02-26
-**Version:** OS 6.4
-**Total Agents:** 131
+**Last Updated:** 2026-03-16
+**Version:** OS 7.0
+**Total Agents:** 100
 
-> **Scope Note:** This quick-reference covers all 131 agents across 14 domains. See `docs/reference/os-dependency-graph.yaml` for complete registry.
+> **Scope Note:** This quick-reference covers all 100 agents across 10 domains. See `docs/reference/os-dependency-graph.yaml` for complete registry.
 
 ---
 
-## Agent Architecture (OS 6.4)
+## Agent Architecture (OS 7.0)
 
 **All Agents Use Opus 4.6:**
 - Grand architects (coordination & architecture)
@@ -28,23 +28,26 @@
 
 | Domain | Count | Location |
 |--------|-------|----------|
-| iOS | 19 | `agents/iOS/` |
+| iOS | 18 | `agents/iOS/` |
 | Next.js | 15 | `agents/nextjs/` |
 | Django-React | 13 | `agents/django-react/` |
 | Expo | 12 | `agents/expo/` |
 | RVRY | 7 | `agents/rvry/` |
-| Dev (cross-cutting) | 12 | `agents/dev/` |
+| Dev (cross-cutting) | 13 | `agents/dev/` |
 | OS-Dev | 11 | `agents/os-dev/` |
-| Audit | 8 | `agents/audit/` |
+| Audit | 0 (agentless) | `commands/audit.md` |
 | Research | 7 | `agents/research/` |
 | Typography | 6 | `agents/typography/` |
 | SEO | 5 | `agents/seo/` |
 | Data | 4 | `agents/data/` |
-| **TOTAL** | **131** | |
+| Cross-Domain | 1 | `agents/cross-domain/` |
+| 3D Printing | 0 (MCP+skill) | bambu-3mf, openscad-mcp |
+| Creative Design | 0 (MCP+skill) | adb-mcp (Photoshop, Illustrator) |
+| **TOTAL** | **124** | |
 
 ---
 
-## iOS Pipeline (19 Agents)
+## iOS Pipeline (18 Agents)
 
 ### Orchestration
 | Agent | Purpose |
@@ -75,7 +78,6 @@
 | `ios-standards-enforcer` | Code standards, Swift 6 concurrency | >=90 |
 | `ios-ui-reviewer` | Code-based UI review (no simulator) | >=90 |
 | `ios-verification` | Build/test/visual verification (XcodeBuildMCP) | PASS/FAIL |
-| `design-dna-guardian` | Design system compliance | >=90 |
 
 **MCP Requirements:** XcodeBuildMCP
 
@@ -112,7 +114,7 @@
 | `nextjs-design-reviewer` | Design QA, visual compliance | >=90 |
 | `nextjs-verification-agent` | Build/test/lint verification | PASS/FAIL |
 
-**MCP Requirements:** chrome-devtools, puppeteer
+**MCP Requirements:** chrome-devtools
 
 ---
 
@@ -228,7 +230,7 @@ Orchestrated directly by `/research` command (no lead agent).
 | `seo-quality-guardian` | SEO content quality assurance |
 | `seo-optimizer` | Content optimization against SERP competitors |
 
-**MCP Requirements:** ahrefs, crawl4ai
+**MCP Requirements:** ahrefs, crawl4ai, cognition-mcp (--think)
 
 ---
 
@@ -348,33 +350,19 @@ Meta-pipeline for creating new domain pipelines. 5-phase wizard: Interview → R
 
 ---
 
-## Audit Pipeline (8 Agents)
+## Audit Pipeline (Agentless)
 
-Specialist agents for due-diligence audits. Run in parallel via `/audit` command.
+`/audit` uses direct evidence-based verification protocols -- no subagents. Each verification step produces CLAIM + VERIFICATION EVIDENCE + RESULT, making gaps structurally visible.
 
-### Core Specialists (Phase 1)
-| Agent | Purpose | Weight |
-|-------|---------|--------|
-| `audit-structure-specialist` | Dead code, naming, giant files, organization | medium |
-| `audit-dependency-specialist` | Vulnerabilities, outdated, unused, licenses | medium |
-| `audit-security-specialist` | Exposed secrets, insecure storage, HTTP, validation | heavy |
-
-### Extended Specialists (Phase 2)
-| Agent | Purpose | Weight |
-|-------|---------|--------|
-| `audit-pattern-specialist` | Pattern consistency, anti-patterns, style conformity | medium |
-| `audit-documentation-specialist` | Doc accuracy, completeness, freshness | medium |
-| `audit-test-specialist` | Coverage, test quality, isolation, flakiness | medium |
-| `audit-architecture-specialist` | Circular deps, coupling, cohesion, boundaries | medium |
-| `audit-design-specialist` | Design tokens, UI consistency (UI projects only) | medium |
-
-**Output:** JSON to `.claude/audit/temp/<agent>.json`
-**Scoring:** Deduction-based (100 - rule violations)
-**Conditional:** `audit-design-specialist` only runs for UI projects (Next.js, Expo, iOS)
+**Dimensions:** Structure, Security, Dependencies, Patterns, Architecture, Tests, Documentation, Design
+**Modes:** `--quick` (3 dimensions), `--core` (5), `--comprehensive` (all 8)
+**Documentation:** `--documentation` runs specialized doc verification with evidence spot-checks
+**Scoring:** Deduction-based (100 - rule violations), weighted aggregation
+**Output:** `.claude/audit/YYYY-MM-DD-<mode>.md`
 
 ---
 
-## Cross-Cutting Agents (12 Agents)
+## Cross-Cutting Agents (13 Agents)
 
 Located in `agents/dev/`. These agents work across multiple pipelines:
 
@@ -383,7 +371,8 @@ Located in `agents/dev/`. These agents work across multiple pipelines:
 | `a11y-enforcer` | Expo, Next.js | WCAG 2.2 compliance |
 | `crash-analyzer` | All lanes | Cross-domain crash and error analysis |
 | `debt-eliminator` | All lanes | Technical debt identification and prioritization |
-| `design-system-architect` | All UI lanes | Design system guardian: multi-format detection (JSON/MD/CSS), token enforcement |
+| `design-dna-guardian` | iOS, Expo, Django-React | Design DNA/token presence and compliance enforcement |
+| `design-system-architect` | All UI lanes | Phase 0 pre-implementation subagent: CSS methodology awareness, design-dna.json creation/review, multi-format detection (JSON/MD/CSS) |
 | `design-token-guardian` | Expo, Next.js | Token enforcement, no hardcoded values |
 | `performance-enforcer` | Expo, Next.js | Bundle size, performance budgets |
 | `performance-prophet` | Expo | Predictive performance analysis |
@@ -392,6 +381,47 @@ Located in `agents/dev/`. These agents work across multiple pipelines:
 | `shadcn-specialist` | Next.js | shadcn/ui components (auto-detected) |
 | `tailwind-specialist` | Next.js | Tailwind CSS (auto-detected) |
 | `version-shield` | All lanes | Dependency version management and breaking changes |
+
+---
+
+## Cross-Domain Agents (1 Agent)
+
+Located in `agents/cross-domain/`. These agents are spawned by light orchestrators across all lanes:
+
+| Agent | Spawned By | Purpose |
+|-------|------------|---------|
+| `standards-persistence-agent` | All light orchestrators | Parses gate violation JSON, deduplicates against existing standards, persists via save_standard |
+
+**Trigger:** Spawned as fire-and-forget background task when any gate agent returns ERROR or BLOCK.
+
+**MCP Requirements:** project-context (save_standard + query_context)
+
+---
+
+## 3D Printing (MCP+Skill Driven, 0 Agents)
+
+No dedicated agent directory. Capabilities provided by MCP servers and skills:
+
+| MCP | Purpose |
+|-----|----------|
+| `bambu-3mf` | Bambu Studio 3MF settings manipulation, OrcaSlicer CLI analysis (8 tools) |
+| `openscad-mcp` | OpenSCAD 3D rendering, STL analysis, model comparison |
+
+**Command:** `/design` (routes to 3D workflows when OpenSCAD/3MF context detected)
+
+---
+
+## Creative Design (MCP+Skill Driven, 0 Agents)
+
+No dedicated agent directory. Capabilities provided by MCP servers, skills, and commands:
+
+| MCP | Purpose |
+|-----|----------|
+| `adobe-photoshop` | Adobe Photoshop document/layer/filter/text operations |
+| `adobe-illustrator` | Adobe Illustrator scripting, document management, export |
+
+**Commands:** `/design` (cognitive design thinking), `/illustrate` (measured Adobe execution)
+**Skill:** `adobe-execution` (measure-place-verify guardrails)
 
 ---
 
@@ -414,14 +444,15 @@ Located in `agents/dev/`. These agents work across multiple pipelines:
 ### Global (Deployed to ~/.claude/)
 ```
 ~/.claude/agents/
-  iOS/              # 19 agents
+  iOS/              # 18 agents
   nextjs/           # 15 agents
   django-react/     # 13 agents
   expo/             # 12 agents
-  dev/              # 12 agents (cross-cutting)
+  cross-domain/     # 1 agent (standards persistence)
+  dev/              # 13 agents (cross-cutting)
   rvry/             # 7 agents
   os-dev/           # 11 agents (os-dev-* + orca-pipeline-*)
-  audit/            # 8 agents
+  audit/            # (agentless)
   research/         # 7 agents
   typography/       # 6 agents
   seo/              # 5 agents
@@ -455,4 +486,4 @@ $ORCA_OS_PATH/agents/
 ---
 
 _Source of truth: `docs/reference/os-dependency-graph.yaml`_
-_Last sync: 2026-02-26_
+_Last sync: 2026-03-16_

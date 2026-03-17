@@ -1,6 +1,8 @@
 ---
 description: Save current session context for automatic resumption
-allowed-tools: [Bash, Write]
+allowed-tools:
+  - Bash
+  - Write
 ---
 
 # /session-save - Save Session Context

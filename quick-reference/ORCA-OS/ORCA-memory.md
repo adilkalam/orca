@@ -114,6 +114,8 @@ This wizard:
 
 **The killer feature**: `workshop why` returns the original reasoning, not a reconstruction. You get what you actually thought, not what the model guesses you might have thought.
 
+**Retention:** Workshop enforces a `maxEntries=500` cap with prune-on-write. When the cap is reached, unpinned entries are pruned oldest-first. Entries tagged as preferences or antipatterns are auto-pinned to survive pruning.
+
 ### 2. Code Index (Semantic Code Search)
 
 **What it stores**: Code embeddings and symbol index for semantic search
@@ -211,11 +213,13 @@ When you start Claude Code, `session-start.sh` runs automatically:
 
 1. **Loads active task context** (if saved via `/session-save`) - outputs directly to STDOUT
 2. Loads previous session summary (if less than 24h old)
-3. Loads Workshop summary (recent decisions, gotchas)
+3. Loads Workshop context and recent entries into session-context.md (NOT stdout)
 4. Initializes code-index (telemetry deprecated -- replaced by orca-record recording layer)
-5. Outputs architecture reminders
-6. Writes session metadata to `.claude/orchestration/temp/session-context.md`
+5. Outputs recording status and recent ORCA-Mem episodes (compact)
+6. Writes detailed session metadata to `.claude/orchestration/temp/session-context.md`
 7. Makes context available to all subsequent work
+
+STDOUT is kept minimal (~2KB) because Claude Code injects it into system-reminder. Detailed context lives in session-context.md for agents that need it.
 
 You see this in the session startup:
 ```
@@ -227,10 +231,8 @@ PREVIOUS SESSION CONTEXT
 
 ===============================================================
 
-PROJECT CONTEXT AUTO-LOAD
-Memory systems available:
-  - Workshop: workshop --workspace .claude/memory <command>
-  - ProjectContext MCP: mcp__project-context__query_context
+SessionStart: success. Context: .claude/orchestration/temp/session-context.md
+Recording: N session(s) tracked. Use /continue to resume, /orca-status for details.
 ```
 
 ### Session Persistence (Active Task)
@@ -314,7 +316,6 @@ Both systems feed agents through ProjectContext, so every task starts with both 
 | Standards | "All API responses must include timestamp" | Workshop |
 | Code context | Semantic embeddings of codebase | code-index.db |
 | Cognitive output | Deepthink analyses, decision trails | `.claude/cognition/` files |
-| Learned patterns | Agent success/failure tracking | `.claude/agent-knowledge/` (created per-project by agents when they record learnings; convention-based, no central infrastructure) |
 | Learned rules | Your accumulated corrections | CLAUDE.md |
 
 ---
@@ -359,4 +360,4 @@ Both systems feed agents through ProjectContext, so every task starts with both 
 
 ---
 
-_Version: OS 6.4 | Memory is continuity, made persistent._
+_Version: OS 7.0 | Memory is continuity, made persistent._

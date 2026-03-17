@@ -1,15 +1,17 @@
 /**
- * Persistence Layer - Per-project + global fallback storage
+ * Persistence Layer - Global storage at ~/.orca-cognition/
  *
- * Per-project: {projectPath}/.claude/.cognition/sessions/{sessionId}/
- * Global fallback: ~/.orca-cognition/sessions/ (unattributed sessions)
+ * All sessions: ~/.orca-cognition/sessions/{sessionId}/
  * Global index: ~/.orca-cognition/index.jsonl (cross-project search)
+ *
+ * projectPath is stored in session metadata for attribution but does NOT
+ * affect storage location. All machine-readable data is global.
  *
  * Append-only JSONL format for each store type.
  * Prevents corruption and allows streaming reads.
  */
 import { promises as fs } from 'fs';
-import { existsSync, mkdirSync, appendFileSync } from 'fs';
+import { existsSync, mkdirSync, appendFileSync, writeFileSync } from 'fs';
 import * as path from 'path';
 import { homedir } from 'os';
 import { SessionState } from './state.js';
@@ -63,64 +65,50 @@ const STORE_FILES = {
     audit: 'audit.jsonl',
 };
 // ============================================================================
-// PATH RESOLUTION - Per-project or global
+// PATH RESOLUTION - Always global (~/.orca-cognition/)
 // ============================================================================
 /**
- * Resolve the base cognition directory for a project or global.
+ * Resolve the base cognition directory. Always global.
+ * _projectPath accepted for backward compatibility but ignored.
  */
-export function resolveBaseDir(projectPath) {
-    if (projectPath) {
-        return path.join(projectPath, '.claude', '.cognition');
-    }
+export function resolveBaseDir(_projectPath) {
     return GLOBAL_BASE_DIR;
 }
 /**
- * Resolve the sessions directory for a project or global.
+ * Resolve the sessions directory. Always global.
  */
-export function resolveSessionsDir(projectPath) {
-    return path.join(resolveBaseDir(projectPath), 'sessions');
-}
-/**
- * Resolve the exports directory for a project or global.
- */
-export function resolveExportsDir(projectPath) {
-    return path.join(resolveBaseDir(projectPath), 'exports');
+export function resolveSessionsDir(_projectPath) {
+    return path.join(GLOBAL_BASE_DIR, 'sessions');
 }
 // ============================================================================
 // DIRECTORY MANAGEMENT
 // ============================================================================
 /**
  * Ensure all required directories exist.
+ * _projectPath accepted for backward compatibility but ignored.
  */
-export function ensureDirectories(projectPath) {
-    const baseDir = resolveBaseDir(projectPath);
-    const sessionsDir = resolveSessionsDir(projectPath);
-    const exportsDir = resolveExportsDir(projectPath);
-    if (!existsSync(baseDir)) {
-        mkdirSync(baseDir, { recursive: true });
+export function ensureDirectories(_projectPath) {
+    if (!existsSync(GLOBAL_BASE_DIR)) {
+        mkdirSync(GLOBAL_BASE_DIR, { recursive: true });
     }
+    const sessionsDir = path.join(GLOBAL_BASE_DIR, 'sessions');
     if (!existsSync(sessionsDir)) {
         mkdirSync(sessionsDir, { recursive: true });
     }
-    if (!existsSync(exportsDir)) {
-        mkdirSync(exportsDir, { recursive: true });
-    }
-    // Always ensure global base exists (for index.jsonl)
-    if (projectPath && !existsSync(GLOBAL_BASE_DIR)) {
-        mkdirSync(GLOBAL_BASE_DIR, { recursive: true });
-    }
 }
 /**
- * Get the directory path for a session.
+ * Get the directory path for a session. Always global.
+ * _projectPath accepted for backward compatibility but ignored.
  */
-function getSessionDir(sessionId, projectPath) {
-    return path.join(resolveSessionsDir(projectPath), sessionId);
+function getSessionDir(sessionId, _projectPath) {
+    return path.join(GLOBAL_BASE_DIR, 'sessions', sessionId);
 }
 /**
  * Ensure session directory exists.
+ * _projectPath accepted for backward compatibility but ignored.
  */
-function ensureSessionDir(sessionId, projectPath) {
-    const sessionDir = getSessionDir(sessionId, projectPath);
+function ensureSessionDir(sessionId, _projectPath) {
+    const sessionDir = getSessionDir(sessionId);
     if (!existsSync(sessionDir)) {
         mkdirSync(sessionDir, { recursive: true });
     }
@@ -158,6 +146,25 @@ export async function saveSessionMetadata(session) {
     const sessionDir = ensureSessionDir(session.id, projectPath);
     const metadataPath = path.join(sessionDir, 'session.json');
     await fs.writeFile(metadataPath, JSON.stringify(session.metadata, null, 2));
+}
+/**
+ * Save protocol state to protocol.json
+ * Called after checkpoint modifies protocol state.
+ */
+export function saveProtocolState(session) {
+    if (!session.protocolState)
+        return;
+    const projectPath = session.metadata.projectPath;
+    const sessionDir = ensureSessionDir(session.id, projectPath);
+    const protocolPath = path.join(sessionDir, 'protocol.json');
+    const ps = session.protocolState;
+    const data = {
+        constraints: Object.fromEntries(ps.constraints),
+        nextConstraintId: ps.nextConstraintId,
+        phasesCompleted: [...ps.phasesCompleted],
+        ...(ps.command ? { command: ps.command } : {}),
+    };
+    writeFileSync(protocolPath, JSON.stringify(data, null, 2));
     // Update global index for cross-project discovery
     updateGlobalIndex(session.metadata);
 }
@@ -174,26 +181,17 @@ export function appendEntry(sessionId, storeType, entry, projectPath) {
     appendFileSync(filepath, line, 'utf8');
 }
 /**
- * Load session from filesystem.
- * Checks project-local first, then global fallback.
- * Returns null if session doesn't exist in either location.
+ * Load session from filesystem. Always from global storage.
+ * _projectPath accepted for backward compatibility but ignored.
  */
-export async function loadSession(sessionId, projectPath) {
-    // Try project-local first
-    if (projectPath) {
-        const local = await loadSessionFromDir(sessionId, projectPath);
-        if (local)
-            return local;
-    }
-    // Fallback to global
-    const global = await loadSessionFromDir(sessionId, undefined);
-    return global;
+export async function loadSession(sessionId, _projectPath) {
+    return loadSessionFromDir(sessionId);
 }
 /**
- * Load session from a specific directory (project-local or global).
+ * Load session from global storage directory.
  */
-async function loadSessionFromDir(sessionId, projectPath) {
-    const sessionDir = getSessionDir(sessionId, projectPath);
+async function loadSessionFromDir(sessionId) {
+    const sessionDir = getSessionDir(sessionId);
     if (!existsSync(sessionDir)) {
         return null;
     }
@@ -226,6 +224,23 @@ async function loadSessionFromDir(sessionId, projectPath) {
                 }
             }
         }
+        // Load protocol state if exists
+        const protocolPath = path.join(sessionDir, 'protocol.json');
+        if (existsSync(protocolPath)) {
+            try {
+                const protocolContent = await fs.readFile(protocolPath, 'utf8');
+                const ps = JSON.parse(protocolContent);
+                session.protocolState = {
+                    constraints: new Map(Object.entries(ps.constraints || {})),
+                    nextConstraintId: ps.nextConstraintId || 1,
+                    phasesCompleted: [...(ps.phasesCompleted || [])],
+                    ...(ps.command ? { command: ps.command } : {}),
+                };
+            }
+            catch {
+                console.error('Failed to load protocol state for session ' + sessionId);
+            }
+        }
         return session;
     }
     catch (err) {
@@ -234,15 +249,14 @@ async function loadSessionFromDir(sessionId, projectPath) {
     }
 }
 /**
- * Export complete session to exports directory.
+ * Export complete session to session directory.
  * Called when nextThoughtNeeded: false
  */
 export async function exportSession(session) {
-    const projectPath = session.metadata.projectPath;
-    ensureDirectories(projectPath);
+    ensureDirectories();
     const exportData = session.toExport();
-    const exportsDir = resolveExportsDir(projectPath);
-    const exportPath = path.join(exportsDir, session.id + '.json');
+    const sessionDir = ensureSessionDir(session.id);
+    const exportPath = path.join(sessionDir, 'export.json');
     await fs.writeFile(exportPath, JSON.stringify(exportData, null, 2));
     return exportPath;
 }
@@ -250,13 +264,12 @@ export async function exportSession(session) {
  * Import session from export data.
  */
 export async function importSession(data) {
-    const projectPath = data.metadata.projectPath;
-    ensureDirectories(projectPath);
+    ensureDirectories();
     const session = SessionState.fromExport(data);
     // Save metadata
     await saveSessionMetadata(session);
     // Save all stores to JSONL files
-    const sessionDir = ensureSessionDir(session.id, projectPath);
+    const sessionDir = ensureSessionDir(session.id);
     for (const [storeType, entries] of Object.entries(session.stores)) {
         if (entries.length > 0) {
             const filename = STORE_FILES[storeType];
@@ -268,27 +281,21 @@ export async function importSession(data) {
     return session;
 }
 /**
- * Check if session exists (project-local or global).
+ * Check if session exists in global storage.
+ * _projectPath accepted for backward compatibility but ignored.
  */
-export function sessionExists(sessionId, projectPath) {
-    // Check project-local first
-    if (projectPath) {
-        const localDir = getSessionDir(sessionId, projectPath);
-        const localMeta = path.join(localDir, 'session.json');
-        if (existsSync(localMeta))
-            return true;
-    }
-    // Check global
-    const globalDir = getSessionDir(sessionId, undefined);
+export function sessionExists(sessionId, _projectPath) {
+    const globalDir = getSessionDir(sessionId);
     const globalMeta = path.join(globalDir, 'session.json');
     return existsSync(globalMeta);
 }
 /**
- * List all session IDs for a project (or global).
+ * List all session IDs from global storage.
+ * _projectPath accepted for backward compatibility but ignored.
  */
-export async function listSessions(projectPath) {
-    const sessionsDir = resolveSessionsDir(projectPath);
-    ensureDirectories(projectPath);
+export async function listSessions(_projectPath) {
+    const sessionsDir = resolveSessionsDir();
+    ensureDirectories();
     try {
         const entries = await fs.readdir(sessionsDir, { withFileTypes: true });
         return entries

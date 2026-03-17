@@ -283,10 +283,7 @@ Task(path-guardian): Final path verification
 
 ```bash
 # Record the operation
-workshop note "Typography: {operation_summary} on {font_family}"
-
-# If significant decision made
-workshop decision "{decision}" -r "{reasoning}"
+workshop decision "Typography: {operation_summary} on {font_family}" -r "auto-recorded"
 
 # If gotcha discovered
 workshop gotcha "{issue_description}"

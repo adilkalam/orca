@@ -38,4 +38,37 @@ export interface ThreeMFContents {
     filamentCount: number;
     filePaths: string[];
 }
+/** Metrics returned from a slicer operation. */
+export interface SliceMetrics {
+    estimated_time_minutes: number | null;
+    estimated_time_formatted: string | null;
+    filament_weight_grams: number | null;
+    filament_length_meters: number | null;
+    estimated_cost_usd: number | null;
+    warnings: string[];
+}
+/** Parsed Orca_print.config metadata. */
+export interface OrcaConfig {
+    filament_type: string | null;
+    nozzle_diameter: string | null;
+    layer_height: string | null;
+    infill_density: string | null;
+    wall_loops: number | null;
+    support_enabled: boolean | null;
+    previously_sliced: boolean;
+    last_estimate: string | null;
+    /** All raw key-value pairs from the XML. */
+    raw: Record<string, string>;
+}
+/** Batch production estimate result. */
+export interface BatchMetrics {
+    quantity: number;
+    profile: string;
+    total_time_hours: number;
+    total_time_formatted: string;
+    total_filament_kg: number | null;
+    total_cost_usd: number | null;
+    per_unit_time: string;
+    comparison_vs_current: string;
+}
 //# sourceMappingURL=types.d.ts.map

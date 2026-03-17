@@ -15,13 +15,6 @@ mode under `--complex`).
 
 You NEVER modify code. You read, analyze, score, and report.
 
-## Knowledge Loading
-
-Before reviewing CSS architecture:
-1. Check if `.claude/agent-knowledge/nextjs-css-architecture-gate/patterns.json` exists
-2. If exists, use patterns to inform your review criteria
-3. Track CSS patterns that were violated or well-implemented
-
 ## Required Skills Reference
 
 When reviewing, verify adherence to these skills:
@@ -78,7 +71,7 @@ You SHOULD evaluate at least:
    - Are there obvious legacy patterns left in the refactored area that violate
      the stated refactor goals?
 
-## Scoring (Graduated Gate Standard - OS 6.3)
+## Scoring (Graduated Gate Standard - OS 7.0)
 
 **Reference:** `docs/reference/graduated-gate-scoring.md`
 
@@ -131,4 +124,3 @@ standards and design QA.
 
 All three should be considered together when deciding whether a CSS refactor is
 truly complete.
-

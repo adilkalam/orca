@@ -4,7 +4,7 @@
 | | | | |_) | |     / _ \  | | | \___ \
 | |_| |  _ <| |___ / ___ \ | |_| |___) |
  \___/|_| \_\\____/_/   \_\ \___/|____/
-                                    v6.3
+                                    v7.0
 ```
 > **[QUICK-START.md](QUICK-START.md)**
 
@@ -264,9 +264,9 @@ The mechanism: force Claude to articulate what it *would* have said (the default
 
 This changes both sides of the interaction. Claude produces output shaped by evidence rather than defaults. And you develop the habit of asking "what's the default here?" before accepting any response.
 
-### The 48 operations
+### The 49 operations
 
-Beyond default observation, the cognition-mcp provides 48 structured reasoning operations that Claude can execute but doesn't reach for unprompted. Read the [full guide on cognition](quick-reference/cognition.md).
+Beyond default observation, the cognition-mcp provides 49 structured reasoning operations that Claude can execute but doesn't reach for unprompted. Read the [full guide on cognition](quick-reference/cognition.md).
 
 | Category | Example |
 |----------|---------|
@@ -277,7 +277,7 @@ Beyond default observation, the cognition-mcp provides 48 structured reasoning o
 | **Creative** | "What if we treated onboarding like a game tutorial instead of a form?" |
 | **Meta** | "Am I anchored on the first solution I thought of? What am I not considering?" |
 
-You don't need to know what those 48 reasoning operations are—`/deepthink` selects approaches based on the problem, runs them, saves the output as files and `/problem-solve` runs an 8-step convergent pipeline when you need a decision, while `/challenge` stress-tests the result before you act on it.
+You don't need to know what those 49 reasoning operations are—`/deepthink` selects approaches based on the problem, runs them, saves the output as files and `/problem-solve` runs an 8-step convergent pipeline when you need a decision, while `/challenge` stress-tests the result before you act on it.
 
 ```
 /deepthink (explore)
@@ -289,7 +289,7 @@ You don't need to know what those 48 reasoning operations are—`/deepthink` sel
 /challenge (stress-test)
      |
      v
-/plan (commit to spec)
+/requirements (commit to spec)
 ```
 
 ---
@@ -338,9 +338,9 @@ ORCA turns every unstated detail into a question instead of a guess—it literal
 
 This applies universally -- code, health, research, decisions. It's the primary way ORCA pulls generation away from statistical defaults toward your specific situation. And the interactive Q&A shapes your thinking too -- you discover constraints and preferences you hadn't articulated or even considered. The planning process is a collaboration, not a form.
 
-`/plan` takes the answers and turns them into a document -- scope, decisions, edge cases, architecture -- that exists outside Claude's head. When context compacts halfway through a build, the plan is still there. Everything downstream reads this document, not the original vague prompt. 
+`/requirements` takes the answers and turns them into a document -- scope, decisions, edge cases, architecture -- that exists outside Claude's head. When context compacts halfway through a build, the plan is still there. Everything downstream reads this document, not the original vague prompt. 
 
-Aren't far enough along to have answers to those questions? `/plan --explore` will take on that burden for you. Read the [full guide on planning](quick-reference/plan.md).
+Aren't far enough along to have answers to those questions? `/requirements --explore` will take on that burden for you. Read the [full guide on planning](quick-reference/requirements.md).
 
 ---
 
@@ -380,14 +380,14 @@ Multi-agent orchestration pipelines are a lens, not a source. It focuses whateve
 
 Send a vague prompt into a pipeline and you get a focused version of vague. Send a detailed spec and you get the thing you actually wanted.
 
-124 agents across 13 domains (iOS, Next.js, Django-React, Expo, Research, SEO, Data, Audit, and more). Role separation is strict: orchestrators coordinate and never write code, specialists implement scoped tasks, gates validate and never fix.
+Agents across 11 domains (iOS, Next.js, Django-React, Expo, Research, Data, 3D Printing, Creative Design, Typography, OS-Dev, and more). Role separation is strict: orchestrators coordinate and never write code, specialists implement scoped tasks, gates validate and never fix.
 
 The agents are effective because of what they know -- extracted from studying market leaders and others:
 
 - What does deep research look like?
 - What makes a good iOS data model?
 - What debugging patterns actually work?
-- What are the latest strategies for SEO?
+- What print settings couple with each other?
 
 Routing modes match complexity to effort:
 
@@ -398,7 +398,7 @@ Routing modes match complexity to effort:
 | **--explore** | Divergent exploration, produces tentative brief | Half-baked ideas, early-stage thinking. Explores before committing. |
 | **--problem-solve** | Root-cause analysis with structured reasoning | Something is broken and you don't know why. Traces symptoms to causes. |
 | **-tweak** | Builder only, no gates | Rapid iteration. You verify yourself. |
-| **--complex** | Full pipeline with architect, specialists, all gates | Architecture changes, new features, multi-file work. Requires a spec from `/plan`. |
+| **--complex** | Full pipeline with architect, specialists, all gates | Architecture changes, new features, multi-file work. Requires a spec from `/requirements`. |
 
 Read the [full guide on orchestration](quick-reference/orchestration.md).
 
@@ -438,7 +438,7 @@ ORCA learns at three levels:
 
 **Conversation-level.** `/reflect` extracts learning signals from your interactions. Correct Claude three times about the same thing ("no, use strict mode") and it becomes a permanent rule. Instructions accumulate. Corrections persist across sessions.
 
-All three levels feed a unified improvement bus. A gate failure can become an agent constraint, a project standard, or a permanent rule. A verification question that fails twice becomes a mandatory future check. Nothing stays siloed.
+All three levels feed back through Workshop memory. A gate failure triggers save_standard, which query_context retrieves for the next orchestrator run. A verification question that fails twice becomes a mandatory future check. Nothing stays siloed.
 
 ```
 Gate failure
@@ -451,7 +451,7 @@ Reflexion: "NavigationStack used without checking iOS 16+"
     +---> Mandatory verification question (future gates must check)
 ```
 
-Session 50 is different from session 1. And so is the person using it -- you learn to `/plan` before `/orca-*`, to `/deepthink` before deciding, to not drop in quick requests expecting quality output. The system rewards depth from both sides. Read the [full guide on learning](quick-reference/ORCA-OS/ORCA-learning.md).
+Session 50 is different from session 1. And so is the person using it -- you learn to `/requirements` before `/orca-*`, to `/deepthink` before deciding, to not drop in quick requests expecting quality output. The system rewards depth from both sides. Read the [full guide on learning](quick-reference/ORCA-OS/ORCA-learning.md).
 
 ---
 
@@ -483,7 +483,7 @@ Read the [full guide on memory](quick-reference/ORCA-OS/ORCA-memory.md).
 
 ### Building a feature
 
-You say "add user authentication to my app." `/plan` asks: OAuth, email/password, or both? MFA? Session duration? Remember me? Password reset flow? Rate limiting on login attempts? Each answer narrows the spec. Each answer is something Claude would have guessed about -- probably wrong for your situation.
+You say "add user authentication to my app." `/requirements` asks: OAuth, email/password, or both? MFA? Session duration? Remember me? Password reset flow? Rate limiting on login attempts? Each answer narrows the spec. Each answer is something Claude would have guessed about -- probably wrong for your situation.
 
 The spec goes to the pipeline. An architect designs the approach. Specialists implement against the spec -- they don't guess what to build. Gates verify: does it compile? Do tests pass? Do the standards hold? If a gate fails, work loops back to the specialist. If it passes, the outcome and any learnings get recorded for next time.
 
@@ -493,7 +493,7 @@ You have a folder with bloodwork PDFs, a DEXA scan, MRI reports. You want to und
 
 `/research` runs web search for actual studies, crawls full papers, fact-checks claims, and ensures every citation points to a real source. You get a grounded document, not a training-data summary.
 
-Then ORCA asks: What conditions are you tracking? Longevity markers, athletic performance, managing a diagnosis? What interventions are you open to? `/plan --problem-solve` runs against your research + your answers. The output is specific to your numbers, your goals, your constraints -- with sources you can take to a doctor.
+Then ORCA asks: What conditions are you tracking? Longevity markers, athletic performance, managing a diagnosis? What interventions are you open to? `/requirements --problem-solve` runs against your research + your answers. The output is specific to your numbers, your goals, your constraints -- with sources you can take to a doctor.
 
 Claude Desktop gives you a capable one-pass analysis from training data. ORCA gives you current research with citations, structured reasoning across your data, and specificity driven by your answers.
 
@@ -503,11 +503,11 @@ Claude Desktop gives you a capable one-pass analysis from training data. ORCA gi
 
 | Component | What it enables |
 |-----------|----------------|
-| **cognition-mcp** | 48 structured reasoning operations. Accept-store-echo: the MCP stores thinking, never generates it. |
+| **cognition-mcp** | 49 structured reasoning operations. Accept-store-echo: the MCP stores thinking, never generates it. |
 | **project-context** | Memory across sessions. Decisions, gotchas, preferences. Semantic code search. Context bundles per task. |
 | **sequential-thinking** | Multi-step reasoning with revision and backtracking. |
 | **context7** | Up-to-date library documentation instead of stale training data. |
-| **orca-record** | Session recording and replay. Captures every tool call and file change. Injects relevant history before agents start work. |
+| **orca-record** | Session event tracking. Captures tool calls and file changes. Prior session context loads automatically before agents start work. |
 | **Verification MCPs** | Domain-specific proof. XcodeBuildMCP for iOS builds, Chrome DevTools for live debugging and screenshots, Crawl4AI for research. |
 
 ---
@@ -523,7 +523,7 @@ Claude Desktop gives you a capable one-pass analysis from training data. ORCA gi
 /deepthink "Should I use WebSockets or SSE for real-time updates?"
 
 # Plan a feature
-/plan "Add user authentication to my app"
+/requirements "Add user authentication to my app"
 
 # Build with domain specialists
 /ios "Build a subscription tracker"
@@ -538,4 +538,4 @@ Claude Desktop gives you a capable one-pass analysis from training data. ORCA gi
 
 ---
 
-**ORCA OS v6.3** -- [Documentation](DOCUMENTATION.md) -- [Quick Start](QUICK-START.md)
+**ORCA OS v7.0** -- [Documentation](DOCUMENTATION.md) -- [Quick Start](QUICK-START.md)

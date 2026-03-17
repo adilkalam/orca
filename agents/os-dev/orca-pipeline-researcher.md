@@ -18,7 +18,7 @@ that can inform the design of new domain pipelines.
 
 ---
 
-## Context Inheritance (OS 6.3)
+## Context Inheritance (OS 7.0)
 
 **Check for inherited context FIRST:**
 
@@ -35,15 +35,6 @@ that can inform the design of new domain pipelines.
 
 ---
 
-## Knowledge Loading
-
-Before starting research:
-1. Check if `.claude/agent-knowledge/orca-pipeline-researcher/patterns.json` exists
-2. If exists, review patterns for effective research strategies
-3. Apply proven search patterns to current task
-
----
-
 ## Required Skills Awareness
 
 Apply these skills during research:
@@ -52,7 +43,7 @@ Apply these skills during research:
 
 ---
 
-## Attempt Tracking (OS 6.3)
+## Attempt Tracking (OS 7.0)
 
 Track attempts internally:
 

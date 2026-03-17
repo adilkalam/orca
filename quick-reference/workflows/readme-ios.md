@@ -1,12 +1,12 @@
-# OS 6.4 iOS Lane Readme
+# OS 7.0 iOS Lane Readme
 
 **Lane:** iOS / Native Apple Platforms  
 **Domain:** `ios`  
-**Entrypoints:** `/plan`, `/orca`, `/ios`, `/project-memory`, `/project-code`
+**Entrypoints:** `/requirements`, `/orca`, `/ios`, `/project-memory`, `/project-code`
 
-This document explains how the iOS lane works in OS 6.4:
+This document explains how the iOS lane works in OS 7.0:
 
-- Planning & specs (`/plan`)
+- Planning & specs (`/requirements`)
 - Orchestration (`/orca`, `/ios`)
 - Pipeline & phases
 - Agents and specialists
@@ -33,11 +33,11 @@ Examples:
 
 ## 2. Core Commands and Flow
 
-### 2.1 Planning – `/plan`
+### 2.1 Planning – `/requirements`
 
 For non‑trivial iOS work:
 
-- Run `/plan "..."` to create a spec:
+- Run `/requirements "..."` to create a spec:
   - `.claude/requirements/YYYY-MM-DD-HHMM-<slug>/`
   - Q/A files (`01–05-*`) and final spec `06-requirements-spec.md`
   - RA tags in the spec indicate important decisions and assumptions.
@@ -76,7 +76,7 @@ File: `commands/ios.md`
   /ios "implement requirement <id>"              # With spec
   ```
 
-- **Routing Modes (OS 6.4):**
+- **Routing Modes (OS 7.0):**
 
   | Mode | Flag | Path | Gates |
   |------|------|------|-------|
@@ -214,10 +214,6 @@ iOS builder agents have inline swift-agents patterns:
 - **Data:** SwiftData for new projects, Core Data/GRDB for legacy
 - **Accessibility:** VoiceOver, accessibilityLabel, accessibilityHint
 
-### Agent-Level Learning
-
-Agents can discover and persist patterns to `.claude/agent-knowledge/ios-builder/patterns.json`.
-
 ---
 
 ## 6. Memory Integration
@@ -253,7 +249,7 @@ promote standards and refine lane behavior over time.
 
 ## 8. Mental Model
 
-For iOS work in OS 6.4 (routing modes):
+For iOS work in OS 7.0 (routing modes):
 
 | Mode | Command | Path |
 |------|---------|------|

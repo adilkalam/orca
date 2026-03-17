@@ -135,6 +135,8 @@ export interface DecayConfig {
     halfLifeDays: number;
     /** Minimum score floor to prevent all-zero rankings (default: 0.01) */
     minimumScore: number;
+    /** Maximum number of entries before pruning (default: 500) */
+    maxEntries?: number;
 }
 /**
  * Design system context (summary version for token efficiency)
@@ -151,7 +153,7 @@ export interface DesignSystemContext {
  * Query parameters for context retrieval
  */
 export interface ContextQuery {
-    domain: 'webdev' | 'nextjs' | 'ios' | 'expo' | 'data' | 'seo' | 'brand';
+    domain: 'webdev' | 'nextjs' | 'ios' | 'expo' | 'data' | 'seo' | 'brand' | 'django-react' | 'research' | 'kg' | 'shopify' | 'audit' | 'os-dev' | 'orca-pipeline';
     task: string;
     projectPath: string;
     maxFiles?: number;

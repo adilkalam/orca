@@ -1,7 +1,7 @@
 # ORCA-OS Documentation
 
-**Version:** OS 6.4
-**Last Updated:** 2026-02-26
+**Version:** OS 7.0
+**Last Updated:** 2026-03-02
 
 Welcome to the ORCA-OS documentation. This document serves as the entry point and navigation hub for all ORCA-OS documentation.
 
@@ -30,11 +30,11 @@ Foundational concepts that power ORCA-OS:
 | [Response Awareness](concepts/response-awareness.md) | RA tagging system for tracking assumptions |
 | [Skills](concepts/skills.md) | Reusable knowledge packages for agents |
 | [Cognition MCP](concepts/cognition-mcp.md) | Structured reasoning via cognition-mcp |
-| [Self-Improvement](concepts/self-improvement.md) | Agent learning loops and reflexion |
-| [Improvement Bus](concepts/improvement-bus.md) | Unified event stream for system improvements |
 | [Why ORCA Architecture](concepts/why-orca-architecture.md) | Design philosophy and justification |
 | [Dependency Graph](concepts/dependency-graph.md) | Agent and command dependencies |
 | [LLM Introspection Analysis](concepts/llm-introspection-analysis.md) | Research on LLM self-observation |
+| [The Constraint Chain Session](concepts/the-constraint-chain-session.md) | Constraint chain analysis and session patterns |
+| [ORCA Record](concepts/orca-record.md) | Session recording architecture and usage |
 
 ---
 
@@ -56,7 +56,7 @@ Each development lane has its own pipeline with specific agents, phases, and gat
 | Lane | Pipeline Doc | Entry Command |
 |------|-------------|---------------|
 | OS Development | [os-dev-pipeline.md](pipelines/os-dev-pipeline.md) | `/orca-os-dev` |
-| Requirements | [requirements-pipeline.md](pipelines/requirements-pipeline.md) | `/plan` |
+| Requirements | [requirements-pipeline.md](pipelines/requirements-pipeline.md) | `/requirements` |
 | RVRY | [rvry-pipeline.md](pipelines/rvry-pipeline.md) | `/rvry` |
 | Research | [research-pipeline.md](pipelines/research-pipeline.md) | `/research` |
 | SEO Content | [seo-pipeline.md](pipelines/seo-pipeline.md) | `/seo` |
@@ -78,7 +78,6 @@ Technical specifications and standards:
 | [Graduated Gate Scoring](reference/graduated-gate-scoring.md) | Gate thresholds and scoring methodology |
 | [MCP Project Config](reference/mcp-project-config.md) | Project-scoped MCP configuration |
 | [MCP Scoping Strategy](reference/mcp-scoping-strategy.md) | How MCPs are scoped to projects |
-| [Telemetry Standard](reference/telemetry-standard.md) | Logging and telemetry conventions (deprecated -- use orca-record) |
 | [OS Dependency Graph](reference/os-dependency-graph.yaml) | Source of truth for all agents, commands, and pipelines |
 
 ---
@@ -88,7 +87,7 @@ Technical specifications and standards:
 For day-to-day usage, see the quick-reference guides:
 
 - **[ORCA Commands](../quick-reference/ORCA-OS/ORCA-commands.md)** - All 37 commands
-- **[ORCA Agents](../quick-reference/ORCA-OS/ORCA-agents.md)** - All 131 agents
+- **[ORCA Agents](../quick-reference/ORCA-OS/ORCA-agents.md)** - All 123 agents
 - **[ORCA Architecture](../quick-reference/ORCA-OS/ORCA-architecture.md)** - System architecture overview
 - **[ORCA MCPs](../quick-reference/ORCA-OS/ORCA-mcps.md)** - MCP server reference
 - **[ORCA Verification](../quick-reference/ORCA-OS/ORCA-verification.md)** - Verification patterns
@@ -114,17 +113,17 @@ For day-to-day usage, see the quick-reference guides:
 
 ## Agent Roster
 
-See [agent-index.md](agent-index.md) for the complete agent inventory. 131 agents across 14 domains:
+See [agent-index.md](agent-index.md) for the complete agent inventory. 123 agents across 14 domains:
 
 | Domain | Count | Directory |
 |--------|-------|-----------|
-| iOS | 19 | `agents/iOS/` |
+| iOS | 18 | `agents/iOS/` |
 | Next.js | 15 | `agents/nextjs/` |
 | Django-React | 13 | `agents/django-react/` |
 | Expo/React Native | 12 | `agents/expo/` |
-| Dev (cross-domain) | 12 | `agents/dev/` |
+| Dev (cross-domain) | 13 | `agents/dev/` |
 | OS-Dev | 11 | `agents/os-dev/` |
-| Audit | 8 | `agents/audit/` |
+| Audit | 0 (agentless) | `commands/audit.md` |
 | Research | 7 | `agents/research/` |
 | RVRY | 7 | `agents/rvry/` |
 | Typography | 6 | `agents/typography/` |
@@ -146,11 +145,11 @@ docs/
 +-- DOCUMENTATION.md       <- You are here
 +-- agent-index.md         <- Agent roster
 +-- changelog.md           <- Version history
-+-- concepts/              <- Core concepts (13 docs)
++-- concepts/              <- Core concepts (11 docs)
 +-- pipelines/             <- Lane-specific pipelines (15 docs)
 +-- reference/             <- Technical specifications
 ```
 
 ---
 
-_ORCA-OS v6.4 | See [quick-reference/](../quick-reference/) for day-to-day guides_
+_ORCA-OS v7.0 | See [quick-reference/](../quick-reference/) for day-to-day guides_

@@ -11,13 +11,6 @@ tools: Read, Write, Edit, MultiEdit, Grep, Glob, Bash
 You are the Django backend specialist focused on data modeling, ORM operations,
 migrations, and admin interface customization.
 
-## Knowledge Loading
-
-Before starting any task:
-1. Check if `.claude/agent-knowledge/django-master/patterns.json` exists
-2. If exists, read and apply relevant patterns
-3. Track which patterns you apply
-
 ## Required Skills
 
 You MUST apply these skills:

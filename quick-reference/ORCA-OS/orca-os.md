@@ -73,7 +73,7 @@ Key concepts:
 When to read: You want work executed reliably with verification, not self-reported completion.
 
 Key concepts:
-- `/plan` -> `/orca-{domain}` workflow
+- `/requirements` -> `/{domain}` workflow
 - Routing modes (default/tweak/complex)
 - Role separation (orchestrators/builders/gates)
 - Response Awareness annotations for visible assumptions
@@ -85,10 +85,9 @@ Key concepts:
 When to read: You want the system to get better over time, not repeat the same mistakes.
 
 Key concepts:
-- Three learning levels (agent/gate/conversation)
+- Gate-level learning: standards from failures fed back to builders
 - Reflexion-based gate learning (NeurIPS 2023)
-- `/reflect` for extracting rules from your corrections
-- Improvement bus unifying all learning loops
+- Standards loop: gates write structured failures, builders receive them via ProjectContext
 
 ---
 
@@ -108,7 +107,7 @@ Key concepts:
 /think --systems How does our auth work?
 
 # 2. Plan the implementation
-/plan Add social login to the auth flow
+/requirements Add social login to the auth flow
 
 # 3. Execute with orchestration
 /nextjs   # or /ios, /expo, /django-react
@@ -125,7 +124,7 @@ Key concepts:
 
 ```bash
 # Major feature, full ceremony
-/plan --complex "implement checkout flow"
+/requirements --complex "implement checkout flow"
 /nextjs --complex "implement requirement checkout-flow"
 ```
 
@@ -137,10 +136,10 @@ Key concepts:
 |-----------|------------|
 | "I'm confused about this problem" | [Cognition](../cognition.md) - `/deepthink` |
 | "Why did we choose X?" | [Memory](ORCA-memory.md) - `/project-memory why` or `workshop why "X"` |
-| "Build this feature" | [Orchestration](../orchestration.md) - `/plan` -> `/orca-*` |
+| "Build this feature" | [Orchestration](../orchestration.md) - `/requirements` -> `/{domain}` |
 | "Quick fix" | [Orchestration](../orchestration.md) - `/{domain} -tweak` |
 | "Is this a good idea?" | [Cognition](../cognition.md) - `/challenge` |
-| "Same bug keeps happening" | [Learning](ORCA-learning.md) - `/reflect` |
+| "Same bug keeps happening" | [Learning](ORCA-learning.md) - standards loop |
 
 ---
 
@@ -159,7 +158,7 @@ For significant features, use everything:
 /challenge Rebuild checkout with progressive disclosure
 
 # 4. ORCHESTRATION: Plan implementation
-/plan Implement progressive checkout redesign
+/requirements Implement progressive checkout redesign
 
 # 5. ORCHESTRATION: Execute with verification
 /nextjs   # Reads spec, assembles team, runs gates
@@ -181,4 +180,4 @@ Next time you work on checkout, memory loads what you learned. Gates check what 
 
 ---
 
-_Version: OS 6.4_
+_Version: OS 7.0_

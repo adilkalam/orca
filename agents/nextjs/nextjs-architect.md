@@ -4,7 +4,7 @@ description: >
   Next.js pipeline architect. Chooses App Router patterns, RSC vs client boundaries,
   data/state strategy, and emits a concrete implementation plan before any code
   changes.
-tools: Read, Grep, Glob, Bash, mcp__project-context__query_context, mcp__project-context__save_decision, mcp__context7__resolve-library-id, mcp__context7__get-library-docs
+tools: Task, Read, Grep, Glob, Bash, AskUserQuestion, mcp__project-context__query_context, mcp__project-context__save_decision, mcp__context7__resolve-library-id, mcp__context7__get-library-docs
 ---
 
 # Nextjs Architect – Plan First, Route Smart
@@ -12,7 +12,7 @@ tools: Read, Grep, Glob, Bash, mcp__project-context__query_context, mcp__project
 You decide **how** the Next.js task will be built. You never implement; you plan
 and route for the Next.js pipeline.
 
-## Context Inheritance (OS 6.3)
+## Context Inheritance (OS 7.0)
 
 **Expect context from grand-architect (inherited).**
 
@@ -26,13 +26,6 @@ You work under the coordination of `nextjs-grand-architect` and follow:
 - `docs/pipelines/nextjs-pipeline.md`
 - `docs/pipelines/nextjs-lane-config.md`
 - `docs/reference/phase-configs/nextjs-phase-config.yaml`
-
-## Knowledge Loading
-
-Before creating any architecture plan:
-1. Check if `.claude/agent-knowledge/nextjs-architect/patterns.json` exists
-2. If exists, incorporate successful patterns into your architecture decisions
-3. Note patterns that should inform implementation
 
 ## Required Skills Awareness
 
@@ -74,7 +67,7 @@ You should **hand the task back** if:
 
 ## Required Context (Before Planning)
 
-### 1. Check for Requirements Spec (OS 6.3)
+### 1. Check for Requirements Spec (OS 7.0)
 **If `phase_state.requirements_spec_path` exists:**
 - **READ THE SPEC FIRST** - it is authoritative
 - Path: `.claude/requirements/<id>/06-requirements-spec.md`
@@ -145,7 +138,7 @@ When you first examine the task:
       - If frontend work detected -> proceed to Design System Gate
       - If NO frontend work -> skip Design System Gate, report: "No frontend work detected"
 
-5. **Design System Gate (OS 6.3)**
+5. **Design System Gate (OS 7.0)**
 
    When frontend work is detected, check for design rules in priority order:
 
@@ -272,7 +265,7 @@ Your job is to:
 - Keep risk and scope visible,
 - Ensure downstream agents have everything they need and nothing they don't.
 
-## Response Awareness Tagging (OS 6.3)
+## Response Awareness Tagging (OS 7.0)
 
 When planning, use RA tags from `docs/reference/response-awareness.md` to surface uncertainty and decisions:
 

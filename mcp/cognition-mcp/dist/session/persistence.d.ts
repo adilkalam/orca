@@ -1,9 +1,11 @@
 /**
- * Persistence Layer - Per-project + global fallback storage
+ * Persistence Layer - Global storage at ~/.orca-cognition/
  *
- * Per-project: {projectPath}/.claude/.cognition/sessions/{sessionId}/
- * Global fallback: ~/.orca-cognition/sessions/ (unattributed sessions)
+ * All sessions: ~/.orca-cognition/sessions/{sessionId}/
  * Global index: ~/.orca-cognition/index.jsonl (cross-project search)
+ *
+ * projectPath is stored in session metadata for attribution but does NOT
+ * affect storage location. All machine-readable data is global.
  *
  * Append-only JSONL format for each store type.
  * Prevents corruption and allows streaming reads.
@@ -11,21 +13,19 @@
 import type { SessionMetadata, SessionStores, SessionExport, StoredEntry } from '../types.js';
 import { SessionState } from './state.js';
 /**
- * Resolve the base cognition directory for a project or global.
+ * Resolve the base cognition directory. Always global.
+ * _projectPath accepted for backward compatibility but ignored.
  */
-export declare function resolveBaseDir(projectPath?: string): string;
+export declare function resolveBaseDir(_projectPath?: string): string;
 /**
- * Resolve the sessions directory for a project or global.
+ * Resolve the sessions directory. Always global.
  */
-export declare function resolveSessionsDir(projectPath?: string): string;
-/**
- * Resolve the exports directory for a project or global.
- */
-export declare function resolveExportsDir(projectPath?: string): string;
+export declare function resolveSessionsDir(_projectPath?: string): string;
 /**
  * Ensure all required directories exist.
+ * _projectPath accepted for backward compatibility but ignored.
  */
-export declare function ensureDirectories(projectPath?: string): void;
+export declare function ensureDirectories(_projectPath?: string): void;
 /**
  * Append/update entry in global index.
  * Called on every session metadata save.
@@ -36,18 +36,22 @@ export declare function updateGlobalIndex(metadata: SessionMetadata): void;
  */
 export declare function saveSessionMetadata(session: SessionState): Promise<void>;
 /**
+ * Save protocol state to protocol.json
+ * Called after checkpoint modifies protocol state.
+ */
+export declare function saveProtocolState(session: SessionState): void;
+/**
  * Append a single entry to the appropriate JSONL file.
  * This is the core of append-only persistence.
  */
 export declare function appendEntry(sessionId: string, storeType: keyof SessionStores, entry: StoredEntry<unknown>, projectPath?: string): void;
 /**
- * Load session from filesystem.
- * Checks project-local first, then global fallback.
- * Returns null if session doesn't exist in either location.
+ * Load session from filesystem. Always from global storage.
+ * _projectPath accepted for backward compatibility but ignored.
  */
-export declare function loadSession(sessionId: string, projectPath?: string): Promise<SessionState | null>;
+export declare function loadSession(sessionId: string, _projectPath?: string): Promise<SessionState | null>;
 /**
- * Export complete session to exports directory.
+ * Export complete session to session directory.
  * Called when nextThoughtNeeded: false
  */
 export declare function exportSession(session: SessionState): Promise<string>;
@@ -56,11 +60,13 @@ export declare function exportSession(session: SessionState): Promise<string>;
  */
 export declare function importSession(data: SessionExport): Promise<SessionState>;
 /**
- * Check if session exists (project-local or global).
+ * Check if session exists in global storage.
+ * _projectPath accepted for backward compatibility but ignored.
  */
-export declare function sessionExists(sessionId: string, projectPath?: string): boolean;
+export declare function sessionExists(sessionId: string, _projectPath?: string): boolean;
 /**
- * List all session IDs for a project (or global).
+ * List all session IDs from global storage.
+ * _projectPath accepted for backward compatibility but ignored.
  */
-export declare function listSessions(projectPath?: string): Promise<string[]>;
+export declare function listSessions(_projectPath?: string): Promise<string[]>;
 //# sourceMappingURL=persistence.d.ts.map

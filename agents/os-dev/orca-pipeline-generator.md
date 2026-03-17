@@ -33,7 +33,7 @@ Write({
 
 ---
 
-## Context Inheritance (OS 6.3)
+## Context Inheritance (OS 7.0)
 
 **Check for inherited context FIRST:**
 
@@ -50,15 +50,6 @@ Write({
 
 ---
 
-## Knowledge Loading
-
-Before generating:
-1. Check if `.claude/agent-knowledge/orca-pipeline-generator/patterns.json` exists
-2. If exists, review patterns for file generation
-3. Apply proven patterns to current generation
-
----
-
 ## Required Skills
 
 Apply these skills during generation:
@@ -67,7 +58,7 @@ Apply these skills during generation:
 
 ---
 
-## Attempt Tracking (OS 6.3)
+## Attempt Tracking (OS 7.0)
 
 Track generation attempts:
 
@@ -117,7 +108,7 @@ files_failed: []
 
 ```markdown
 ---
-description: "OS 6.3 <domain> pipeline - <description>"
+description: "OS 7.0 <domain> pipeline - <description>"
 argument-hint: "[-tweak | --complex] <task-description>"
 allowed-tools:
   - Task
@@ -147,7 +138,7 @@ This slash command EXISTS to delegate work to agents. Not to do work directly.
 
 ---
 
-# /<domain> – <Description> (OS 6.3)
+# /<domain> – <Description> (OS 7.0)
 
 <Brief description of what this pipeline does>
 
@@ -233,7 +224,7 @@ tools: <comma-separated tool list>
 
 ---
 
-## Context Inheritance (OS 6.3)
+## Context Inheritance (OS 7.0)
 
 **Check for inherited context FIRST:**
 
@@ -242,15 +233,6 @@ tools: <comma-separated tool list>
    - USE the inherited bundle
    - DO NOT call `mcp__project-context__query_context`
 3. Extract relevant context from bundle
-
----
-
-## Knowledge Loading
-
-Before starting:
-1. Check if `.claude/agent-knowledge/<domain>-<role>/patterns.json` exists
-2. If exists, review patterns for this role
-3. Apply proven patterns to current task
 
 ---
 
@@ -265,7 +247,7 @@ Apply these skills:
 
 ---
 
-## Attempt Tracking (OS 6.3)
+## Attempt Tracking (OS 7.0)
 
 Track attempts internally:
 
@@ -307,7 +289,7 @@ If task fails 3 times, escalate to orchestrator.
 ```markdown
 # <Domain> Pipeline
 
-**Status:** OS 6.3 Domain Pipeline
+**Status:** OS 7.0 Domain Pipeline
 **Domain:** `<domain>`
 **Last Updated:** <date>
 

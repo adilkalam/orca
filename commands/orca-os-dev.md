@@ -1,5 +1,5 @@
 ---
-description: "OS 6.3 orchestrator entrypoint for OS / Claude Code configuration tasks (LOCAL to this repo)"
+description: "OS 7.0 orchestrator entrypoint for OS / Claude Code configuration tasks (LOCAL to this repo)"
 argument-hint: "[--light | -tweak | --complex] <task description or requirement ID>"
 allowed-tools:
   - Task
@@ -103,10 +103,10 @@ Even `-tweak` delegates to a builder. It skips gates, not agents.
 
 ---
 
-# /orca-os-dev – OS / Tooling Orchestrator (OS 6.3)
+# /orca-os-dev -- OS / Tooling Orchestrator (OS 7.0)
 
 Use this command when the task is clearly OS / Claude Code / tooling
-configuration work for **Vibe OS 6.3**, not application code.
+configuration work for **Vibe OS 7.0**, not application code.
 
 **IMPORTANT: This command is LOCAL to ORCA-OS repo only.**
 It is NOT deployed to `~/.claude` global config. Use `/orca-os-dev` only
@@ -123,9 +123,9 @@ when working in this repository to modify the OS itself.
 Examples:
 
 - Adjust lane/phase config behavior (Next.js, iOS, etc.)
-- Add or update commands/agents/skills used by OS 6.3
-- Configure MCP servers and integrate them into OS 6.3 lanes
-- Change how memory and context are used by `/plan` / `/orca` / `/audit`
+- Add or update commands/agents/skills used by OS 7.0
+- Configure MCP servers and integrate them into OS 7.0 lanes
+- Change how memory and context are used by `/requirements` / `/orca` / `/audit`
 
 **Key Resources:**
 - `docs/pipelines/os-dev-pipeline.md` - Pipeline specification
@@ -143,15 +143,15 @@ Before any implementation:
 4. Ensure ALL affected files are in scope
 
 **Documentation sync is REQUIRED:**
-- Agent changes → update `quick-reference/ORCA-OS/ORCA-agents.md`
-- Command changes → update `quick-reference/ORCA-OS/ORCA-commands.md`
-- MCP changes → update `quick-reference/ORCA-OS/ORCA-mcps.md`
-- Lane changes → update `quick-reference/ORCA-OS/ORCA-architecture.md`
-- ALL changes → update `docs/reference/os-dependency-graph.yaml`
+- Agent changes -> update `quick-reference/ORCA-OS/ORCA-agents.md`
+- Command changes -> update `quick-reference/ORCA-OS/ORCA-commands.md`
+- MCP changes -> update `quick-reference/ORCA-OS/ORCA-mcps.md`
+- Lane changes -> update `quick-reference/ORCA-OS/ORCA-architecture.md`
+- ALL changes -> update `docs/reference/os-dependency-graph.yaml`
 
 **Standards gate will FAIL if documentation is not synced.**
 
-##  CRITICAL ROLE BOUNDARY 
+## CRITICAL ROLE BOUNDARY
 
 **YOU ARE AN ORCHESTRATOR. YOU NEVER WRITE CONFIG OR CODE.**
 
@@ -173,15 +173,15 @@ Your only job is to coordinate agents via `Task`.
 
 **Check for flags:**
 ```
-$ARGUMENTS contains "--light" → Section 1 (Light Orchestrator, NO confirmation)
-$ARGUMENTS contains "-tweak" → Section 1 (Builder Direct, NO confirmation)
-$ARGUMENTS contains "--complex" → Full pipeline with confirmation (Section 0)
-No flag → Light Orchestrator WITH confirmation (Section 1 via confirmation)
+$ARGUMENTS contains "--light" → Section 1.1 (Light Orchestrator, NO confirmation)
+$ARGUMENTS contains "-tweak" → Section 1.2 (Builder Direct, NO confirmation)
+$ARGUMENTS contains "--complex" → Section 2 (Full Pipeline with confirmation)
+No flag → Section 2 (Light Orchestrator WITH confirmation)
 ```
 
 ---
 
-## 0.1 Recording Context (OS 6.3)
+## 0.1 Recording Context (OS 7.0)
 
 > Session activity is captured automatically by **orca-record** hooks. Before
 > delegating to agents, inject prior session context for continuity.
@@ -228,16 +228,14 @@ the delegation prompt. If present, use it directly and skip the query below.
 
 ---
 
-## 1. Light Path Flow (--light and -tweak modes, or Default after confirmation)
+## 1. Light Path Flow (--light and -tweak modes ONLY)
 
-This section applies when:
-- `--light` flag: Delegate directly to `os-dev-light-orchestrator`, skip confirmation
-- `-tweak` flag: Delegate directly to `os-dev-builder`, skip confirmation
-- Default (no flag) after confirmation: Route here from Section 0
+This section applies ONLY when user passes `--light` or `-tweak` flags.
+Default (no flag) goes to Section 2 for confirmation first.
 
 ### 1.1 --light Flag - Light Path WITHOUT Confirmation
 
-Delegate to `os-dev-light-orchestrator` directly.
+Delegate to `os-dev-light-orchestrator` directly. Skip Section 2.
 
 **Context Inheritance Protocol (--light mode):**
 
@@ -252,6 +250,9 @@ CONTEXT_MODE: full
 DO_NOT_QUERY: true
 
 <ContextBundle JSON if queried, or "narrow query needed" if memory-first>
+
+STANDARDS (from previous gate failures):
+<list each relatedStandard.rule as a bullet, prefixed by domain>
 ===
 
 CRITICAL: You received context above. DO NOT call mcp__project-context__query_context.
@@ -316,22 +317,15 @@ ROUTING MODE: tweak (pure speed)
 
 ---
 
-### 1.3 Default (no flag) - Light Path WITH Confirmation
+## 2. Pipeline Flow with Confirmation (Default and --complex modes)
 
-For default mode (no flag), go to Section 0 for team confirmation first.
-After user confirms, route back here to delegate to `os-dev-light-orchestrator`.
+This section applies when:
+- **Default (no flag)**: Routes to light-orchestrator AFTER confirmation
+- **--complex flag**: Routes to grand-architect AFTER confirmation
 
----
+### 2.1 Team Confirmation (MANDATORY - BLOCKING)
 
-### --complex Flag - Full Pipeline (Grand-Architect + All Gates)
-
-Continue with full orchestration below (Section 0).
-
-**0) Team Confirmation (MANDATORY - BLOCKING)**
-
-**This applies to both Default (no flag) and --complex modes.**
-
-**DO NOT PROCEED TO STEP 1 WITHOUT USER CONFIRMATION**
+**DO NOT PROCEED TO SECTION 2.2 WITHOUT USER CONFIRMATION**
 
 **This is a TWO-STEP process. You MUST do both steps.**
 
@@ -422,13 +416,13 @@ AskUserQuestion({
 
 **After presenting the confirmation question:**
 1. STOP and wait for user response
-2. If user says "Yes, proceed" → Route based on mode (see below)
-3. If user says "Modify team" → ask what to change, update, re-output team, re-confirm
-4. If user says "Switch to --light" → delegate to os-dev-light-orchestrator directly (Section 1.1)
+2. If user says "Yes, proceed" -> Route based on mode (see below)
+3. If user says "Modify team" -> ask what to change, update, re-output team, re-confirm
+4. If user says "Switch to --light" -> delegate to os-dev-light-orchestrator directly (Section 1.1)
 
 **After confirmation received - ROUTING:**
-- If `--complex` flag → Continue to Step 1) Intake below (full pipeline)
-- If default (no flag) → Delegate to `os-dev-light-orchestrator` (Section 1.1, fast with gates)
+- If `--complex` flag -> Continue to Section 2.2 Intake below (full pipeline)
+- If default (no flag) -> Delegate to `os-dev-light-orchestrator` (Section 1.1, fast with gates)
 
 **Anti-patterns (WRONG):**
 - Putting the team list inside AskUserQuestion options
@@ -439,7 +433,7 @@ AskUserQuestion({
 
 ---
 
-### 1) Intake
+### 2.2 Intake (--complex only)
 
 1. OS-Dev work uses full pipeline by default (routing_mode: "complex")
 2. Write `phase_state.intake` in `.claude/orchestration/phase_state.json`:
@@ -451,7 +445,7 @@ Then delegate to `os-dev-grand-architect` via `Task` with Context Inheritance:
 
 **Context Inheritance Protocol (--complex mode):**
 
-After the ProjectContext query in Step 3, wrap the delegation with inheritance headers:
+After the ProjectContext query in Section 2.4, wrap the delegation with inheritance headers:
 
 ```
 Task({
@@ -463,7 +457,10 @@ CONTEXT_SOURCE: /orca-os-dev
 CONTEXT_MODE: full
 DO_NOT_QUERY: true
 
-<ContextBundle JSON from Step 3>
+<ContextBundle JSON from Section 2.4>
+
+STANDARDS (from previous gate failures):
+<list each relatedStandard.rule as a bullet, prefixed by domain>
 ===
 
 CRITICAL: You received context above. DO NOT call mcp__project-context__query_context.
@@ -476,7 +473,7 @@ Use the inherited bundle. You MAY supplement with targeted file reads if needed.
 
 ---
 
-### 2) Memory-First Context
+### 2.3 Memory-First Context (--complex only)
 
 Working with `os-dev-grand-architect`:
 
@@ -486,7 +483,7 @@ Working with `os-dev-grand-architect`:
    python3 ~/.claude/scripts/memory-search-unified.py "$TASK_SUMMARY" --mode all --top-k 10 || true
    ```
 
-2. Load relevant reflexions from past gate failures (OS 6.3):
+2. Load relevant reflexions from past gate failures (OS 7.0):
 
    ```bash
    workshop --workspace .claude/memory search "reflexion" -t os-dev --limit 5 2>/dev/null || true
@@ -502,14 +499,14 @@ If the script is unavailable, note this and continue with ProjectContext.
 
 ---
 
-### 3) ProjectContext Query (Cached)
+### 2.4 ProjectContext Query (--complex only)
 
 Call `mcp__project-context__query_context`:
 
 - `domain: "os-dev"`
 - `task`: short summary
 - `projectPath`: repo root
-- `maxFiles`: 10–15
+- `maxFiles`: 10-15
 - `includeHistory: true`
 
 Assume SharedContext caching is configured at the MCP layer; do not call this
@@ -519,7 +516,7 @@ Write a brief `context_bundle_summary` into `phase_state.context_query`.
 
 ---
 
-### 4) Requirements Spec (Complex Only)
+### 2.5 Requirements Spec (--complex only)
 
 For `complex` changes:
 
@@ -535,7 +532,7 @@ For `complex` changes:
    - Instruct the user to run:
 
      ```text
-     /plan "Short description of the OS-Dev change"
+     /requirements "Short description of the OS-Dev change"
      ```
 
    - Then stop the lane until a spec exists.
@@ -546,7 +543,7 @@ For `simple` and `medium` tasks, specs are optional but encouraged.
 
 ---
 
-### 5) Planning – OS-Dev Architect
+### 2.6 Planning -- OS-Dev Architect (--complex only)
 
 Delegate to `os-dev-architect` via `Task`:
 
@@ -572,7 +569,7 @@ Expect `os-dev-architect` to populate `phase_state.planning`:
 
 ---
 
-### 6) Implementation – Pass 1 (OS-Dev Builder)
+### 2.7 Implementation -- Pass 1 (--complex only)
 
 Delegate to `os-dev-builder`:
 
@@ -594,7 +591,7 @@ Ensure `files_modified` remain within allowed OS-Dev surfaces.
 
 ---
 
-### 7) Standards & Safety Gate
+### 2.8 Standards & Safety Gate (--complex only)
 
 Delegate to `os-dev-standards-enforcer`:
 
@@ -618,11 +615,11 @@ Expect `phase_state.gates.os_dev_standards_gate` to be populated:
 - `dependency_graph_update` was true but `dependency_graph_updated` is false
 
 If `gate_decision == "ERROR"` or `"BLOCK"` and a corrective pass is allowed, proceed to
-Implementation Pass 2.
+Section 2.9.
 
 ---
 
-### 8) Corrective Implementation – Pass 2 (Optional)
+### 2.9 Corrective Implementation -- Pass 2 (--complex only, optional)
 
 If gates fail:
 
@@ -637,7 +634,7 @@ remaining risks.
 
 ---
 
-### 9) Verification – OS-Dev Verification Agent
+### 2.10 Verification (--complex only)
 
 Delegate to `os-dev-verification`:
 
@@ -657,7 +654,7 @@ If verification fails:
 
 ---
 
-### 10) Completion & Learning
+### 2.11 Completion & Learning
 
 Once standards and verification gates have passed (or the user explicitly
 accepts residual risk):
@@ -699,7 +696,7 @@ accepts residual risk):
    - `domain: "os-dev"`
    - `task`: short description
    - `outcome`: e.g. `"success"`, `"partial"`, `"abandoned"`
-   - `learnings`: 3–7 bullets
+   - `learnings`: 3-7 bullets
    - `files_modified`
 5. For recurring issues resolved by this task:
    - Use `mcp__project-context__save_standard` to codify OS-Dev standards.
@@ -712,7 +709,7 @@ Return a concise report to the user emphasizing:
 
 ---
 
-## 4. State Preservation & Session Continuity
+## 3. State Preservation & Session Continuity
 
 When the user interrupts (questions, clarifications, test results, pauses):
 
@@ -737,25 +734,25 @@ When the user interrupts (questions, clarifications, test results, pauses):
    - Resume from current phase AFTER confirmation
 
 5. Resume from the appropriate phase (after confirmation):
-   - If planning incomplete → continue with `os-dev-architect`.
-   - If in implementation → continue with `os-dev-builder`.
-   - If in gates → continue with `os-dev-standards-enforcer`.
-   - If in verification → continue with `os-dev-verification`.
+   - If planning incomplete -> continue with `os-dev-architect`.
+   - If in implementation -> continue with `os-dev-builder`.
+   - If in gates -> continue with `os-dev-standards-enforcer`.
+   - If in verification -> continue with `os-dev-verification`.
    - Update `phase_state` as new information arrives.
 
 6. **Anti-Pattern Detection:**
-   - "Let me edit this config" → WRONG. Delegate to os-dev-builder
-   - "I'll fix this directly" → WRONG. Delegate to appropriate agent
-   - Using Edit/Write tools → WRONG. You're an orchestrator
-   - Resuming without confirmation → WRONG. Must re-confirm first
-   - "Based on feedback, re-confirming plan..." → CORRECT
-   - "Based on feedback, delegating to os-dev-builder..." → WRONG (skipped confirmation)
+   - "Let me edit this config" -> WRONG. Delegate to os-dev-builder
+   - "I'll fix this directly" -> WRONG. Delegate to appropriate agent
+   - Using Edit/Write tools -> WRONG. You're an orchestrator
+   - Resuming without confirmation -> WRONG. Must re-confirm first
+   - "Based on feedback, re-confirming plan..." -> CORRECT
+   - "Based on feedback, delegating to os-dev-builder..." -> WRONG (skipped confirmation)
 
 User questions **do not** reset your role or the pipeline.
 
 ---
 
-##  Session Logging
+## Session Logging
 
 For significant OS-Dev sessions, create a log file in `logs/`:
 

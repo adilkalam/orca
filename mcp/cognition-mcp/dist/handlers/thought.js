@@ -36,6 +36,7 @@ export async function handleThought(args, session) {
         content: thoughtContent, // UNCHANGED - exact same content that came in
         quality: args.quality, // UNCHANGED - Claude's self-assessment
         timestamp: Date.now(),
+        ...(args.tokenEstimate !== undefined ? { tokenEstimate: args.tokenEstimate } : {}),
     };
     // 3. PERSIST to filesystem
     await manager.addEntry(session, 'thoughts', entry);

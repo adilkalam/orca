@@ -53,17 +53,17 @@ The key inversion: **work isn't done until evidence exists.** A builder claiming
 Two commands cover most work:
 
 ```
-/plan  -->  /orca-{domain}
+/requirements  -->  /{domain}
   |              |
 PLAN IT      BUILD IT
 ```
 
-### /plan: Requirements First
+### /requirements: Requirements First
 
 For anything beyond trivial changes:
 
 ```bash
-/plan Add user authentication
+/requirements Add user authentication
 ```
 
 This runs:
@@ -73,7 +73,7 @@ This runs:
 
 The spec becomes the source of truth. Decisions are locked. The builder follows the plan, not its own ideas.
 
-### /orca-{domain}: Execute
+### /{domain}: Execute
 
 After planning (or for simple tasks, directly):
 
@@ -101,7 +101,7 @@ Not all tasks need the same ceremony. ORCA routes based on complexity:
 |------|------|-------|----------|
 | **Default** | (none) | YES | Most work -- fast with quality checks |
 | **Tweak** | `-tweak` | NO | Speed iteration, you verify |
-| **Complex** | `--complex` | YES | Architecture, multi-file, risky. Requires spec from `/plan` |
+| **Complex** | `--complex` | YES | Architecture, multi-file, risky. Requires spec from `/requirements` |
 | **Audit** | `--audit` | NO | Review only -- produces report, no changes |
 
 ### Default Mode (Light + Gates)
@@ -138,13 +138,13 @@ For architectural changes, multi-file refactors, security work.
 
 **Route**: Grand architect -> specialists -> gates -> verification
 
-**Requires a spec.** If you try `--complex` without running `/plan` first:
+**Requires a spec.** If you try `--complex` without running `/requirements` first:
 
 ```
 BLOCKED: Complex task requires a spec.
 
 Run first:
-  /plan "implement checkout flow"
+  /requirements "implement checkout flow"
 
 Then return with:
   /nextjs "implement requirement checkout-flow"
@@ -154,7 +154,7 @@ This prevents diving into major work without planning.
 
 ---
 
-## Recording Context Injection (OS 6.4)
+## Recording Context Injection (OS 7.0)
 
 Domain commands inject prior session context from `.orca/recording.db` before delegating to agents. This provides continuity across sessions.
 
@@ -294,11 +294,11 @@ When `/audit` finds the same RA assumption recurring (e.g., "mobile breakpoint 7
 |-----------|---------|
 | "Fix typo in README" | `/nextjs -tweak "fix typo"` |
 | "Update button colors" | `/nextjs "update button colors"` |
-| "Add user profile screen" | `/plan` first, then `/ios` |
-| "Implement payment flow" | `/plan --complex`, then `/nextjs --complex` |
+| "Add user profile screen" | `/requirements` first, then `/ios` |
+| "Implement payment flow" | `/requirements --complex`, then `/nextjs --complex` |
 | "How's our code quality?" | `/ios --audit` |
 
-**Rule of thumb**: If you'd hesitate to start coding without thinking it through, run `/plan` first.
+**Rule of thumb**: If you'd hesitate to start coding without thinking it through, run `/requirements` first.
 
 ---
 
@@ -349,11 +349,11 @@ The main `/orca` command auto-detects domain based on project files and routes a
 
 ```bash
 # Planning
-/plan "description"                # Standard planning
-/plan --explore "description"      # Divergent exploration
-/plan --problem-solve "description"  # Convergent analysis
-/plan -tweak "description"         # Quick scope only
-/plan --complex "description"      # Deep analysis
+/requirements "description"                # Standard planning
+/requirements --explore "description"      # Divergent exploration
+/requirements --problem-solve "description"  # Convergent analysis
+/requirements -tweak "description"         # Quick scope only
+/requirements --complex "description"      # Deep analysis
 
 # Execution
 /nextjs "task"                     # Default (with gates)
@@ -379,7 +379,7 @@ The main `/orca` command auto-detects domain based on project files and routes a
 
 | Location | Purpose |
 |----------|---------|
-| `.claude/requirements/` | Specs from /plan |
+| `.claude/requirements/` | Specs from /requirements |
 | `.claude/orchestration/phase_state.json` | Current task state |
 | `.claude/orchestration/evidence/` | Gate reports, audit logs |
 
@@ -408,9 +408,9 @@ This is why the four systems (cognition, memory, orchestration, learning) work t
 - `docs/concepts/pipeline-model.md` - Full architecture reference
 - `docs/concepts/complexity-routing.md` - Routing mode details
 - `docs/concepts/response-awareness.md` - Complete RA tag reference
-- `commands/plan.md` - Complete /plan specification
+- `commands/requirements.md` - Complete /requirements specification
 - `commands/orca.md` - Complete /orca specification
 
 ---
 
-_Version: OS 6.4 | Orchestration is execution, made reliable._
+_Version: OS 7.0 | Orchestration is execution, made reliable._

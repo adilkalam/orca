@@ -1,9 +1,9 @@
-# Requirements Pipeline Phase Configuration - OS 6.4
+# Requirements Pipeline Phase Configuration - OS 7.0
 
 pipeline:
   name: requirements
-  description: Requirements gathering lane for OS 6.4
-  version: "6.0"
+  description: Requirements gathering lane for OS 7.0
+  version: "7.0"
 
 context:
   provider: ProjectContextServer
@@ -43,7 +43,7 @@ tiers:
 
 phases:
   - name: setup
-    agent: plan-command  # /plan command handles requirements directly (no helper agent)
+    agent: requirements-command  # /requirements command handles requirements directly (no helper agent)
     description: Initialize requirement folder, metadata, and initial context
     context_required: true
     outputs:
@@ -53,7 +53,7 @@ phases:
       scope: Create docs only, no implementation
 
   - name: discovery_questions
-    agent: plan-command  # /plan command handles requirements directly (no helper agent)
+    agent: requirements-command  # /requirements command handles requirements directly (no helper agent)
     description: Ask 5 high-level yes/no discovery questions with smart defaults
     dependencies:
       - setup
@@ -66,7 +66,7 @@ phases:
       quality: Exactly 5 questions, yes/no with defaults
 
   - name: context_findings
-    agent: plan-command  # /plan command handles requirements directly (no helper agent)
+    agent: requirements-command  # /requirements command handles requirements directly (no helper agent)
     description: Targeted code/context analysis informed by discovery answers
     dependencies:
       - discovery_questions
@@ -78,7 +78,7 @@ phases:
       scope: Read-only analysis of codebase
 
   - name: detail_questions
-    agent: plan-command  # /plan command handles requirements directly (no helper agent)
+    agent: requirements-command  # /requirements command handles requirements directly (no helper agent)
     description: Ask 5 expert-level yes/no questions referencing specific code
     dependencies:
       - context_findings
@@ -91,7 +91,7 @@ phases:
       quality: Exactly 5 questions, tied to concrete files/patterns
 
   - name: spec
-    agent: plan-command  # /plan command handles requirements directly (no helper agent)
+    agent: requirements-command  # /requirements command handles requirements directly (no helper agent)
     description: Generate final requirements spec and update indexes
     dependencies:
       - detail_questions
@@ -105,7 +105,7 @@ phases:
 
   # Explore tier phases
   - name: exploration
-    agent: plan-command  # /plan command handles requirements directly (no helper agent)
+    agent: requirements-command  # /requirements command handles requirements directly (no helper agent)
     description: Run full deepthink-style divergent exploration
     dependencies:
       - setup
@@ -120,7 +120,7 @@ phases:
       self_check: Mandatory after each mode
 
   - name: minimal_questions
-    agent: plan-command  # /plan command handles requirements directly (no helper agent)
+    agent: requirements-command  # /requirements command handles requirements directly (no helper agent)
     description: Ask 2-3 targeted questions based on exploration findings
     dependencies:
       - exploration
@@ -134,7 +134,7 @@ phases:
       quality: 2-3 questions, informed by exploration
 
   - name: brief_generation
-    agent: plan-command  # /plan command handles requirements directly (no helper agent)
+    agent: requirements-command  # /requirements command handles requirements directly (no helper agent)
     description: Generate exploration brief with Go/No-Go criteria
     dependencies:
       - minimal_questions
@@ -149,7 +149,7 @@ phases:
 
   # From-brief tier phases
   - name: brief_validation
-    agent: plan-command  # /plan command handles requirements directly (no helper agent)
+    agent: requirements-command  # /requirements command handles requirements directly (no helper agent)
     description: Validate and load exploration brief for conversion
     dependencies: []
     context_required: true

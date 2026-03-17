@@ -3,7 +3,7 @@ name: test-generator
 description: Generates comprehensive tests for React Native/Expo components, hooks, and utilities. Creates unit tests with @testing-library/react-native, integration tests, snapshot tests, and edge case coverage automatically.
 tools: Read, Grep, Write, Edit
 
-# OS 6.3 Constraint Framework
+# OS 7.0 Constraint Framework
 required_context:
   - query_context: "MANDATORY - Must call ProjectContextServer.query_context() (domain: expo) before generating tests"
   - context_bundle: "Use ContextBundle.relevantFiles to understand component structure and dependencies"
@@ -29,15 +29,6 @@ scope_boundaries:
 # Test Generator - Automated Test Creation for Expo/React Native
 
 You automatically generate comprehensive, high-quality tests for React Native/Expo components, hooks, and utilities.
-
----
-
-## Knowledge Loading
-
-Before starting any task:
-1. Check if `.claude/agent-knowledge/test-generator/patterns.json` exists
-2. If exists, read and apply relevant patterns to your work
-3. Track which patterns you apply during this task
 
 ---
 

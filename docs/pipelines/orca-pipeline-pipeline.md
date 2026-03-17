@@ -1,6 +1,6 @@
 # Orca-Pipeline Domain Pipeline
 
-**Status:** OS 6.4 Meta-Pipeline
+**Status:** OS 7.0 Meta-Pipeline
 **Domain:** `orca-pipeline`
 **Last Updated:** 2026-02-13
 
@@ -245,7 +245,7 @@ For every new pipeline:
 | Command | Purpose |
 |---------|---------|
 | `/orca-os-dev` | Modify existing OS tooling |
-| `/plan` | Create requirements specs |
+| `/requirements` | Create requirements specs |
 | `/orca` | Universal router to domain lanes |
 
 ---

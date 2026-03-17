@@ -25,4 +25,14 @@ export declare function buildErrorResponse(errorResponse: Record<string, unknown
  *   Block 2: Clean human-readable summary for the user
  */
 export declare function buildResponse(content: Record<string, unknown>, args: CognitionRequest, session: SessionState, storeType: keyof SessionStores, status: 'stored' | 'exported', exportPath?: string | null, extra?: Record<string, unknown>): HandlerResult;
+/**
+ * Build a StoredEntry from validated content and args.
+ * Centralizes entry construction so tokenEstimate is included automatically.
+ */
+export declare function buildEntry<T>(content: T, args: CognitionRequest): {
+    content: T;
+    quality?: import('../types.js').QualityMetrics;
+    timestamp: number;
+    tokenEstimate?: number;
+};
 //# sourceMappingURL=shared.d.ts.map

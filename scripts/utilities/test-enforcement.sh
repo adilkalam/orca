@@ -1,11 +1,11 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 # Test Enforcement Layers
 #
 # Verifies all 6 enforcement layers are working and measures performance
 #
 
-set -e
+set -euo pipefail
 
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo "  Enforcement Layer Testing"

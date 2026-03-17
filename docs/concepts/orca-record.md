@@ -234,7 +234,7 @@ cognition-mcp reads from recording.db (READ-ONLY) for cognitive fusion queries:
 
 ### Workshop Memory
 
-The session-end hook extracts learnings from sessions and persists them as Workshop notes. This is the primary downstream consumer of recording data.
+Recording data feeds Workshop memory through two paths: gate agents write structured standards via `save_standard` MCP after failures, and orchestrators persist task outcomes via `save_task_history`. Both use ProjectContext MCP as the write interface.
 
 ### Recording Context Injection
 
@@ -299,4 +299,4 @@ The event tracking layer (hooks + SQLite + state machine + redaction) was the va
 
 ---
 
-_This document describes the orca-record v0.4.0 architecture as of OS 6.4._
+_This document describes the orca-record v0.4.0 architecture as of OS 7.0._

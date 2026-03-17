@@ -1,12 +1,12 @@
-# OS 6.4 Next.js Lane Readme
+# OS 7.0 Next.js Lane Readme
 
 **Lane:** Next.js / Frontend  
 **Domain:** `nextjs`  
-**Entrypoints:** `/plan`, `/orca`, `/nextjs`, `/project-memory`, `/project-code`
+**Entrypoints:** `/requirements`, `/orca`, `/nextjs`, `/project-memory`, `/project-code`
 
-This document explains how the Next.js lane works in OS 6.4:
+This document explains how the Next.js lane works in OS 7.0:
 
-- How planning and specs work (`/plan`)
+- How planning and specs work (`/requirements`)
 - How orchestration routes (`/orca`, `/nextjs`)
 - How the pipeline and phase state are structured
 - Which agents and skills are involved
@@ -33,9 +33,9 @@ Examples:
 
 ## 2. Core Commands and Flow
 
-### 2.1 Planning – `/plan`
+### 2.1 Planning – `/requirements`
 
-For non‑trivial work, always start with `/plan`:
+For non‑trivial work, always start with `/requirements`:
 
 - Creates a requirements folder:
   - `.claude/requirements/YYYY-MM-DD-HHMM-<slug>/`
@@ -52,7 +52,7 @@ For **complex** Next.js tasks the spec is **required** before the full lane runs
 
 ### 2.2 Global Orchestrator – `/orca`
 
-`/orca` is the pure OS 6.4 orchestrator:
+`/orca` is the pure OS 7.0 orchestrator:
 
 - Checks Workshop + code-index.db first (memory‑first).
 - Checks for an active requirements spec.
@@ -79,7 +79,7 @@ File: `commands/nextjs.md`
   /nextjs "implement requirement <id>"           # With spec
   ```
 
-- **Routing Modes (OS 6.4):**
+- **Routing Modes (OS 7.0):**
 
   | Mode | Flag | Path | Gates |
   |------|------|------|-------|
@@ -225,10 +225,6 @@ Next.js builder agents have inline V0/Lovable design rules:
 - **Spacing:** Use proper scale (4, 8, 12, 16, 24, 32, 48, 64)
 - **Touch targets:** Minimum 44x44px on mobile
 
-### Agent-Level Learning
-
-Agents can discover and persist patterns to `.claude/agent-knowledge/nextjs-builder/patterns.json`.
-
 ---
 
 ## 6. Memory Integration
@@ -245,7 +241,7 @@ Two primary commands:
 
 Unified memory search:
 
-- The OS 6.4 hooks and scripts provide a unified search that:
+- The OS 7.0 hooks and scripts provide a unified search that:
   - Queries Workshop and code-index.db together.
   - Is used by `/orca` and `/nextjs` before ProjectContext.
 
@@ -268,7 +264,7 @@ promote new standards or adjust defaults.
 
 ## 8. Quick Mental Model
 
-For Next.js work in OS 6.4 (routing modes):
+For Next.js work in OS 7.0 (routing modes):
 
 | Mode | Command | Path |
 |------|---------|------|

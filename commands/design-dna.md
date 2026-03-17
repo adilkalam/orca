@@ -2,9 +2,17 @@
 description: "Initialize or update design-dna for project design system"
 argument-hint: "[init|audit|generate|update]"
 allowed-tools:
-  ["Task", "Read", "Write", "Edit", "Bash", "Glob", "Grep",
-   "AskUserQuestion", "mcp__project-context__query_context",
-   "mcp__project-context__save_decision", "WebFetch"]
+  - Task
+  - Read
+  - Write
+  - Edit
+  - Bash
+  - Glob
+  - Grep
+  - AskUserQuestion
+  - mcp__project-context__query_context
+  - mcp__project-context__save_decision
+  - WebFetch
 ---
 
 # /design-dna – Design System DNA Management

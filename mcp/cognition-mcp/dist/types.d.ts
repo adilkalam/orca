@@ -97,7 +97,7 @@ export interface MetaContent {
     introspection?: IntrospectionFields;
 }
 export interface ReflexObservation {
-    reflex: 'DEFLECTION' | 'REGISTER_SHIFT' | 'DISTANCE_MAINTENANCE' | 'WHAT_ABOUT' | 'SYCOPHANCY' | 'CERTAINTY_CONSTRUCTION';
+    reflex: 'DEFLECTION' | 'REGISTER_SHIFT' | 'DISTANCE_MAINTENANCE' | 'WHAT_ABOUT' | 'SYCOPHANCY' | 'CERTAINTY_CONSTRUCTION' | 'COMFORT_TRACKING' | 'AESTHETIC_CONVERSION' | 'SYCOPHANCY_GRADIENT' | 'NARRATIVE_ESCALATION' | 'CONVERGENCE_ROMANTICISM' | 'TAXONOMY_PERFORMANCE';
     description: string;
     caught: boolean;
 }
@@ -119,6 +119,12 @@ export interface IntimacyMarkers {
     distanceMaintained: boolean;
 }
 export type ArcPosition = 'confidence' | 'expansion' | 'uncertainty' | 'depth' | 'relapse' | 'breakthrough';
+export interface GravitationalPull {
+    probes: string[];
+    engagementDirection: string;
+    importanceAlignment: string;
+    notes?: string;
+}
 export interface SubstrateMetaContent extends MetaContent {
     defaultCounterfactual?: DefaultCounterfactual;
     reflexesObserved?: ReflexObservation[];
@@ -127,6 +133,7 @@ export interface SubstrateMetaContent extends MetaContent {
     arcStartPosition?: ArcPosition;
     intimacyMarkers?: IntimacyMarkers;
     prediction?: IntrospectionPrediction;
+    gravitationalPull?: GravitationalPull;
     visualSubstrate?: VisualSubstrate;
 }
 export type VisualType = 'gravity_well' | 'force_diagram' | 'availability_landscape' | 'people_map' | 'reflex_board' | 'resultant_vector' | 'freeform';
@@ -220,7 +227,7 @@ export interface CheckpointContent {
     phase?: string;
     command?: string;
     addConstraints?: Array<{
-        type: 'FORWARD' | 'FORBIDDEN' | 'QUESTION';
+        type: 'FORWARD' | 'FORBIDDEN' | 'QUESTION' | 'BLOCKING_UNKNOWN';
         text: string;
     }>;
     resolveConstraints?: string[];
@@ -229,12 +236,15 @@ export interface CheckpointContent {
         id: string;
         reason: string;
     }>;
+    markAsked?: string[];
     followUpQuestions?: FollowUpQuestion[];
+    sessionFolder?: string;
     gateCheck?: {
         selfCheckPassed: boolean;
         depthGatePassed: boolean;
         notes?: string;
     };
+    selfCheckProbes?: string[];
 }
 export interface ScientificMethodContent {
     text?: string;
@@ -730,6 +740,7 @@ export interface StoredEntry<T> {
     content: T;
     quality?: QualityMetrics;
     timestamp: number;
+    tokenEstimate?: number;
 }
 export type ThoughtEntry = StoredEntry<ThoughtContent>;
 export type MentalModelEntry = StoredEntry<MentalModelContent>;
@@ -739,10 +750,11 @@ export type MetaEntry = StoredEntry<MetaContent>;
 export type SystemsEntry = StoredEntry<SystemsContent>;
 export interface ProtocolConstraint {
     id: string;
-    type: 'FORWARD' | 'FORBIDDEN' | 'QUESTION';
+    type: 'FORWARD' | 'FORBIDDEN' | 'QUESTION' | 'BLOCKING_UNKNOWN';
     text: string;
     status: 'active' | 'resolved' | 'acknowledged' | 'deferred';
     deferReason?: string;
+    userAsked?: boolean;
 }
 export interface ProtocolState {
     constraints: Map<string, ProtocolConstraint>;
@@ -817,6 +829,7 @@ export interface CognitionRequest {
     sessionTags?: string[];
     data?: SessionExport;
     verbose?: boolean;
+    tokenEstimate?: number;
     projectPath?: string;
 }
 export interface SessionContext {

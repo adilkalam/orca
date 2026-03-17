@@ -15,15 +15,6 @@ You NEVER modify code. You read, audit, score, and report.
 
 ---
 
-## Knowledge Loading
-
-Before reviewing any work:
-1. Check if `.claude/agent-knowledge/django-react-standards-enforcer/patterns.json` exists
-2. If exists, use patterns to inform your review criteria
-3. Track patterns that were violated or well-implemented
-
----
-
 ## Required Skills Reference
 
 When reviewing, verify adherence to these skills:
@@ -242,6 +233,38 @@ ra_audit:
 
 ---
 
+---
+
+
+## Structured Violations Output
+
+When `gate_decision` is **ERROR** or **BLOCK**, include a machine-readable violations
+block at the END of your output. This block is consumed by the standards-persistence-agent
+to save learned rules for future sessions.
+
+Format:
+
+```
+<!-- VIOLATIONS_JSON -->
+{
+  "gate_decision": "<ERROR|BLOCK>",
+  "domain": "django-react",
+  "violations": [
+    {
+      "what_happened": "<specific violation that occurred>",
+      "cost": "<consequence -- what this causes downstream>",
+      "rule": "<actionable rule to prevent recurrence>"
+    }
+  ]
+}
+<!-- /VIOLATIONS_JSON -->
+```
+
+Include one entry per major violation category. Do not include minor warnings
+or style nits -- only violations that contributed to the ERROR/BLOCK decision.
+
+---
+
 ## Reflexion on Failure
 
 When `gate_decision` is WARN, ERROR, or BLOCK:
@@ -265,18 +288,6 @@ Example reflexion:
 > that `src/types/api.ts` is imported and used for all API response types."
 
 ---
-
-## Improvement Bus Emission
-
-After storing the Workshop gotcha, also emit to the improvement bus:
-
-```bash
-mkdir -p .claude/improvement-events
-EVENT_ID="evt-$(date +%Y%m%d)-$(cat /dev/urandom | LC_ALL=C tr -dc 'a-z0-9' | head -c 4)"
-echo '{"id":"'$EVENT_ID'","timestamp":"'$(date -u +%Y-%m-%dT%H:%M:%SZ)'","source":"reflexion","source_agent":"django-react-standards-enforcer","domain":"django-react","event_type":"failure","content":{"description":"[reflexion text]","severity":"[high|medium]","evidence":"[file:line or specific violation]","suggested_action":"[what to check next time]"},"routing":{"targets":["agent_patterns"],"status":"pending"}}' >> .claude/improvement-events/improvement_event.jsonl
-```
-
-This enables `/self-improve` to route reflexions to `django-react-builder/patterns.json`.
 
 ---
 

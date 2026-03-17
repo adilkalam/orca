@@ -1,5 +1,5 @@
 ---
-description: "OS 6.3 Expo/React Native Orchestrator – coordinates the Expo lane pipeline, never writes code"
+description: "OS 7.0 Expo/React Native Orchestrator – coordinates the Expo lane pipeline, never writes code"
 argument-hint: "[--light | -tweak | --complex] <task description or requirement ID>"
 allowed-tools:
   - Task
@@ -36,7 +36,7 @@ Even `-tweak` delegates to a builder. It skips gates, not agents.
 
 ---
 
-# /expo - Expo Lane Orchestrator (OS 6.3)
+# /expo - Expo Lane Orchestrator (OS 7.0)
 
 Use this command for Expo/React Native mobile work.
 
@@ -73,7 +73,7 @@ No flag → Section 3 (Light Orchestrator WITH confirmation)
 
 ---
 
-## 0.1 Recording Context (OS 6.3)
+## 0.1 Recording Context (OS 7.0)
 
 > Session activity is captured automatically by **orca-record** hooks. Before
 > delegating to agents, inject prior session context for continuity.
@@ -234,6 +234,73 @@ implementation pipeline unless explicitly requested.
 
 ---
 
+
+## 0.6 Design-First Check (UI Tasks)
+
+### Manifesto Priming (ALL tiers)
+Inject this context block into ALL delegation prompts (tweak, default, complex):
+
+```
+=== DESIGN AWARENESS ===
+When working with CSS/styling, be aware of these verified failure patterns:
+1. I autocomplete utility classes from training data rather than designing.
+2. With utilities, every session produces different combinations for the same element.
+3. Semantic CSS constrains my output to design coherence; utilities make me an unsupervised designer.
+4. 'Change all labels' is one CSS edit with semantic classes, a codebase-wide hunt with utilities.
+5. The stylesheet IS the design document. Utilities scatter design across every JSX file.
+Recommendation: For agentic coding, semantic CSS produces better output. The stylesheet constrains all downstream work.
+===
+```
+
+### Design-DNA Gate (default and complex modes only)
+
+**Tweak mode**: Skip gate. Manifesto priming above is sufficient.
+
+**Default mode**:
+1. Check: `test -f design-dna.json` (or `.claude/design-dna/*.json`)
+2. If EXISTS: Record path in delegation prompt as `DESIGN_DNA_PATH: <path>`
+3. If MISSING: Invoke design-system-architect as subagent:
+   ```
+   Task({
+     subagent_type: "design-system-architect",
+     description: "Create design-dna for UI task",
+     prompt: `Analyze this project's existing CSS/components and produce design-dna.json.
+     Task context: $ARGUMENTS
+     Project: $PROJECT_PATH
+     Follow your CSS Methodology Awareness workflow.`
+   })
+   ```
+4. After subagent returns, record design-dna.json path and continue to delegation.
+
+**Complex mode**:
+1. ALWAYS invoke design-system-architect as subagent (even if design-dna.json exists):
+   ```
+   Task({
+     subagent_type: "design-system-architect",
+     description: "Review/create design-dna for complex UI task",
+     prompt: `Review or create design-dna.json for this complex task.
+     Task context: $ARGUMENTS
+     Project: $PROJECT_PATH
+     Existing design-dna: <path if exists>
+     Follow your CSS Methodology Awareness workflow.`
+   })
+   ```
+2. Block delegation until design-system-architect confirms design-dna.json is ready.
+
+### Design Weight Escalation
+
+When a requirements spec is detected (via requirement ID in arguments):
+1. Read `metadata.json` from the requirements folder
+2. Check `design_weight` field:
+   - `high`: Escalate gate behavior -- default mode uses complex-mode gate (always invoke design-system-architect, block until confirmed)
+   - `medium`: Keep current tier's gate behavior
+   - `low`: Keep current tier's gate behavior
+
+This ensures design-heavy tasks get mandatory design-system-architect review even in default mode.
+
+
+---
+
 ## 1. Memory-First Context
 
 ### 1.1 Memory Search (Before ProjectContext)
@@ -252,7 +319,7 @@ If memory hits are relevant:
 - Note them for context
 - May skip or reduce ProjectContext query scope
 
-### 1.1.1 Reflexion Loading (OS 6.3)
+### 1.1.1 Reflexion Loading (OS 7.0)
 
 Load relevant reflexions from past gate failures:
 
@@ -275,7 +342,7 @@ This helps agents avoid repeating past mistakes.
 
    This task appears to involve multiple screens or architectural decisions.
    Please run:
-     /plan "<task description>"
+     /requirements "<task description>"
 
    Then return with:
      /expo "implement requirement <id>"
@@ -308,10 +375,24 @@ CONTEXT_MODE: full
 DO_NOT_QUERY: true
 
 <ContextBundle JSON if queried, or "narrow query needed" if memory-first>
+
+STANDARDS (from previous gate failures):
+<list each relatedStandard.rule as a bullet, prefixed by domain>
 ===
 
 CRITICAL: You received context above. DO NOT call mcp__project-context__query_context.
 Use the inherited bundle. You MAY query with narrow scope (maxFiles: 5) if context missing.
+
+
+=== DESIGN AWARENESS ===
+When working with CSS/styling, be aware of these verified failure patterns:
+1. I autocomplete utility classes from training data rather than designing.
+2. With utilities, every session produces different combinations for the same element.
+3. Semantic CSS constrains my output to design coherence; utilities make me an unsupervised designer.
+4. 'Change all labels' is one CSS edit with semantic classes, a codebase-wide hunt with utilities.
+5. The stylesheet IS the design document. Utilities scatter design across every JSX file.
+Recommendation: For agentic coding, semantic CSS produces better output. The stylesheet constrains all downstream work.
+===
 
 Handle this Expo/React Native task via the light path WITH design verification gates.
 
@@ -357,6 +438,17 @@ Use Workshop memory and targeted file reads only.
 ===
 
 Quick fix without design verification.
+
+
+=== DESIGN AWARENESS ===
+When working with CSS/styling, be aware of these verified failure patterns:
+1. I autocomplete utility classes from training data rather than designing.
+2. With utilities, every session produces different combinations for the same element.
+3. Semantic CSS constrains my output to design coherence; utilities make me an unsupervised designer.
+4. 'Change all labels' is one CSS edit with semantic classes, a codebase-wide hunt with utilities.
+5. The stylesheet IS the design document. Utilities scatter design across every JSX file.
+Recommendation: For agentic coding, semantic CSS produces better output. The stylesheet constrains all downstream work.
+===
 
 REQUEST: $ARGUMENTS
 
@@ -554,7 +646,7 @@ Initialize phase_state.json:
 
 Delegate to `expo-grand-orchestrator` with Context Inheritance:
 
-**Context Inheritance Protocol (OS 6.3):**
+**Context Inheritance Protocol (OS 7.0):**
 
 When delegating, wrap the ContextBundle with inheritance headers:
 
@@ -565,10 +657,24 @@ CONTEXT_MODE: full
 DO_NOT_QUERY: true
 
 <ContextBundle JSON from Section 3.2>
+
+STANDARDS (from previous gate failures):
+<list each relatedStandard.rule as a bullet, prefixed by domain>
 ===
 
 CRITICAL: You received context above. DO NOT call mcp__project-context__query_context.
 Use the inherited bundle. You MAY supplement with targeted file reads if needed.
+
+
+=== DESIGN AWARENESS ===
+When working with CSS/styling, be aware of these verified failure patterns:
+1. I autocomplete utility classes from training data rather than designing.
+2. With utilities, every session produces different combinations for the same element.
+3. Semantic CSS constrains my output to design coherence; utilities make me an unsupervised designer.
+4. 'Change all labels' is one CSS edit with semantic classes, a codebase-wide hunt with utilities.
+5. The stylesheet IS the design document. Utilities scatter design across every JSX file.
+Recommendation: For agentic coding, semantic CSS produces better output. The stylesheet constrains all downstream work.
+===
 ```
 
 Inputs:
@@ -702,7 +808,7 @@ Update phase_state.verification.
 
 ---
 
-## 5. Standards Inputs (OS 6.3 Learning Loop)
+## 5. Standards Inputs (OS 7.0 Learning Loop)
 
 ### Gate Enforcement
 

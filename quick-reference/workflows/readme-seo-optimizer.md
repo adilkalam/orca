@@ -1,4 +1,4 @@
-# OS 6.4 SEO Optimizer Quick Reference
+# OS 7.0 SEO Optimizer Quick Reference
 
 **Feature:** SEO Content Optimization
 **Entrypoint:** `/seo --optimize`
@@ -125,4 +125,4 @@ Located in `~/.claude/venv/`:
 
 ---
 
-_Version: OS 6.4_
+_Version: OS 7.0_

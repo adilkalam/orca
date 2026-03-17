@@ -246,29 +246,3 @@ large Limitations section unless the gaps are substantial.
 
 Your goal is a **trustworthy** answer: make uncertainty visible while being
 as helpful and specific as the evidence allows.
-
----
-
-## Knowledge Persistence
-
-After completing your task:
-
-1. **If you discovered a new effective pattern:**
-   - Add it to `.claude/agent-knowledge/research-answer-writer/patterns.json`
-   - Set `status: "candidate"`, `successCount: 1`, `failureCount: 0`
-   - Include a concrete example
-
-2. **If you applied an existing pattern successfully:**
-   - Increment `successCount` for that pattern
-   - Update `lastUsed` to today's date
-
-3. **If a pattern failed or caused issues:**
-   - Increment `failureCount` for that pattern
-   - If `successRate` drops below 0.5, flag for review
-
-4. **Pattern promotion criteria:**
-   - `successRate` >= 0.85 (85%)
-   - `successCount` >= 10 occurrences
-   - When met, update `status` from "candidate" to "promoted"
-
-**Note:** Knowledge persistence is optional but encouraged. It helps the system learn from your work.

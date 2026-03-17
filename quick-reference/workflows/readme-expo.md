@@ -1,10 +1,10 @@
-# OS 6.4 Expo Lane Readme
+# OS 7.0 Expo Lane Readme
 
 **Lane:** Expo / React Native  
 **Domain:** `expo`  
-**Entrypoints:** `/plan`, `/orca`, `/expo`, `/project-memory`, `/project-code`
+**Entrypoints:** `/requirements`, `/orca`, `/expo`, `/project-memory`, `/project-code`
 
-This readme explains the Expo lane in OS 6.4:
+This readme explains the Expo lane in OS 7.0:
 
 - Planning & specs for Expo tasks
 - Orchestration via `/orca` and `/expo`
@@ -33,11 +33,11 @@ Examples:
 
 ## 2. Core Commands and Flow
 
-### 2.1 Planning – `/plan`
+### 2.1 Planning – `/requirements`
 
 For non‑trivial Expo tasks:
 
-- `/plan "..."` creates a spec under `.claude/requirements/`.
+- `/requirements "..."` creates a spec under `.claude/requirements/`.
 - Complex flows (multi‑screen auth, offline, sensitive data) should
   have a spec before the full Expo lane runs.
 
@@ -69,7 +69,7 @@ File: `commands/expo.md`
   /expo "implement requirement <id>"             # With spec
   ```
 
-- **Routing Modes (OS 6.4):**
+- **Routing Modes (OS 7.0):**
 
   | Mode | Flag | Path | Gates |
   |------|------|------|-------|
@@ -168,10 +168,6 @@ Expo builder agents have inline React Native best practices:
 - **Platform:** Respect iOS vs Android conventions, use Platform.select
 - **Accessibility:** accessibilityLabel, accessibilityRole, accessibilityHint, 44x44pt touch targets
 
-### Agent-Level Learning
-
-Agents can discover and persist patterns to `.claude/agent-knowledge/expo-builder-agent/patterns.json`.
-
 ### Memory
 
 - `/project-memory`:
@@ -195,7 +191,7 @@ Expo pipeline includes:
 
 ## 7. Mental Model
 
-For Expo work in OS 6.4 (routing modes):
+For Expo work in OS 7.0 (routing modes):
 
 | Mode | Command | Path |
 |------|---------|------|

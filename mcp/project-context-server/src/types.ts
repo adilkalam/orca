@@ -150,6 +150,8 @@ export interface DecayConfig {
   halfLifeDays: number;
   /** Minimum score floor to prevent all-zero rankings (default: 0.01) */
   minimumScore: number;
+  /** Maximum number of entries before pruning (default: 500) */
+  maxEntries?: number;
 }
 
 /**

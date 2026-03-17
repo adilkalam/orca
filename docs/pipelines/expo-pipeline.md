@@ -1,13 +1,13 @@
 # Expo / React Native Domain Pipeline
 
-**Status:** OS 6.4 Core Pipeline (ExpoPipeline)
+**Status:** OS 7.0 Core Pipeline (ExpoPipeline)
 **Last Updated:** 2026-02-13
 
 ## Overview
 
 The Expo pipeline handles **React Native mobile development** for projects using Expo SDK 50+ / React Native 0.74+ with TypeScript. It combines:
 
-- OS 6.4 primitives (ProjectContextServer, phase_state.json, code-index.db, Workshop, constraint framework)
+- OS 7.0 primitives (ProjectContextServer, phase_state.json, code-index.db, Workshop, constraint framework)
 - Memory-first context (Workshop + code-index.db before ProjectContext)
 - Four-tier routing (Light/Default/Tweak/Complex)
 - Spec gating (complex tasks require requirements spec)
@@ -33,7 +33,7 @@ use the **iOS** pipeline.
 
 ---
 
-## Four-Tier Routing (OS 6.4)
+## Four-Tier Routing (OS 7.0)
 
 The Expo pipeline uses four-tier routing:
 
@@ -80,7 +80,7 @@ Full pipeline with grand-orchestrator planning. Spec required.
 
 ---
 
-## Standards Inputs (OS 6.4 Learning Loop)
+## Standards Inputs (OS 7.0 Learning Loop)
 
 Standards flow into and out of the Expo pipeline:
 
@@ -564,7 +564,7 @@ pending → in_progress → completed
 
 ---
 
-### Recording Context (OS 6.4)
+### Recording Context (OS 7.0)
 
 Domain commands inject recording context (recent session history from `.orca/recording.db`) before delegating to agents. This is optional and silently skipped if no recording database exists.
 
@@ -606,6 +606,37 @@ Decision Point:
 
 ---
 
+
+### Phase 0: Design-First (Pre-Implementation)
+
+**Agent:** `design-system-architect` (invoked as subagent via Task delegation)
+
+**Purpose:** Enforce design approach quality before any implementation begins. Research from Nov 2025 identified design-first architecture as the top quality driver -- gates exist post-implementation but catch output violations, not approach failures.
+
+**Two Components:**
+
+1. **Manifesto Priming (ALL tiers including tweak)**
+   A DESIGN_AWARENESS context block containing five verified LLM failure modes with CSS is injected into ALL delegation prompts. This ensures every agent working on UI has metacognitive awareness of how LLMs actually fail with styling.
+
+2. **Design-DNA Gate (tiered by complexity)**
+
+   | Tier | Gate Behavior |
+   |------|---------------|
+   | **Tweak** | Manifesto priming only. No file check, no blocking. |
+   | **Default** | Check `design-dna.json` existence. If missing, invoke design-system-architect to create it. If exists, inject path. |
+   | **Complex** | Always invoke design-system-architect (even if file exists). Block implementation until confirmed. |
+
+**Output:** `design-dna.json` with `methodology` field:
+- `"semantic-css"`: includes `roles` + `role_mappings`
+- `"tailwind"`: includes `components` + `allowed_utilities`
+
+**Methodology Detection:**
+- `tailwind.config.*` or `@import 'tailwindcss'` -> Tailwind mode
+- `@layer`, `.module.css`, semantic class naming -> Semantic CSS mode
+- No methodology detected -> Default to semantic CSS guidance
+
+---
+
 ## Phase Definitions
 
 ### Phase 1: Context Query (MANDATORY)
@@ -641,7 +672,7 @@ Decision Point:
 
 **Agents:**
 - `expo-architect-agent` (Expo pipeline architect)
-- `/orca` + OS 6.4 constraint framework
+- `/orca` + OS 7.0 constraint framework
 
 **Tasks:**
 1. Restate the request in clear, concrete terms (feature, bugfix, refactor).

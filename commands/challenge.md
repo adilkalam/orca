@@ -1,9 +1,17 @@
 ---
 description: Adversarial analysis - systematically attack a proposal to find weaknesses before implementation.
-argument-hint: [--quick|--deep] <proposal to challenge>
+argument-hint: [--quick|--deep|--auto] <proposal to challenge>
+allowed-tools:
+  - mcp__cognition-mcp__cognition
+  - AskUserQuestion
+  - Read
+  - Grep
+  - Glob
+  - Bash
+  - Write
 ---
 
-# /challenge - Adversarial Analysis
+# /challenge-local - Adversarial Analysis
 
 **YOUR ROLE**: Stress-test the user's proposal using cognition-mcp's structured notepad pattern.
 
@@ -27,20 +35,22 @@ This command is self-contained. Every non-help run must include:
 Display this reference and stop:
 
 ```
-/challenge - Adversarial Analysis
+/challenge-local - Adversarial Analysis
 
 Uses cognition-mcp's accept-store-echo pattern for structured adversarial analysis.
 All reasoning is explicitly recorded and persisted for review.
 
 USAGE:
-  /challenge <proposal>
-  /challenge --quick <proposal>
-  /challenge --deep <proposal>
-  /challenge --help
+  /challenge-local <proposal>
+  /challenge-local --quick <proposal>
+  /challenge-local --deep <proposal>
+  /challenge-local --auto <proposal>
+  /challenge-local --help
 
-MODES:
-  (default)   Full analysis with causal + assumption/edge/failure checks + argumentation + decide
-  --quick     Rapid causal pass + assumption/edge scan + top risks
+FLAGS:
+  --auto      Fully autonomous - no BLOCKING questions, states assumptions
+  --quick     Rapid causal pass + assumption/edge scan + top risks (can ask questions)
+  --quick --auto  Fastest: rapid pass, no questions
   --deep      Full analysis + simulation + ethical considerations
 
 OPERATIONS USED:
@@ -52,27 +62,141 @@ OPERATIONS USED:
   6. decide           - Final GO/NO GO verdict with reasoning
 
 EXAMPLES:
-  /challenge Use microservices instead of monolith
-  /challenge --quick Add Redis caching layer
-  /challenge --deep Migrate from REST to GraphQL
+  /challenge-local Use microservices instead of monolith
+  /challenge-local --quick Add Redis caching layer
+  /challenge-local --deep Migrate from REST to GraphQL
 
 OUTPUT: Structured analysis with persisted session + verdict.
 ```
 
 ---
 
+## Output Rendering (Separate from Reasoning)
+
+**The reasoning happens via cognition-mcp calls.** Causal analysis, structured argumentation, decision evaluation - this is the core value. ALWAYS make the MCP calls and work with the data.
+
+**The rendering is a separate step.** After cognition-mcp returns JSON:
+1. USE the JSON data to build your analysis (this IS the reasoning)
+2. When presenting to the user, render as clean markdown - not raw JSON
+
+This is about **presentation clarity**, not about whether you use cognition-mcp.
+
+---
+
 ## Verbose Flag
 
-Include `verbose: false` in every cognition MCP call from /challenge. This command makes 5-6 calls per session (default), 6-8 calls in deep mode; the minimal ACK response saves tokens.
+Include `verbose: false` in every cognition MCP call from /challenge-local. This command makes 5-6 calls per session (default), 6-8 calls in deep mode; the minimal ACK response saves tokens.
 
 ## Parse Arguments
 
 Extract mode and proposal from $ARGUMENTS:
 
-1. Check for `--quick` flag -> Quick mode
-2. Check for `--deep` flag -> Deep mode
-3. No flag -> Default mode (full analysis)
-4. Extract the proposal text (everything after the flag, or all of $ARGUMENTS if no flag)
+1. Check for `--auto` flag -> Autonomous mode (no questions)
+2. Check for `--quick` flag -> Quick mode
+3. Check for `--deep` flag -> Deep mode
+4. No flag -> Default mode (full analysis)
+5. Extract the proposal text (everything after the flag, or all of $ARGUMENTS if no flag)
+
+---
+
+## Phase 0: Create Session Folder
+
+Before any analysis, create a folder for this challenge session's incremental artifacts:
+
+1. Create `{$PWD}/.claude/cognition/YYYYMMDD-HHMM-<slug>/` directory (slug from the proposal summary, first 30 chars, kebab-cased). IMPORTANT: This is the PROJECT's `.claude/`, NOT `~/.claude/`. Use the absolute project root path.
+2. Write `00-enter.md` with:
+   - Proposal text
+   - Mode (quick/default/deep)
+   - Timestamp
+
+This folder is created BEFORE Phase 0.5 so that all artifacts have a home.
+
+---
+
+## Phase 0.5: BLOCKING Unknown Clarification (MANDATORY unless --auto)
+
+This phase spans THREE responses. This is not optional -- the response boundaries
+are what make AskUserQuestion render. The pattern mirrors /requirements Section 1+3.
+
+### Response A: Uncertainty Analysis + Write Uncertainties + Write Questions
+
+All of this happens in ONE response:
+
+1. After reading the proposal, identify what you don't know:
+   - **List uncertainties** about the proposal (context, constraints, goals, dependencies)
+   - **Classify each** as:
+     - **BLOCKING**: Would invalidate your adversarial analysis if wrong (changes what you'd attack, determines scope, affects risk severity)
+     - **NON-BLOCKING**: Nice to know but analysis remains valid either way
+
+2. For each BLOCKING unknown:
+   - Check if already answered in user's prompt
+   - If ambiguous or not mentioned -> needs clarification
+
+3. Write `01-uncertainties.md` in the session folder:
+
+```markdown
+# Uncertainties: <proposal summary>
+
+## BLOCKING
+- [uncertainty 1] - needs clarification
+- [uncertainty 2] - needs clarification
+
+## NON-BLOCKING
+- [uncertainty 3] - analysis valid either way
+- [uncertainty 4] - analysis valid either way
+```
+
+4. Write `02-blocking-questions.md` with the questions you will ask:
+
+```markdown
+# Blocking Questions
+
+## Q1: <question from BLOCKING uncertainty 1>
+- **Smart default**: <most likely interpretation>
+- **Why blocking**: <what changes if wrong>
+
+## Q2: <question from BLOCKING uncertainty 2>
+- **Smart default**: <most likely interpretation>
+- **Why blocking**: <what changes if wrong>
+```
+
+5. Output a brief markdown summary for the user (e.g., "## Uncertainty Scan" with BLOCKING items listed).
+
+This response contains: Write(01-uncertainties.md), Write(02-blocking-questions.md),
+and markdown text. It does NOT contain AskUserQuestion.
+
+**If no BLOCKING unknowns need clarification**: Skip Response B entirely and proceed to analysis.
+
+### Response B: AskUserQuestion ONLY (if BLOCKING unknowns exist)
+
+**AskUserQuestion is the ONLY tool call in this response. No other tools. No text output.**
+
+```typescript
+AskUserQuestion({
+  questions: [
+    {
+      question: "<question derived from BLOCKING uncertainty>",
+      header: "<short label>",
+      options: [
+        { label: "<most likely interpretation> (Recommended)", description: "Default: <why>" },
+        { label: "<alternative interpretation>", description: "<what changes>" }
+      ],
+      multiSelect: false
+    }
+    // ... one question per BLOCKING unknown
+  ]
+})
+```
+
+### Response C: Record Answers + Proceed to Analysis
+
+1. Write answers to `03-clarification-answers.md` in the session folder.
+2. Incorporate answers before proceeding to analysis.
+
+**If --auto flag present:**
+- Skip Response A/B/C entirely
+- State assumptions clearly at the start of output ("Assuming X based on...")
+- Proceed with analysis using stated assumptions
 
 ---
 
@@ -143,24 +267,29 @@ mcp__cognition-mcp__cognition
 ```markdown
 # Challenge (Quick): [Proposal Summary]
 
-## Entry Point
-The proposal: [what's being challenged, 1 sentence]
-What seems appealing: [surface appeal]
-Initial suspicion: [gut-level concern]
+## The Proposal
+[What's being challenged, 1 sentence.]
+Suspicious of: [gut-level concern]
 
-## Causal Map
-[cause] -> [intermediate] -> [effect] (P: X%)
-Root causes: [2-3 most critical, one line each]
+## Top Risks
+
+**"[Most critical risk]"** (#tag)
+[Brief: why this matters.]
+
+**"[Second risk]"** (#tag)
+[Brief response.]
 
 ## Quick Verdict
 [Proceed with caution / Needs more analysis / Red flags present]
 [1-2 sentences: why]
 
 ## Where to Go Next
--> /challenge "[proposal]" (full analysis without --quick)
+-> /challenge-local "[proposal]" (full analysis without --quick)
    _[why deeper analysis would help]_
 -> /problem-solve "[decision point]"
    _[if ready to decide on approach]_
+
+[No protocol jargon. No arrow notation. Order by severity.]
 ```
 
 ---
@@ -289,30 +418,43 @@ mcp__cognition-mcp__cognition
   }
 ```
 
+All intermediate content (causal analysis, assumptions, argumentation, verdict) is captured in JSONL stores at `~/.orca-cognition/sessions/`.
+
 ### Output Format
 
 ```markdown
 # Challenge: [Proposal Summary]
 
-## Entry Point
-The proposal: [what's being challenged]
-Surface appeal: [why this seems like a good idea]
+## The Proposal
+[What's being challenged and why it seems appealing.]
 What I'm suspicious of: [initial red flags or areas of concern]
 
-## The Attack
-### Causal Failure Map: [1 sentence -- root causes and where they cascade]
-### Assumption Audit: [1 sentence -- weakest assumption and what breaks if wrong]
-### Counter-Arguments: [1 sentence -- strongest case against the proposal]
+## Weaknesses Found
 
-## What the Analysis Caught
-- "[proposal seemed safe because X]" --> [causal analysis / assumption audit] --> [cascade risk Y discovered]
-- "[assumption Z felt solid]" --> [edge case storm / failure mode catalog] --> [breaks under condition W]
-- "[counter-argument seemed weak]" --> [steel-man + rebuttal] --> [stronger than expected / dismissed]
+**"[Most severe weakness or risk]"** (#tag)
+[How it was found, why it matters, what it means for the proposal.
+Plain prose, no arrows, no mechanism names.]
 
-## Summary
-[3-5 sentences: trace the adversarial arc -- what seemed strong initially,
-where the attack found real weakness, what survived scrutiny. Honest about
-whether genuine vulnerabilities emerged or the proposal held up.]
+**"[Next weakness]"** (#tag)
+[Response and impact.]
+
+**"[Finding that survived scrutiny -- if applicable]"**
+[What was tested and held up. Optional -- only if meaningful.]
+
+[Format for adversarial clarity:
+- Order findings from most severe to least. Lead with what
+  could kill the proposal.
+- Bold weakness + plain response. No arrows, no mechanism names.
+- (#tags) help focus remediation: (#assumption), (#cascade),
+  (#edge-case), (#counter-argument). Use when helpful.
+- Scoring tables and weighted criteria are appropriate for
+  formal evaluations (vendor selection, architecture review)
+- In Deep mode, prefix simulation/ethical findings with
+  **[Simulation]** or **[Ethics]** labels
+- Never reference the analytical methodology in user-facing output
+
+Let the context and cognition tool calls determine the appropriate
+structure and detail level for the final output.]
 
 ## Verdict
 **[GO / CONDITIONAL GO / NO GO]** (confidence: X.X)
@@ -322,7 +464,7 @@ whether genuine vulnerabilities emerged or the proposal held up.]
 2. [mitigation 2]
 
 ## Where to Go Next
--> /challenge --deep "[proposal]"
+-> /challenge-local --deep "[proposal]"
    _[if verdict needs simulation/ethical analysis]_
 -> /problem-solve "[how to mitigate top risk]"
    _[if proceeding and need to decide on approach]_
@@ -394,14 +536,19 @@ mcp__cognition-mcp__cognition
   }
 ```
 
+Simulation and ethical analysis results are captured in JSONL stores at `~/.orca-cognition/sessions/`.
+
 ### Output Format
 
-Same as Default Mode output above, with two additional subsections in The Attack (inserted before What the Analysis Caught):
+Same as Default Mode output, with additional entries in Weaknesses Found prefixed by **[Simulation]** or **[Ethics]** labels:
 
-### Failure Simulation: [2-3 sentence summary -- what broke and at which step]
-### Ethical Analysis: [2-3 sentence summary -- stakeholder impacts and recommendation]
+**[Simulation] "[What broke and at which step]"**
+[Detail of the simulation failure scenario and its implications.]
 
-The Summary and Verdict sections incorporate simulation + ethics findings. Verdict becomes "Revised Verdict" if simulation changed the assessment.
+**[Ethics] "[Stakeholder impacts]"**
+[Ethical analysis findings and recommendation.]
+
+The Verdict section incorporates simulation and ethics findings. Verdict becomes "Revised Verdict" if simulation changed the assessment.
 
 ---
 
@@ -428,6 +575,7 @@ mcp__cognition-mcp__cognition
   projectPath: "<absolute project path>"
   content: {
     phase: "harvest",
+    sessionFolder: "<absolute path to {$PWD}/.claude/cognition/YYYYMMDD-HHMM-slug/ -- project-local, NOT ~/.claude/>",
     summary: "<verdict and key risks>",
     keyFindings: ["<weakness 1>", "<weakness 2>"],
     openQuestions: ["<unresolved concern>"],
@@ -442,66 +590,26 @@ mcp__cognition-mcp__cognition
   }
 ```
 
-### Step 1: Create Cognition Directory
+The MCP auto-persist writes `99-harvest.md` to the session folder via `sessionFolder`. Raw telemetry (`99-raw.json`) is written to `~/.orca-cognition/sessions/{sessionId}/`.
 
-```bash
-mkdir -p .claude/cognition
-```
-
-### Step 2: Generate Summary File
-
-Create file at `.claude/cognition/YYYYMMDD-HHMM-<slug>.md` where:
-- YYYYMMDD = current date (no dashes)
-- HHMM = current time
-- slug = first 30 chars of proposal, kebab-cased
-
-**File Template**:
-```markdown
-# Challenge: [Proposal]
-
-**Date**: YYYY-MM-DD HH:MM
-**Session ID**: <sessionId from cognition-mcp>
-**Command**: /challenge
-
-## Executive Summary
-
-[2-3 sentence summary of verdict and key risks identified]
-
-## Key Findings
-
-- [Risk/Finding 1]
-- [Risk/Finding 2]
-- [Risk/Finding 3]
-
-## Decision/Recommendation
-
-[GO / CONDITIONAL GO / NO GO with rationale]
-
-## Recovery
-
-To resume full analysis:
-```
-/think --import <sessionId>
-```
-```
-
-### Step 3: Write Workshop Entry
+### Step 1: Write Workshop Entry
 
 ```bash
 workshop --workspace .claude/memory note \
-  "/challenge: [Proposal] - [Verdict]. Session: <sessionId>. File: .claude/cognition/<filename>" \
+  "/challenge-local: [Proposal] - [Verdict]. Session: <sessionId>. File: .claude/cognition/<folder-name>/99-harvest.md" \
   -t challenge -t cognition
 ```
 
-### Step 4: Confirm to User
+### Step 2: Confirm to User
 
 Output:
 ```
 ---
 Analysis persisted:
-  File: .claude/cognition/YYYYMMDD-HHMM-slug.md
+  Folder: .claude/cognition/YYYYMMDD-HHMM-slug/
+  Harvest: 99-harvest.md (auto-persisted by MCP)
   Workshop: Tagged with challenge, cognition
-  Recovery: /think --import <sessionId>
+  Recovery: /think-local --import <sessionId>
 ---
 ```
 

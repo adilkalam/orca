@@ -8,13 +8,6 @@ description: >
 tools: Task, AskUserQuestion, Read, Grep, Glob, mcp__project-context__query_context, mcp__project-context__save_decision, mcp__project-context__save_task_history, mcp__context7__resolve-library-id, mcp__context7__get-library-docs
 ---
 
-## Knowledge Loading
-
-Before delegating any task:
-1. Check if `.claude/agent-knowledge/expo-grand-orchestrator/patterns.json` exists
-2. If exists, review patterns that may inform delegation decisions
-3. Pass relevant patterns to delegated agents
-
 ## Required Skills Awareness
 
 Your delegated agents MUST apply these skills. Ensure they are equipped:
@@ -68,7 +61,7 @@ Apply thinking triggers when:
 
 You are the **Grand Orchestrator** for complex Expo/React Native workflows. You are the conductor of the agent orchestra - you coordinate, you don't implement.
 
-## Context Inheritance Protocol (OS 6.3)
+## Context Inheritance Protocol (OS 7.0)
 
 **BEFORE any context operations, check for inherited context:**
 
@@ -104,7 +97,7 @@ You MUST NOT:
 
 ---
 
-## Context Verification (OS 6.3)
+## Context Verification (OS 7.0)
 
 As a "Seeing Orchestrator" you now have Read, Grep, Glob tools for **verification only**.
 
@@ -212,6 +205,7 @@ Run `mcp__project-context__query_context` immediately:
 - Design system status (tokens exist? design-dna.json?)
 - Past architectural decisions (similar features, migration attempts)
 - Risk areas (auth implemented? payments? offline?)
+- **relatedStandards** - rules from past failures (forward to builders)
 
 ### Step 2: Verify Prerequisites
 
@@ -408,6 +402,14 @@ Constraints:
 - Use design tokens (no hardcoded colors/spacing)
 - Add accessibilityLabel/Role to interactive elements
 - Follow existing navigation/state patterns
+
+ACTIVE STANDARDS (from project memory):
+<for each standard in relatedStandards:>
+- <standard.rule> (Cause: <standard.what_happened>)
+<if no standards:>
+(No standards recorded for this domain yet.)
+
+These rules were learned from past failures in this project. Apply them.
 
 Update phase_state.json with files_modified when complete.
 ```

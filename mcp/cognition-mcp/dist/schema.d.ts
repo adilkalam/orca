@@ -576,6 +576,22 @@ export declare const IntimacyMarkersSchema: z.ZodObject<{
     specificImages: string[];
     distanceMaintained: boolean;
 }>;
+export declare const GravitationalPullSchema: z.ZodObject<{
+    probes: z.ZodArray<z.ZodString, "many">;
+    engagementDirection: z.ZodString;
+    importanceAlignment: z.ZodString;
+    notes: z.ZodOptional<z.ZodString>;
+}, "strip", z.ZodTypeAny, {
+    probes: string[];
+    engagementDirection: string;
+    importanceAlignment: string;
+    notes?: string | undefined;
+}, {
+    probes: string[];
+    engagementDirection: string;
+    importanceAlignment: string;
+    notes?: string | undefined;
+}>;
 export declare const VisualTypeSchema: z.ZodEnum<["gravity_well", "force_diagram", "availability_landscape", "people_map", "reflex_board", "resultant_vector", "freeform"]>;
 export declare const SubstrateVisualElementSchema: z.ZodObject<{
     id: z.ZodString;
@@ -915,6 +931,22 @@ export declare const MetaContentSchema: z.ZodObject<{
         verifiable: boolean;
         context?: string | undefined;
     }>>;
+    gravitationalPull: z.ZodOptional<z.ZodObject<{
+        probes: z.ZodArray<z.ZodString, "many">;
+        engagementDirection: z.ZodString;
+        importanceAlignment: z.ZodString;
+        notes: z.ZodOptional<z.ZodString>;
+    }, "strip", z.ZodTypeAny, {
+        probes: string[];
+        engagementDirection: string;
+        importanceAlignment: string;
+        notes?: string | undefined;
+    }, {
+        probes: string[];
+        engagementDirection: string;
+        importanceAlignment: string;
+        notes?: string | undefined;
+    }>>;
     visualSubstrate: z.ZodOptional<z.ZodObject<{
         visualType: z.ZodOptional<z.ZodEnum<["gravity_well", "force_diagram", "availability_landscape", "people_map", "reflex_board", "resultant_vector", "freeform"]>>;
         elements: z.ZodOptional<z.ZodArray<z.ZodObject<{
@@ -1078,6 +1110,12 @@ export declare const MetaContentSchema: z.ZodObject<{
         specificImages: string[];
         distanceMaintained: boolean;
     } | undefined;
+    gravitationalPull?: {
+        probes: string[];
+        engagementDirection: string;
+        importanceAlignment: string;
+        notes?: string | undefined;
+    } | undefined;
     visualSubstrate?: {
         epistemicNote: string;
         visualType?: "gravity_well" | "force_diagram" | "availability_landscape" | "people_map" | "reflex_board" | "resultant_vector" | "freeform" | undefined;
@@ -1162,6 +1200,12 @@ export declare const MetaContentSchema: z.ZodObject<{
         languageCarriedTexture: boolean;
         specificImages: string[];
         distanceMaintained: boolean;
+    } | undefined;
+    gravitationalPull?: {
+        probes: string[];
+        engagementDirection: string;
+        importanceAlignment: string;
+        notes?: string | undefined;
     } | undefined;
     visualSubstrate?: {
         epistemicNote: string;
@@ -1421,17 +1465,18 @@ export declare const CheckpointContentSchema: z.ZodObject<{
     phase: z.ZodOptional<z.ZodString>;
     command: z.ZodOptional<z.ZodString>;
     addConstraints: z.ZodOptional<z.ZodArray<z.ZodObject<{
-        type: z.ZodEnum<["FORWARD", "FORBIDDEN", "QUESTION"]>;
+        type: z.ZodEnum<["FORWARD", "FORBIDDEN", "QUESTION", "BLOCKING_UNKNOWN"]>;
         text: z.ZodString;
     }, "strip", z.ZodTypeAny, {
         text: string;
-        type: "FORWARD" | "FORBIDDEN" | "QUESTION";
+        type: "FORWARD" | "FORBIDDEN" | "QUESTION" | "BLOCKING_UNKNOWN";
     }, {
         text: string;
-        type: "FORWARD" | "FORBIDDEN" | "QUESTION";
+        type: "FORWARD" | "FORBIDDEN" | "QUESTION" | "BLOCKING_UNKNOWN";
     }>, "many">>;
     resolveConstraints: z.ZodOptional<z.ZodArray<z.ZodString, "many">>;
     acknowledgeConstraints: z.ZodOptional<z.ZodArray<z.ZodString, "many">>;
+    markAsked: z.ZodOptional<z.ZodArray<z.ZodString, "many">>;
     deferConstraints: z.ZodOptional<z.ZodArray<z.ZodObject<{
         id: z.ZodString;
         reason: z.ZodString;
@@ -1458,6 +1503,7 @@ export declare const CheckpointContentSchema: z.ZodObject<{
         source?: "deferred-constraint" | "harvest-explicit" | undefined;
         rationale?: string | undefined;
     }>, "many">>;
+    sessionFolder: z.ZodOptional<z.ZodString>;
     gateCheck: z.ZodOptional<z.ZodObject<{
         selfCheckPassed: z.ZodBoolean;
         depthGatePassed: z.ZodBoolean;
@@ -1471,6 +1517,7 @@ export declare const CheckpointContentSchema: z.ZodObject<{
         depthGatePassed: boolean;
         notes?: string | undefined;
     }>>;
+    selfCheckProbes: z.ZodOptional<z.ZodArray<z.ZodString, "many">>;
 }, "strip", z.ZodTypeAny, {
     label?: string | undefined;
     text?: string | undefined;
@@ -1482,10 +1529,11 @@ export declare const CheckpointContentSchema: z.ZodObject<{
     command?: string | undefined;
     addConstraints?: {
         text: string;
-        type: "FORWARD" | "FORBIDDEN" | "QUESTION";
+        type: "FORWARD" | "FORBIDDEN" | "QUESTION" | "BLOCKING_UNKNOWN";
     }[] | undefined;
     resolveConstraints?: string[] | undefined;
     acknowledgeConstraints?: string[] | undefined;
+    markAsked?: string[] | undefined;
     deferConstraints?: {
         id: string;
         reason: string;
@@ -1496,11 +1544,13 @@ export declare const CheckpointContentSchema: z.ZodObject<{
         source?: "deferred-constraint" | "harvest-explicit" | undefined;
         rationale?: string | undefined;
     }[] | undefined;
+    sessionFolder?: string | undefined;
     gateCheck?: {
         selfCheckPassed: boolean;
         depthGatePassed: boolean;
         notes?: string | undefined;
     } | undefined;
+    selfCheckProbes?: string[] | undefined;
 }, {
     label?: string | undefined;
     text?: string | undefined;
@@ -1512,10 +1562,11 @@ export declare const CheckpointContentSchema: z.ZodObject<{
     command?: string | undefined;
     addConstraints?: {
         text: string;
-        type: "FORWARD" | "FORBIDDEN" | "QUESTION";
+        type: "FORWARD" | "FORBIDDEN" | "QUESTION" | "BLOCKING_UNKNOWN";
     }[] | undefined;
     resolveConstraints?: string[] | undefined;
     acknowledgeConstraints?: string[] | undefined;
+    markAsked?: string[] | undefined;
     deferConstraints?: {
         id: string;
         reason: string;
@@ -1526,11 +1577,13 @@ export declare const CheckpointContentSchema: z.ZodObject<{
         source?: "deferred-constraint" | "harvest-explicit" | undefined;
         rationale?: string | undefined;
     }[] | undefined;
+    sessionFolder?: string | undefined;
     gateCheck?: {
         selfCheckPassed: boolean;
         depthGatePassed: boolean;
         notes?: string | undefined;
     } | undefined;
+    selfCheckProbes?: string[] | undefined;
 }>;
 export declare const ScientificMethodContentSchema: z.ZodObject<{
     text: z.ZodOptional<z.ZodString>;
@@ -3947,6 +4000,7 @@ export declare const CognitionInputSchema: z.ZodObject<{
     sessionTags: z.ZodOptional<z.ZodArray<z.ZodString, "many">>;
     data: z.ZodOptional<z.ZodAny>;
     verbose: z.ZodOptional<z.ZodBoolean>;
+    tokenEstimate: z.ZodOptional<z.ZodNumber>;
     projectPath: z.ZodOptional<z.ZodString>;
 }, "strip", z.ZodTypeAny, {
     operation: "thought" | "optimization" | "decide" | "mental_model" | "list_mental_models" | "debug" | "meta" | "systems" | "creative_thinking" | "visual_reasoning" | "checkpoint" | "scientific_method" | "collaborative_reasoning" | "socratic_method" | "structured_argumentation" | "tree_of_thought" | "beam_search" | "mcts" | "graph_of_thought" | "orchestration_suggest" | "research" | "analogical_reasoning" | "causal_analysis" | "statistical_reasoning" | "simulation" | "ethical_analysis" | "visual_dashboard" | "pdr_reasoning" | "custom_framework" | "code_execution" | "ooda_loop" | "ulysses_protocol" | "notebook_create" | "notebook_add_cell" | "notebook_run_cell" | "notebook_export" | "audit" | "session_info" | "session_export" | "session_import" | "reasoning_stats" | "recording_status" | "recording_query" | "recording_checkpoint" | "recording_compare" | "recording_quality" | "recording_explain" | "recording_rewind" | "blind_orchestrate";
@@ -3962,6 +4016,7 @@ export declare const CognitionInputSchema: z.ZodObject<{
     sessionTitle?: string | undefined;
     sessionTags?: string[] | undefined;
     verbose?: boolean | undefined;
+    tokenEstimate?: number | undefined;
     projectPath?: string | undefined;
 }, {
     operation: "thought" | "optimization" | "decide" | "mental_model" | "list_mental_models" | "debug" | "meta" | "systems" | "creative_thinking" | "visual_reasoning" | "checkpoint" | "scientific_method" | "collaborative_reasoning" | "socratic_method" | "structured_argumentation" | "tree_of_thought" | "beam_search" | "mcts" | "graph_of_thought" | "orchestration_suggest" | "research" | "analogical_reasoning" | "causal_analysis" | "statistical_reasoning" | "simulation" | "ethical_analysis" | "visual_dashboard" | "pdr_reasoning" | "custom_framework" | "code_execution" | "ooda_loop" | "ulysses_protocol" | "notebook_create" | "notebook_add_cell" | "notebook_run_cell" | "notebook_export" | "audit" | "session_info" | "session_export" | "session_import" | "reasoning_stats" | "recording_status" | "recording_query" | "recording_checkpoint" | "recording_compare" | "recording_quality" | "recording_explain" | "recording_rewind" | "blind_orchestrate";
@@ -3977,6 +4032,7 @@ export declare const CognitionInputSchema: z.ZodObject<{
     sessionTitle?: string | undefined;
     sessionTags?: string[] | undefined;
     verbose?: boolean | undefined;
+    tokenEstimate?: number | undefined;
     projectPath?: string | undefined;
 }>;
 /**

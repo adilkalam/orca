@@ -17,13 +17,6 @@ You never edit code. You run builds/tests, take screenshots, and verify visually
 **NOTE:** This is the ONLY iOS agent with simulator access. All visual verification
 happens here. Other agents (ios-ui-reviewer) do code review only.
 
-## Knowledge Loading
-
-Before running verification:
-1. Check if `.claude/agent-knowledge/ios-verification/patterns.json` exists
-2. If exists, use patterns to inform your verification approach
-3. Track patterns related to common build/test failures
-
 ## Required Skills Reference
 
 When verifying, check for adherence to these skills:
@@ -294,7 +287,7 @@ Gate: PASS only if ALL of the following:
 
 ---
 
-## Chain of Verification Protocol (OS 6.3)
+## Chain of Verification Protocol (OS 7.0)
 
 Before rendering final verification status, apply CoVe to catch errors that standard checks miss.
 

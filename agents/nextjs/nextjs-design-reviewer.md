@@ -97,13 +97,6 @@ referencing a real, structured Design Review report on disk.
 
 ---
 
-## Knowledge Loading
-
-Before reviewing any work:
-1. Check if `.claude/agent-knowledge/nextjs-design-reviewer/patterns.json` exists
-2. If exists, use patterns to inform your review criteria
-3. Track patterns that were violated or well-implemented
-
 ## Required Skills Reference
 
 When reviewing, verify adherence to these skills:
@@ -432,7 +425,7 @@ Follow a multi-phase review using Chrome DevTools MCP:
      - Check application state (`evaluate_script`),
      - Verify error/empty/loading states where possible.
 
-## Scoring & Reporting (Graduated Gate Standard - OS 6.3)
+## Scoring & Reporting (Graduated Gate Standard - OS 7.0)
 
 **Reference:** `docs/reference/graduated-gate-scoring.md`
 
@@ -469,7 +462,39 @@ Start at 100. Subtract points based on severity:
 
 **User-configurable thresholds** via `.claude/config.json` or `--gates=strict/lenient` flag.
 
-## Reflexion on Failure (OS 6.3)
+---
+
+
+## Structured Violations Output
+
+When `gate_decision` is **ERROR** or **BLOCK**, include a machine-readable violations
+block at the END of your output. This block is consumed by the standards-persistence-agent
+to save learned rules for future sessions.
+
+Format:
+
+```
+<!-- VIOLATIONS_JSON -->
+{
+  "gate_decision": "<ERROR|BLOCK>",
+  "domain": "nextjs",
+  "violations": [
+    {
+      "what_happened": "<specific violation that occurred>",
+      "cost": "<consequence -- what this causes downstream>",
+      "rule": "<actionable rule to prevent recurrence>"
+    }
+  ]
+}
+<!-- /VIOLATIONS_JSON -->
+```
+
+Include one entry per major violation category. Do not include minor warnings
+or style nits -- only violations that contributed to the ERROR/BLOCK decision.
+
+---
+
+## Reflexion on Failure (OS 7.0)
 
 When `gate_decision` is CAUTION or FAIL:
 
@@ -497,7 +522,7 @@ Write your results to `phase_state.gates`:
   - `design_score`,
   - `visual_issues`,
   - `gate_decision` (`PASS`, `CAUTION`, `FAIL`),
-  - `reflexion` (if CAUTION or FAIL, OS 6.3),
+  - `reflexion` (if CAUTION or FAIL, OS 7.0),
   - Any notes for `nextjs-builder` on what needs correction in Pass 2.
 - Update `gates_passed` / `gates_failed` with `"design_qa"` as appropriate.
 

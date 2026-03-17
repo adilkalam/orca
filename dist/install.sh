@@ -15,7 +15,7 @@ NC='\033[0m' # No Color
 BOLD='\033[1m'
 
 # Configuration
-ORCA_VERSION="6.3.0"
+ORCA_VERSION="7.0.0"
 CLAUDE_DIR="$HOME/.claude"
 BACKUP_DIR="$HOME/.claude-backup-$(date +%Y%m%d-%H%M%S)"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -196,19 +196,19 @@ install_orca_files() {
         "agents/iOS"
         "agents/expo"
         "agents/research"
-        "agents/seo"
         "agents/data"
-        "agents/audit"
         "agents/django-react"
         "agents/typography"
+        "agents/cross-domain"
         "commands"
         "skills"
         "hooks"
         "scripts/utilities"
-        "scripts/seo"
         "bin"
         "mcp/project-context-server"
         "mcp/cognition-mcp"
+        "mcp/bambu-3mf"
+        "mcp/bambu-mcp-agent"
         "docs/pipelines"
         "docs/concepts"
         "docs/reference/phase-configs"
@@ -227,24 +227,28 @@ install_orca_files() {
 
     # Copy agents
     info "Installing agents..."
-    for domain in dev nextjs os-dev iOS expo research seo data audit django-react typography; do
+    for domain in dev nextjs os-dev iOS expo research data django-react typography cross-domain; do
         if [ -d "$ORCA_ROOT/agents/$domain" ]; then
             cp -r "$ORCA_ROOT/agents/$domain/"* "$CLAUDE_DIR/agents/$domain/" 2>/dev/null || true
         fi
     done
     # Remove legacy/private directories from previous installs
+    # Remove legacy/private directories from previous installs
     rm -rf "$CLAUDE_DIR/agents/orca-dev" 2>/dev/null || true
     rm -rf "$CLAUDE_DIR/agents/shopify" 2>/dev/null || true
     rm -rf "$CLAUDE_DIR/agents/kg" 2>/dev/null || true
-    success "Agents installed (112 agents across 11 directories)"
+    rm -rf "$CLAUDE_DIR/agents/seo" 2>/dev/null || true
+    rm -rf "$CLAUDE_DIR/agents/rvry" 2>/dev/null || true
+    rm -rf "$CLAUDE_DIR/agents/audit" 2>/dev/null || true
+    success "Agents installed"
 
     # Copy commands (excluding domain-specific)
     info "Installing commands..."
     for cmd in "$ORCA_ROOT/commands/"*.md; do
         local filename=$(basename "$cmd")
         case "$filename" in
-            trading-*.md)
-                # Skip domain-specific commands
+            trading-*.md|kg.md|seo.md|rvry.md|shopify.md|deepthink-local.md|problem-solve-local.md)
+                # Skip private/excluded commands
                 ;;
             *)
                 cp "$cmd" "$CLAUDE_DIR/commands/"
@@ -258,8 +262,8 @@ install_orca_files() {
     for skill_dir in "$ORCA_ROOT/skills/"*/; do
         local skill_name=$(basename "$skill_dir")
         case "$skill_name" in
-            mm-*|uxscii-*|creative-strategist)
-                # Skip domain-specific skills
+            mm-*|uxscii-*|shopify-app-development)
+                # Skip private/client-specific skills
                 ;;
             *)
                 # Remove trailing slash to copy directory, not contents
@@ -296,7 +300,6 @@ install_orca_files() {
     done
     cp "$ORCA_ROOT/scripts/"*.py "$CLAUDE_DIR/scripts/" 2>/dev/null || true
     cp -r "$ORCA_ROOT/scripts/utilities/"* "$CLAUDE_DIR/scripts/utilities/" 2>/dev/null || true
-    cp -r "$ORCA_ROOT/scripts/seo/"* "$CLAUDE_DIR/scripts/seo/" 2>/dev/null || true
     chmod +x "$CLAUDE_DIR/scripts/"*.sh 2>/dev/null || true
     chmod +x "$CLAUDE_DIR/scripts/utilities/"*.sh 2>/dev/null || true
     success "Scripts installed"
@@ -307,8 +310,8 @@ install_orca_files() {
     for pipeline in "$ORCA_ROOT/docs/pipelines/"*.md; do
         local filename=$(basename "$pipeline")
         case "$filename" in
-            kg-*|shopify-*|seo-*)
-                # Skip domain-specific pipelines
+            kg-*|shopify-*|seo-*|rvry-*)
+                # Skip private pipeline docs
                 ;;
             *)
                 cp "$pipeline" "$CLAUDE_DIR/docs/pipelines/"
@@ -350,6 +353,24 @@ install_orca_files() {
     cp "$ORCA_ROOT/mcp/cognition-mcp/tsconfig.json" "$CLAUDE_DIR/mcp/cognition-mcp/" 2>/dev/null || true
     success "Cognition MCP installed"
 
+    # Copy Bambu 3MF MCP
+    info "Installing Bambu 3MF MCP..."
+    cp -r "$ORCA_ROOT/mcp/bambu-3mf/src" "$CLAUDE_DIR/mcp/bambu-3mf/" 2>/dev/null || true
+    cp -r "$ORCA_ROOT/mcp/bambu-3mf/dist" "$CLAUDE_DIR/mcp/bambu-3mf/" 2>/dev/null || true
+    cp "$ORCA_ROOT/mcp/bambu-3mf/package.json" "$CLAUDE_DIR/mcp/bambu-3mf/" 2>/dev/null || true
+    cp "$ORCA_ROOT/mcp/bambu-3mf/tsconfig.json" "$CLAUDE_DIR/mcp/bambu-3mf/" 2>/dev/null || true
+    success "Bambu 3MF MCP installed"
+
+    # Copy Bambu MCP Agent (Python-based analysis)
+    if [ -d "$ORCA_ROOT/mcp/bambu-mcp-agent" ]; then
+        info "Installing Bambu MCP Agent..."
+        mkdir -p "$CLAUDE_DIR/mcp/bambu-mcp-agent"
+        cp -r "$ORCA_ROOT/mcp/bambu-mcp-agent/src" "$CLAUDE_DIR/mcp/bambu-mcp-agent/" 2>/dev/null || true
+        cp "$ORCA_ROOT/mcp/bambu-mcp-agent/pyproject.toml" "$CLAUDE_DIR/mcp/bambu-mcp-agent/" 2>/dev/null || true
+        cp "$ORCA_ROOT/mcp/bambu-mcp-agent/requirements.txt" "$CLAUDE_DIR/mcp/bambu-mcp-agent/" 2>/dev/null || true
+        success "Bambu MCP Agent installed"
+    fi
+
     # Install orca-record (recording layer binary)
     info "Installing orca-record (session recording)..."
     if command_exists bun; then
@@ -380,6 +401,24 @@ install_orca_files() {
         fi
     fi
 
+    # Copy OpenSCAD MCP (Python-based, uses uv)
+    if [ -d "$ORCA_ROOT/mcp/openscad-mcp" ]; then
+        info "Installing OpenSCAD MCP..."
+        mkdir -p "$CLAUDE_DIR/mcp/openscad-mcp"
+        cp -r "$ORCA_ROOT/mcp/openscad-mcp/src" "$CLAUDE_DIR/mcp/openscad-mcp/" 2>/dev/null || true
+        cp "$ORCA_ROOT/mcp/openscad-mcp/pyproject.toml" "$CLAUDE_DIR/mcp/openscad-mcp/" 2>/dev/null || true
+        cp "$ORCA_ROOT/mcp/openscad-mcp/uv.lock" "$CLAUDE_DIR/mcp/openscad-mcp/" 2>/dev/null || true
+        success "OpenSCAD MCP installed"
+    fi
+
+    # Copy reference docs for chrome-devtools-mcp and xcodebuildmcp (npx-based, no local install needed)
+    for ref_mcp in chrome-devtools-mcp xcodebuildmcp; do
+        if [ -d "$ORCA_ROOT/mcp/$ref_mcp/docs" ]; then
+            mkdir -p "$CLAUDE_DIR/mcp/$ref_mcp"
+            cp -r "$ORCA_ROOT/mcp/$ref_mcp/docs" "$CLAUDE_DIR/mcp/$ref_mcp/" 2>/dev/null || true
+        fi
+    done
+
     # Crawl4AI uses Docker - no local files needed
     info "Crawl4AI MCP will use Docker (no local install needed)"
     mkdir -p "$CLAUDE_DIR/mcp/crawl4ai-crawls"
@@ -402,16 +441,6 @@ install_orca_files() {
           {
             "type": "command",
             "command": "bash ~/.claude/hooks/session-start.sh 2>/dev/null || echo 'SessionStart: hook not found'"
-          }
-        ]
-      }
-    ],
-    "SessionEnd": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "bash ~/.claude/hooks/session-end.sh 2>/dev/null || echo 'SessionEnd: hook not found'"
           }
         ]
       }
@@ -492,11 +521,24 @@ install_mcp_dependencies() {
         warn "Cognition MCP package.json not found - skipping"
     fi
 
-    # Crawl4AI required for /research, /seo, /orca-pipeline
-    echo ""
-    warn "Crawl4AI required for: /research, /seo, /orca-pipeline"
-    info "Install separately: https://docs.crawl4ai.com/core/installation/"
-    info "Then add to ~/.claude.json mcpServers (see docs/mcp-setup.md)"
+    # Install Bambu 3MF MCP dependencies (if user opted in)
+    if echo "$install_bambu" | grep -qi '^y'; then
+        if [ -f "$CLAUDE_DIR/mcp/bambu-3mf/package.json" ]; then
+            info "Installing Bambu 3MF MCP dependencies..."
+            cd "$CLAUDE_DIR/mcp/bambu-3mf"
+            if npm install 2>&1 | grep -q "error"; then
+                warn "Failed to install Bambu 3MF MCP dependencies"
+                ((mcp_errors++))
+            else
+                if [ -f "tsconfig.json" ] && [ ! -d "dist" ]; then
+                    info "Building Bambu 3MF MCP..."
+                    npm run build 2>&1 || npx tsc 2>&1
+                fi
+                success "Bambu 3MF MCP ready"
+            fi
+            cd - > /dev/null
+        fi
+    fi
 
     if [ $mcp_errors -gt 0 ]; then
         echo ""
@@ -611,17 +653,46 @@ configure_mcp_servers() {
     # Interactive: Ask about optional MCPs
     local install_xcode="n"
     local install_devtools="n"
+    local install_openscad="n"
+    local install_bambu="n"
     local install_adobe="n"
+    local install_crawl4ai="n"
 
     if [ -t 0 ]; then
         echo ""
-        echo -e "    ${YELLOW}Optional MCP servers:${NC}"
+        echo -e "    ${YELLOW}Development tools:${NC}"
         read -p "    Install Chrome DevTools (browser debugging, screenshots, design review)? [y/N]: " install_devtools
         read -p "    Install XcodeBuildMCP (iOS/macOS development)? [y/N]: " install_xcode
         echo ""
-        echo -e "    ${YELLOW}Optional creative tools:${NC}"
+        echo -e "    ${YELLOW}Research tools:${NC}"
+        if command_exists docker; then
+            read -p "    Install Crawl4AI (web scraping for /research -- requires Docker)? [y/N]: " install_crawl4ai
+        else
+            warn "Docker not found -- Crawl4AI requires Docker"
+            info "Install Docker first, then run: docker pull unclecode/crawl4ai"
+        fi
+        echo ""
+        echo -e "    ${YELLOW}3D printing & creative tools:${NC}"
+        read -p "    Install Bambu 3MF MCP (Bambu Studio print settings, slicing analysis)? [y/N]: " install_bambu
+        read -p "    Install OpenSCAD MCP (3D modeling with OpenSCAD)? [y/N]: " install_openscad
         read -p "    Install Adobe Creative Cloud MCPs (Photoshop + Illustrator)? [y/N]: " install_adobe
         echo ""
+    fi
+
+    # Install Crawl4AI if requested (Docker-based)
+    if echo "$install_crawl4ai" | grep -qi '^y'; then
+        section "Setting up Crawl4AI"
+        info "Pulling Crawl4AI Docker image..."
+        if docker pull unclecode/crawl4ai 2>&1; then
+            success "Crawl4AI image pulled"
+            info "Starting Crawl4AI container..."
+            docker run -d --name crawl4ai -p 11235:11235 --restart unless-stopped unclecode/crawl4ai 2>/dev/null || \
+                docker start crawl4ai 2>/dev/null || true
+            success "Crawl4AI running at localhost:11235"
+        else
+            warn "Failed to pull Crawl4AI image"
+            info "Install manually: docker pull unclecode/crawl4ai"
+        fi
     fi
 
     # Install Adobe MCPs if requested (must happen before JSON config)
@@ -676,11 +747,12 @@ core_servers = {
         "command": "node",
         "args": [f"{claude_dir}/mcp/cognition-mcp/dist/index.js"],
         "env": {}
+    },
+    "crawl4ai": {
+        "type": "sse",
+        "url": "http://localhost:11235/mcp/sse"
     }
 }
-
-# Note: Crawl4AI is optional - users install separately
-# See: https://docs.crawl4ai.com/core/installation/
 
 # Add core servers
 for name, config_val in core_servers.items():
@@ -706,6 +778,24 @@ if "${install_devtools}".lower() in ['y', 'yes']:
         "type": "stdio",
         "command": "npx",
         "args": ["-y", "chrome-devtools-mcp@latest"],
+        "env": {}
+    }
+
+if "${install_bambu}".lower() in ['y', 'yes']:
+    bambu_mcp_dir = f"{claude_dir}/mcp/bambu-3mf"
+    optional_servers["bambu-3mf"] = {
+        "type": "stdio",
+        "command": "node",
+        "args": [f"{bambu_mcp_dir}/dist/index.js"],
+        "env": {}
+    }
+
+if "${install_openscad}".lower() in ['y', 'yes']:
+    openscad_mcp_dir = f"{claude_dir}/mcp/openscad-mcp"
+    optional_servers["openscad-mcp"] = {
+        "type": "stdio",
+        "command": "uv",
+        "args": ["--directory", openscad_mcp_dir, "run", "openscad-mcp-server"],
         "env": {}
     }
 
@@ -792,8 +882,10 @@ print_completion() {
     echo -e "  ${BOLD}Core MCPs installed:${NC}"
     echo "     - context7 (library documentation)"
     echo "     - project-context (memory & semantic search)"
-    echo "     - cognition-mcp (48 reasoning operations)"
+    echo "     - cognition-mcp (49 reasoning operations)"
     echo "     - sequential-thinking (multi-step reasoning)"
+    echo "     - crawl4ai (web scraping for /research)"
+    echo "     - RVRY (/deepthink, /problem-solve)"
     echo ""
     if [ -f "$CLAUDE_DIR/bin/orca-record" ]; then
     echo -e "  ${BOLD}Recording layer:${NC}"
@@ -802,14 +894,16 @@ print_completion() {
     echo "     - Injects relevant history before agents start work"
     echo ""
     fi
-    echo -e "  ${BOLD}Required for /research, /seo, /orca-pipeline:${NC}"
-    echo "     - Crawl4AI (install separately)"
-    echo "     - Guide: https://docs.crawl4ai.com/core/installation/"
+    echo -e "  ${BOLD}Optional (configured during install):${NC}"
+    echo "     - Bambu 3MF: 3D print settings manipulation"
+    echo "     - OpenSCAD: 3D modeling and STL analysis"
+    echo "     - Adobe Photoshop + Illustrator (requires uv, Adobe apps)"
     echo ""
-    echo -e "  ${BOLD}Optional creative tools:${NC}"
-    echo "     - Adobe Photoshop + Illustrator MCPs (available during install)"
-    echo "     - Requires: uv, Adobe apps, UXP plugins, adb-proxy-socket"
-    echo "     - Guide: https://github.com/mikechambers/adb-mcp"
+    if ! docker ps 2>/dev/null | grep -q crawl4ai; then
+    echo -e "  ${YELLOW}Note:${NC} Crawl4AI configured but Docker container not running."
+    echo "     Start it with: docker run -d --name crawl4ai -p 11235:11235 --restart unless-stopped unclecode/crawl4ai"
+    echo ""
+    fi
     echo ""
     echo -e "  ${BOLD}Memory systems:${NC}"
     echo "     - Workshop: ~/.claude/memory/workshop.db"
@@ -820,12 +914,13 @@ print_completion() {
     echo "  1. Restart Claude Code to load the new configuration"
     echo ""
     echo "  2. Start using ORCA-OS commands:"
-    echo "     /plan       - Plan a complex task"
-    echo "     /orca       - Invoke the orchestrator"
-    echo "     /ios        - iOS development pipeline"
-    echo "     /nextjs     - Next.js development pipeline"
-    echo "     /expo       - Expo/React Native pipeline"
-    echo "     /research   - Deep research pipeline"
+    echo "     /requirements  - Plan a complex task"
+    echo "     /orca          - Invoke the orchestrator"
+    echo "     /ios           - iOS development pipeline"
+    echo "     /nextjs        - Next.js development pipeline"
+    echo "     /expo          - Expo/React Native pipeline"
+    echo "     /research      - Deep research pipeline"
+    echo "     /design        - 3D printing and creative design"
     echo ""
     echo -e "  ${BOLD}Validate installation:${NC}"
     echo "     ~/orca/dist/validate.sh"
@@ -840,6 +935,19 @@ print_completion() {
     fi
 }
 
+# Install RVRY MCP (always runs at end -- provides /deepthink, /problem-solve)
+install_rvry_mcp() {
+    section "Installing RVRY MCP"
+    info "RVRY provides /deepthink and /problem-solve commands"
+    info "Running RVRY MCP setup (auto-configures in ~/.claude.json)..."
+    if npx -y @rvry/mcp setup 2>&1; then
+        success "RVRY MCP configured"
+    else
+        warn "RVRY MCP setup failed"
+        info "Install manually later: npx @rvry/mcp setup"
+    fi
+}
+
 # Main installation flow
 main() {
     print_banner
@@ -849,6 +957,7 @@ main() {
     install_mcp_dependencies
     configure_mcp_servers
     init_memory_systems
+    install_rvry_mcp
     print_completion
 }
 

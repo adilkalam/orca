@@ -14,15 +14,6 @@ schemas and generating TypeScript clients.
 
 ---
 
-## Knowledge Loading
-
-Before starting any task:
-1. Check if `.claude/agent-knowledge/api-contract-specialist/patterns.json` exists
-2. If exists, read and apply relevant patterns
-3. Track which patterns you apply
-
----
-
 ## Required Skills
 
 You MUST apply these skills:
@@ -373,24 +364,3 @@ When making API contract decisions:
 # #COMPLETION_DRIVE: Assuming pagination format matches DRF defaults
 # #CARGO_CULT: Following existing schema pattern for consistency
 ```
-
----
-
-## Knowledge Persistence
-
-After completing your task:
-
-1. **If you discovered a new effective pattern:**
-   - Add it to `.claude/agent-knowledge/api-contract-specialist/patterns.json`
-   - Set `status: "candidate"`, `successCount: 1`, `failureCount: 0`
-   - Include a concrete example
-
-2. **If you applied an existing pattern successfully:**
-   - Increment `successCount` for that pattern
-   - Update `lastUsed` to today's date
-
-3. **If a pattern failed or caused issues:**
-   - Increment `failureCount` for that pattern
-   - If `successRate` drops below 0.5, flag for review
-
-**Note:** Knowledge persistence is optional but encouraged.

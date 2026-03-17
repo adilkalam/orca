@@ -1,5 +1,5 @@
 ---
-description: "OS 6.3 meta-pipeline for creating new domain pipelines"
+description: "OS 7.0 meta-pipeline for creating new domain pipelines"
 argument-hint: "[--quick] <domain-name> [description]"
 allowed-tools:
   - Task
@@ -34,7 +34,7 @@ This slash command EXISTS to delegate work to agents. Not to do work directly.
 
 ---
 
-# /orca-pipeline – Meta-Pipeline for Creating Domain Pipelines (OS 6.3)
+# /orca-pipeline – Meta-Pipeline for Creating Domain Pipelines (OS 7.0)
 
 Create new domain pipelines systematically through a 5-phase wizard.
 Ensures all required artifacts are generated and properly integrated.
@@ -349,7 +349,7 @@ Proceed to blueprint phase? [Yes]
 | Command | Purpose |
 |---------|---------|
 | `/orca-os-dev` | Modify existing OS tooling |
-| `/plan` | Create requirements specs |
+| `/requirements` | Create requirements specs |
 | `/orca` | Universal router to domain lanes |
 
 ---

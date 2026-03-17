@@ -31,6 +31,17 @@ export declare class WorkshopClient {
     constructor(projectPath: string);
     private getDbPath;
     private openDatabase;
+    private writeDatabase;
+    /**
+     * Auto-pin preference and antipattern entries that lack pinned metadata.
+     * Called before prune() evaluates entries, so pinned entries survive pruning.
+     */
+    pinRecentEntries(): Promise<void>;
+    /**
+     * Prune lowest-decay unpinned entries when count exceeds maxEntries.
+     * Called after every write operation to enforce retention cap.
+     */
+    prune(): Promise<void>;
     /**
      * Execute workshop command
      */
@@ -55,7 +66,7 @@ export declare class WorkshopClient {
         domain: string;
     }): Promise<void>;
     /**
-     * Save task history as a note
+     * Save task history as a single merged note
      */
     saveTaskHistory(task: {
         domain: string;

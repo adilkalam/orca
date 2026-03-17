@@ -57,16 +57,4 @@ fi
 
 echo "PreCompact: Snapshot written to $SNAPSHOT_FILE (trigger=$TRIGGER)" >&2
 
-# Record to Workshop if available
-if command -v workshop >/dev/null 2>&1; then
-  NOTE_CONTENT="Context compaction triggered (trigger=$TRIGGER)"
-  if [ -n "$SNAPSHOT_PREVIEW" ]; then
-    NOTE_CONTENT="$NOTE_CONTENT | Preview: $SNAPSHOT_PREVIEW"
-  fi
-  workshop --workspace "$WORKSHOP_DIR" note \
-    "$NOTE_CONTENT" \
-    -t compaction -t "compaction-$TRIGGER" 2>/dev/null || true
-  echo "PreCompact: Workshop note recorded" >&2
-fi
-
 exit 0

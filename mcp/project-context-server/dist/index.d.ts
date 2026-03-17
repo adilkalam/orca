@@ -31,6 +31,19 @@ export declare class ProjectContextServer {
      * This is called before EVERY agent operation
      */
     private handleQueryContext;
+    /**
+     * Validate that required string fields are present and non-empty.
+     * Throws a descriptive error if validation fails.
+     */
+    private validateRequiredStrings;
+    /**
+     * Validate that a field, if present, is a string.
+     */
+    private validateOptionalString;
+    /**
+     * Validate that a field, if present, is an array of strings.
+     */
+    private validateOptionalStringArray;
     private handleSaveDecision;
     private handleSaveStandard;
     private handleSaveTaskHistory;

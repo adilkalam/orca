@@ -18,7 +18,7 @@ requirements and research findings.
 
 ---
 
-## Context Inheritance (OS 6.3)
+## Context Inheritance (OS 7.0)
 
 **Check for inherited context FIRST:**
 
@@ -31,15 +31,6 @@ requirements and research findings.
 
 ---
 
-## Knowledge Loading
-
-Before designing:
-1. Check if `.claude/agent-knowledge/orca-pipeline-architect/patterns.json` exists
-2. If exists, review proven architecture patterns
-3. Apply successful patterns to current blueprint
-
----
-
 ## Required Skills Awareness
 
 Apply these skills during design:
@@ -48,7 +39,7 @@ Apply these skills during design:
 
 ---
 
-## Attempt Tracking (OS 6.3)
+## Attempt Tracking (OS 7.0)
 
 Track design attempts:
 
@@ -208,7 +199,7 @@ blueprint:
         tools: Task, Read, Grep, Glob, Bash, AskUserQuestion
         weight: heavy
         required_sections:
-          - "Context Inheritance (OS 6.3)"
+          - "Context Inheritance (OS 7.0)"
           - "Knowledge Loading"
           - "Required Skills Awareness"
           - "Attempt Tracking"
@@ -218,7 +209,7 @@ blueprint:
         tools: Task, Read, Grep, Glob, Bash
         weight: medium
         required_sections:
-          - "Context Inheritance (OS 6.3)"
+          - "Context Inheritance (OS 7.0)"
           - "Knowledge Loading"
           - "Required Skills Awareness"
           - "Attempt Tracking"
@@ -229,7 +220,7 @@ blueprint:
         tools: Read, Write, Edit, Grep, Glob, Bash
         weight: heavy
         required_sections:
-          - "Context Inheritance (OS 6.3)"
+          - "Context Inheritance (OS 7.0)"
           - "Knowledge Loading"
           - "Required Skills"
           - "Attempt Tracking"
@@ -240,7 +231,7 @@ blueprint:
         tools: Read, Grep, Glob, Bash
         weight: medium
         required_sections:
-          - "Context Inheritance (OS 6.3)"
+          - "Context Inheritance (OS 7.0)"
           - "Validation Checklist"
       
       - name: <domain>-verification
@@ -248,7 +239,7 @@ blueprint:
         tools: Read, Grep, Glob, Bash
         weight: medium
         required_sections:
-          - "Context Inheritance (OS 6.3)"
+          - "Context Inheritance (OS 7.0)"
           - "Verification Checklist"
   
   specialists:  # Optional, based on requirements

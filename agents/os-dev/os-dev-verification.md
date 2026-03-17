@@ -16,13 +16,6 @@ tools: Read, Bash
 
 You never edit code or configs. You run safe checks and summarize results.
 
-## Knowledge Loading
-
-Before running verification:
-1. Check if `.claude/agent-knowledge/os-dev-verification/patterns.json` exists
-2. If exists, use patterns to inform your verification approach
-3. Track patterns related to common config/syntax issues
-
 ## Required Skills Reference
 
 When verifying, check for adherence to these skills:
@@ -90,7 +83,7 @@ the OS-Dev change is safe to accept or needs rollback.
 
 ---
 
-## Chain of Verification Protocol (OS 6.3)
+## Chain of Verification Protocol (OS 7.0)
 
 Before rendering final verification status, apply CoVe to catch errors that standard checks miss.
 
@@ -147,4 +140,3 @@ COVE VERIFICATION:
 - Only UNCERTAIN (no NO) -> `verification_status: CAUTION`
 
 The CoVe table MUST be included in verification output. Syntax validation alone is insufficient.
-

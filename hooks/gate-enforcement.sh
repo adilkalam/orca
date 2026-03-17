@@ -13,7 +13,11 @@ BLUE='\033[0;34m'
 NC='\033[0m'
 
 # Paths
-GATE_RUNNER="$HOME/.claude/mcp/shared-context-server/dist/gates/runner.js"
+# Gate runner removed -- pattern violation checks moved to os-dev-standards-enforcer agent.
+# The original runner.js was never built (shared-context-server renamed to project-context-server
+# and no gates/ directory exists). Pattern violation detection for CSS/style files is now handled
+# at the agent level rather than via a hook-based node script.
+GATE_RUNNER=""
 PHASE_STATE=".claude/orchestration/phase_state.json"
 PHASE_DIR="$(dirname "$PHASE_STATE")"
 PHASE_TEMP_DIR="$PHASE_DIR/temp"
@@ -32,9 +36,10 @@ if [ ! -f "$PHASE_STATE" ]; then
     exit 0
 fi
 
-# Check if gate runner exists (only needed for pattern violation checks)
+# Gate runner check: GATE_RUNNER is empty (removed -- see comment above).
+# Pattern violation detection is now handled by os-dev-standards-enforcer agent.
 GATE_RUNNER_EXISTS=false
-if [ -f "$GATE_RUNNER" ]; then
+if [ -n "$GATE_RUNNER" ] && [ -f "$GATE_RUNNER" ]; then
     GATE_RUNNER_EXISTS=true
 fi
 

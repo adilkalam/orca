@@ -1,9 +1,9 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # File Organization Verification Script
 # Ensures main folder and docs/ folder follow strict rules
 
-set -e
+set -euo pipefail
 
 echo "🔍 Verifying file organization..."
 echo ""

@@ -25,6 +25,13 @@ mkdir -p "$ARCHIVE_DIR" "${HOME}/.claude/temp" 2>/dev/null || true
 HOOK_INPUT=$(cat)
 TOOL_TYPE=$(echo "$HOOK_INPUT" | jq -r '.tool_name // "unknown"' 2>/dev/null || echo "unknown")
 
+# === PASSTHROUGH: Never interfere with interactive tools ===
+# AskUserQuestion relies on clean stdin/stdout flow between Claude Code and the user.
+# Echoing its tool_response to stdout corrupts the answer pipeline.
+if [[ "$TOOL_TYPE" == "AskUserQuestion" ]]; then
+  exit 0
+fi
+
 # Extract tool response for truncation logic
 OUTPUT=$(echo "$HOOK_INPUT" | jq -r '.tool_response // empty' 2>/dev/null || echo "")
 LENGTH=${#OUTPUT}

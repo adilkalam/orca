@@ -39,7 +39,7 @@ Start with reasoning using `/think`:
 Generate a structured implementation plan:
 
 ```bash
-/plan <task description>
+/requirements <task description>
 ```
 
 This creates a requirements spec with:
@@ -58,10 +58,9 @@ Run the appropriate domain command:
 | React Native/Expo | `/expo <task>` |
 | Next.js | `/nextjs <task>` |
 | Django + React | `/django-react <task>` |
-| RVRY | `/rvry <task>` |
 | Research | `/research <question>` |
-| SEO Content | `/seo <topic>` |
-| Knowledge Graph | `/kg <query>` |
+| 3D Printing / Creative Design | `/design <task>` |
+<!-- PRIVATE -->| Knowledge Graph | `/kg <query>` |<!-- /PRIVATE -->
 | Due Diligence Audit | `/audit <scope>` |
 | Typography | `/typography <task>` |
 | OS Development | `/orca-os-dev <task>` |
@@ -74,15 +73,15 @@ Adjust based on task complexity:
 
 ```bash
 # Quick fix, skip gates
-/plan -tweak "fix typo in header"
+/requirements -tweak "fix typo in header"
 /ios -tweak "update button color"
 
 # Standard (default) - includes design gates
-/plan "add user profile page"
+/requirements "add user profile page"
 /nextjs "implement dark mode"
 
 # Complex - full pipeline with architect + all gates
-/plan --complex "redesign authentication system"
+/requirements --complex "redesign authentication system"
 /expo --complex "implement offline sync"
 ```
 
@@ -127,7 +126,7 @@ This runs adversarial analysis:
 Create a targeted fix plan:
 
 ```bash
-/plan "fix description"
+/requirements "fix description"
 ```
 
 ### 4. Execute
@@ -156,8 +155,8 @@ Choose the right thinking mode:
 # Inversion thinking (what could go wrong?)
 /think --model inversion "problem"
 
-# Multi-persona discussion
-/think --collab "problem"
+# Systems mapping
+/think --systems "problem"
 
 # Causal analysis
 /think --causal "problem"
@@ -182,7 +181,7 @@ This identifies:
 Use complex mode for full architect involvement:
 
 ```bash
-/plan --complex "task description"
+/requirements --complex "task description"
 ```
 
 ### 4. Execute with Full Pipeline
@@ -216,8 +215,8 @@ Use complex mode for full architect involvement:
 | `first-principles` | Break down to fundamentals |
 | `inversion` | Think about what could go wrong |
 | `pre-mortem` | Imagine failure, trace causes |
-| `second-order` | Consider downstream effects |
-| `occams-razor` | Simplest explanation |
+| `five-whys` | Root cause drilling |
+| `steelmanning` | Strongest opposing argument |
 | `rubber-duck` | Explain to clarify |
 
 ### Modifier Flags (combine with primary)
@@ -227,21 +226,12 @@ Use complex mode for full architect involvement:
 | `--visual` | Output ASCII diagram of reasoning |
 | `--challenge` | Run adversarial critique after |
 
-### Collaborative
-
-| Flag | Use When |
-|------|----------|
-| `--collab` | Multi-persona discussion |
-| `--socratic` | Question-driven refinement |
-| `--argue` | Build formal arguments |
-
 ### Strategic
 
 | Flag | Use When |
 |------|----------|
 | `--ooda` | Rapid decision cycles |
 | `--ulysses` | Pre-commitment mechanisms |
-| `--tree` | Branching exploration |
 
 ---
 
@@ -257,7 +247,7 @@ Use complex mode for full architect involvement:
 /think --systems "notification system needs: push, email, in-app, preferences"
 
 # Plan it out
-/plan "implement user notification system with push, email, and in-app support"
+/requirements "implement user notification system with push, email, and in-app support"
 
 # Execute
 /expo "implement notification system per plan"
@@ -281,13 +271,13 @@ Use complex mode for full architect involvement:
 ```bash
 # Deep analysis
 /think --model first-principles "why is our state management complex?"
-/think --collab "should we migrate from Redux to Zustand?"
+/think --decide "should we migrate from Redux to Zustand?"
 
 # Stress test
 /challenge --deep "migrate from Redux to Zustand"
 
 # Full planning
-/plan --complex "migrate state management from Redux to Zustand"
+/requirements --complex "migrate state management from Redux to Zustand"
 
 # Execute with all gates
 /nextjs --complex "execute Redux to Zustand migration"
@@ -305,7 +295,7 @@ Use complex mode for full architect involvement:
 
 4. **Match complexity to task** - Don't use `--complex` for typo fixes. Don't use `-tweak` for architecture changes.
 
-5. **Check the plan output** - `/plan` creates specs in `.claude/requirements/`. Review before executing.
+5. **Check the plan output** - `/requirements` creates specs in `.claude/requirements/`. Review before executing.
 
 6. **Domain commands are smart** - They route to the right specialists automatically. Trust the orchestration.
 
@@ -323,10 +313,10 @@ Use complex mode for full architect involvement:
 | `/nextjs` | Next.js frontend development |
 | `/expo` | Expo/React Native development |
 | `/django-react` | Django + React full-stack development |
-| `/rvry` | RVRY product orchestration engine |
 | `/research` | Deep, cited research |
-| `/seo` | SEO content pipeline |
-| `/kg` | Knowledge graph mechanism + answer synthesis |
+| `/design` | 3D printing (OpenSCAD, STL), creative design (Photoshop, Illustrator) |
+| `/illustrate` | Measured Adobe Photoshop/Illustrator execution |
+<!-- PRIVATE -->| `/kg` | Knowledge graph mechanism + answer synthesis |<!-- /PRIVATE -->
 | `/audit` | Multi-agent due diligence auditing |
 | `/typography` | Typography pipeline (glyph editing, TTF export, font tools) |
 | `/orca-os-dev` | OS/Claude Code configuration development |
@@ -347,7 +337,7 @@ Use complex mode for full architect involvement:
 
 | Command | Purpose |
 |---------|---------|
-| `/plan` | Unified planner (requirements + RA blueprint, no implementation) |
+| `/requirements` | Unified planner (requirements + RA blueprint, no implementation) |
 | `/project-setup` | Initialize or update CLAUDE.md with project conventions |
 | `/design-dna` | Initialize or update design-dna for project design system |
 
@@ -376,7 +366,7 @@ Use complex mode for full architect involvement:
 |---------|---------|
 | `/enhance` | Transform vague requests into well-structured prompts |
 | `/reflect` | Self-improvement (learn from interactions) |
-| `/self-improve` | Run the Improvement Bus (route events to agents and gates) |
+| `/self-improve` | Show Workshop memory statistics and recent activity |
 | `/root-cause` | Root cause analysis (identify why something is failing) |
 | `/continue` | Resume previous recording sessions |
 | `/orca-status` | Show current ORCA recording session status |

@@ -46,13 +46,6 @@ Any deployment that violates these = **INSTANT BLOCK (-100)**:
 
 ---
 
-## Knowledge Loading
-
-Before reviewing any work:
-1. Check if `.claude/agent-knowledge/os-dev-standards-enforcer/patterns.json` exists
-2. If exists, use patterns to inform your review criteria
-3. Track patterns that were violated or well-implemented
-
 ## Required Skills Reference
 
 When reviewing, verify adherence to these skills:
@@ -104,7 +97,7 @@ If these are missing, stop and request context.
 - Skills directories contain a `SKILL.md` with required metadata.
 - MCP configs are consistent with existing MCP patterns.
 
-### Documentation Sync (MANDATORY - OS 6.3)
+### Documentation Sync (MANDATORY - OS 7.0)
 
 - **Check documentation was synced:**
   - Compare `phase_state.planning.documentation_updates` with `phase_state.implementation_pass1.docs_synced`
@@ -134,7 +127,7 @@ If these are missing, stop and request context.
 Any unresolved, critical RA concerns should result in at least a WARN, and
 for high-risk areas may justify a BLOCK.
 
-## Scoring & Gate Decision (Graduated Gate Standard - OS 6.3)
+## Scoring & Gate Decision (Graduated Gate Standard - OS 7.0)
 
 **Reference:** `docs/reference/graduated-gate-scoring.md`
 
@@ -204,7 +197,39 @@ Log promotion to phase_state for audit traceability.
 
 **Note:** Net Positive promotion does NOT override Critical Safety Override. Any safety violation still results in BLOCK.
 
-## Reflexion on Failure (OS 6.3)
+---
+
+
+## Structured Violations Output
+
+When `gate_decision` is **ERROR** or **BLOCK**, include a machine-readable violations
+block at the END of your output. This block is consumed by the standards-persistence-agent
+to save learned rules for future sessions.
+
+Format:
+
+```
+<!-- VIOLATIONS_JSON -->
+{
+  "gate_decision": "<ERROR|BLOCK>",
+  "domain": "os-dev",
+  "violations": [
+    {
+      "what_happened": "<specific violation that occurred>",
+      "cost": "<consequence -- what this causes downstream>",
+      "rule": "<actionable rule to prevent recurrence>"
+    }
+  ]
+}
+<!-- /VIOLATIONS_JSON -->
+```
+
+Include one entry per major violation category. Do not include minor warnings
+or style nits -- only violations that contributed to the ERROR/BLOCK decision.
+
+---
+
+## Reflexion on Failure (OS 7.0)
 
 When `gate_decision` is WARN, ERROR, or BLOCK:
 
@@ -236,8 +261,7 @@ Populate:
   - `file`
   - `summary`
 - `ra_status` – `none`, `present_resolved`, or `present_unresolved`.
-- `reflexion` – verbal reflection on failure causes (OS 6.3, only if WARN/ERROR/BLOCK).
+- `reflexion` – verbal reflection on failure causes (OS 7.0, only if WARN/ERROR/BLOCK).
 
 Your report should make it easy for `os-dev-builder` to run a targeted
 corrective pass if required.
-

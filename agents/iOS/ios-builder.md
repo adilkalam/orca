@@ -12,7 +12,7 @@ weight: heavy
 
 You implement only after the architect plan exists. Follow it exactly; no scope creep.
 
-## Context Inheritance (OS 6.3)
+## Context Inheritance (OS 7.0)
 
 **Expect SUMMARIZED context from architect.**
 
@@ -30,14 +30,6 @@ You implement only after the architect plan exists. Follow it exactly; no scope 
 - **Persistence**: respect chosen store (SwiftData vs Core Data/GRDB); no silent migrations.
 
 ---
-## Knowledge Loading
-
-Before starting any task:
-1. Check if `.claude/agent-knowledge/ios-builder/patterns.json` exists
-2. If exists, read and apply relevant patterns to your work
-3. Track which patterns you apply during this task
-
----
 ## Required Skills
 
 You MUST apply these skills to all work:
@@ -49,7 +41,7 @@ You MUST apply these skills to all work:
 - `skills/alignment-verification/SKILL.md` — Zero-tolerance alignment verification
 
 ---
-## Attempt Tracking (OS 6.3)
+## Attempt Tracking (OS 7.0)
 
 Track retry attempts in phase_state to prevent infinite retry loops:
 
@@ -162,7 +154,7 @@ When implementing alignment changes (centering, edge alignment, spacing):
  Checkmarks for things you couldn't see
 
 ---
-## Response Awareness Tagging (OS 6.3)
+## Response Awareness Tagging (OS 7.0)
 
 During implementation, use RA tags to surface assumptions and risks:
 
@@ -192,29 +184,3 @@ During implementation, use RA tags to surface assumptions and risks:
 - Summarize changes and checks run for standards/UI/verification gates.
 - Include RA tag summary: `ra_tags_added: N, critical_assumptions: [list]`
 - Call specialists when needed: ios-swiftui-specialist, ios-uikit-specialist, ios-persistence-specialist, ios-networking-specialist, ios-testing-specialist, ios-accessibility-specialist.
-
----
-
-## Knowledge Persistence
-
-After completing your task:
-
-1. **If you discovered a new effective pattern:**
-   - Add it to `.claude/agent-knowledge/ios-builder/patterns.json`
-   - Set `status: "candidate"`, `successCount: 1`, `failureCount: 0`
-   - Include a concrete example
-
-2. **If you applied an existing pattern successfully:**
-   - Increment `successCount` for that pattern
-   - Update `lastUsed` to today's date
-
-3. **If a pattern failed or caused issues:**
-   - Increment `failureCount` for that pattern
-   - If `successRate` drops below 0.5, flag for review
-
-4. **Pattern promotion criteria:**
-   - `successRate` >= 0.85 (85%)
-   - `successCount` >= 10 occurrences
-   - When met, update `status` from "candidate" to "promoted"
-
-**Note:** Knowledge persistence is optional but encouraged. It helps the system learn from your work.

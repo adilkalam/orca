@@ -2,9 +2,17 @@
 description: Constraint chain exploration with cognitive scaffolding via cognition-mcp
 argument-hint: [--flag] <problem or question>
 # --quick flag available for fast exploration without self-observation
+allowed-tools:
+  - mcp__cognition-mcp__cognition
+  - AskUserQuestion
+  - Read
+  - Write
+  - Grep
+  - Glob
+  - Bash
 ---
 
-# /think - Constraint Chain Exploration
+# /think-local - Constraint Chain Exploration
 
 **YOUR ROLE**: Build reasoning chains by making MULTIPLE calls to `mcp__cognition-mcp__cognition`. Each call stores a thought step; the MCP echoes it back unchanged. Default mode uses constraint chain exploration with mode selection and self-checks.
 
@@ -17,15 +25,17 @@ argument-hint: [--flag] <problem or question>
 Display this reference and stop:
 
 ```
-/think - Constraint Chain Exploration (cognition-mcp)
+/think-local - Constraint Chain Exploration (cognition-mcp)
 
 USAGE:
-  /think [--flag] <prompt>
-  /think --help
+  /think-local [--flag] <prompt>
+  /think-local --help
 
 PRIMARY FLAGS (pick reasoning mode):
     (none)           Constraint chain exploration (2-3 modes, self-check, harvest)
-    --quick          Fast exploration via blind_orchestrate (no self-observation)
+    --auto           Fully autonomous - no assumption check, states assumptions
+    --quick          Fast exploration via blind_orchestrate (can ask questions unless --auto)
+    --quick --auto   Fast + autonomous (no self-observation, no questions)
     --design         Design-focused exploration (auto-loads design context)
     --debug          Debug approach capstone
     --decide         Decision framework capstone
@@ -66,18 +76,19 @@ MENTAL MODELS (for --model):
     first-principles       Break to fundamentals
 
 EXAMPLES:
-  /think Why is this test flaky?
-  /think --quick Quick question about caching
-  /think --design How should the login flow look?
-  /think --debug Why is authentication failing?
-  /think --model inversion How could this migration fail?
-  /think --decide Microservices vs monolith
-  /think --systems How do these components interact?
-  /think --creative How could we restructure this blog post?
-  /think --causal Why are users dropping off at checkout?
-  /think --spatial --visual How should this UI be laid out?
-  /think --decide --challenge Should we rewrite or refactor?
-  /think --ooda How should we respond to this outage?
+  /think-local Why is this test flaky?
+  /think-local --auto "Why is caching slow?" (autonomous, states assumptions)
+  /think-local --quick Quick question about caching
+  /think-local --design How should the login flow look?
+  /think-local --debug Why is authentication failing?
+  /think-local --model inversion How could this migration fail?
+  /think-local --decide Microservices vs monolith
+  /think-local --systems How do these components interact?
+  /think-local --creative How could we restructure this blog post?
+  /think-local --causal Why are users dropping off at checkout?
+  /think-local --spatial --visual How should this UI be laid out?
+  /think-local --decide --challenge Should we rewrite or refactor?
+  /think-local --ooda How should we respond to this outage?
 ```
 
 ---
@@ -94,7 +105,32 @@ MCP returns:   { thought: "X", ... }  <- UNCHANGED
 
 **YOU generate the reasoning. The MCP tracks it.**
 
-**Verbose flag**: Include `verbose: true` in every cognition MCP call from /think. Since /think is a single-call command, the echo IS the output -- you need it back.
+**Verbose flag**: Include `verbose: true` in every cognition MCP call from /think-local. Since /think-local is a single-call command, the echo IS the output -- you need it back.
+
+---
+
+## Output Rendering (Separate from Reasoning)
+
+**The reasoning happens via cognition-mcp calls.** This is the core value - structured operations, stored steps, protocol tracking. ALWAYS make the MCP calls and work with the structured data.
+
+**The rendering is a separate step.** After cognition-mcp returns JSON:
+1. USE the JSON data to inform your analysis (this IS the reasoning)
+2. When presenting to the user, render content as clean markdown - not raw JSON
+
+**Bad output** (dumps escaped JSON):
+```
+The MCP returned: {"thought": "Analysis of X\n\nKey points:\n- Point 1", ...}
+```
+
+**Good output** (extracts and renders):
+```
+Analysis of X
+
+Key points:
+- Point 1
+```
+
+This is about **presentation clarity**, not about whether you use cognition-mcp. The structured reasoning is essential; the raw JSON is not user-facing.
 
 ---
 
@@ -128,12 +164,56 @@ Extract from $ARGUMENTS:
    - `--import <data>` - Import session
 
 4. **Prompt**: Everything after flags
+5. **--auto flag**: If present with any mode, skip assumption check and state assumptions
 
 **Routing logic**:
-- If a specialized flag is present (--debug, --decide, --model, --meta, --meta-visual, --systems, --spatial, --creative, --causal, --ooda, --ulysses): Jump to **Phase 2: Specialized Operations**
-- If --quick: Jump to **Phase 1C: Quick Exploration**
-- If --design: Jump to **Phase 1B: Design Exploration**
-- If no flags: Continue to **Phase 1A: Default Constraint Chain**
+- If a specialized flag is present (--debug, --decide, --model, --meta, --meta-visual, --systems, --spatial, --creative, --causal, --ooda, --ulysses): Jump to **Phase 0.5a** then **Phase 2: Specialized Operations**
+- If --quick (with or without --auto): Jump to **Phase 0.5a** then **Phase 1C: Quick Exploration**
+- If --design: Jump to **Phase 0.5a** then **Phase 1B: Design Exploration**
+- If --auto alone or no flags: Continue to **Phase 0.5a** then **Phase 1A: Default Constraint Chain**
+
+---
+
+## Phase 0.5a: Memory Query (Before Analysis)
+
+Before starting exploration, query project memory for relevant context.
+
+### 0.5a.1 Extract Keywords
+From the problem statement, extract 3-5 key terms:
+- Topic words (e.g., "context", "orchestration", "standards")
+- Domain words (e.g., "nextjs", "ios", "orca-os")
+- Problem type (e.g., "broken", "missing", "design")
+
+### 0.5a.2 Query Workshop
+```bash
+workshop --workspace .claude/memory search "<keywords>" --limit 5 2>/dev/null || true
+workshop --workspace .claude/memory why "<topic>" 2>/dev/null || true
+```
+
+### 0.5a.3 Query Cognition Files
+```bash
+ls -la .claude/cognition/*<topic>* 2>/dev/null | head -5
+```
+
+If relevant files found, read the first 50 lines for summary.
+
+### 0.5a.4 Compile Prior Context
+
+If prior context found, include in cognition ENTER call:
+```typescript
+{
+  operation: "thought",
+  sessionTitle: "Think: <summary>",
+  content: {
+    thought: "Prior context loaded:\n- <workshop findings>\n- <related sessions>\n\nStarting exploration with this foundation.",
+    thoughtNumber: 0,
+    totalThoughts: 8,
+    nextThoughtNeeded: true
+  }
+}
+```
+
+If no prior context found, proceed directly to Phase 1.
 
 ---
 
@@ -170,10 +250,10 @@ The enhanced version operates at SUBSTRATE level (what training imposes before r
 
 ```bash
 # Standard meta (unchanged - process level)
-/think --meta "Evaluating our decision process"
+/think-local --meta "Evaluating our decision process"
 
 # Substrate observation (new - substrate level)
-/think --meta "What is my training doing here before reasoning begins?"
+/think-local --meta "What is my training doing here before reasoning begins?"
 ```
 
 The distinction:
@@ -185,6 +265,8 @@ The distinction:
 ## Substrate Visualization Mode (--meta-visual)
 
 When `--meta-visual` is used, perform substrate observation AND generate ASCII visualizations.
+
+**Rendering**: ASCII visualizations should be actual multi-line markdown (real newlines, box-drawing characters). The templates below show the target format.
 
 ### Workflow
 
@@ -298,23 +380,36 @@ If the substrate observation doesn't fit templates, generate a custom ASCII:
 
 When no flags (or only modifier flags) are provided, run constraint chain exploration.
 
-### Step 1: ENTER
+### Step 1: Session Folder
 
-Call cognition with `operation: "thought"`, `sessionTitle: "Think: <summary>"`, `sessionTags: ["think", "exploration"]`. Register the command:
+Create a folder for this think session's incremental artifacts:
 
-```typescript
-{ operation: "checkpoint", sessionId: "<id>", content: { command: "think", phase: "enter" } }
-```
+1. Create `{$PWD}/.claude/cognition/YYYYMMDD-HHMM-<slug>/` directory (slug from the problem summary). IMPORTANT: This is the PROJECT's `.claude/`, NOT `~/.claude/`. Use the absolute project root path.
+2. Write `00-enter.md` with:
+   - Problem statement
+   - Timestamp
 
-### Step 2: Brief ORIENT (2 lines max)
+### Step 2: Brief ORIENT
 
-Quick scope check. Call cognition `operation: "thought"` with:
-- What is the question?
-- What is uncertain?
+Orient directly -- no cognition-mcp calls yet. Analyze the prompt and write:
 
-Do NOT display full what-I-know/uncertain/avoiding. Keep it brief.
+1. `01-orient.md` with:
+   - What is the question?
+   - What is uncertain? (list each uncertainty specifically)
 
-### Step 3: Mode Selection
+2. `02-scope-questions.md` -- translate each uncertainty into a binary question with a smart default.
+
+If the problem has genuine scope ambiguity, ask scope questions via `AskUserQuestion` (up to 2 questions, each with 2 options, smart default first marked "(Recommended)"). If AskUserQuestion returns blank, state assumptions visibly and proceed. If no questions needed (problem is clear), state scope and proceed.
+
+Record answers in `03-scope-answers.md`.
+
+Cognition-mcp begins in Step 4 (mode execution).
+
+**--auto bypass**: State assumptions and proceed.
+
+Continue to Step 3 (Mode Selection).
+
+### Step 3: Mode Selection (uses answers)
 
 Select 2-3 modes based on problem type:
 
@@ -329,7 +424,11 @@ Select 2-3 modes based on problem type:
 
 ### Step 4: Execute Modes
 
+Start cognition session: call `operation: "thought"` with `sessionTitle: "Think: <summary>"`, `sessionTags: ["think", "exploration"]`. Register command with `operation: "checkpoint"` (`phase: "enter"`).
+
 Execute each selected mode using cognition-mcp operations (same mode definitions as /deepthink).
+
+All intermediate content is captured in JSONL stores at `~/.orca-cognition/sessions/`. No incremental files written to the session folder.
 
 **MAP**: systems map then causal_analysis on leverage points.
 **INVERT**: mental_model pre-mortem then thought reflexion.
@@ -406,6 +505,19 @@ Execute each selected mode using cognition-mcp operations (same mode definitions
 2. What am I avoiding?
 3. What would a skeptic challenge?
 
+### Weakness Probe (after self-check, before verify-or-defer)
+
+Ask yourself ONE of these (rotate by mode number, starting from 1):
+1. Which part of your analysis would you spend more time on if you had another round?
+2. If your recommendation fails in practice, what is the first concrete thing someone notices?
+3. What surprised you during this analysis? If nothing, what does that tell you?
+4. What is the thing you almost said but did not?
+5. Which of your claims would you remove if you had to stake your credibility on the remaining ones?
+6. Your strongest claim and your most significant caveat -- are they in tension? If so, which do you stand behind?
+
+Include self-check and probe results in the checkpoint `gateCheck.notes`.
+
+
 **Verify-or-Defer Obligation** (mandatory after self-check):
 
 For each concern raised in Q2 or Q3, you MUST either:
@@ -434,7 +546,7 @@ Deferred concerns flow to HARVEST as open questions with their deferral reasons 
     resolveConstraints: ["C1"],
     acknowledgeConstraints: ["C2"],
     deferConstraints: [
-      { id: "C3", reason: "Requires running tests to verify. Cannot verify in /think session." }
+      { id: "C3", reason: "Requires running tests to verify. Cannot verify in /think-local session." }
     ],
     gateCheck: {
       selfCheckPassed: true,
@@ -450,7 +562,65 @@ Deferred concerns flow to HARVEST as open questions with their deferral reasons 
 - `SOFT_FAIL` -> active constraints remain, run another mode
 - `HARD_FAIL` -> self-check or depth gate failed, go deeper
 
+### Mode Routing on SOFT_FAIL
+
+When `gateStatus: "SOFT_FAIL"`, consider the active constraint types to select the next mode:
+
+| Active constraint type | Consider | Rationale |
+|------------------------|----------|-----------|
+| FORWARD (unresolved gap) | DEEP or MAP | Sustained focus on the specific gap |
+| FORBIDDEN (untested boundary) | INVERT | Stress-test what was marked forbidden |
+| QUESTION (open question) | PERSPECTIVES or EDGES | Different viewpoints or analogies to resolve |
+| depthGatePassed: false | Same mode, stronger framing | Need more depth, not a different angle |
+| selfCheckPassed: false | META | Process issue -- observe what's happening |
+
+This table is suggestive, not prescriptive. If your judgment says a different mode fits better, follow your judgment. The table helps when multiple modes seem equally valid.
+
+### Candidate Reframing (After Conclusion-Producing Modes)
+
+If the previous mode produced a conclusion-producing output (a specific recommendation, a position reversal or commitment, or an actionable architecture/design decision), reframe the next mode as a COMPETING candidate:
+
+**Instruction to yourself before executing the next mode:**
+"Generate a different approach to the ORIGINAL question. Do not extend or elaborate the previous mode's recommendation. The constraint table is still visible as guardrails, but your analysis should compete with -- not deepen -- what came before."
+
+This prevents COMPLEXITY-COLLAPSE: the pattern where a simple problem gets elaborated until the complexity justifies a complex solution.
+
+If the previous mode's output was exploratory (a map, question-generating exercise, or information gathering), skip this reframing and build normally.
+
+After 2-3 modes with PASS gates, proceed to harvest.
+
+
 ### Step 6: HARVEST
+
+### Harvest Pre-Mortem (Before Synthesis)
+
+Before writing the harvest checkpoint, run a scope-focused pre-mortem on the direction your analysis has been heading.
+
+Call `mental_model` with:
+```typescript
+{
+  operation: "mental_model",
+  sessionId: "<sessionId>",
+  content: {
+    modelName: "pre-mortem",
+    problem: "<your emerging recommendation, in one sentence>",
+    setup: "This recommendation was implemented. Compare it to the original question. Does the recommendation match the scale of the original problem, or has the analysis elaborated a simple problem until the complexity justified a complex solution?",
+    steps: [
+      "What was the original question?",
+      "What is the recommendation now?",
+      "What is the gap between the two in terms of complexity and scope?",
+      "If the recommendation is more complex than the original problem warranted, what is the simpler version?"
+    ],
+    conclusion: "<whether the recommendation should be simplified before synthesis>"
+  }
+}
+```
+
+**Check for COMPLEXITY-COLLAPSE**: Did the analysis elaborate a simple problem until the complexity justified a complex solution? If the pre-mortem finds the recommendation has grown beyond the original problem's scale, note this in the harvest output. Name the simpler alternative.
+
+This pre-mortem INFORMS synthesis -- it does not block harvest. Include the pre-mortem findings in the harvest checkpoint's `keyFindings`. If over-engineering was detected, the final output should acknowledge it and present the simpler alternative prominently.
+
+**--quick mode**: Skip this pre-mortem. The blind_orchestrate path handles its own harvest.
 
 Call checkpoint with `phase: "harvest"`. MCP auto-persists to `.claude/cognition/`.
 
@@ -463,6 +633,7 @@ Deferred concerns from verify-or-defer appear as open questions AND auto-surface
   projectPath: "<absolute project path>",
   content: {
     phase: "harvest",
+    sessionFolder: "<absolute path to {$PWD}/.claude/cognition/YYYYMMDD-HHMM-slug/ -- project-local, NOT ~/.claude/>",
     summary: "<2-3 sentence executive summary>",
     keyFindings: ["<key finding 1>", "<key finding 2>"],
     openQuestions: ["<remaining question>", "<deferred concern with reason>"],
@@ -475,7 +646,7 @@ Deferred concerns from verify-or-defer appear as open questions AND auto-surface
       },
       {
         question: "<specific follow-up based on findings>",
-        command: "/think",
+        command: "/think-local",
         rationale: "<why this needs further investigation>"
       }
     ]
@@ -483,12 +654,26 @@ Deferred concerns from verify-or-defer appear as open questions AND auto-surface
 }
 ```
 
+The MCP auto-persist writes `99-harvest.md` to the session folder via `sessionFolder`. Raw telemetry (`99-raw.json`) is written to `~/.orca-cognition/sessions/{sessionId}/`.
+
 ### Step 7: Workshop Entry
 
 ```bash
 workshop --workspace .claude/memory note \
-  "/think: [Topic] - [Key finding]. Session: <sessionId>. File: <autoPersist.file>" \
+  "/think-local: [Topic] - [Key finding]. Session: <sessionId>. File: <autoPersist.file>" \
   -t think -t cognition
+```
+
+### Step 8: Confirm to User
+
+Output after harvest + workshop:
+```
+---
+Analysis persisted:
+  File: <autoPersist.file path>
+  Workshop: Tagged with think, cognition
+  Recovery: /think-local --import <sessionId>
+---
 ```
 
 ---
@@ -506,7 +691,7 @@ Design-focused exploration with auto-loaded context.
    - `design-system.md` (project root)
    - `css/design-system-tokens.css` (if exists)
 3. Auto-select DESIGN mode.
-4. Run with constraint tracking and 3-question self-check (same as default /think).
+4. Run with constraint tracking and 3-question self-check (same as default /think-local).
 5. Design-specific depth gate: "Did we find specific, actionable design issues?"
 
 ### DESIGN Mode Operations
@@ -525,7 +710,9 @@ Same as default -- auto-persist via harvest checkpoint + workshop entry.
 
 ## Phase 1C: Quick Exploration (--quick)
 
-Fast exploration using blind_orchestrate. Skips all self-observation overhead: no constraint tracking, no self-checks, no verify-or-defer, no checkpoint calls. Uses blind_orchestrate to get analytical tasks sequentially.
+Fast exploration using blind_orchestrate.
+
+**Scope**: --quick skips ORIENT (and its scope questions). If --quick --auto, fully autonomous. Skips all self-observation overhead: no constraint tracking, no self-checks, no verify-or-defer, no checkpoint calls. Uses blind_orchestrate to get analytical tasks sequentially.
 
 ### Process
 
@@ -555,8 +742,8 @@ Fast exploration using blind_orchestrate. Skips all self-observation overhead: n
 What is the question: [concise framing]
 
 ## Exploration
-- [MODE]: [1 sentence -- the pivot or key finding]
-- [MODE]: [1 sentence -- what changed or surprised]
+- [1 sentence: the pivot or key finding]
+- [1 sentence: what changed or surprised]
 
 ## Summary
 [2-3 sentences: key insight]
@@ -564,13 +751,15 @@ What is the question: [concise framing]
 ## Where to Go Next
 -> /deepthink "[deeper question]"
    _[why this needs adversarial exploration]_
--> /think "[follow-up]" (without --quick, for full constraint chain)
+-> /think-local "[follow-up]" (without --quick, for full constraint chain)
    _[why this needs structured exploration]_
 -> /problem-solve "[decision point]"
    _[if ready to decide]_
 ```
 
-Note: --quick output does NOT include "What the Protocol Caught" table since there is no protocol self-observation.
+[No protocol jargon. No mode labels. Lead with findings.]
+
+Note: --quick output does NOT include "What Shifted" section since there is no protocol self-observation.
 
 ### Persistence
 
@@ -578,7 +767,7 @@ Workshop entry only (no cognition file, no daily log):
 
 ```bash
 workshop --workspace .claude/memory note \
-  "/think --quick: [Topic] - [Summary]. Session: <sessionId>" \
+  "/think-local --quick: [Topic] - [Summary]. Session: <sessionId>" \
   -t think -t quick -t cognition
 ```
 
@@ -955,6 +1144,8 @@ Make additional calls, incrementing thoughtNumber:
 
 **Applicable operations**: thought, tree_of_thought, graph_of_thought, decide, systems, beam_search, mcts
 
+**Rendering**: Extract structured data from cognition-mcp and render as readable ASCII with real newlines (see "Output Rendering" section above).
+
 **Output formats**:
 
 ```
@@ -1079,13 +1270,27 @@ What is the question: [concise framing]
 What is uncertain: [key unknowns]
 
 ## Exploration
-- [MODE]: [1 sentence -- the pivot or key finding]
-- [MODE]: [1 sentence -- what changed or surprised]
-[No ### headers. 1 bullet per mode, 1 sentence each. Just pivots.]
+- [1 sentence: the pivot or key finding from this exploration step]
+- [1 sentence: what changed or surprised]
+[No ### headers. 1 bullet per step, 1 sentence each. Lead with the
+finding, not the mode name.]
 
-## What the Protocol Caught
-- "[what we initially believed]" --> [self-check, verify-or-defer, or constraint] --> [what actually held up]
-- "[concern raised then checked]" --> [verification or deferral] --> [result]
+## What Shifted
+
+**"[What I initially believed or assumed]"**
+[What testing showed. Did it hold, change, or get deferred?]
+
+**"[Another assumption or belief tested]"**
+[Result and what it means.]
+
+[Format for human readability in terminal:
+- Exploration bullets: lead with the finding, not the mode name
+- What Shifted entries: bold assumption, plain result. No arrows.
+- Summary is narrative, not conclusion. Trace what moved.
+- No protocol vocabulary in user-facing output
+
+Let the context and cognition tool calls determine the appropriate
+structure and detail level for the final output.]
 
 ## Summary
 [2-4 sentences: trace what shifted during exploration -- what you expected
@@ -1097,7 +1302,7 @@ of how understanding moved.]
    _[why this needs pre-mortem stress-testing]_
 -> /problem-solve "[decision point]"
    _[why this needs convergent decision-making]_
--> /plan "[implementation task]"
+-> /requirements "[implementation task]"
    _[if ready to implement]_
 ```
 
@@ -1252,10 +1457,10 @@ For specialized operations (single capstone):
 
 For default mode (constraint chain):
 
-1. ENTER checkpoint
-2. Brief ORIENT thought
+1. ENTER checkpoint + Create Session Folder
+2. Brief ORIENT (orient analysis, optional scope questions via AskUserQuestion, record answers)
 3. 2-3 mode executions with self-check + constraint checkpoints
-4. HARVEST checkpoint
+4. HARVEST checkpoint (MCP auto-persists 99-harvest.md)
 
 ---
 
@@ -1269,7 +1474,7 @@ Auto-persist via harvest checkpoint (MCP handles file creation). Then:
 
 ```markdown
 ---
-### [HH:MM] /think - [Topic slug]
+### [HH:MM] /think-local - [Topic slug]
 Session: <sessionId>
 
 [1-2 sentence summary of the insight/conclusion]
@@ -1280,13 +1485,25 @@ Session: <sessionId>
 
 ```bash
 workshop --workspace .claude/memory note \
-  "/think: [Topic] - [Summary]. Session: <sessionId>" \
+  "/think-local: [Topic] - [Summary]. Session: <sessionId>" \
   -t think -t cognition
 ```
 
 ### Specialized Modes (capstone operations)
 
 Append to daily log `.claude/cognition/YYYYMMDD-daily.md` + Workshop entry (same as current behavior).
+
+### Confirm to User
+
+Output after all persistence steps:
+```
+---
+Analysis persisted:
+  File: <autoPersist.file path>
+  Workshop: Tagged with think, cognition
+  Recovery: /think-local --import <sessionId>
+---
+```
 
 ### Error Handling
 

@@ -102,19 +102,19 @@ export class ProjectContextServer {
           return await this.handleQueryContext(args as unknown as ContextQuery);
 
         case 'save_decision':
-          return await this.handleSaveDecision(args as any);
+          return await this.handleSaveDecision(args as Record<string, unknown>);
 
         case 'save_standard':
-          return await this.handleSaveStandard(args as any);
+          return await this.handleSaveStandard(args as Record<string, unknown>);
 
         case 'save_task_history':
-          return await this.handleSaveTaskHistory(args as any);
+          return await this.handleSaveTaskHistory(args as Record<string, unknown>);
 
         case 'index_project':
-          return await this.handleIndexProject(args as any);
+          return await this.handleIndexProject(args as { projectPath?: string });
 
         case 'reanalyze_project':
-          return await this.handleReanalyzeProject(args as any);
+          return await this.handleReanalyzeProject(args as { projectPath?: string });
 
         case 'recall':
           return await this.handleRecall(args as { id: string });
@@ -286,47 +286,123 @@ export class ProjectContextServer {
     };
   }
 
-  private async handleSaveDecision(args: any) {
-    const projectPath = this.detectProjectPath(args.projectPath);
+  /**
+   * Validate that required string fields are present and non-empty.
+   * Throws a descriptive error if validation fails.
+   */
+  private validateRequiredStrings(
+    args: Record<string, unknown>,
+    fields: string[],
+    handlerName: string
+  ): void {
+    for (const field of fields) {
+      if (typeof args[field] !== 'string' || args[field].trim() === '') {
+        throw new Error(
+          `${handlerName}: '${field}' is required and must be a non-empty string`
+        );
+      }
+    }
+  }
+
+  /**
+   * Validate that a field, if present, is a string.
+   */
+  private validateOptionalString(
+    args: Record<string, unknown>,
+    field: string,
+    handlerName: string
+  ): void {
+    if (args[field] !== undefined && args[field] !== null && typeof args[field] !== 'string') {
+      throw new Error(
+        `${handlerName}: '${field}' must be a string if provided`
+      );
+    }
+  }
+
+  /**
+   * Validate that a field, if present, is an array of strings.
+   */
+  private validateOptionalStringArray(
+    args: Record<string, unknown>,
+    field: string,
+    handlerName: string
+  ): void {
+    if (args[field] !== undefined && args[field] !== null) {
+      if (!Array.isArray(args[field]) || !args[field].every((item: unknown) => typeof item === 'string')) {
+        throw new Error(
+          `${handlerName}: '${field}' must be an array of strings if provided`
+        );
+      }
+    }
+  }
+
+  private async handleSaveDecision(args: Record<string, unknown>) {
+    // Validate required fields
+    this.validateRequiredStrings(args, ['domain', 'decision', 'reasoning'], 'save_decision');
+    // Validate optional fields
+    this.validateOptionalString(args, 'projectPath', 'save_decision');
+    this.validateOptionalString(args, 'context', 'save_decision');
+    this.validateOptionalStringArray(args, 'tags', 'save_decision');
+
+    const projectPath = this.detectProjectPath(args.projectPath as string | undefined);
     // Use Workshop for session memory (decisions, gotchas, learnings)
     const workshop = new WorkshopClient(projectPath);
     await workshop.saveDecision({
-      domain: args.domain,
-      decision: args.decision,
-      reasoning: args.reasoning,
-      context: args.context,
-      tags: args.tags,
+      domain: args.domain as string,
+      decision: args.decision as string,
+      reasoning: args.reasoning as string,
+      context: args.context as string | undefined,
+      tags: args.tags as string[] | undefined,
     });
     return {
       content: [{ type: 'text', text: 'Decision saved to Workshop' }],
     };
   }
 
-  private async handleSaveStandard(args: any) {
-    const projectPath = this.detectProjectPath(args.projectPath);
+  private async handleSaveStandard(args: Record<string, unknown>) {
+    // Validate required fields
+    this.validateRequiredStrings(args, ['what_happened', 'cost', 'rule', 'domain'], 'save_standard');
+    // Validate optional fields
+    this.validateOptionalString(args, 'projectPath', 'save_standard');
+
+    const projectPath = this.detectProjectPath(args.projectPath as string | undefined);
     // Use Workshop for gotchas (standards/rules)
     const workshop = new WorkshopClient(projectPath);
     await workshop.saveGotcha({
-      what_happened: args.what_happened,
-      cost: args.cost,
-      rule: args.rule,
-      domain: args.domain,
+      what_happened: args.what_happened as string,
+      cost: args.cost as string,
+      rule: args.rule as string,
+      domain: args.domain as string,
     });
     return {
       content: [{ type: 'text', text: 'Standard saved to Workshop as gotcha' }],
     };
   }
 
-  private async handleSaveTaskHistory(args: any) {
-    const projectPath = this.detectProjectPath(args.projectPath);
+  private async handleSaveTaskHistory(args: Record<string, unknown>) {
+    // Validate required fields
+    this.validateRequiredStrings(args, ['domain', 'task', 'outcome'], 'save_task_history');
+    // Validate outcome enum
+    const validOutcomes = ['success', 'failure', 'partial'];
+    if (!validOutcomes.includes(args.outcome as string)) {
+      throw new Error(
+        `save_task_history: 'outcome' must be one of: ${validOutcomes.join(', ')}`
+      );
+    }
+    // Validate optional fields
+    this.validateOptionalString(args, 'projectPath', 'save_task_history');
+    this.validateOptionalString(args, 'learnings', 'save_task_history');
+    this.validateOptionalStringArray(args, 'files_modified', 'save_task_history');
+
+    const projectPath = this.detectProjectPath(args.projectPath as string | undefined);
     // Use Workshop for task history
     const workshop = new WorkshopClient(projectPath);
     await workshop.saveTaskHistory({
-      domain: args.domain,
-      task: args.task,
-      outcome: args.outcome,
-      learnings: args.learnings,
-      files_modified: args.files_modified,
+      domain: args.domain as string,
+      task: args.task as string,
+      outcome: args.outcome as string,
+      learnings: args.learnings as string | undefined,
+      files_modified: args.files_modified as string[] | undefined,
     });
     return {
       content: [{ type: 'text', text: 'Task history saved to Workshop' }],
@@ -372,6 +448,11 @@ Cache updated at .claude/memory/state.json`;
    * Retrieves full content that was truncated by post-tool-use hook
    */
   private async handleRecall(args: { id: string }): Promise<any> {
+    // Validate archive ID to prevent path traversal
+    if (args.id.includes('/') || args.id.includes('..') || args.id.includes('\\')) {
+      throw new Error('Invalid archive ID');
+    }
+
     const baseDir = `${process.env.HOME}/.claude/archives`;
     const fs = await import('fs');
     const path = await import('path');

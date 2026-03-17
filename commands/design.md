@@ -682,12 +682,14 @@ After completing the analysis, append to daily log.
 ### Step 1: Create Cognition Directory
 
 ```bash
-mkdir -p .claude/cognition
+mkdir -p "$PWD/.claude/cognition"
 ```
+
+NOTE: This is the PROJECT's `.claude/`, NOT `~/.claude/`. Always use $PWD to ensure project-local path.
 
 ### Step 2: Append to Daily Log
 
-Append entry to `.claude/cognition/YYYYMMDD-daily.md`:
+Append entry to `$PWD/.claude/cognition/YYYYMMDD-daily.md`:
 
 ```markdown
 ---

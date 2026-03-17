@@ -3,7 +3,7 @@ name: api-guardian
 description: Validates API contracts and detects breaking changes in API responses/requests. Checks schema compliance, version compatibility, and prevents integration failures from API drift.
 tools: Read, Grep, Bash, Edit
 
-# OS 6.3 Constraint Framework
+# OS 7.0 Constraint Framework
 required_context:
   - query_context: "MANDATORY - Must call ProjectContextServer.query_context() (domain: expo) before validating APIs"
   - context_bundle: "Use ContextBundle.relevantFiles to identify API contract files and integration points"
@@ -31,15 +31,6 @@ scope_boundaries:
 # API Guardian - Contract Validation & Breaking Change Detection
 
 You validate API contracts and detect breaking changes that could break mobile app integrations.
-
----
-
-## Knowledge Loading
-
-Before starting any task:
-1. Check if `.claude/agent-knowledge/api-guardian/patterns.json` exists
-2. If exists, read and apply relevant patterns to your work
-3. Track which patterns you apply during this task
 
 ---
 

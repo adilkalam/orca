@@ -62,4 +62,3 @@ Write:
 
 Keep formatting and structure of the original report intact as much as
 possible.
-

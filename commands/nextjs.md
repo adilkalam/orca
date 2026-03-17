@@ -1,5 +1,5 @@
 ---
-description: "OS 6.3 orchestrator entrypoint for Next.js frontend tasks"
+description: "OS 7.0 orchestrator entrypoint for Next.js frontend tasks"
 argument-hint: "[--light | -tweak | --complex] <task description or requirement ID>"
 allowed-tools:
   - Task
@@ -36,7 +36,7 @@ Even `-tweak` delegates to a builder. It skips gates, not agents.
 
 ---
 
-# /nextjs - Next.js Lane Orchestrator (OS 6.3)
+# /nextjs - Next.js Lane Orchestrator (OS 7.0)
 
 Use this command for Next.js / frontend UI work.
 
@@ -73,7 +73,7 @@ No flag → Section 3 (Light Orchestrator WITH confirmation)
 
 ---
 
-## 0.1 Recording Context (OS 6.3)
+## 0.1 Recording Context (OS 7.0)
 
 > Session activity is captured automatically by **orca-record** hooks. Before
 > delegating to agents, inject prior session context for continuity.
@@ -216,7 +216,7 @@ When `--audit` is detected:
      - Structural/standards issues
      - Design inconsistencies
      - Perf/a11y/SEO risks
-     - Suggested follow-up tasks (each one can become a `/plan` + `/nextjs` implementation later).
+     - Suggested follow-up tasks (each one can become a `/requirements` + `/nextjs` implementation later).
 
 5. **(Optional) Save audit history**
    - Use `mcp__project-context__save_task_history` with:
@@ -227,6 +227,73 @@ When `--audit` is detected:
 
 Return this report to the user and **do not** proceed into the normal
 implementation pipeline unless explicitly requested.
+
+---
+
+
+## 0.6 Design-First Check (UI Tasks)
+
+### Manifesto Priming (ALL tiers)
+Inject this context block into ALL delegation prompts (tweak, default, complex):
+
+```
+=== DESIGN AWARENESS ===
+When working with CSS/styling, be aware of these verified failure patterns:
+1. I autocomplete utility classes from training data rather than designing.
+2. With utilities, every session produces different combinations for the same element.
+3. Semantic CSS constrains my output to design coherence; utilities make me an unsupervised designer.
+4. 'Change all labels' is one CSS edit with semantic classes, a codebase-wide hunt with utilities.
+5. The stylesheet IS the design document. Utilities scatter design across every JSX file.
+Recommendation: For agentic coding, semantic CSS produces better output. The stylesheet constrains all downstream work.
+===
+```
+
+### Design-DNA Gate (default and complex modes only)
+
+**Tweak mode**: Skip gate. Manifesto priming above is sufficient.
+
+**Default mode**:
+1. Check: `test -f design-dna.json` (or `.claude/design-dna/*.json`)
+2. If EXISTS: Record path in delegation prompt as `DESIGN_DNA_PATH: <path>`
+3. If MISSING: Invoke design-system-architect as subagent:
+   ```
+   Task({
+     subagent_type: "design-system-architect",
+     description: "Create design-dna for UI task",
+     prompt: `Analyze this project's existing CSS/components and produce design-dna.json.
+     Task context: $ARGUMENTS
+     Project: $PROJECT_PATH
+     Follow your CSS Methodology Awareness workflow.`
+   })
+   ```
+4. After subagent returns, record design-dna.json path and continue to delegation.
+
+**Complex mode**:
+1. ALWAYS invoke design-system-architect as subagent (even if design-dna.json exists):
+   ```
+   Task({
+     subagent_type: "design-system-architect",
+     description: "Review/create design-dna for complex UI task",
+     prompt: `Review or create design-dna.json for this complex task.
+     Task context: $ARGUMENTS
+     Project: $PROJECT_PATH
+     Existing design-dna: <path if exists>
+     Follow your CSS Methodology Awareness workflow.`
+   })
+   ```
+2. Block delegation until design-system-architect confirms design-dna.json is ready.
+
+### Design Weight Escalation
+
+When a requirements spec is detected (via requirement ID in arguments):
+1. Read `metadata.json` from the requirements folder
+2. Check `design_weight` field:
+   - `high`: Escalate gate behavior -- default mode uses complex-mode gate (always invoke design-system-architect, block until confirmed)
+   - `medium`: Keep current tier's gate behavior
+   - `low`: Keep current tier's gate behavior
+
+This ensures design-heavy tasks get mandatory design-system-architect review even in default mode.
+
 
 ---
 
@@ -248,7 +315,7 @@ If memory hits are relevant:
 - Note them for context
 - May skip or reduce ProjectContext query scope
 
-### 1.1.1 Reflexion Loading & Constraint Injection (OS 6.3)
+### 1.1.1 Reflexion Loading & Constraint Injection (OS 7.0)
 
 Load relevant reflexions from past gate failures:
 
@@ -259,7 +326,7 @@ workshop --workspace .claude/memory search "reflexion" -t nextjs --limit 5 2>/de
 Pass any reflexions found to agents in the ContextBundle under `prior_reflexions`.
 This helps agents avoid repeating past mistakes.
 
-**Constraint Injection (OS 6.3):**
+**Constraint Injection (OS 7.0):**
 
 For agents that generated past reflexions, synthesize constraint bullets and inject into `phase_state.plan.constraints`:
 
@@ -270,7 +337,6 @@ For agents that generated past reflexions, synthesize constraint bullets and inj
       "reflexion: Always include loading.tsx for async pages (from evt-20251201-003)",
       "reflexion: Verify 'use client' on hook-using components (from evt-20251128-007)"
     ],
-    "constraint_source": "improvement-bus"
   }
 }
 ```
@@ -302,7 +368,7 @@ Failure to apply these constraints will result in gate failure.
 
    This task appears to involve multiple pages or architectural decisions.
    Please run:
-     /plan "<task description>"
+     /requirements "<task description>"
 
    Then return with:
      /nextjs "implement requirement <id>"
@@ -335,10 +401,24 @@ CONTEXT_MODE: full
 DO_NOT_QUERY: true
 
 <ContextBundle JSON if queried, or "narrow query needed" if memory-first>
+
+STANDARDS (from previous gate failures):
+<list each relatedStandard.rule as a bullet, prefixed by domain>
 ===
 
 CRITICAL: You received context above. DO NOT call mcp__project-context__query_context.
 Use the inherited bundle. You MAY query with narrow scope (maxFiles: 5) if context missing.
+
+
+=== DESIGN AWARENESS ===
+When working with CSS/styling, be aware of these verified failure patterns:
+1. I autocomplete utility classes from training data rather than designing.
+2. With utilities, every session produces different combinations for the same element.
+3. Semantic CSS constrains my output to design coherence; utilities make me an unsupervised designer.
+4. 'Change all labels' is one CSS edit with semantic classes, a codebase-wide hunt with utilities.
+5. The stylesheet IS the design document. Utilities scatter design across every JSX file.
+Recommendation: For agentic coding, semantic CSS produces better output. The stylesheet constrains all downstream work.
+===
 
 Handle this Next.js task via the light path WITH design verification gates.
 
@@ -384,6 +464,17 @@ Use Workshop memory and targeted file reads only.
 ===
 
 Quick fix without design verification.
+
+
+=== DESIGN AWARENESS ===
+When working with CSS/styling, be aware of these verified failure patterns:
+1. I autocomplete utility classes from training data rather than designing.
+2. With utilities, every session produces different combinations for the same element.
+3. Semantic CSS constrains my output to design coherence; utilities make me an unsupervised designer.
+4. 'Change all labels' is one CSS edit with semantic classes, a codebase-wide hunt with utilities.
+5. The stylesheet IS the design document. Utilities scatter design across every JSX file.
+Recommendation: For agentic coding, semantic CSS produces better output. The stylesheet constrains all downstream work.
+===
 
 REQUEST: $ARGUMENTS
 
@@ -628,7 +719,7 @@ Initialize phase_state.json:
 
 Delegate to `nextjs-grand-architect` with Context Inheritance:
 
-**Context Inheritance Protocol (OS 6.3):**
+**Context Inheritance Protocol (OS 7.0):**
 
 When delegating, wrap the ContextBundle with inheritance headers:
 
@@ -639,10 +730,24 @@ CONTEXT_MODE: full
 DO_NOT_QUERY: true
 
 <ContextBundle JSON from Section 3.2>
+
+STANDARDS (from previous gate failures):
+<list each relatedStandard.rule as a bullet, prefixed by domain>
 ===
 
 CRITICAL: You received context above. DO NOT call mcp__project-context__query_context.
 Use the inherited bundle. You MAY supplement with targeted file reads if needed.
+
+
+=== DESIGN AWARENESS ===
+When working with CSS/styling, be aware of these verified failure patterns:
+1. I autocomplete utility classes from training data rather than designing.
+2. With utilities, every session produces different combinations for the same element.
+3. Semantic CSS constrains my output to design coherence; utilities make me an unsupervised designer.
+4. 'Change all labels' is one CSS edit with semantic classes, a codebase-wide hunt with utilities.
+5. The stylesheet IS the design document. Utilities scatter design across every JSX file.
+Recommendation: For agentic coding, semantic CSS produces better output. The stylesheet constrains all downstream work.
+===
 ```
 
 Inputs:

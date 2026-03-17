@@ -1,44 +1,51 @@
-# Audit Pipeline Phase Configuration - OS 6.4
-# Standalone Due Diligence Codebase Auditing
+# Audit Pipeline Phase Configuration - OS 7.0
+# Evidence-Based Due Diligence Codebase Auditing
 #
 # NOTE: This is NOT an /orca pipeline. /audit is a standalone diagnostic
 # command that runs independently of feature development pipelines.
 #
-# Key differences from /orca pipelines:
-# - No intake/planning/verification phases (single-purpose tool)
-# - Parallel agent spawning for efficiency
+# Architecture: AGENTLESS direct execution
+# - Zero subagents spawned -- all verification performed by executing agent
+# - Sequential dimension execution with evidence trails
+# - Every finding requires: claim checked, verification performed, result
 # - Read-only operation (never modifies code)
 # - Produces investor-grade reports
 
 pipeline:
   name: audit
-  description: Multi-agent due diligence auditing with parallel specialist execution
-  version: "6.0"
+  description: Agentless evidence-based due diligence auditing with direct verification protocols
+  version: "7.0"
   type: standalone  # Not an /orca pipeline
+  architecture: agentless  # All work done by executing agent directly
 
 command:
   entry: /audit
-  argument_hint: "[--comprehensive | --core | --item <target>] [--since <commit>] [--verbose]"
+  argument_hint: "[--comprehensive | --core | --item <target> | --documentation [--comprehensive]] [--since <commit>] [--verbose]"
   allowed_tools:
     - Read
     - Grep
     - Glob
     - Bash
-    - Task
-    - mcp__cognition__cognition
+    - Write
+    - mcp__cognition-mcp__cognition
     - mcp__project-context__query_context
     - AskUserQuestion
 
 phases:
-  - name: discovery
-    description: Parse arguments, detect project type, determine dimensions
-    duration_target: "2-3 min"
+  - name: configure
+    description: Parse arguments, detect project type, determine dimensions, init workspace
+    duration_target: "~1 min"
     actions:
       - parse_arguments:
-          mode: "quick | core | comprehensive | item"
+          mode: "quick | core | comprehensive | item | documentation"
           target: "path for --item mode"
           commit: "sha for --since mode"
           verbosity: "boolean"
+          documentation_flags:
+            is_doc_audit: "args.includes('--documentation')"
+            is_doc_comprehensive: "isDocAudit && args.includes('--comprehensive')"
+          invalid_combinations:
+            - "--documentation --since"  # Requires full file reads, not diffs
       - detect_project_type:
           patterns:
             nextjs: "next.config.*"
@@ -50,79 +57,177 @@ phases:
           quick: ["structure", "security", "dependencies"]
           core: ["structure", "security", "dependencies", "patterns", "documentation"]
           comprehensive: "all 8 (7 for non-UI)"
-      - init_temp_directory:
+      - init_workspace:
           path: ".claude/audit/temp/"
+      - cognition_checkpoint:
+          operation: checkpoint
+          phase: enter
+          content: "mode, projectType, dimensions count"
     outputs:
       - mode
       - project_type
       - dimensions
       - temp_path
 
-  - name: parallel_execution
-    description: Spawn specialist agents in parallel via Task tool
-    duration_target:
-      quick: "5 min"
-      core: "15 min"
-      comprehensive: "30-45 min"
-    actions:
-      - spawn_specialists:
-          method: "Task with run_in_background: true"
-          agents_by_mode:
-            quick:
-              - audit-structure-specialist
-              - audit-security-specialist
-              - audit-dependency-specialist
-            core:
-              - audit-structure-specialist
-              - audit-security-specialist
-              - audit-dependency-specialist
-              - audit-pattern-specialist
-              - audit-documentation-specialist
-            comprehensive:
-              - audit-structure-specialist
-              - audit-security-specialist
-              - audit-dependency-specialist
-              - audit-pattern-specialist
-              - audit-documentation-specialist
-              - audit-test-specialist
-              - audit-architecture-specialist
-              - audit-design-specialist  # Conditional: UI projects only
-      - collect_json_outputs:
-          location: ".claude/audit/temp/"
-          schema: "agent output JSON"
-    outputs:
-      - agent_results  # Array of JSON from each specialist
-
-  - name: aggregation
-    description: Calculate scores, rank findings, assign IDs
+  - name: discovery
+    description: Establish project map that all dimensions reference
     duration_target: "2-3 min"
     actions:
-      - calculate_scores:
-          weights:
-            structure: 0.10
-            dependencies: 0.15
-            security: 0.20
-            patterns: 0.10
-            documentation: 0.10
-            tests: 0.15
-            architecture: 0.15
-            design: 0.05  # Redistributed if N/A
+      - file_tree_scan:
+          method: "find with standard exclusions (node_modules, .git, dist, .next, build, __pycache__)"
+          limit: 2000
+      - source_inventory:
+          method: "Count files by extension, identify primary languages, locate key configs"
+      - infrastructure_detection:
+          targets:
+            - package_manager  # package.json, Podfile, requirements.txt, go.mod, Cargo.toml
+            - framework_config  # next.config.*, tsconfig.json, app.json, manage.py
+            - test_config  # jest.config.*, pytest.ini, vitest.config.*
+            - ci_cd  # .github/workflows/, .gitlab-ci.yml, Jenkinsfile
+      - cognition_checkpoint:
+          operation: checkpoint
+          phase: discovery
+          content: "projectType, fileCount, primaryLang, keyFindings"
+    context_management:
+      retain: "Project map summary only"
+      release: "Raw file listings"
+    outputs:
+      - project_map
+      - file_count
+      - primary_language
+      - infrastructure_summary
+
+  - name: dimension_execution
+    description: Execute dimensions sequentially with evidence-based DISCOVER-VERIFY-RECORD protocol
+    execution: sequential  # One dimension at a time, fixed order
+    execution_order:
+      - structure       # Establishes codebase map all others reference
+      - security        # Grep/bash-heavy, low context dependency
+      - dependencies    # Grep/bash-heavy, low context dependency
+      - patterns        # Uses the structure map
+      - architecture    # Uses the structure map
+      - tests           # Independent checks
+      - documentation   # References all prior findings
+      - design          # Last, conditional on UI project
+    duration_target:
+      quick: "~10 min (3 dimensions)"
+      core: "~25 min (5 dimensions)"
+      comprehensive: "~60-90 min (7-8 dimensions)"
+    per_dimension_protocol:
+      discover: "Bash/grep commands to find relevant files and patterns (~500-1000 tokens)"
+      verify: "Read specific files, produce evidence per check (~5000-8000 tokens)"
+      record: "Write evidence to temp file, cognition checkpoint, release file contents"
+    evidence_format: |
+      ### [FINDING|CLEAN]: [title]
+      - **Claim**: [what was expected or asserted]
+      - **Verification**: [what command/read was performed to check]
+      - **Result**: [FINDING with details | CLEAN with what was confirmed]
+      - **Location**: [file:line]
+      - **Deduction**: -N ([rule_name]) | 0
+    dimensions:
+      structure:
+        weight: 0.10
+        output: ".claude/audit/temp/structure.md"
+        checks:
+          - giant_files_500plus: "-5 each (cap -20)"
+          - dead_code_files: "-5 each (cap -25)"
+          - naming_inconsistency: "-3 each (cap -20)"
+          - poor_organization: "-5 to -15"
+      security:
+        weight: 0.20
+        output: ".claude/audit/temp/security.md"
+        checks:
+          - exposed_secrets: "-25 each (CRITICAL, caps dimension at 50)"
+          - http_endpoints: "-10 each (cap -30)"
+          - missing_input_validation: "-5 each (cap -20)"
+          - insecure_storage: "-15 each"
+      dependencies:
+        weight: 0.15
+        output: ".claude/audit/temp/dependencies.md"
+        checks:
+          - critical_vulnerability: "-15 each"
+          - high_vulnerability: "-8 each"
+          - outdated_1year: "-5 each (cap -20)"
+          - unused_dependency: "-2 each (cap -10)"
+      patterns:
+        weight: 0.10
+        output: ".claude/audit/temp/patterns.md"
+        checks:
+          - anti_pattern: "-5 each (cap -25)"
+          - inconsistent_error_handling: "-3 each (cap -15)"
+          - mixed_paradigms: "-5 each (cap -20)"
+          - style_inconsistency: "-2 each (cap -10)"
+      architecture:
+        weight: 0.15
+        output: ".claude/audit/temp/architecture.md"
+        checks:
+          - circular_dependency: "-10 each (no cap)"
+          - high_coupling: "-5 each (cap -20)"
+          - low_cohesion: "-5 each (cap -15)"
+          - boundary_violation: "-5 each (cap -20)"
+      tests:
+        weight: 0.15
+        output: ".claude/audit/temp/tests.md"
+        checks:
+          - low_coverage: "-10 (if <60%)"
+          - missing_assertions: "-5 per file (cap -20)"
+          - shared_state: "-5 each (cap -15)"
+          - flakiness_indicator: "-3 each (cap -15)"
+      documentation:
+        weight: 0.10
+        output: ".claude/audit/temp/documentation.md"
+        checks:
+          - missing_critical_doc: "-10 each (no cap)"
+          - stale_documentation: "-5 each (cap -20)"
+          - inaccurate_claim: "-8 each (cap -25)"
+          - incomplete_documentation: "-3 each (cap -15)"
+      design:
+        weight: 0.05
+        condition: "UI projects only; weight redistributed if N/A"
+        output: ".claude/audit/temp/design.md"
+        checks:
+          - hardcoded_value: "-3 each (cap -15)"
+          - inconsistent_component: "-5 each (cap -15)"
+          - missing_accessibility: "-3 each (cap -15)"
+          - token_violation: "-3 each (cap -15)"
+    context_management:
+      persists_across_dimensions:
+        - project_map  # From discovery
+        - running_findings  # Compact: id, location, severity, deduction
+        - running_scores
+      released_after_each_dimension:
+        - raw_file_contents
+        - detailed_evidence  # Written to temp files
+    outputs:
+      - dimension_scores  # Map of dimension -> score
+      - all_findings  # Array of evidence-backed findings
+      - temp_evidence_files  # Written to .claude/audit/temp/
+
+  - name: aggregation
+    description: Calculate weighted scores, rank findings, assign stable IDs
+    duration_target: "~2 min"
+    actions:
+      - calculate_weighted_score:
           formula: "SUM(dimensionScore * dimensionWeight)"
+          design_redistribution: "If design N/A, redistribute 0.05 weight across active dimensions"
       - rank_findings:
           severity_order: ["critical", "high", "medium", "low"]
-      - assign_ids:
+      - assign_stable_ids:
           method: "sha256(type:location:title).slice(0,8)"
           format: "AUD-YYYY-NNN"
           persistence: ".claude/audit/audit-index.json"
+          behavior:
+            existing: "Reuse ID, update lastSeen"
+            new: "Assign next AUD-YYYY-NNN"
     outputs:
       - overall_score
       - grade
       - ranked_findings
       - finding_ids
 
-  - name: report_generation
-    description: Generate markdown report and update tracking
-    duration_target: "1-2 min"
+  - name: report
+    description: Generate markdown report, update index, display terminal summary, cleanup
+    duration_target: "~2 min"
     actions:
       - generate_markdown:
           output: ".claude/audit/YYYY-MM-DD-<mode>.md"
@@ -130,9 +235,10 @@ phases:
             - header  # Score, risk, duration, files analyzed
             - tldr  # Summary bullets
             - recommendation  # PROCEED / ACQUIRE WITH PLAN / DO NOT PROCEED
-            - trend  # Score history
-            - scorecards  # Per-dimension breakdown
-            - findings  # Ranked by severity with evidence
+            - trend  # Score history from audit-index.json
+            - scorecards  # Per-dimension breakdown with evidence
+            - findings  # Ranked by severity
+            - evidence_summary  # Table of verification methodology per dimension
       - update_index:
           file: ".claude/audit/audit-index.json"
           data:
@@ -141,10 +247,10 @@ phases:
             - score_history
             - findings_history
       - store_cognition:
-          operation: "audit"
+          operation: checkpoint
           content: ["scope", "scores", "findings", "recommendation"]
-      - display_summary:
-          format: "terminal-friendly summary"
+      - display_terminal_summary:
+          format: "Structured terminal output with scores, finding counts, top priority, recommendation"
       - cleanup_temp:
           command: "rm -rf .claude/audit/temp/"
     outputs:
@@ -154,48 +260,89 @@ phases:
 
 modes:
   quick:
-    description: "Fast health check - 3 core dimensions"
+    description: "Fast health check - 3 core dimensions, direct execution"
     dimensions: 3
-    agents:
-      - audit-structure-specialist
-      - audit-security-specialist
-      - audit-dependency-specialist
-    duration_target: "~5 min"
+    dimension_list: ["structure", "security", "dependencies"]
+    duration_target: "~10 min"
 
   core:
-    description: "Core analysis - 5 dimensions"
+    description: "Core analysis - 5 dimensions, direct execution"
     dimensions: 5
-    agents:
-      - audit-structure-specialist
-      - audit-security-specialist
-      - audit-dependency-specialist
-      - audit-pattern-specialist
-      - audit-documentation-specialist
-    duration_target: "~15 min"
+    dimension_list: ["structure", "security", "dependencies", "patterns", "documentation"]
+    duration_target: "~25 min"
 
   comprehensive:
-    description: "Full due diligence - all dimensions"
+    description: "Full due diligence - all dimensions, direct execution"
     dimensions: "7-8 (design conditional on UI project)"
-    agents:
-      - audit-structure-specialist
-      - audit-security-specialist
-      - audit-dependency-specialist
-      - audit-pattern-specialist
-      - audit-documentation-specialist
-      - audit-test-specialist
-      - audit-architecture-specialist
-      - audit-design-specialist  # Conditional
-    duration_target: "45-60 min"
+    dimension_list: ["structure", "security", "dependencies", "patterns", "architecture", "tests", "documentation", "design"]
+    duration_target: "~60-90 min"
 
   item:
-    description: "Focused audit on specific area"
+    description: "Focused audit on specific area, direct execution"
     dimensions: "varies by target"
-    duration_target: "5-10 min"
+    duration_target: "~10-15 min"
     fuzzy_matching:
       - exact_path
       - partial_path_glob
       - module_name_search
       - prompt_on_multiple
+
+  since:
+    description: "Incremental audit scoped to changed files since commit"
+    scope: "git diff --name-only <commit>..HEAD"
+    comparison: "Last full audit from audit-index.json"
+    duration_target: "varies by change size"
+
+  documentation:
+    description: "Direct 6-OP documentation content verification"
+    execution: sequential  # Inventory first, then per-file verification
+    phases:
+      inventory:
+        description: "Build ground-truth counts and item names via bash/glob"
+        output: ".claude/audit/temp/inventory.md"
+        duration_target: "1-2 min"
+        data_collected:
+          - agent_counts_per_domain
+          - command_list
+          - hook_list
+          - mcp_server_list
+          - skill_list
+          - canonical_version
+      per_file_verification:
+        description: "Apply all 6 verification operations per doc file"
+        file_selection:
+          sampled: "Key docs -- README.md, CLAUDE.md, CONTRIBUTING.md, docs/**/*.md, quick-reference/**/*.md, dist/*.md, phase-configs/*.yaml"
+          comprehensive: "Every doc file in inventory"
+        operations:
+          - OP-1: "Count Verification -- numbers adjacent to countable nouns vs ground-truth"
+          - OP-2: "Link/Path Verification -- resolve markdown links and backtick paths"
+          - OP-3: "Command/Flag Verification -- /command and --flag references vs command specs"
+          - OP-4: "Version String Verification -- OS X.Y patterns vs canonical version"
+          - OP-5: "Infrastructure Verification -- backtick path references vs filesystem"
+          - OP-6: "List Completeness -- set-diff documented items vs ground-truth item names"
+      self_validation:
+        description: "Structural validation after all files processed"
+        checks:
+          - coverage_check: "comprehensive mode: filesVerified/totalDocFiles >= 95%"
+          - suspicious_clean: "score > 90 with zero root causes"
+          - skipped_operations: "any OP with zero runs across all files"
+          - evidence_spot_check: "re-verify 3 random CLEAN files"
+      deduplication:
+        description: "Group findings by root cause, rank by instance count"
+        key: "operation:canonicalSourceId:expectedValue"
+    sub_modes:
+      sampled:
+        description: "Key docs, all 6 ops (~20-30 min)"
+        flag: "--documentation"
+      comprehensive:
+        description: "Every file, every line (no time limit)"
+        flag: "--documentation --comprehensive"
+    invalid_combinations:
+      - "--documentation --since"  # Requires full file reads, not diffs
+    output: ".claude/audit/YYYY-MM-DD-documentation.md"
+    duration_target:
+      sampled: "20-30 min"
+      comprehensive: "no time limit"
 
 scoring:
   dimension_weights:
@@ -227,8 +374,11 @@ outputs:
     cleanup: "after report generation"
 
 guardrails:
-  - "Audit NEVER modifies code (read-only)"
-  - "Findings are suggestions, not automatic fixes"
-  - "Finding IDs are stable via content hash"
+  - "Audit NEVER modifies code (read-only inspection)"
+  - "All verification performed directly by executing agent -- zero subagents"
+  - "Every FINDING must include claim, verification method, and result"
+  - "Every CLEAN verdict must include verification evidence"
+  - "Finding IDs are stable across audits via content hash"
   - "Design dimension only for UI projects"
-  - "Parallel execution for efficiency"
+  - "Sequential dimension execution for context management"
+  - "Evidence IS the work product -- gaps in evidence are visible gaps in verification"

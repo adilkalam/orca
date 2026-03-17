@@ -203,4 +203,3 @@ These tags will be harvested into `phase_state.research_ra_events`.
 If your search fails (no results, tool error, etc.), the lead agent will decide
 whether to retry with a different strategy or mark the subquestion as exhausted.
 Always report failures clearly so the lead agent can make informed retry decisions.
-

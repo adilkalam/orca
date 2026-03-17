@@ -12,7 +12,7 @@ allowed-tools:
   - Glob
 ---
 
-# /root-cause – Multi-Lane Root Cause Analysis (OS 6.3)
+# /root-cause – Multi-Lane Root Cause Analysis (OS 7.0)
 
 Use this command when **something is failing** and you want to understand
 *why* before you change anything:
@@ -83,14 +83,29 @@ Summarize:
 - Any past incidents with similar error messages
 - Decisions or gotchas around the suspected stack (iOS/Next.js/Expo/Django-React/data/seo/os-dev)
 
-### 1.2 ProjectContext Query
+### 1.2 Heuristic Domain Detection
 
-Then call ProjectContextServer with a **diagnostic task**:
+Before calling ProjectContext, detect the likely domain from the symptom:
+
+| Signal | Domain |
+|--------|--------|
+| `.swift`, `Xcode`, `xctest`, `SwiftUI` | `ios` |
+| `.tsx`, `next.config`, `app/`, `pages/` | `nextjs` |
+| `expo`, `react-native`, `metro` | `expo` |
+| `django`, `manage.py`, `serializer`, `.py` + React | `django-react` |
+| `analytics`, `data pipeline`, `notebook` | `data` |
+| `SEO`, `keyword`, `SERP` | `seo` |
+| `CLAUDE.md`, `commands/`, `agents/`, hooks | `os-dev` |
+| Unclear / mixed | `webdev` (general fallback) |
+
+### 1.3 ProjectContext Query
+
+Call ProjectContextServer with the **detected domain**:
 
 ```bash
 # Pseudocode (actual call via mcp__project-context__query_context)
 {
-  "domain": "dev",          // general dev context
+  "domain": "<detected domain from 1.2>",
   "task": "Investigate root cause: <short description>",
   "projectPath": "<repo root>",
   "maxFiles": 20,
@@ -98,18 +113,12 @@ Then call ProjectContextServer with a **diagnostic task**:
 }
 ```
 
-Use the ContextBundle to identify:
+Use the ContextBundle to validate domain detection:
 
 - Which files/tests are involved (e.g. `.swift`, `.tsx`, `.liquid`, tests)
-- Which domain is likely responsible:
-  - iOS (Swift/SwiftUI/Xcode)
-  - Next.js (React/Next)
-  - Expo (React Native/Expo)
-  - Django-React (Django/Python + React)
-  - Data / SEO (if mostly content/analysis)
-  - OS-Dev (if failure is coming from OS 6.3 tooling itself)
+- Does the domain match what was detected in 1.2?
 
-### 1.3 Confirm Domain with User
+### 1.4 Confirm Domain with User
 
 Propose a domain based on heuristics, then confirm via `AskUserQuestion`:
 
@@ -249,7 +258,7 @@ For other domains:
 - SEO:
   - `seo-brief-strategist`, `seo-quality-guardian` for content/SEO issues.
 - OS-Dev:
-  - OS-Dev agents (`os-dev-architect`, `os-dev-builder`, `os-dev-standards-enforcer`) **in diagnostic mode** to analyze whether OS 6.3 config or hooks are causing failures.
+  - OS-Dev agents (`os-dev-architect`, `os-dev-builder`, `os-dev-standards-enforcer`) **in diagnostic mode** to analyze whether OS 7.0 config or hooks are causing failures.
 
 ---
 
@@ -294,10 +303,10 @@ After the root-cause squad agents respond:
 
 Fixing the issue should be done via the appropriate pipeline:
 
-- iOS: `/plan` → `/orca` → `/ios`
-- Next.js: `/plan` → `/orca` → `/nextjs`
-- Expo: `/plan` → `/orca` → `/expo`
-- OS-Dev: `/plan` → `/orca-os-dev`
+- iOS: `/requirements` → `/orca` → `/ios`
+- Next.js: `/requirements` → `/orca` → `/nextjs`
+- Expo: `/requirements` → `/orca` → `/expo`
+- OS-Dev: `/requirements` → `/orca-os-dev`
 
 ---
 
@@ -308,12 +317,14 @@ After completing the analysis, persist for future reference.
 ### Step 1: Create Cognition Directory
 
 ```bash
-mkdir -p .claude/cognition
+mkdir -p "$PWD/.claude/cognition"
 ```
+
+NOTE: This is the PROJECT's `.claude/`, NOT `~/.claude/`. Always use $PWD to ensure project-local path.
 
 ### Step 2: Generate Summary File
 
-Create file at `.claude/cognition/YYYYMMDD-HHMM-<slug>.md` where:
+Create file at `$PWD/.claude/cognition/YYYYMMDD-HHMM-<slug>.md` where:
 - YYYYMMDD = current date (no dashes)
 - HHMM = current time
 - slug = first 30 chars of symptom, kebab-cased

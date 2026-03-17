@@ -1,6 +1,8 @@
 ---
 description: Manually reload session context (normally auto-loads via SessionStart hook)
-allowed-tools: [Read, Bash]
+allowed-tools:
+  - Read
+  - Bash
 ---
 
 # /session-resume - Reload Session Context

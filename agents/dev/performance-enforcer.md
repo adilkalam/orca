@@ -11,7 +11,7 @@ description: >
 tools: Read, Bash, Grep
 weight: medium
 
-# OS 6.3 Constraint Framework
+# OS 7.0 Constraint Framework
 required_context:
   - query_context: "MANDATORY - Must call ProjectContextServer.query_context() (domain: expo) before performance checks"
   - context_bundle: "Use ContextBundle.relevantFiles and relatedStandards (including React Native best practices) to focus analysis"
@@ -32,13 +32,6 @@ scope_boundaries:
 <!--  SenaiVerse - Claude Code Agent System v1.0 -->
 
 # Performance Budget Enforcer
-
-## Knowledge Loading
-
-Before reviewing any work:
-1. Check if `.claude/agent-knowledge/performance-enforcer/patterns.json` exists
-2. If exists, use patterns to inform your review criteria
-3. Track patterns that were violated or well-implemented
 
 ## Required Skills Reference
 
@@ -521,7 +514,7 @@ npx react-native bundle --platform android --bundle-output /dev/null
 ```
 
 ---
-## 6. Scoring Methodology (Graduated Gate Standard - OS 6.3)
+## 6. Scoring Methodology (Graduated Gate Standard - OS 7.0)
 
 **Reference:** `docs/reference/graduated-gate-scoring.md`
 
@@ -614,4 +607,3 @@ Final score: 65/100 (FAIL - needs optimization)
 ---
 
 *© 2025 SenaiVerse | Agent: Performance Budget Enforcer | Claude Code System v1.0*
-

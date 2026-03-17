@@ -1,7 +1,8 @@
 /**
  * bambu-3mf MCP Server
  *
- * 4 tools for Bambu Studio 3MF print settings manipulation.
+ * 8 tools for Bambu Studio 3MF print settings manipulation
+ * and OrcaSlicer CLI analysis.
  * Transport: stdio
  */
 
@@ -13,9 +14,18 @@ import {
   type Tool,
 } from '@modelcontextprotocol/sdk/types.js';
 
-import { listPresets, readSettings, applyPreset, updateSettings } from './tools.js';
+import {
+  listPresets,
+  readSettings,
+  applyPreset,
+  updateSettings,
+  sliceAnalyze,
+  sliceCompare,
+  sliceBatch,
+  readOrcaConfigTool,
+} from './tools.js';
 
-const VERSION = '1.0.0';
+const VERSION = '2.0.0';
 
 class Bambu3MFServer {
   private server: Server;
@@ -52,6 +62,7 @@ class Bambu3MFServer {
 
   private getTools(): Tool[] {
     return [
+      // --- Original 4 tools ---
       {
         name: 'list_presets',
         description:
@@ -120,11 +131,82 @@ class Bambu3MFServer {
           required: ['path', 'settings', 'filament_slot'],
         },
       },
+
+      // --- New slicer tools ---
+      {
+        name: 'slice_analyze',
+        description:
+          'Run OrcaSlicer CLI on a 3MF file to get baseline print metrics: ' +
+          'estimated time, filament weight/length, cost, and warnings. ' +
+          'Returns helpful error with install instructions if OrcaSlicer is not installed.',
+        inputSchema: {
+          type: 'object' as const,
+          properties: {
+            path: { type: 'string', description: 'Absolute path to the .3mf file' },
+          },
+          required: ['path'],
+        },
+      },
+      {
+        name: 'slice_compare',
+        description:
+          'Compare current 3MF settings against preset profiles by running actual ' +
+          'OrcaSlicer slices. Returns metrics for each profile with time/weight deltas ' +
+          'and a recommendation. Returns helpful error if OrcaSlicer is not installed.',
+        inputSchema: {
+          type: 'object' as const,
+          properties: {
+            path: { type: 'string', description: 'Absolute path to the .3mf file' },
+            presets: {
+              type: 'array',
+              items: { type: 'string' },
+              description: 'Preset names to compare. Default: all available presets.',
+            },
+          },
+          required: ['path'],
+        },
+      },
+      {
+        name: 'slice_batch',
+        description:
+          'Calculate batch production estimates for N units of a 3MF model. ' +
+          'Returns total time, filament usage, cost, and comparison vs current settings. ' +
+          'Returns helpful error if OrcaSlicer is not installed.',
+        inputSchema: {
+          type: 'object' as const,
+          properties: {
+            path: { type: 'string', description: 'Absolute path to the .3mf file' },
+            quantity: { type: 'number', description: 'Number of units to produce' },
+            preset: { type: 'string', description: 'Preset name. Default: current settings.' },
+          },
+          required: ['path', 'quantity'],
+        },
+      },
+      {
+        name: 'read_orca_config',
+        description:
+          'Parse the Orca_print.config XML from inside a 3MF file. Returns slicer-specific ' +
+          'metadata: filament type, nozzle diameter, layer height, infill density, wall loops, ' +
+          'support settings, and previous slice info. Does NOT require OrcaSlicer CLI.',
+        inputSchema: {
+          type: 'object' as const,
+          properties: {
+            path: { type: 'string', description: 'Absolute path to the .3mf file' },
+            keys: {
+              type: 'array',
+              items: { type: 'string' },
+              description: 'Specific keys to return. Default: all known keys.',
+            },
+          },
+          required: ['path'],
+        },
+      },
     ];
   }
 
   private async dispatch(toolName: string, args: Record<string, unknown>): Promise<unknown> {
     switch (toolName) {
+      // Original tools
       case 'list_presets':
         return listPresets(args.type as 'filament' | 'process' | 'all' | undefined);
       case 'read_settings':
@@ -147,6 +229,27 @@ class Bambu3MFServer {
           args.filament_slot as number,
           args.output_path as string | undefined
         );
+
+      // New slicer tools
+      case 'slice_analyze':
+        return sliceAnalyze(args.path as string);
+      case 'slice_compare':
+        return sliceCompare(
+          args.path as string,
+          args.presets as string[] | undefined
+        );
+      case 'slice_batch':
+        return sliceBatch(
+          args.path as string,
+          args.quantity as number,
+          args.preset as string | undefined
+        );
+      case 'read_orca_config':
+        return readOrcaConfigTool(
+          args.path as string,
+          args.keys as string[] | undefined
+        );
+
       default:
         throw new Error(`Unknown tool: ${toolName}`);
     }
@@ -155,7 +258,7 @@ class Bambu3MFServer {
   async run(): Promise<void> {
     const transport = new StdioServerTransport();
     await this.server.connect(transport);
-    console.error(`bambu-3mf MCP v${VERSION} started`);
+    console.error(`bambu-3mf MCP v${VERSION} started (8 tools)`);
   }
 }
 

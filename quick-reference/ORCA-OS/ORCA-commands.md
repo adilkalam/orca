@@ -1,8 +1,8 @@
-# OS 6.4 Commands Quick Reference
+# OS 7.0 Commands Quick Reference
 
-**Last Updated:** 2026-02-26
-**Version:** OS 6.4
-**Total Commands:** 37 (+ orca-record CLI with 7 subcommands (5 hook + 2 user))
+**Last Updated:** 2026-03-16
+**Version:** OS 7.0
+**Total Commands:** 38 (+ orca-record CLI with 7 subcommands (5 hook + 2 user))
 
 ---
 
@@ -103,6 +103,8 @@ All `/orca-*` lane commands support four execution modes:
 **Agents:** typography-orchestrator, glyph-editor, ttf-exporter, typography-advisor, typography-explorer-generator, path-guardian
 **Workflows:** glyph editing (fontTools), TTF export (Epson LabelWorks), font selection/pairing, explorer generation
 
+| `/design` | (MCP+skill driven -- bambu-3mf, openscad-mcp, adb-mcp) |
+| `/illustrate` | (MCP+skill driven -- adobe-photoshop, adobe-illustrator) |
 
 ### `/rvry` - RVRY Product Pipeline
 ```bash
@@ -143,14 +145,14 @@ Meta-pipeline for creating new domain pipelines. 5 phases: Interview → Researc
 
 ## Planning Commands (1)
 
-### `/plan` - Unified Requirements + RA Blueprint
+### `/requirements` - Unified Requirements + RA Blueprint
 ```bash
-/plan "Add dark mode support"
-/plan --visual "UI redesign"
-/plan --systems "Database migration"
-/plan --debug "Fix checkout bug"
-/plan --problem-solve "Complex architectural decision"   # Full 8-step pipeline
-/plan -complex --problem-solve "Migrate to GraphQL"      # Max rigor
+/requirements "Add dark mode support"
+/requirements --visual "UI redesign"
+/requirements --systems "Database migration"
+/requirements --debug "Fix checkout bug"
+/requirements --problem-solve "Complex architectural decision"   # Full 8-step pipeline
+/requirements -complex --problem-solve "Migrate to GraphQL"      # Max rigor
 ```
 **Cognition Flags:** `--visual`, `--systems`, `--debug`, `--model`, `--creative`, `--causal`, `--decide`, `--problem-solve`
 **Tier Flags:** `-tweak` (quick), (none) (standard), `-complex` (deep)
@@ -158,12 +160,14 @@ Creates: `.claude/requirements/<id>/06-requirements-spec.md`
 
 ---
 
-## Reasoning Commands (5)
+## Reasoning Commands (6)
 
 ### `/think` - Constraint Chain Exploration
 ```bash
-/think "Why is this test flaky?"                           # Default: 2-3 modes + constraints + self-check
-/think --quick "Quick question about caching"              # Quick: blind_orchestrate, no self-observation
+/think "Why is this test flaky?"                           # Default: 2-3 modes + constraints + self-check (asks BLOCKING questions)
+/think --auto "Why is caching slow?"                        # Autonomous: no questions, states assumptions
+/think --quick "Quick question about caching"              # Quick: blind_orchestrate (can ask BLOCKING questions)
+/think --quick --auto "Fast analysis"                       # Fastest: no self-observation, no questions
 /think --design "How should the login flow look?"          # Design: auto-loads design context
 /think --debug "Why is authentication failing?"            # Specialized capstone (unchanged)
 /think --model five-whys "Why do users drop off?"          # Mental model capstone (unchanged)
@@ -173,8 +177,9 @@ Creates: `.claude/requirements/<id>/06-requirements-spec.md`
 /think --meta "What is my training doing here?"            # Substrate observation (unchanged)
 /think --systems "How do these components interact?"       # Systems thinking (unchanged)
 ```
-**Default Mode:** Constraint chain exploration -- 2-3 modes with constraint tracking, 3-question self-check with verify-or-defer obligation after each mode, gate evaluation, harvest with auto-persist and follow-up questions. Brief ORIENT (2 lines).
-**--quick Mode:** Fast exploration via blind_orchestrate -- no self-observation, no constraints, no self-checks.
+**Default Mode:** Constraint chain exploration -- asks BLOCKING questions first, then 2-3 modes with constraint tracking, 3-question self-check with verify-or-defer obligation after each mode, gate evaluation, harvest with auto-persist and follow-up questions. Brief ORIENT (2 lines).
+**--auto Mode:** Fully autonomous -- no BLOCKING questions, states assumptions clearly, proceeds with analysis.
+**--quick Mode:** Fast exploration via blind_orchestrate -- can ask BLOCKING questions unless --auto present.
 **--design Mode:** Design-focused exploration -- auto-loads design-deepthink skill and project design files, DESIGN mode with constraint tracking.
 **Specialized Capstones:** --debug, --decide, --model, --meta, --meta-visual, --systems, --spatial, --creative, --causal, --ooda, --ulysses (all unchanged, single operations)
 **Mental Models (--model):** five-whys, fermi-estimation, abstraction-laddering, steelmanning, rubber-duck, opportunity-cost, constraint-relaxation, time-horizon-shifting, impact-effort-grid, assumption-surfacing, trade-off-matrix, decomposition, inversion, pre-mortem, first-principles
@@ -184,6 +189,22 @@ Creates: `.claude/requirements/<id>/06-requirements-spec.md`
 **Templates:** `quick-reference/thinking-models/*.md`
 **Persistence:** Default/--design: auto-persist to `.claude/cognition/` + daily log + Workshop. --quick: Workshop entry only. Capstones: daily log + Workshop.
 **Handoff Guidance:** Includes "Next Steps" section with contextual command recommendations
+
+### `/meta` - Sustained Metacognitive Substrate Observation
+```bash
+/meta                                      # Observe current conversation context
+/meta "What is my training doing here?"    # Focused substrate observation
+/meta --predict "hedge patterns"           # With verifiable prediction
+/meta --on <sessionId> "revisit"           # Reflect on prior session
+/meta --auto "training artifacts"          # No questions, states assumptions
+```
+3 constraint-chained rounds: Priority Displacement, Constrained Observation, Synthesis. Each round uses cognition-mcp `meta` operation with the same sessionId. Sustained observation outlasts trained responses via content thinning.
+**Flags:** `--predict` (verifiable prediction in Round 3, persisted to Workshop), `--on <sessionId>` (composability -- loads prior session harvest), `--auto` (no questions)
+**Topic:** Optional -- no args observes current conversation context
+**MCP:** cognition-mcp
+**Persistence:** Creates `.claude/cognition/YYYYMMDD-HHMM-meta-<slug>.md` + Workshop entry
+**See also:** `/think --meta` (quick single-shot), `/think --meta-visual` (with ASCII diagrams)
+
 
 ### `/contemplate` - Reasoning Strategy Advisor
 ```bash
@@ -199,29 +220,35 @@ Recommends which /think operations to use.
 
 ### `/deepthink` - Pre-Mortem Exploration
 ```bash
-/deepthink "Why does user retention drop after day 3?"    # Full exploration + adaptive pre-mortems
-/deepthink --quick "Quick analysis of caching strategy"    # Fast exploration, no self-observation
+/deepthink "Why does user retention drop after day 3?"    # Full exploration + adaptive pre-mortems (asks BLOCKING questions)
+/deepthink --auto "Deep analysis of API design"            # Autonomous: no questions, states assumptions
+/deepthink --quick "Quick analysis of caching strategy"    # Fast exploration (can ask BLOCKING questions)
+/deepthink --quick --auto "Fastest analysis"               # No self-observation, no questions
 /deepthink --design "Redesign the login flow"              # Design-focused with pre-mortems
 ```
 Pre-mortem exploration with adaptive failure analysis. Runs full ORIENT (what I know / uncertain / avoiding) then 3-4 modes with constraint chain AND adaptive pre-mortems after conclusion-producing modes.
-**--quick Mode:** Fast exploration via blind_orchestrate -- no self-checks, constraints, pre-mortems, or protocol vocabulary. Replaces the former /deepthink-blind command.
-**Default Mode:** Full exploration -- 6-question self-check, constraint chain, adaptive pre-mortem after modes that produce testable conclusions (recommendations, position reversals, actionable decisions). Pre-mortem skipped for purely exploratory modes (maps, question-generating exercises).
+**--auto Mode:** Fully autonomous -- no BLOCKING questions, states assumptions clearly, proceeds with analysis.
+**--quick Mode:** Fast exploration via blind_orchestrate -- can ask BLOCKING questions unless --auto present. Replaces the former /deepthink-blind command.
+**Default Mode:** Full exploration -- asks BLOCKING questions first, then 6-question self-check, constraint chain, adaptive pre-mortem after modes that produce testable conclusions (recommendations, position reversals, actionable decisions). Pre-mortem skipped for purely exploratory modes (maps, question-generating exercises).
 **--design Mode:** Auto-loads design-deepthink skill, reads project design files, DESIGN mode with pre-mortems on design decisions.
 **Constraint Chain:** After each mode, generates constraints (FORWARD, FORBIDDEN, QUESTION) that must be addressed (RESOLVED, ACKNOWLEDGED, DEFERRED) before finishing. Hard block if unresolved. Minimum 2 constraints per mode.
 **Enhanced Modes:** MAP (systems + causal), INVERT (pre-mortem + reflexion), PERSPECTIVES (collaborative + steelmanning), EDGES (creative + analogical), DEEP (self-consistency via 3 parallel chains)
 **6-Question Self-Check:** Internal (shallow? avoiding? uncomfortable option?) + External (critique? expert challenge? verifiable claims?)
 **MCP:** cognition-mcp
-**Persistence:** Creates `.claude/cognition/YYYYMMDD-HHMM-<slug>.md` + Workshop entry
+**Persistence:** Creates `.claude/cognition/YYYYMMDD-HHMM-<slug>/` session folder (00-enter.md, 01-orient.md, mode artifacts, 99-harvest.md) + Workshop entry
 **Handoff Guidance:** Includes "Next Steps" section with contextual command recommendations
 
 ### `/problem-solve` - Convergent 8-Step Decision Pipeline
 ```bash
-/problem-solve "How should we architect the notification system?"
-/problem-solve --quick "Which database: PostgreSQL vs MongoDB?"   # Shortened + no self-observation
+/problem-solve "How should we architect the notification system?"  # Full pipeline (asks BLOCKING questions)
+/problem-solve --auto "Architecture decision"                       # Autonomous: no questions, states assumptions
+/problem-solve --quick "Which database: PostgreSQL vs MongoDB?"    # Shortened (can ask BLOCKING questions)
+/problem-solve --quick --auto "Fast decision"                       # Shortest: no questions, no self-observation
 /problem-solve --strategic "3-year platform modernization"
 ```
 Runs full ORIENT→ANTICIPATE→GENERATE→EVALUATE→COMMIT cycle for convergent decisions.
-**Variants:** --quick (3 steps, no self-observation), --risk (4 steps), --strategic (5 steps), --incident (3 steps)
+**--auto Mode:** Fully autonomous -- no BLOCKING questions, states assumptions clearly, proceeds with analysis.
+**Variants:** --quick (3 steps, can ask questions), --quick --auto (3 steps, no questions), --risk (4 steps), --strategic (5 steps), --incident (3 steps)
 **Phase Gates:** 5 verification checkpoints (after ORIENT, ANTICIPATE, GENERATE, EVALUATE, PRE-MORTEM GATE) with PASS/SOFT FAIL/HARD FAIL status to catch errors early
 **Gate Protocol:** 3 questions per gate, soft fails warn but continue, hard fails stop for correction
 **MCP:** cognition-mcp, sequential-thinking
@@ -251,11 +278,13 @@ Systematically attacks proposals using cognition-mcp.
 /audit --core                    # Core dimensions (~15 min, 5 agents)
 /audit --item design-system      # Focused audit on specific area
 /audit --item page /checkout
+/audit --documentation           # Deep doc verification (~15-20 min, sampled)
+/audit --documentation --comprehensive  # Exhaustive doc verification (every file)
 /audit --since abc1234           # Incremental since commit
 /audit --verbose                 # Full findings (default: TL;DR)
 ```
-**Architecture:** Multi-agent parallel execution for thorough analysis
-**Agents:** audit-structure-specialist, audit-dependency-specialist, audit-security-specialist (Phase 1)
+**Architecture:** Multi-agent parallel execution (standard modes); sequential two-agent pipeline (documentation mode)
+**Agents:** audit-structure-specialist, audit-dependency-specialist, audit-security-specialist (Phase 1); audit-doc-inventory, audit-doc-verifier (documentation mode)
 **Dimensions:** Structure (0.10), Dependencies (0.15), Security (0.20), Patterns (0.10), Documentation (0.10), Tests (0.15), Architecture (0.15), Design (0.05)
 **Output:** `.claude/audit/YYYY-MM-DD-<scope>.md` + `audit-index.json`
 **Scoring:** Weighted average of dimension scores (0-100), grade A-F, risk level
@@ -355,9 +384,9 @@ Searches all memory systems for relevant context and decisions.
 /reflect status                     # View rules
 ```
 
-### `/self-improve` - Improvement Bus
+### `/self-improve` - Workshop Memory Stats
 ```bash
-/self-improve                       # Run improvement cycle
+/self-improve                       # Show Workshop memory stats
 /self-improve --dry-run             # Preview only
 ```
 
@@ -436,7 +465,7 @@ Measure-place-verify guardrails for Adobe Photoshop and Illustrator MCP work. Pr
 - Only coordinate agents via Task tool
 - Read phase_state.json for resumption
 
-### Recording Context Injection (OS 6.4)
+### Recording Context Injection (OS 7.0)
 
 All lane orchestrator commands inject prior session context from `.orca/recording.db`
 before delegating to agents:
@@ -487,8 +516,10 @@ $ORCA_OS_PATH/commands/
 | `/rvry` | rvry-grand-architect, rvry-engine-architect, rvry-engine-builder, rvry-web-builder, rvry-protocol-gate, rvry-verification |
 | `/orca-pipeline` | orca-pipeline-orchestrator, orca-pipeline-researcher, orca-pipeline-generator |
 | `/typography` | typography-orchestrator, glyph-editor, ttf-exporter, typography-advisor, typography-explorer-generator, path-guardian |
+| `/design` | (MCP+skill driven -- bambu-3mf, openscad-mcp, adb-mcp) |
+| `/illustrate` | (MCP+skill driven -- adobe-photoshop, adobe-illustrator) |
 
 ---
 
 _Source of truth: `docs/reference/os-dependency-graph.yaml`_
-_Last sync: 2026-02-26_
+_Last sync: 2026-03-16_

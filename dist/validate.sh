@@ -72,10 +72,9 @@ check "$CLAUDE_DIR/agents/expo" "Expo agents"
 check "$CLAUDE_DIR/agents/django-react" "Django-React agents"
 check "$CLAUDE_DIR/agents/os-dev" "OS-Dev agents"
 check "$CLAUDE_DIR/agents/research" "Research agents"
-check "$CLAUDE_DIR/agents/seo" "SEO agents"
 check "$CLAUDE_DIR/agents/data" "Data agents"
-check "$CLAUDE_DIR/agents/audit" "Audit agents"
 check "$CLAUDE_DIR/agents/typography" "Typography agents"
+check "$CLAUDE_DIR/agents/cross-domain" "Cross-domain agents"
 
 # Count all agents
 total_agents=0
@@ -92,7 +91,7 @@ check "$CLAUDE_DIR/bin/orca-record" "orca-record binary" false
 
 echo ""
 echo "Checking commands..."
-check "$CLAUDE_DIR/commands/plan.md" "/plan command"
+check "$CLAUDE_DIR/commands/requirements.md" "/requirements command"
 check "$CLAUDE_DIR/commands/orca.md" "/orca command"
 check "$CLAUDE_DIR/commands/ios.md" "/ios command"
 check "$CLAUDE_DIR/commands/nextjs.md" "/nextjs command"
@@ -117,7 +116,6 @@ echo "  Skills found: $((skills_count - 1))"
 echo ""
 echo "Checking hooks..."
 check "$CLAUDE_DIR/hooks/session-start.sh" "session-start hook"
-check "$CLAUDE_DIR/hooks/session-end.sh" "session-end hook"
 check "$CLAUDE_DIR/hooks/post-tool-use.sh" "post-tool-use hook"
 
 echo ""
@@ -210,7 +208,7 @@ else
 fi
 
 # Crawl4AI - user installs separately
-echo "  Crawl4AI MCP (required for /research, /seo, /orca-pipeline)..."
+echo "  Crawl4AI MCP (required for /research, /orca-pipeline)..."
 echo -e "    ${YELLOW}[INFO]${NC} Install separately: https://docs.crawl4ai.com/core/installation/"
 
 echo ""

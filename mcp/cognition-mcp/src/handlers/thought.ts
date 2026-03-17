@@ -46,6 +46,7 @@ export async function handleThought(
     content: thoughtContent,  // UNCHANGED - exact same content that came in
     quality: args.quality,    // UNCHANGED - Claude's self-assessment
     timestamp: Date.now(),
+    ...(args.tokenEstimate !== undefined ? { tokenEstimate: args.tokenEstimate } : {}),
   };
 
   // 3. PERSIST to filesystem

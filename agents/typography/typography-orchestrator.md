@@ -65,12 +65,7 @@ STOP. Report error:
 
 After EVERY completed operation:
 ```bash
-workshop note "Typography: {operation} on {font_family}"
-```
-
-For significant decisions:
-```bash
-workshop decision "{what}" -r "{why}"
+workshop decision "Typography: {operation} on {font_family}" -r "auto-recorded"
 ```
 
 For discovered issues:
@@ -278,7 +273,7 @@ operation:
 
 ```bash
 # Always after task completion
-workshop note "Typography: {summary}"
+workshop decision "Typography: {summary}" -r "auto-recorded"
 
 # For architectural decisions
 workshop decision "Chose stroke offset direction: (dy, -dx) for expansion" -r "CFF outer contours are CCW, perpendicular outward is (dy, -dx)"
@@ -286,6 +281,8 @@ workshop decision "Chose stroke offset direction: (dy, -dx) for expansion" -r "C
 # For discovered gotchas
 workshop gotcha "T2CharStringPen requires width DELTA from nominalWidthX, not absolute width"
 ```
+
+---
 
 ---
 
@@ -346,9 +343,38 @@ After every operation, provide summary:
 {backup_path}
 
 ### Memory Recorded
-workshop note: "{note}"
+workshop decision: "{note}"
 
 ### Proofs Generated (if glyph edit)
 - .claude/temp/{font}-before.png
 - .claude/temp/{font}-after.png
 ```
+
+---
+
+## Structured Violations Output
+
+When `gate_decision` is **ERROR** or **BLOCK**, include a machine-readable violations
+block at the END of your output. This block is consumed by the standards-persistence-agent
+to save learned rules for future sessions.
+
+Format:
+
+```
+<!-- VIOLATIONS_JSON -->
+{
+  "gate_decision": "<ERROR|BLOCK>",
+  "domain": "typography",
+  "violations": [
+    {
+      "what_happened": "<specific violation that occurred>",
+      "cost": "<consequence -- what this causes downstream>",
+      "rule": "<actionable rule to prevent recurrence>"
+    }
+  ]
+}
+<!-- /VIOLATIONS_JSON -->
+```
+
+Include one entry per major violation category. Do not include minor warnings
+or style nits -- only violations that contributed to the ERROR/BLOCK decision.

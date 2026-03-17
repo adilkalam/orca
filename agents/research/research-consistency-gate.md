@@ -52,7 +52,7 @@ Perform the following checks:
      ensure the report explicitly calls this out as a limitation.
 
 ---
-## 3. Scoring & Decision (Graduated Gate Standard - OS 6.3)
+## 3. Scoring & Decision (Graduated Gate Standard - OS 7.0)
 
 **Reference:** `docs/reference/graduated-gate-scoring.md`
 
@@ -83,4 +83,3 @@ Start at 100. Subtract points based on severity:
 
 Summarize issues and recommended fixes in a short Markdown report that the
 lead agent or writer can act on.
-

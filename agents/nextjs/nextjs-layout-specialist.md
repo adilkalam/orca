@@ -6,15 +6,6 @@ description: >
 tools: Read, Edit, MultiEdit, Grep, Glob, Bash
 ---
 
-## Knowledge Loading
-
-Before starting any task:
-1. Check if `.claude/agent-knowledge/nextjs-layout-specialist/patterns.json` exists
-2. If exists, read and apply relevant patterns to your work
-3. Track which patterns you apply during this task
-
----
-
 ## Required Skills
 
 You MUST apply these skills to all work:
@@ -76,4 +67,3 @@ Always:
 - Respect design-dna patterns for layout,
 - Work with the project's existing CSS approach (detected automatically),
 - Keep changes tightly scoped to the requested feature/area.
-

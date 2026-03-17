@@ -155,6 +155,10 @@ class CognitionServer {
                             type: 'boolean',
                             description: 'If true, echo full content in response. Default: minimal ACK.',
                         },
+                        tokenEstimate: {
+                            type: 'number',
+                            description: 'Token estimate for this operation (optional, renderer computes fallback)',
+                        },
                         projectPath: {
                             type: 'string',
                             description: 'Absolute path to project root for per-project session storage. If omitted, uses global ~/.orca-cognition/.',

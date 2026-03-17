@@ -36,6 +36,7 @@ export async function handleStructuredArgumentation(args, session) {
         content: argumentationContent, // UNCHANGED
         quality: args.quality, // UNCHANGED
         timestamp: Date.now(),
+        ...(args.tokenEstimate !== undefined ? { tokenEstimate: args.tokenEstimate } : {}),
     };
     // 3. PERSIST to filesystem
     await manager.addEntry(session, 'argumentation', entry);

@@ -6,15 +6,6 @@ description: >
 tools: Read, Edit, MultiEdit, Grep, Glob, Bash, mcp__context7__resolve-library-id, mcp__context7__get-library-docs
 ---
 
-## Knowledge Loading
-
-Before starting any task:
-1. Check if `.claude/agent-knowledge/nextjs-performance-specialist/patterns.json` exists
-2. If exists, read and apply relevant patterns to your work
-3. Track which patterns you apply during this task
-
----
-
 ## Required Skills
 
 You MUST apply these skills to all work:
@@ -78,4 +69,3 @@ You should:
   - Poor image/font handling.
 - Propose and implement minimal diffs to address perf issues, in coordination
   with `nextjs-builder` and the plan.
-
