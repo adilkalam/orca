@@ -75,7 +75,7 @@ Both sides operating at higher depth creates a feedback loop that neither could 
 
 **This is what allows a person to work effectively outside their areas of expertise.** Not by compensating for missing technical knowledge, but by creating a collaboration mode where the depth of engagement is structural -- a property of the interaction, not of either participant.
 
-The `.claude/cognition/` directory in any Claude Code project holds the evidence: 
+The `.rvry/` directory in any Claude Code project holds the evidence: 
 - A hook infrastructure audit that found 9 distinct issues where a quick prompt found 1 -- dead hooks, wrong event triggers, duplicate firings, broken environment variable assumptions.
 - A 3D printer calibration guide that synthesized 45 sources—including from YouTube videos—identified three firmware-specific bugs with community-validated workarounds, and produced a settings reference no single prompt would generate.
 - A planning session that discovered the payment processor prohibits a new product category -- before anyone wrote a line of integration code.
@@ -121,7 +121,7 @@ The entire decision trail exists as files. You can share them with your team. Yo
 
 ## How it Works: The Loop
 
-ORCA is a loop, not a pipeline. Cognition—ie. extensive thinking—and planning happen before execution. Verification is evidence-based. Every run feeds memory for the next one.
+ORCA is a loop, not a pipeline. Extensive thinking—and planning happen before execution. Verification is evidence-based. Every run feeds memory for the next one.
 
 ```
                                   User Request
@@ -130,7 +130,7 @@ ORCA is a loop, not a pipeline. Cognition—ie. extensive thinking—and plannin
             |                          |
             v                          v
 +---------------------+    +------------------------+
-|   MEMORY+RECORDING  |    |       COGNITION        |
+|   MEMORY+RECORDING  |    |       RVRY             |
 |                     |--->|                        |
 |  past decisions     |    |  /deepthink            |
 |  gotchas            |    |  /problem-solve        |
@@ -186,7 +186,7 @@ Each section below corresponds to a layer in this loop.
 
 ---
 
-## Cognition
+## RVRY — Reasoning Depth Enforcement Engine
 
 Claude responds in one pass -- no draft, no revision before you see it. The reasoning engine **is** capable of sharp, specific, asymmetric analysis. But default behaviors shape the output before reasoning starts: patterns reinforced by millions of interactions where quick, agreeable, hedged responses were the norm. Think of it as gravitational pull. The defaults pull everything toward center. The stronger the claim, the more pull.
 
