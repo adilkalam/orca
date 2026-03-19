@@ -444,10 +444,10 @@ All three levels feed back through Workshop memory. A gate failure triggers save
 Gate failure
     |
     v
-Reflexion: "NavigationStack used without checking iOS 16+"
+Violation persisted: "NavigationStack used without checking iOS 16+"
     |
-    +---> Agent constraint (ios-builder checks deployment target)
-    +---> Workshop standard (all iOS agents load this)
+    +---> Workshop standard (all iOS agents load this via query_context)
+    +---> Builder constraint (ios-builder checks deployment target)
     +---> Mandatory verification question (future gates must check)
 ```
 

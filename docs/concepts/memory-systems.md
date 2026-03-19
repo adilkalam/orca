@@ -113,6 +113,16 @@ The ProjectContext MCP uses a hybrid approach for Workshop integration:
 
 **Symlink Consolidation**: On macOS/Linux, `.workshop` is automatically symlinked to `.claude/memory` so the Workshop CLI defaults to the correct location.
 
+**Maintenance -- Native Module Rebuilds**: The `better-sqlite3` module is compiled against a specific Node ABI. After upgrading Node.js, rebuild it in the deployed directory:
+
+```bash
+cd ~/.claude/mcp/project-context-server && npm rebuild better-sqlite3
+```
+
+Without this, all SQLite read methods (`queryStandards`, `queryDecisions`, `queryTaskHistory`) silently return empty results.
+
+
+
 ## Memory-First Pattern
 
 OS 7.0 checks fast, local memory before expensive queries:
@@ -318,6 +328,23 @@ If not, create it:
 ```bash
 ln -s .claude/memory .workshop
 ```
+
+### relatedStandards always empty in ContextBundle
+
+The learning loop depends on `better-sqlite3` reading from Workshop DB. Two common causes:
+
+1. **Node ABI mismatch**: After a Node.js upgrade, the native module fails to load. Fix:
+   ```bash
+   cd ~/.claude/mcp/project-context-server && npm rebuild better-sqlite3
+   ```
+
+2. **Serialization mismatch**: Standards are stored as flattened strings by `saveGotcha()`. If the format changes, `queryStandards()` regex will not parse them. Verify stored format:
+   ```bash
+   sqlite3 .claude/memory/workshop.db "SELECT content FROM entries WHERE type='gotcha' LIMIT 3"
+   ```
+   Expected format: `[domain] rule text (Cost: cost text. Cause: what happened)`
+
+
 
 ## Memory Layer 4: ORCA-Mem
 

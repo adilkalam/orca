@@ -29,39 +29,40 @@ Without learning, you're the only quality memory in the system. You catch the sa
 
 ## The v7.0 Learning Loop
 
-ORCA-OS v7.0 implements a closed-loop learning system based on gate failures flowing back to builders. No phantom infrastructure -- just the actual flow:
+ORCA-OS v7.0 implements a closed-loop learning system. Gate failures flow through a dedicated persistence agent back to builders via the ContextBundle.
 
 ```
-Gate detects failure
+Gate detects failure (ERROR or BLOCK)
     |
     v
-Gate calls mcp__project-context__save_standard({
-  what_happened: "Used NavigationStack without iOS 16 check",
-  cost: "Gate failed, required manual fix",
-  rule: "Check deployment target before using iOS 16+ APIs",
-  domain: "ios"
-})
+Gate emits VIOLATIONS_JSON block in output
     |
     v
-Standard stored in Workshop DB
+Orchestrator detects VIOLATIONS_JSON
     |
     v
-Next task: lane command calls query_context(domain, task)
+Orchestrator spawns standards-persistence-agent (fire-and-forget)
     |
     v
-query_context returns ContextBundle with relatedStandards
+standards-persistence-agent deduplicates + calls save_standard()
     |
     v
-Orchestrator extracts relatedStandards
+Standard stored in Workshop DB (gotcha entry)
     |
     v
-Orchestrator includes "ACTIVE STANDARDS" section in Task prompt to builder
+Next task: orchestrator calls query_context(domain, task)
     |
     v
-Builder sees and applies standards
+queryStandards() reads + parses from Workshop DB
     |
     v
-Fewer failures --> fewer new standards needed
+ContextBundle.relatedStandards populated
+    |
+    v
+Orchestrator injects "ACTIVE STANDARDS" into builder prompt
+    |
+    v
+Builder applies standards --> fewer failures
 ```
 
 This is a genuine feedback loop: failures create standards, standards prevent future failures.
@@ -82,25 +83,41 @@ The research backing: Reflexion (Shinn et al., NeurIPS 2023) achieved 88% pass@1
 
 ## Gate-Level Learning (Standards)
 
-When a gate reports CAUTION or FAIL, it calls `save_standard` with structured failure information.
+When a gate reports CAUTION or FAIL, it emits a `VIOLATIONS_JSON` block. The orchestrator spawns the `standards-persistence-agent` to parse and persist these violations.
 
 ### How It Works
 
 ```
-Gate runs  -->  CAUTION or FAIL
+Gate runs  -->  ERROR or BLOCK
     |
     v
-Gate calls save_standard MCP:
-  what_happened: "NavigationStack used without checking iOS 16+ deployment target"
-  cost: "Gate failed, required 2 fix iterations"
-  rule: "Check deployment target before using iOS 16+ APIs"
-  domain: "ios"
+Gate emits VIOLATIONS_JSON:
+  <!-- VIOLATIONS_JSON
+  [{
+    "rule": "Check deployment target before using iOS 16+ APIs",
+    "what_happened": "NavigationStack used without iOS 16 check",
+    "cost": "Gate failed, required 2 fix iterations",
+    "domain": "ios"
+  }]
+  -->
     |
     v
-Workshop stores standard with domain tag
+Orchestrator spawns standards-persistence-agent
+    |
+    v
+Agent deduplicates against existing standards
+    |
+    v
+Agent calls save_standard() for each new violation
+    |
+    v
+Workshop stores as gotcha: "[ios] Check deployment target... (Cost: ... Cause: ...)"
     |
     v
 Future runs: orchestrator calls query_context(domain, task)
+    |
+    v
+queryStandards() parses content field back into structured Standard objects
     |
     v
 ContextBundle.relatedStandards populated from Workshop
@@ -127,6 +144,15 @@ interface ContextBundle {
 ```
 
 Orchestrators are responsible for extracting `relatedStandards` and injecting them into builder prompts.
+
+### The Persistence Agent
+
+The `standards-persistence-agent` (in `agents/cross-domain/`) is the primary path for saving standards. It is spawned as a fire-and-forget background task by orchestrators when a gate returns ERROR or BLOCK.
+
+Why a dedicated agent instead of direct gate calls:
+- Gate agents focus on quality checking, not persistence
+- Deduplication logic lives in one place
+- 12 gate agents share one persistence mechanism
 
 ---
 
@@ -188,7 +214,7 @@ workshop gotcha "Always check deployment target before using new APIs"
 
 **File-based, not weight-based.** All learning is stored in SQLite (Workshop) and markdown (CLAUDE.md). Nothing modifies the model itself. This means learnings are inspectable, editable, and portable.
 
-**Gate-to-builder flow.** Standards flow from gates (who detect failures) to builders (who prevent them). The orchestrator is the bridge.
+**Gate-to-builder flow via persistence agent.** Standards flow from gates (who detect failures) through the standards-persistence-agent (who persists them) to builders (who prevent them). The orchestrator bridges detection and application.
 
 **Scoped injection.** Standards are tagged by domain. `nextjs-builder` doesn't see iOS standards. This prevents context bloat.
 
@@ -196,11 +222,25 @@ workshop gotcha "Always check deployment target before using new APIs"
 
 ---
 
+## Maintenance
+
+### After Node.js Upgrades
+
+The ProjectContext MCP uses `better-sqlite3` (native Node module). After upgrading Node.js, rebuild it:
+
+```bash
+cd ~/.claude/mcp/project-context-server && npm rebuild better-sqlite3
+```
+
+Without this, `queryStandards()` silently returns empty results -- the learning loop appears functional but produces nothing.
+
+---
+
 ## Storage Locations
 
 | Data | Location |
 |------|----------|
-| Domain standards | Workshop DB (via `save_standard` MCP) |
+| Domain standards | Workshop DB (via `save_standard` MCP, persisted by standards-persistence-agent) |
 | Decisions/gotchas | Workshop DB (via `workshop` CLI) |
 | Learned rules | Project CLAUDE.md `Learned Rules` section |
 
@@ -210,6 +250,7 @@ workshop gotcha "Always check deployment target before using new APIs"
 
 - `quick-reference/ORCA-OS/ORCA-memory.md` - Memory systems reference
 - `docs/concepts/memory-systems.md` - Full memory architecture
+- `docs/concepts/self-improvement.md` - Detailed self-improvement architecture and history
 
 ---
 

@@ -400,13 +400,26 @@ export class WorkshopClient {
                     }
                     catch { }
                 }
+                // Parse the flattened content format from saveGotcha:
+                // "[{domain}] {rule} (Cost: {cost}. Cause: {what_happened})"
+                let what_happened = row.content || '';
+                let cost = metadata.cost || '';
+                let rule = row.reasoning || '';
+                if (!rule && row.content) {
+                    const match = row.content.match(/^\[([^\]]+)\]\s*(.+?)\s*\(Cost:\s*(.+?)\.\s*Cause:\s*(.+?)\)$/s);
+                    if (match) {
+                        rule = match[2];
+                        cost = cost || match[3];
+                        what_happened = match[4];
+                    }
+                }
                 return {
                     id: row.id,
                     created: new Date(row.timestamp),
                     domain,
-                    what_happened: row.content || '',
-                    cost: metadata.cost || '',
-                    rule: row.reasoning || '',
+                    what_happened,
+                    cost,
+                    rule,
                     enforced_count: 0,
                     entry_metadata: row.entry_metadata, // Keep for decay processing
                 };

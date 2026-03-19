@@ -237,7 +237,11 @@ ORCA-OS includes persistent memory across sessions:
 
 ## Self-Improvement
 
-The `/reflect` command enables Claude to learn from interactions:
+ORCA learns at two levels:
+
+**Automatic (gate-level).** When a quality gate fails, the violation is persisted as a standard in Workshop memory. Future runs in the same domain load these standards automatically via `query_context`, so builders see past failures as constraints. No manual intervention needed.
+
+**Manual (conversation-level).** The `/reflect` command extracts learning signals from your interactions:
 
 ```bash
 /reflect                    # Analyze recent session
@@ -246,7 +250,7 @@ The `/reflect` command enables Claude to learn from interactions:
 /reflect unlearn "rule-id"  # Remove a rule
 ```
 
-Rules are stored in your project's CLAUDE.md and persist across sessions.
+Rules from `/reflect` are stored in your project's CLAUDE.md. Standards from gate failures are stored in Workshop and loaded via ProjectContext MCP.
 
 ---
 
