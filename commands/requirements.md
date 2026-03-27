@@ -1,6 +1,6 @@
 ---
 description: "Unified OS 7.0 planner -- requirements + RA blueprint (no implementation)"
-argument-hint: "<task> [--problem-solve] [--explore] [--complex] [--tweak] [--debug] [--visual] [--systems] [--model] [--creative] [--causal] [--decide] [--from-brief [path]]"
+argument-hint: "<task> [--solve] [--explore] [--complex] [--tweak] [--debug] [--visual] [--systems] [--model] [--creative] [--causal] [--decide] [--from-brief [path]]"
 allowed-tools:
   ["Task (model: opus only)", "Read", "Write", "Edit", "Glob", "Grep",
    "AskUserQuestion", "mcp__project-context__query_context", "mcp__project-context__save_decision",
@@ -27,7 +27,7 @@ This is /requirements, not /shimmer or /contemplate.
 
 - OUTPUT goes to: `.claude/requirements/` (ALWAYS)
 - NOT to: `.claude/cognition/` (that's for /shimmer and /contemplate)
-- Cognition flags (--problem-solve, --visual, --systems, etc.) are ANALYSIS INPUTS,
+- Cognition flags (--solve, --visual, --systems, etc.) are ANALYSIS INPUTS,
   not output destinations.
 
 If you find yourself saving to .claude/cognition/ -- STOP. You are in the wrong pipeline.
@@ -36,7 +36,7 @@ If you find yourself saving to .claude/cognition/ -- STOP. You are in the wrong 
 
 ## CRITICAL: Requirements Folder First
 
-REGARDLESS of any cognition flags (--visual, --systems, --problem-solve, etc.):
+REGARDLESS of any cognition flags (--visual, --systems, --solve, etc.):
 
 1. FIRST: Create the requirements folder at `.claude/requirements/YYYY-MM-DD-HHMM-slug/`
 2. THEN: Run discovery questions (no cognition-mcp before AskUserQuestion)
@@ -60,22 +60,22 @@ Never save /requirements output to `.claude/cognition/` -- that directory is for
 | `--tweak` | **Quick** -- 2-3 scope questions, minimal spec | Small changes, config updates |
 | `--complex` | **Deep** -- Extended analysis, risk assessment, multi-phase breakdown | Architecture changes, refactors |
 | `--explore` | **Exploratory** -- Full divergent exploration, tentative brief | Half-baked ideas, early-stage thinking |
-| `--problem-solve` | **Convergent** -- Structured 8-step analysis before planning | Complex decisions, architectural choices |
+| `--solve` | **Convergent** -- Structured 8-step analysis before planning | Complex decisions, architectural choices |
 
 ### Mutual Exclusivity
 
-`--explore` is mutually exclusive with `--tweak`, `--complex`, and `--problem-solve`:
+`--explore` is mutually exclusive with `--tweak`, `--complex`, and `--solve`:
 - `--explore` produces a TENTATIVE brief (uncommitted)
-- `--tweak`, `--complex`, `--problem-solve` produce COMMITTED specs
+- `--tweak`, `--complex`, `--solve` produce COMMITTED specs
 
 **Valid combinations:**
 - `--explore --debug` (exploration with debug focus)
-- `--problem-solve --debug` (convergent analysis with debug focus)
+- `--solve --debug` (convergent analysis with debug focus)
 
 **Invalid combinations (will error):**
 - `--explore --tweak` (conflicting workflows)
 - `--explore --complex` (conflicting workflows)
-- `--explore --problem-solve` (divergent vs convergent conflict)
+- `--explore --solve` (divergent vs convergent conflict)
 
 ### Behavior by Tier
 
@@ -202,16 +202,16 @@ All cognitive work in /requirements MUST use the correct tool. Do not rely on de
 
 **Execution order**: Section 1 (folder) -> Section 3 (discovery questions via AskUserQuestion) -> Section 2 (cognition analysis) -> Section 4 (blueprint).
 
-If the user provided a cognition flag (`--debug`, `--problem-solve`, `--visual`, `--systems`, `--model`, `--creative`, `--causal`, `--decide`), run the appropriate analysis now. Use the user's discovery answers to inform the analysis. All output is saved INTO the requirements folder.
+If the user provided a cognition flag (`--debug`, `--solve`, `--visual`, `--systems`, `--model`, `--creative`, `--causal`, `--decide`), run the appropriate analysis now. Use the user's discovery answers to inform the analysis. All output is saved INTO the requirements folder.
 
-### --problem-solve Mode
+### --solve Mode
 
-When `--problem-solve` is provided, run a structured analysis AFTER discovery questions (Section 3):
+When `--solve` is provided, run a structured analysis AFTER discovery questions (Section 3):
 
 1. **Requirements folder already exists** (Section 1 -- completed above, non-negotiable)
 2. **Discovery questions run first** (Section 3 -- no cognition-mcp before AskUserQuestion)
 3. Run cognition-mcp operations: systems mapping, pre-mortem, approach generation, evaluation
-4. Save the full analysis to `00-problem-solve-analysis.md` in the requirements folder
+4. Save the full analysis to `00-solve-analysis.md` in the requirements folder
 5. Use the combined analysis + user answers to generate the blueprint (Section 4)
 
 The analysis should cover:
@@ -223,10 +223,10 @@ The analysis should cover:
 - Architectural decisions tagged as `#PATH_DECISION`
 - Assumptions tagged as `#COMPLETION_DRIVE`
 
-Do NOT treat `--problem-solve` as a standalone thinking exercise.
+Do NOT treat `--solve` as a standalone thinking exercise.
 It is an analysis step WITHIN the requirements pipeline, running AFTER discovery questions.
 
-**When to use --problem-solve**: Database migrations, new auth systems, multi-service integrations, major refactors, features with significant unknowns, high-risk production changes. Rule of thumb: if you would use extended thinking before making a decision, use `/requirements --problem-solve`.
+**When to use --solve**: Database migrations, new auth systems, multi-service integrations, major refactors, features with significant unknowns, high-risk production changes. Rule of thumb: if you would use extended thinking before making a decision, use `/requirements --solve`.
 
 ### --debug Mode
 
@@ -303,14 +303,14 @@ Add to `metadata.json`:
 }
 ```
 
-For `--problem-solve`, the metadata structure is:
+For `--solve`, the metadata structure is:
 ```json
 {
   "cognition": {
-    "mode": "problem-solve",
+    "mode": "solve",
     "pipeline": "full",
     "sessionId": "<cognition session ID>",
-    "analysisFile": "00-problem-solve-analysis.md",
+    "analysisFile": "00-solve-analysis.md",
     "timestamp": "<ISO timestamp>"
   }
 }
@@ -515,7 +515,7 @@ The key difference: `--explore` produces a TENTATIVE brief (not committed), whil
 ### Prerequisites
 
 1. Requirements folder from Section 1 MUST exist
-2. Check mutual exclusivity: error if `-tweak`, `-complex`, or `--problem-solve` also provided
+2. Check mutual exclusivity: error if `-tweak`, `-complex`, or `--solve` also provided
 
 ### Step 1: Run Full Deepthink-Style Exploration
 
