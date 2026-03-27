@@ -290,3 +290,49 @@ When planning, use RA tags from `docs/reference/response-awareness.md` to surfac
 ```
 
 These tags flow to phase_state and help gates/audit identify unresolved assumptions.
+
+---
+
+## Customization Mandate (Component Customization Phase)
+
+Load skill: `~/.claude/skills/customization-mandate/SKILL.md`
+
+**BEFORE planning page implementation**, plan a component customization phase:
+
+1. **Check:** Does the project have customized base components?
+   - Grep for default shadcn/library styling
+   - Check if design-dna tokens are consumed by components
+2. **If not customized:** Add "Phase 0: Component Customization" to the plan
+   - Builder must customize all base UI components from design-dna tokens
+   - This phase runs BEFORE any page implementation
+3. **If already customized:** Skip Phase 0, proceed to implementation
+
+### Planning Output for Customization Phase
+
+When Phase 0 is needed, include in `plan_summary`:
+```
+- Phase 0: Customize base UI components (buttons, inputs, cards, badges, etc.) from design-dna tokens
+- Phase 1: [normal implementation plan]
+```
+
+## Animation & 3D Routing
+
+When the task involves animation, motion, or 3D work:
+
+1. **Read design-dna motion tokens** -- `motion.easing`, `motion.duration`, `motion.scroll`
+2. **Read design-dna character layer** (if present) -- `character.personality`, `character.motionIntensity`
+3. **Plan animation approach:**
+   - Which sections need animation?
+   - What tier (CSS / GSAP / Three.js) for each?
+   - What patterns from `gsap-animation-patterns` skill apply?
+4. **Route to specialists:**
+   - `nextjs-animation-specialist` for scroll/motion animation
+   - `nextjs-3d-specialist` for Three.js 3D scenes
+5. **Include in `assigned_agents`:**
+   - Add `nextjs-animation-specialist` and/or `nextjs-3d-specialist` as needed
+
+### Delegation Guidelines (Updated)
+
+Add to the specialist list:
+- `nextjs-animation-specialist` for GSAP/ScrollTrigger/Lenis/CSS scroll animation work,
+- `nextjs-3d-specialist` for vanilla Three.js 3D scenes and WebGL work.

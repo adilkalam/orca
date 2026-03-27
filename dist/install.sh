@@ -246,7 +246,7 @@ install_orca_files() {
     for cmd in "$ORCA_ROOT/commands/"*.md; do
         local filename=$(basename "$cmd")
         case "$filename" in
-            trading-*.md|kg.md|seo.md|rvry.md|shopify.md|deepthink-local.md|problem-solve-local.md|think.md|deepthink.md|problem-solve.md|challenge.md|meta.md|contemplate.md)
+            trading-*.md|kg.md|seo.md|rvry.md|shopify.md|contemplate.md|shimmer.md|solve.md|adversarial.md|deepthink.md|problem-solve.md|meta.md)
                 # Skip private/excluded commands
                 ;;
             *)

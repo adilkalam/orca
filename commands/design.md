@@ -43,7 +43,7 @@ EXAMPLES:
   /design Illustrator logo: geometric animal mark for a coffee brand
 
 RELATED:
-  /think --creative   Non-design creative thinking (workarounds, reframing)
+  /contemplate --creative   Non-design creative thinking (workarounds, reframing)
   /design-review      Visual quality audit of existing UI
 ```
 
@@ -714,4 +714,4 @@ If persistence fails, display warning and continue - do NOT halt.
 
 ---
 
-_See also: `think.md --creative` for non-design creative thinking, `deepthink.md` for depth-first exploration_
+_See also: `contemplate.md --creative` for non-design creative thinking, `shimmer.md` for depth-first exploration_

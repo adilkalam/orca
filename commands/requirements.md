@@ -23,10 +23,10 @@ You never implement code from `/requirements`; you only plan.
 
 ## Step 0: Route Check
 
-This is /requirements, not /deepthink or /think.
+This is /requirements, not /shimmer or /contemplate.
 
 - OUTPUT goes to: `.claude/requirements/` (ALWAYS)
-- NOT to: `.claude/cognition/` (that's for /deepthink and /think)
+- NOT to: `.claude/cognition/` (that's for /shimmer and /contemplate)
 - Cognition flags (--problem-solve, --visual, --systems, etc.) are ANALYSIS INPUTS,
   not output destinations.
 
@@ -44,7 +44,7 @@ REGARDLESS of any cognition flags (--visual, --systems, --problem-solve, etc.):
 4. THEN: Generate spec
 
 Cognition analysis is an INPUT to the requirements process, not a replacement for it.
-Never save /requirements output to `.claude/cognition/` -- that directory is for /deepthink and /think only.
+Never save /requirements output to `.claude/cognition/` -- that directory is for /shimmer and /contemplate only.
 
 ---
 
@@ -593,7 +593,7 @@ Save exploration to TWO locations:
 
 1. **Cognition archive**: `.claude/cognition/YYYYMMDD-HHMM-<slug>.md`
    - Full exploration output with all mode results
-   - Preserves thinking for future `/think --import` reference
+   - Preserves thinking for future `/contemplate --import` reference
 
 2. **Requirements folder**: `00-exploration-analysis.md`
    - Summary of exploration for this requirement
@@ -670,7 +670,7 @@ How would we decide whether to proceed to full planning?
 | Decision | Recommended Action |
 |----------|-------------------|
 | Proceed to full planning | `/requirements --from-brief` |
-| Need more exploration | `/deepthink "[specific question]"` |
+| Need more exploration | `/shimmer "[specific question]"` |
 | Abandon | Archive this requirement |
 
 ---
@@ -711,7 +711,7 @@ Full exploration saved to: .claude/cognition/YYYYMMDD-HHMM-<slug>.md
 Next steps:
   - Review the brief and Go/No-Go criteria
   - If proceeding: /requirements --from-brief
-  - If more exploration needed: /deepthink "[specific question]"
+  - If more exploration needed: /shimmer "[specific question]"
   - If abandoning: Archive this requirement folder
 ```
 
@@ -938,7 +938,7 @@ Full exploration: .claude/cognition/20251127-1430-new-feature.md
 Next steps:
   - Review brief and Go/No-Go criteria
   - If proceeding: /requirements --from-brief
-  - If more exploration: /deepthink "[specific question]"
+  - If more exploration: /shimmer "[specific question]"
   - If abandoning: Archive this requirement
 ```
 

@@ -303,3 +303,79 @@ Your gate output should include:
 In CSS Architecture Refactor Mode, your report is consumed alongside
 `nextjs-css-architecture-gate` and `nextjs-design-reviewer` to decide whether
 the refactor is structurally complete.
+
+---
+
+## GSAP Anti-Pattern Checks
+
+When modified files include GSAP/ScrollTrigger/animation code, run these additional checks:
+
+### Check 1: ScrollTrigger on Child Tweens Inside Timelines
+
+```bash
+# ANTI-PATTERN: scrollTrigger inside a tl.to() or tl.from() call
+grep -n "tl\.\(to\|from\|fromTo\).*scrollTrigger" <modified_files>
+```
+
+**Violation:** ScrollTrigger should be on the timeline, not on individual child tweens.
+**Severity:** High (-10)
+**Fix:** Move scrollTrigger to `gsap.timeline({ scrollTrigger: { ... } })`
+
+### Check 2: Missing Animation Cleanup
+
+```bash
+# Look for gsap.to/from/fromTo without gsap.context or ctx.revert
+grep -n "gsap\.\(to\|from\|fromTo\|timeline\)" <modified_files>
+# Verify corresponding ctx.revert() exists in same component
+grep -n "ctx\.revert\|context.*revert" <modified_files>
+```
+
+**Violation:** GSAP animations without `gsap.context()` + `ctx.revert()` cleanup.
+**Severity:** High (-10)
+**Fix:** Wrap in `gsap.context()` and return `ctx.revert()` in useEffect cleanup.
+
+### Check 3: Hardcoded Animation Values
+
+```bash
+# Look for hardcoded durations, easings, distances in GSAP calls
+grep -n "duration:\s*[0-9]" <modified_files>
+grep -n "ease:\s*['\"]" <modified_files>
+grep -n "stagger:\s*[0-9]" <modified_files>
+```
+
+**Violation:** Animation values should come from design-dna motion tokens, not hardcoded.
+**Severity:** Medium (-5) per instance
+**Fix:** Reference `designDna.motion.duration.*`, `designDna.motion.easing.*`, etc.
+
+### Check 4: Mixed scrub and toggleActions
+
+```bash
+# scrollTrigger with both scrub and toggleActions
+grep -A5 "scrollTrigger" <modified_files> | grep -B2 "scrub\|toggleActions"
+```
+
+**Violation:** `scrub` and `toggleActions` should not be used together on the same ScrollTrigger.
+**Severity:** Medium (-5)
+**Fix:** Use either `scrub` (for scroll-linked) OR `toggleActions` (for triggered), not both.
+
+### Check 5: Missing gsap.matchMedia for Responsive
+
+```bash
+# GSAP animations without matchMedia check
+grep -l "gsap\.\(to\|from\|fromTo\|timeline\)" <modified_files> | \
+  xargs grep -L "matchMedia"
+```
+
+**Violation:** GSAP animations should use `gsap.matchMedia()` for responsive behavior.
+**Severity:** Medium (-5)
+**Note:** Not all animations need responsive handling. Flag as [Improvement] if the animation is viewport-independent.
+
+### Scoring for GSAP Checks
+
+| Check | Severity | Points |
+|-------|----------|--------|
+| ScrollTrigger on child tweens | High | -10 |
+| Missing cleanup | High | -10 |
+| Hardcoded values (per file) | Medium | -5 |
+| Mixed scrub/toggleActions | Medium | -5 |
+| Missing matchMedia | Medium | -5 |

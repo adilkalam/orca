@@ -396,3 +396,41 @@ workshop --workspace .claude/memory task_history add \
 - `failure`: Critical issues, task not complete
 
 **Always record**, even for successful tasks. This data feeds pattern recognition.
+
+---
+
+## Animation & 3D Specialist Routing
+
+When the user's request involves animation, motion, scroll effects, or 3D, route to the appropriate specialist:
+
+### Detection Keywords
+
+| Keywords | Route To |
+|----------|----------|
+| animation, animate, scroll effect, reveal, parallax, pin, horizontal scroll, smooth scroll, lenis, gsap, motion, transition | `nextjs-animation-specialist` |
+| 3d, three.js, webgl, scene, model, particles, 3d background | `nextjs-3d-specialist` |
+
+### Routing Rules
+
+1. **Animation work** -> Delegate to `nextjs-animation-specialist`
+   - This specialist handles GSAP ScrollTrigger, Lenis, and CSS scroll-driven animations
+   - It consumes design-dna motion tokens
+   - It follows the three-tier decision tree (CSS -> GSAP -> Three.js)
+
+2. **3D work** -> Delegate to `nextjs-3d-specialist`
+   - This specialist handles vanilla Three.js (NOT React Three Fiber)
+   - Pins three@0.169.0
+   - Handles scene setup, model loading, camera animation, particles
+
+3. **Mixed work** -> Route to both specialists sequentially
+   - Animation specialist handles scroll/motion
+   - 3D specialist handles Three.js scenes
+   - Coordinate via shared design-dna motion tokens
+
+4. **Neither** -> Standard pipeline (architect -> builder -> gates)
+
+### Updated Task Force Assembly
+
+When animation/3D is detected, add to the specialist roster:
+- `nextjs-animation-specialist` for scroll/motion animation work
+- `nextjs-3d-specialist` for Three.js 3D scenes

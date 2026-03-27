@@ -1,6 +1,6 @@
 # OS 7.0 Commands Quick Reference
 
-**Last Updated:** 2026-03-16
+**Last Updated:** 2026-03-18
 **Version:** OS 7.0
 **Total Commands:** 37 (+ orca-record CLI with 7 subcommands (5 hook + 2 user))
 
@@ -162,33 +162,24 @@ Creates: `.claude/requirements/<id>/06-requirements-spec.md`
 
 ## Reasoning Commands (5)
 
-### `/think` - Constraint Chain Exploration
+### `/contemplate` - Structured Exploration
 ```bash
-/think "Why is this test flaky?"                           # Default: 2-3 modes + constraints + self-check (asks BLOCKING questions)
-/think --auto "Why is caching slow?"                        # Autonomous: no questions, states assumptions
-/think --quick "Quick question about caching"              # Quick: blind_orchestrate (can ask BLOCKING questions)
-/think --quick --auto "Fast analysis"                       # Fastest: no self-observation, no questions
-/think --design "How should the login flow look?"          # Design: auto-loads design context
-/think --debug "Why is authentication failing?"            # Specialized capstone (unchanged)
-/think --model five-whys "Why do users drop off?"          # Mental model capstone (unchanged)
-/think --model pre-mortem "How could this migration fail?" # Pre-mortem model (unchanged)
-/think --decide "Microservices vs monolith"                # Decision capstone (unchanged)
-/think --creative "Ideas for onboarding"                   # Creative 3-step flow (unchanged)
-/think --meta "What is my training doing here?"            # Substrate observation (unchanged)
-/think --systems "How do these components interact?"       # Systems thinking (unchanged)
+/contemplate "Why is this test flaky?"                           # Default: blind_orchestrate loop (asks BLOCKING questions)
+/contemplate --auto "Why is caching slow?"                        # Autonomous: no questions, states assumptions
+/contemplate --systems "How do these components interact?"       # Systems thinking (architecture, data flow)
+/contemplate --creative "Ideas for onboarding"                   # Creative thinking (brainstorming, divergent)
+/contemplate --causal "Why does this keep failing?"              # Causal analysis (cause-and-effect chains)
+/contemplate --model "First principles of this design"           # Mental model (first-principles reasoning)
+/contemplate --perspectives "Microservices vs monolith"          # Collaborative reasoning (multiple viewpoints)
+/contemplate --decide "Which database to use?"                   # Decision analysis (trade-off analysis)
+/contemplate --auto --systems "Architecture overview"            # Combine --auto with any flag
 ```
-**Default Mode:** Constraint chain exploration -- asks BLOCKING questions first, then 2-3 modes with constraint tracking, 3-question self-check with verify-or-defer obligation after each mode, gate evaluation, harvest with auto-persist and follow-up questions. Brief ORIENT (2 lines).
+**Default Mode:** blind_orchestrate loop -- auto-routed exploration that runs until the orchestrator signals completion. Asks BLOCKING questions first, 3-question self-check, harvest with auto-persist and follow-up questions.
 **--auto Mode:** Fully autonomous -- no BLOCKING questions, states assumptions clearly, proceeds with analysis.
-**--quick Mode:** Fast exploration via blind_orchestrate -- can ask BLOCKING questions unless --auto present.
-**--design Mode:** Design-focused exploration -- auto-loads design-deepthink skill and project design files, DESIGN mode with constraint tracking.
-**Specialized Capstones:** --debug, --decide, --model, --meta, --meta-visual, --systems, --spatial, --creative, --causal, --ooda, --ulysses (all unchanged, single operations)
-**Mental Models (--model):** five-whys, fermi-estimation, abstraction-laddering, steelmanning, rubber-duck, opportunity-cost, constraint-relaxation, time-horizon-shifting, impact-effort-grid, assumption-surfacing, trade-off-matrix, decomposition, inversion, pre-mortem, first-principles
-**Modifier Flags:** --visual (ASCII diagram), --challenge (adversarial critique)
+**Mental Model Flags:** --systems, --creative, --causal, --model, --perspectives, --decide -- each runs a specific cognition-mcp operation directly instead of blind_orchestrate.
 **MCP:** cognition-mcp
-**Meta Modes:** Standard (process-level) + Substrate Observation (V1-V6 reflection insights)
-**Templates:** `quick-reference/thinking-models/*.md`
-**Persistence:** Default/--design: auto-persist to `.claude/cognition/` + daily log + Workshop. --quick: Workshop entry only. Capstones: daily log + Workshop.
-**Handoff Guidance:** Includes "Next Steps" section with contextual command recommendations
+**Persistence:** Creates `.claude/cognition/YYYYMMDD-HHMM-think-<slug>/` session folder (00-enter.md, 01-orient.md, 99-harvest.md) + Workshop entry
+**Handoff Guidance:** Includes "Follow-ups" section with contextual command recommendations
 
 ### `/meta` - Sustained Metacognitive Substrate Observation
 ```bash
@@ -203,7 +194,7 @@ Creates: `.claude/requirements/<id>/06-requirements-spec.md`
 **Topic:** Optional -- no args observes current conversation context
 **MCP:** cognition-mcp
 **Persistence:** Creates `.claude/cognition/YYYYMMDD-HHMM-meta-<slug>.md` + Workshop entry
-**See also:** `/think --meta` (quick single-shot), `/think --meta-visual` (with ASCII diagrams)
+**See also:** `/contemplate --meta` (quick single-shot), `/contemplate --meta-visual` (with ASCII diagrams)
 
 
 ### `/deepthink` - Pre-Mortem Exploration
@@ -241,19 +232,22 @@ Runs full ORIENT→ANTICIPATE→GENERATE→EVALUATE→COMMIT cycle for convergen
 **Gate Protocol:** 3 questions per gate, soft fails warn but continue, hard fails stop for correction
 **MCP:** cognition-mcp, sequential-thinking
 **Persistence:** Creates `.claude/cognition/YYYYMMDD-HHMM-<slug>.md` + Workshop entry
-**Compounding:** All three cognition commands (/think, /deepthink, /problem-solve) produce follow-up questions in HARVEST with command routing recommendations. Deferred constraints from /think verify-or-defer auto-surface as follow-ups.
+**Compounding:** All three cognition commands (/contemplate, /deepthink, /problem-solve) produce follow-up questions in HARVEST with command routing recommendations. Deferred constraints from /contemplate verify-or-defer auto-surface as follow-ups.
 **Handoff Guidance:** Includes "Next Steps" section with contextual command recommendations
 
-### `/challenge` - Adversarial Proposal Analysis
+### `/adversarial` - Adversarial Proposal Analysis
 ```bash
-/challenge "Use microservices for this feature"
-/challenge --quick "Add caching layer"
-/challenge --deep "Migrate to serverless"
+/adversarial "Use microservices for this feature"
+/adversarial --auto "Add Redis caching layer"
+/adversarial --quick "Migrate from REST to GraphQL"
 ```
-Systematically attacks proposals using cognition-mcp.
-**Modes:** --quick (causal_analysis), default (+ argumentation + decide), --deep (+ simulation + ethical)
-**MCP:** cognition-mcp (sessions persisted to ~/.orca-cognition/)
-**Persistence:** Creates `.claude/cognition/YYYYMMDD-HHMM-<slug>.md` + Workshop entry
+Adversarial multi-operation pipeline using cognition-mcp: pre-mortem (failure modes) -> structured_argumentation (case against) -> collaborative_reasoning (devil's advocate vs defender) -> verdict.
+**Flags:** --auto (no questions), --quick (pre-mortem only, skip argumentation)
+**3-Question Self-Check:** Between each operation -- "Am I being genuinely adversarial?"
+**MCP:** cognition-mcp
+**Persistence:** Creates `.claude/cognition/YYYYMMDD-HHMM-challenge-<slug>/` session folder + Workshop entry
+**Output:** GO / CONDITIONAL GO / NO GO verdict with required mitigations
+
 
 ---
 

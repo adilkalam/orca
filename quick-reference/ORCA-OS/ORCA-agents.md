@@ -1,10 +1,10 @@
 # OS 7.0 Agents Quick Reference
 
-**Last Updated:** 2026-03-16
+**Last Updated:** 2026-03-23
 **Version:** OS 7.0
-**Total Agents:** 100
+**Total Agents:** 126
 
-> **Scope Note:** This quick-reference covers all 100 agents across 10 domains. See `docs/reference/os-dependency-graph.yaml` for complete registry.
+> **Scope Note:** This quick-reference covers all 126 agents across 10 domains. See `docs/reference/os-dependency-graph.yaml` for complete registry.
 
 ---
 
@@ -29,7 +29,7 @@
 | Domain | Count | Location |
 |--------|-------|----------|
 | iOS | 18 | `agents/iOS/` |
-| Next.js | 15 | `agents/nextjs/` |
+| Next.js | 17 | `agents/nextjs/` |
 | Django-React | 13 | `agents/django-react/` |
 | Expo | 12 | `agents/expo/` |
 | RVRY | 7 | `agents/rvry/` |
@@ -43,7 +43,7 @@
 | Cross-Domain | 1 | `agents/cross-domain/` |
 | 3D Printing | 0 (MCP+skill) | bambu-3mf, openscad-mcp |
 | Creative Design | 0 (MCP+skill) | adb-mcp (Photoshop, Illustrator) |
-| **TOTAL** | **124** | |
+| **TOTAL** | **126** | |
 
 ---
 
@@ -83,7 +83,7 @@
 
 ---
 
-## Next.js Pipeline (15 Agents)
+## Next.js Pipeline (17 Agents)
 
 ### Orchestration
 | Agent | Purpose |
@@ -106,6 +106,8 @@
 | `nextjs-performance-specialist` | Bundle optimization, lazy loading |
 | `nextjs-seo-specialist` | SEO optimization |
 | `nextjs-accessibility-specialist` | WCAG compliance, semantic HTML |
+| `nextjs-animation-specialist` | GSAP ScrollTrigger, Lenis smooth scroll, CSS scroll-driven animations |
+| `nextjs-3d-specialist` | Vanilla Three.js scenes, GLTF models, particle systems, WebGL |
 
 ### Gates
 | Agent | Purpose | Threshold |
@@ -447,7 +449,7 @@ No dedicated agent directory. Capabilities provided by MCP servers, skills, and 
 ```
 ~/.claude/agents/
   iOS/              # 18 agents
-  nextjs/           # 15 agents
+  nextjs/           # 17 agents
   django-react/     # 13 agents
   expo/             # 12 agents
   cross-domain/     # 1 agent (standards persistence)
@@ -488,4 +490,4 @@ $ORCA_OS_PATH/agents/
 ---
 
 _Source of truth: `docs/reference/os-dependency-graph.yaml`_
-_Last sync: 2026-03-16_
+_Last sync: 2026-03-23_

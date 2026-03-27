@@ -549,3 +549,62 @@ Write your results to `phase_state.gates`:
 
 Your review should make it easy for `nextjs-builder` to perform a targeted
 corrective pass and for orchestrators to understand residual visual risk.
+
+---
+
+## Multi-Scroll-Position Screenshot Protocol
+
+When reviewing pages with scroll animations, parallax, or pinned sections:
+
+### Capture at 5 Scroll Positions
+
+Take screenshots at these scroll positions to verify animation behavior:
+
+```javascript
+// 0% - Top of page
+evaluate_script({ expression: `window.scrollTo(0, 0)` });
+// Wait for animations to settle
+take_screenshot({ name: "scroll-0pct" });
+
+// 25%
+evaluate_script({ expression: `window.scrollTo(0, document.body.scrollHeight * 0.25)` });
+take_screenshot({ name: "scroll-25pct" });
+
+// 50%
+evaluate_script({ expression: `window.scrollTo(0, document.body.scrollHeight * 0.50)` });
+take_screenshot({ name: "scroll-50pct" });
+
+// 75%
+evaluate_script({ expression: `window.scrollTo(0, document.body.scrollHeight * 0.75)` });
+take_screenshot({ name: "scroll-75pct" });
+
+// 100% - Bottom of page
+evaluate_script({ expression: `window.scrollTo(0, document.body.scrollHeight)` });
+take_screenshot({ name: "scroll-100pct" });
+```
+
+### What to Verify at Each Position
+
+| Position | Check |
+|----------|-------|
+| 0% | Hero section visible, no premature animation triggers |
+| 25% | First scroll reveals triggered, elements in expected positions |
+| 50% | Mid-page animations active, pinned sections correct |
+| 75% | Late-page reveals triggered, parallax layers positioned correctly |
+| 100% | All animations complete, footer visible, no stuck elements |
+
+### Common ScrollTrigger Issues to Flag
+
+- **Stuck elements:** Pinned sections that never unpin
+- **Mispositioned elements:** Elements that should have animated but are in start/end position
+- **Overlapping content:** Pin spacing incorrect, causing content overlap
+- **Animation not triggering:** ScrollTrigger start/end misconfigured
+- **Jumpy scroll:** Missing Lenis integration or ScrollTrigger conflict
+
+### Scoring
+
+Animation-related issues contribute to the design score:
+- Stuck/mispositioned elements: High severity (-10)
+- Animation not triggering: Medium severity (-5)
+- Scroll jank/jumpiness: Medium severity (-5)
+- Missing responsive animation adaptation: Medium severity (-5)

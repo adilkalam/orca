@@ -619,7 +619,7 @@ Cognitive analysis persists as files on disk. When the context window compacts, 
 4. **Graduated scoring**: >=90 PASS, 80-89 WARN, 70-79 ERROR, <70 BLOCK
 5. **Context mandatory**: All agents call ProjectContext MCP first
 6. **State preserved**: phase_state.json enables resumption across sessions
-7. **All Opus 4.6**: Default model across all 100 agents, never specified
+7. **All Opus 4.6**: Default model across all 102 agents, never specified
 8. **Four-tier routing**: --light (fast, no confirmation) / default (fast+gates) / -tweak (builder direct) / --complex (full pipeline)
 9. **User approval required**: Agents never auto-modify; improvements need explicit approval
 

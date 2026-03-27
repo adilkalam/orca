@@ -97,8 +97,6 @@ check "$CLAUDE_DIR/commands/ios.md" "/ios command"
 check "$CLAUDE_DIR/commands/nextjs.md" "/nextjs command"
 check "$CLAUDE_DIR/commands/expo.md" "/expo command"
 check "$CLAUDE_DIR/commands/research.md" "/research command"
-check "$CLAUDE_DIR/commands/think.md" "/think command"
-check "$CLAUDE_DIR/commands/challenge.md" "/challenge command"
 
 commands_count=$(count_files "$CLAUDE_DIR/commands" "*.md")
 echo "  Commands found: $commands_count"

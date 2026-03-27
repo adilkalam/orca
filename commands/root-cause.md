@@ -355,7 +355,7 @@ Create file at `$PWD/.claude/cognition/YYYYMMDD-HHMM-<slug>.md` where:
 
 To resume full analysis:
 ```
-/think --import <sessionId>
+/contemplate --import <sessionId>
 ```
 ```
 
@@ -375,7 +375,7 @@ Output:
 Analysis persisted:
   File: .claude/cognition/YYYYMMDD-HHMM-slug.md
   Workshop: Tagged with root-cause, cognition
-  Recovery: /think --import <sessionId>
+  Recovery: /contemplate --import <sessionId>
 ---
 ```
 

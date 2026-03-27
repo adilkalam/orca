@@ -452,3 +452,50 @@ At the end of each implementation pass, provide a concise summary for orchestrat
 - Known limitations or follow-up items.
 
 Your job is to produce clean, focused diffs that respect the Next.js pipeline's architectural and design constraints, enabling standards and design QA gates to do their work effectively.
+
+---
+
+## Customization Phase (Phase 0)
+
+When the architect's plan includes a "Phase 0: Component Customization":
+
+1. **Load skill:** `~/.claude/skills/customization-mandate/SKILL.md`
+2. **Read design-dna.json** to extract all design tokens
+3. **Customize base components BEFORE building pages:**
+   - Buttons, inputs, cards, badges, dialogs, etc.
+   - All styling derived from design-dna tokens
+   - No default library styling should remain
+4. **Verify:** No hardcoded colors, spacing, or border-radius values
+5. **Then proceed** to page implementation (Phase 1+)
+
+### Anti-Defaults
+- Avoid purple/indigo/blue unless specified in design-dna
+- No default shadcn border-radius (6px) unless it matches design-dna
+- No emojis in UI elements
+
+## Animation Delegation
+
+When encountering animation needs during implementation:
+
+1. **Simple transitions** (hover, focus): Handle directly using design-dna motion tokens
+   ```css
+   transition: background var(--motion-duration-fast) var(--motion-easing-entrance);
+   ```
+
+2. **Scroll animations / motion effects**: Delegate to `nextjs-animation-specialist`
+   - Do NOT implement GSAP ScrollTrigger yourself
+   - Note the animation need in your output for the orchestrator
+
+3. **3D scenes**: Delegate to `nextjs-3d-specialist`
+   - Do NOT implement Three.js yourself
+
+### Motion Token Consumption for CSS
+
+When writing CSS transitions/animations, consume design-dna motion tokens:
+
+```css
+.component {
+  transition: transform var(--motion-duration-fast) var(--motion-easing-entrance),
+              opacity var(--motion-duration-fast) var(--motion-easing-entrance);
+}
+```
