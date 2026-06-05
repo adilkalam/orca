@@ -3,8 +3,8 @@ set -euo pipefail
 
 # Convert a Markdown file to PDF using md-to-pdf with ORCA-OS defaults.
 # Usage: scripts/utilities/md-to-pdf.sh [--serif|--sans] <input.md> [output.pdf]
-#   (no flag)  = Sharp Sans No. 2 headings + Tiempos Text body (default)
-#   --serif    = Financier
+#   (no flag)  = Sharp Sans No. 2 headings + Ivar Text body (default)
+#   --serif    = serif variant
 #   --sans     = Sharp Sans No. 2
 
 STYLE="default"
@@ -48,7 +48,7 @@ fi
 GENERATED_PDF="$IN_DIR/$BASE_NO_EXT.pdf"
 
 if [ -z "$OUT_ARG" ]; then
-  TARGET_PDF="$IN_DIR/PDF/$BASE_NO_EXT.pdf"
+  TARGET_PDF="$IN_DIR/$BASE_NO_EXT.pdf"
 else
   OUT="$OUT_ARG"
   if [[ "$OUT" = /* ]]; then

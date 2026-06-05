@@ -48,7 +48,7 @@ log_detail() { if [[ "$VERBOSE" == "--verbose" ]]; then echo "       $1"; fi; }
 PROJECT_ROOT=$(pwd)
 ORCA_OS_ROOT="/Users/adilkalam/ORCA-OS"
 MCP_CALL="$ORCA_OS_ROOT/scripts/mcp-call.mjs"
-EVIDENCE_DIR="$PROJECT_ROOT/.claude/orchestration/evidence/scenarios"
+EVIDENCE_DIR="$PROJECT_ROOT/.orca/orchestration/evidence/scenarios"
 TIMESTAMP=$(date +%Y%m%d-%H%M%S)
 
 mkdir -p "$EVIDENCE_DIR"
@@ -137,18 +137,18 @@ scenario_a() {
     sleep 1  # Allow filesystem sync
 
     # Find recent cognition file
-    RECENT_FILE=$(find "$PROJECT_ROOT/.claude/cognition" -name "*.md" -mmin -2 2>/dev/null | head -1)
+    RECENT_FILE=$(find "$PROJECT_ROOT/.cognition" -name "*.md" -mmin -2 2>/dev/null | head -1)
     if [[ -n "$RECENT_FILE" ]] && grep -q "$topic" "$RECENT_FILE" 2>/dev/null; then
         log_pass "A.5: Persisted cognition file references Workshop topic"
         log_detail "File: $RECENT_FILE"
     else
         # Check if any file references our topic
-        MATCHING_FILE=$(grep -l "$topic" "$PROJECT_ROOT/.claude/cognition"/*.md 2>/dev/null | head -1 || echo "")
+        MATCHING_FILE=$(grep -l "$topic" "$PROJECT_ROOT/.cognition"/*.md 2>/dev/null | head -1 || echo "")
         if [[ -n "$MATCHING_FILE" ]]; then
             log_pass "A.5: Found cognition file with topic reference"
         else
             log_fail "A.5: No cognition file references Workshop topic"
-            log_detail "Searched for: $topic in .claude/cognition/*.md"
+            log_detail "Searched for: $topic in .orca/cognition/*.md"
         fi
     fi
 
@@ -495,7 +495,7 @@ scenario_x() {
     fi
 
     # Check cognition files
-    if find "$PROJECT_ROOT/.claude/cognition" -name "*.md" -mmin -2 2>/dev/null | grep -q .; then
+    if find "$PROJECT_ROOT/.cognition" -name "*.md" -mmin -2 2>/dev/null | grep -q .; then
         log_pass "X.4b: Recent cognition file exists"
     else
         log_pass "X.4b: Cognition session created (file may be async)"

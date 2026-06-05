@@ -1,8 +1,8 @@
 # ORCA-OS Agent Index
 
-**Total Agents:** 123
-**Categories:** 14
-**Generated:** 2026-02-26
+**Total Agents:** 72
+**Categories:** 10
+**Generated:** 2026-02-26 (seo-optimizer removed 2026-05-17)
 
 ---
 
@@ -162,7 +162,6 @@
 |-------------------------|---------------------------------------------------------|-------|--------------|
 | seo-brief-strategist    | Transform research pack into production-ready SEO co... | 373   | 2026-01-30   |
 | seo-draft-writer        | Produce sophisticated long-form SEO content with nat... | 543   | 2026-01-30   |
-| seo-optimizer           | Analyzes content against SERP competitors using NLP,... | 310   | 2026-01-30   |
 | seo-quality-guardian    | Comprehensive SEO quality review with clarity gates,... | 682   | 2026-01-30   |
 | seo-research-specialist | SEO research specialist with SERP intelligence, mult... | 517   | 2026-01-30   |
 

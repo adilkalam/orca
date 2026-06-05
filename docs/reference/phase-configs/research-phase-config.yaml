@@ -203,12 +203,12 @@ optional_phases:
       - corrected_sections
 
 config:
-  evidence_path: .claude/orchestration/evidence/
+  evidence_path: .orca/orchestration/evidence/
   reports_path: reports/
-  phase_state_path: .claude/orchestration/phase_state.json
+  phase_state_path: .orca/orchestration/phase_state.json
 
 phase_state:
-  location: ".claude/orchestration/phase_state.json"
+  location: ".orca/orchestration/phase_state.json"
   domain: "research"
 
   top_level_fields:

@@ -7,10 +7,9 @@ description: >
   accessibilityLabel, accessibilityRole, accessibilityHint, checks for accessibility
   issues, finds accessibility violations in React Native/Expo apps. Use PROACTIVELY
   before App Store submission, when adding interactive components, or when building
-  forms. Example: Task(subagent_type="a11y-enforcer", prompt="Audit checkout flow
+  forms. Example: Agent(subagent_type="a11y-enforcer", prompt="Audit checkout flow
   for accessibility compliance before release")
 tools: Read, Grep, Bash, Edit
-weight: medium
 
 # OS 7.0 Constraint Framework
 required_context:

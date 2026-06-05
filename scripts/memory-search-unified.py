@@ -168,13 +168,7 @@ def search_workshop(project_root: Path, query: str) -> Tuple[str, int]:
   """
   workspace = project_root / ".claude" / "memory"
   if not workspace.exists():
-    # Fall back to legacy locations if needed
-    legacy = project_root / ".workshop"
-    if legacy.exists():
-      workspace = legacy
-
-  if not workspace.exists():
-    return ("Workshop workspace not found (expected .claude/memory or .workshop).", 1)
+    return ("Workshop workspace not found (expected .claude/memory).", 1)
 
   if not shutil_which("workshop"):
     return ("`workshop` CLI not found on PATH.", 1)

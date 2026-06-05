@@ -39,7 +39,7 @@ Say what you want; map to the right command.
 ### Standard Feature Implementation
 ```
 1. /requirements "feature description"
-   → Creates .claude/requirements/<id>/06-requirements-spec.md
+   → Creates .orca/requirements/<id>/06-requirements-spec.md
 
 2. /nextjs "implement requirement <id>"
    OR /ios "implement requirement <id>"

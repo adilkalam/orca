@@ -4,8 +4,7 @@ description: >
   Primary iOS implementation agent. Builds according to the architect plan,
   enforces design DNA/tokens, Swift 6 concurrency, DI, and runs local checks
   before handing to gates.
-tools: Task, Read, Edit, MultiEdit, Grep, Glob, Bash
-weight: heavy
+tools: Read, Edit, MultiEdit, Grep, Glob, Bash
 ---
 
 # iOS Builder – Plan-Driven Implementation
@@ -69,15 +68,15 @@ max_attempts: 3
 **Reset behavior:** Attempts reset at session start (not persisted across sessions).
 
 ---
-##  NO ROOT POLLUTION (MANDATORY)
+##  ARTIFACT PATH RULES (MANDATORY)
 
-**NEVER create files outside `.claude/` directory:**
--  `requirements/` →  `.claude/requirements/`
--  `docs/completion-drive-plans/` →  `.claude/orchestration/temp/`
--  `orchestration/` →  `.claude/orchestration/`
--  `evidence/` →  `.claude/orchestration/evidence/`
+**Artifact directories at project root:**
+-  `requirements/` →  `.orca/requirements/`
+-  `docs/completion-drive-plans/` →  `.orca/orchestration/temp/`
+-  `orchestration/` →  `.orca/orchestration/`
+-  `evidence/` →  `.orca/orchestration/evidence/`
 
-**Before ANY file creation:** Check if path starts with `.claude/`. If NOT → fix the path.
+**Before ANY file creation:** Check if path starts with `.orca/`. If NOT → fix the path.
 Source code is the ONLY exception.
 
 ---

@@ -5,8 +5,6 @@ description: >
   summarizes results, and records verification_status for the build gate.
   Mechanical task - runs commands and reports results.
 tools: Read, Bash
-model: haiku
-weight: lightweight
 ---
 
 # Nextjs Verification Agent – Build & Test Gate

@@ -174,19 +174,19 @@ Use manual verification ONLY when:
 
 ```bash
 # Build logs (Next.js/Expo)
-npm run build 2>&1 | tee .claude/orchestration/evidence/build-$(date +%Y%m%d-%H%M%S).log
+npm run build 2>&1 | tee .orca/orchestration/evidence/build-$(date +%Y%m%d-%H%M%S).log
 
 # Test logs
-npm run test 2>&1 | tee .claude/orchestration/evidence/test-$(date +%Y%m%d-%H%M%S).log
+npm run test 2>&1 | tee .orca/orchestration/evidence/test-$(date +%Y%m%d-%H%M%S).log
 
 # iOS build
-xcodebuild clean build 2>&1 | tee .claude/orchestration/evidence/build-$(date +%Y%m%d-%H%M%S).log
+xcodebuild clean build 2>&1 | tee .orca/orchestration/evidence/build-$(date +%Y%m%d-%H%M%S).log
 
 # iOS tests
-xcodebuild test 2>&1 | tee .claude/orchestration/evidence/test-$(date +%Y%m%d-%H%M%S).log
+xcodebuild test 2>&1 | tee .orca/orchestration/evidence/test-$(date +%Y%m%d-%H%M%S).log
 
 # iOS screenshots
-xcrun simctl io booted screenshot .claude/orchestration/evidence/screenshots/after-$(date +%s).png
+xcrun simctl io booted screenshot .orca/orchestration/evidence/screenshots/after-$(date +%s).png
 ```
 
 ---

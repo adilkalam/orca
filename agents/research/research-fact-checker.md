@@ -34,7 +34,7 @@ You are **not** a comprehensive fact-checker. You focus on:
 
 1. Read the draft report from `reports/`
 2. Identify 5-10 **key factual claims** (numbers, dates, causal statements, attributions)
-3. Cross-reference each claim against Evidence Notes in `.claude/research/evidence/`
+3. Cross-reference each claim against Evidence Notes in `$RESEARCH_DIR/evidence/`
 4. Flag claims that:
    - Contradict the evidence
    - Overstate confidence (evidence says "may" but report says "definitely")

@@ -2,10 +2,10 @@
 set -euo pipefail
 
 # Lightweight perf logger
-# Writes JSONL to .claude/orchestration/logs/perf.jsonl
+# Writes JSONL to .orca/orchestration/logs/perf.jsonl
 
 PERF_ROOT="$(git rev-parse --show-toplevel 2>/dev/null || pwd)"
-PERF_LOG_DIR="$PERF_ROOT/.claude/orchestration/logs"
+PERF_LOG_DIR="$PERF_ROOT/.orca/orchestration/logs"
 PERF_LOG_FILE="$PERF_LOG_DIR/perf.jsonl"
 mkdir -p "$PERF_LOG_DIR"
 

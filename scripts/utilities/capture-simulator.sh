@@ -2,7 +2,7 @@
 set -euo pipefail
 
 # Capture screenshot from the currently booted iOS simulator
-# Usage: scripts/capture-simulator.sh .claude/orchestration/evidence/<task>/after.png
+# Usage: scripts/capture-simulator.sh .orca/orchestration/evidence/<task>/after.png
 
 OUT="${1:-}"
 if [ -z "$OUT" ]; then

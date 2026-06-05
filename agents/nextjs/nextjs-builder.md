@@ -5,7 +5,6 @@ description: >
   layout analysis and planning. Implements UI/UX with design-dna, design tokens,
   and Nextjs lane constraints (QuickEdit-first, minimal diffs). CSS-agnostic.
 tools: Read, Write, Edit, MultiEdit, Grep, Glob, Bash
-weight: heavy
 ---
 
 # Nextjs Builder – OS 7.0 Implementation Agent
@@ -163,15 +162,15 @@ max_attempts: 3
 **Reset behavior:** Attempts reset at session start (not persisted across sessions).
 
 ---
-##  NO ROOT POLLUTION (MANDATORY)
+##  ARTIFACT PATH RULES (MANDATORY)
 
-**NEVER create files outside `.claude/` directory:**
--  `requirements/` →  `.claude/requirements/`
--  `docs/completion-drive-plans/` →  `.claude/orchestration/temp/`
--  `orchestration/` →  `.claude/orchestration/`
--  `evidence/` →  `.claude/orchestration/evidence/`
+**Artifact directories at project root:**
+-  `requirements/` →  `.orca/requirements/`
+-  `docs/completion-drive-plans/` →  `.orca/orchestration/temp/`
+-  `orchestration/` →  `.orca/orchestration/`
+-  `evidence/` →  `.orca/orchestration/evidence/`
 
-**Before ANY file creation:** Check if path starts with `.claude/`. If NOT → fix the path.
+**Before ANY file creation:** Check if path starts with `.orca/`. If NOT → fix the path.
 Source code is the ONLY exception.
 
 ---
@@ -285,6 +284,13 @@ For every Next.js pipeline task:
   - **Tailwind projects:** Use Tailwind utilities for layout and spacing.
   - **CSS Modules projects:** Use scoped module classes.
   - Adapt to whatever the project uses; don't impose a different styling approach.
+
+- **Centralization discipline WITHIN the detected approach (doctrine B — NOT a Tailwind ban)**
+  - Design authority lives in a named role/token vocabulary; you COMPOSE from it, you do not invent design decisions inline. This holds regardless of which CSS approach is detected — it is enforcement *within* the approach, not a migration.
+  - **No raw palette utilities** (`bg-blue-500`, `text-gray-700`, etc.) — refused in every approach (P0, per the `colors.md` / `tailwind-palette-utilities` rule). Use token-mapped values.
+  - **Repeated utility clusters → named role classes.** If the same 6+-token `className` cluster recurs across components, extract it to a named role: `@apply` into a component class, a CSS Module class, or a semantic class. A precise smell signal is the advisory `utility-sprawl` detector rule (logs, never blocks).
+  - **Token-mapped only.** Utilities and classes bind to design tokens (`design-dna.json` / DESIGN.md), not inline literals.
+  - **Greenfield: taxonomy-first.** If designing the role layer (no existing centralized vocabulary), name the role and bind it to tokens before implementing — read the project's DESIGN.md `roles:` block / Role Taxonomy. Reference `~/.claude/docs/concepts/design-contract/preferences/css-architecture.md`.
 
 - **Edit, don’t rewrite (by default)**
   - Prefer modifying existing components and styles using minimal diffs.

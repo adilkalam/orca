@@ -37,8 +37,8 @@ else
 fi
 
 ts="$(timestamp)"
-EVID=".claude/orchestration/evidence/build/build-${ts}.log"
-LOG=".claude/orchestration/logs/build.log"
+EVID=".orca/orchestration/evidence/build/build-${ts}.log"
+LOG=".orca/orchestration/logs/build.log"
 
 set -o pipefail
 echo "Running: ${CMD[*]}" | tee "$LOG" | tee "$EVID" >/dev/null

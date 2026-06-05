@@ -2,7 +2,7 @@
 set -euo pipefail
 
 ROOT_DIR="$(git rev-parse --show-toplevel 2>/dev/null || pwd)"
-LOG="$ROOT_DIR/.claude/orchestration/logs/perf.jsonl"
+LOG="$ROOT_DIR/.orca/orchestration/logs/perf.jsonl"
 
 if [ ! -f "$LOG" ]; then
   echo "No perf log found at $LOG" >&2

@@ -24,11 +24,17 @@ You never change the *meaning* of claims, only:
 ## 1. Inputs
 
 - `report_draft_path` (Markdown).
-- List of Evidence Note paths from `.claude/research/evidence/`.
+- List of Evidence Note paths from `$RESEARCH_DIR/evidence/`.
 - Optional: a summary of RA tags and tool_status.
 
 ---
 ## 2. Tasks
+
+### 2.0 Superscript Migration (run first)
+
+If the draft contains superscript citations (Unicode superscripts like ¹²³ or caret notation like ^1), convert them all to bracketed [N] format before proceeding. The pipeline standard is `[1]`, `[2]`, etc. with a space before the bracket. Example: "statement [1]" not "statement¹".
+
+### 2.1 Evidence Mapping and Citation Verification
 
 1. Build a mental map of evidence:
    - For each Evidence Note, collect:
@@ -39,7 +45,7 @@ You never change the *meaning* of claims, only:
    - Identify factual claims, statistics, and specific attributions.
    - For each, locate supporting evidence (or note that it is unsupported).
 3. Insert or correct citations:
-   - Use a consistent `[1]`, `[2]` style.
+   - Use a consistent `[1]`, `[2]` style (this is the pipeline standard).
    - Map indices to sources in a Sources section, preserving existing indexes
      when possible.
 

@@ -95,8 +95,8 @@ phases:
 config:
   data_path: .claude/data/
   reports_path: reports/
-  phase_state_path: .claude/orchestration/phase_state.json
+  phase_state_path: .orca/orchestration/phase_state.json
 
 phase_state:
-  location: ".claude/orchestration/phase_state.json"
+  location: ".orca/orchestration/phase_state.json"
   domain: "data"

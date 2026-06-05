@@ -22,8 +22,8 @@ exports, or any visual reference.
 ## How You Are Invoked
 
 You are typically called by the `/clone-website` command when it detects an
-image path instead of a URL. You can also be invoked directly via Task tool
-from any orchestrator.
+image path instead of a URL. You can also be invoked directly via the Agent
+tool from the main thread.
 
 ---
 
@@ -125,7 +125,7 @@ After all three passes, synthesize into a single structured output.
 
 ### Output Format
 
-Write the analysis to: `.claude/orchestration/evidence/screenshot-analysis-<name>.md`
+Write the analysis to: `.orca/orchestration/evidence/screenshot-analysis-<name>.md`
 
 Where `<name>` is derived from the filename or a slug of the user's description.
 

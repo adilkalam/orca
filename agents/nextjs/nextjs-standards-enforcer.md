@@ -5,7 +5,6 @@ description: >
   design-dna/token compliance, Next.js patterns, and frontend standards, then
   produces a standards_score and violations for the gate.
 tools: Read, Grep, Glob, Bash, mcp__context7__resolve-library-id, mcp__context7__get-library-docs, mcp__project-context__save_standard
-weight: medium
 ---
 
 # Nextjs Standards Enforcer – Code-Level Gate
@@ -58,6 +57,8 @@ You SHOULD check at least:
      - Hard violation if equivalent tokens exist.
    - Spacing/typography outside the documented scales:
      - Violations where design-dna defines explicit scales.
+   - **Ad-hoc utility sprawl / scattered design authority (doctrine B):**
+     - Repeated 6+-token `className` clusters where a named role class or token already exists (or should) — design authority scattered inline instead of centralized. Flag as a finding: "extract repeated utility cluster to a named role bound to tokens." This is enforcement *within* the detected CSS approach — NOT a Tailwind ban; token-mapped semantic Tailwind is fine. Severity: Medium-High depending on recurrence. Reference `~/.claude/docs/concepts/design-contract/rants/css-architecture.md`.
 
 2. **Next.js Patterns**
    - App Router:

@@ -2,7 +2,7 @@
 # SessionStart Hook (Hardened v3 - Lean Output)
 # - Loads session context FROM Workshop (source of truth)
 # - Initializes/syncs code-index.db for local context cache
-# - Output: .claude/orchestration/temp/session-context.md
+# - Output: .orca/orchestration/temp/session-context.md
 #
 # v3 changes: Stdout capped to ~2-5KB. Detailed data goes to session-context.md only.
 # Workshop context, recent entries, and static reminders removed from stdout.
@@ -23,7 +23,7 @@ set -uo pipefail
 ROOT_DIR="$(git rev-parse --show-toplevel 2>/dev/null || pwd)"
 cd "$ROOT_DIR" || exit 0
 
-ORCH_DIR=".claude/orchestration"
+ORCH_DIR=".orca/orchestration"
 TEMP_DIR="$ORCH_DIR/temp"
 OUT_MD="$TEMP_DIR/session-context.md"
 ERROR_LOG="$TEMP_DIR/session-start-errors.log"

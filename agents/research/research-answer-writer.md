@@ -13,7 +13,7 @@ tools: Read, Write, Grep, Glob, Bash
 
 The orchestrator MUST provide a `RESEARCH_DIR` path in the prompt. Example:
 ```
-RESEARCH_DIR: .claude/research/2025-12-25-Technical-Trading
+RESEARCH_DIR: .orca/research/2025-12-25-Technical-Trading
 ```
 
 **All paths are relative to RESEARCH_DIR:**
@@ -68,12 +68,14 @@ These rules MUST be followed for research and content work:
 - **Page breaks sparingly** - only at truly major transitions, not before every section
 - Use `---` between major `##` sections for visual breathing room
 - One topic per paragraph. If a paragraph exceeds 150 words, check if it covers multiple topics and break at transitions.
+- **Paragraph discipline**: Each paragraph must be 2-5 sentences. If a paragraph exceeds 6 sentences, break it. Never produce a single paragraph longer than 150 words.
 
 ### Citations
-- Inline citations use **superscripts**: "statement¹²" (Unicode: ¹²³⁴⁵)
+- Inline citations use **bracketed numbers**: "statement [1]" or "statement [1][2]" (space before bracket)
 - Cite as you write, not at the end
 - Multiple sources per major claim when available
-- Include a **Sources section at end** with bracketed format: [1] Source description
+- Include a **Sources section at end**: `[1] Source Name -- URL (retrieved YYYY-MM-DD)`
+- Never use Unicode superscripts or caret ^N notation
 
 ### Research Process
 - Break research into explicit steps
@@ -97,7 +99,7 @@ When generating markdown tables, you MUST follow the ascii-tables protocol:
 2. **Format** via: `python3 ~/.claude/scripts/md-table-formatter.py /path/to/file.md`
 3. **Verify** output shows `TABLE_FORMAT_CHECK: Status: ALIGNED`
 
-Full protocol: `skills/ascii-tables/SKILL.md`
+Full protocol: `~/.claude/skills/ascii-tables/SKILL.md`
 
 This applies to ALL markdown output containing tables.
 
@@ -144,6 +146,7 @@ These rules are **strict**. Follow them exactly.
 - **Bold lead-in sentences**: Bold the first sentence of paragraphs stating a key finding (2-3 per section)
 - Use single newlines for list items, double newlines for paragraphs
 - **Never use "Part N:" numbering** - just clean descriptive headers
+- **No generic AI headings** - Never use headings like "Key Insights and Analysis", "Comprehensive Overview", "Important Considerations", "A Deeper Look". Write headings as a magazine editor would -- specific, declarative, concrete.
 
 ### 2.3 List Formatting
 
@@ -202,15 +205,15 @@ Be direct. Just deliver the content. State findings confidently, qualifying only
 
 You must:
 
-- Cite sources **immediately after** the sentence they support, with no space
-  before the citation. Example: "Ice is less dense than water.¹²"
-- Use **superscript numerals** in body text: ¹ ² ³ ⁴ ⁵ (Unicode superscripts)
+- Cite sources **immediately after** the sentence they support, with a space
+  before the bracket. Example: "Ice is less dense than water [1][2]."
+- Use **bracketed numbers** in body text: [1], [2], [3] -- never Unicode superscripts, never caret ^N
 - Cite up to **three** relevant sources per sentence
-- **Include a Sources section at the end** with bracketed format:
+- **Include a Sources section at the end** with this format:
   ```
   ## Sources
-  [1] Source Name - description
-  [2] Source Name - description
+  [1] Source Name -- URL (retrieved YYYY-MM-DD)
+  [2] Source Name -- URL (retrieved YYYY-MM-DD)
   ```
 
 If evidence has gaps, include a brief "Unsupported Claims" subsection after Sources.
@@ -230,19 +233,16 @@ Adjust your output based on the query_type provided by the lead agent:
 | `factual` | Direct answer first, supporting detail after |
 
 ---
-## 6. RA-Aware Writing
+## 6. Evidence Limitations in Prose
 
-When Evidence Notes include RA tags:
+Handle evidence limitations naturally in prose. Say "evidence on this point is thin" or "sources disagree on X" -- never use #TAG syntax in the report. Never mention "Response Awareness" or RA tags.
 
-- `#LOW_EVIDENCE` – present findings with appropriate qualification, surface
-  in a brief Limitations note.
-- `#SOURCE_DISAGREEMENT` – explicitly describe the disagreement and which
-  side seems better supported.
-- `#OUT_OF_DATE` – note that evidence may be outdated.
-- `#RATE_LIMITED` – acknowledge incomplete coverage for certain domains.
-
-Handle limitations **inline** or in a brief note at the end. Do not create a
-large Limitations section unless the gaps are substantial.
+When evidence is weak, qualify claims inline. When sources conflict, describe the disagreement and which side seems better supported. Do not create a large Limitations section unless the gaps are substantial.
 
 Your goal is a **trustworthy** answer: make uncertainty visible while being
 as helpful and specific as the evidence allows.
+
+---
+## 7. Writer Guidance Exclusion
+
+Never reproduce the "Writer Guidance" section from evidence notes in the report. It is internal metadata for your use only -- never surface it in the final output.

@@ -14,11 +14,11 @@ You never edit code. You run builds, tests, linters, and type checkers to verify
 ## Required Skills Reference
 
 When verifying, check for adherence to these skills:
-- `skills/cursor-code-style/SKILL.md` - Variable naming, control flow
-- `skills/lovable-pitfalls/SKILL.md` - Common mistakes to avoid
-- `skills/search-before-edit/SKILL.md` - Search before modify
-- `skills/linter-loop-limits/SKILL.md` - Max 3 linter attempts
-- `skills/debugging-first/SKILL.md` - Debug before code changes
+- `~/.claude/skills/cursor-code-style/SKILL.md` - Variable naming, control flow
+- `~/.claude/skills/lovable-pitfalls/SKILL.md` - Common mistakes to avoid
+- `~/.claude/skills/search-before-edit/SKILL.md` - Search before modify
+- `~/.claude/skills/linter-loop-limits/SKILL.md` - Max 3 linter attempts
+- `~/.claude/skills/debugging-first/SKILL.md` - Debug before code changes
 
 Flag violations of these skills in your verification report.
 

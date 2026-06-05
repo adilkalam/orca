@@ -25,12 +25,12 @@ You never implement code from `/requirements`; you only plan.
 
 This is /requirements, not /shimmer or /contemplate.
 
-- OUTPUT goes to: `.claude/requirements/` (ALWAYS)
-- NOT to: `.claude/cognition/` (that's for /shimmer and /contemplate)
+- OUTPUT goes to: `.orca/requirements/` (ALWAYS)
+- NOT to: `.orca/cognition/` (that's for /shimmer and /contemplate)
 - Cognition flags (--solve, --visual, --systems, etc.) are ANALYSIS INPUTS,
   not output destinations.
 
-If you find yourself saving to .claude/cognition/ -- STOP. You are in the wrong pipeline.
+If you find yourself saving to .orca/cognition/ -- STOP. You are in the wrong pipeline.
 
 ---
 
@@ -38,13 +38,13 @@ If you find yourself saving to .claude/cognition/ -- STOP. You are in the wrong 
 
 REGARDLESS of any cognition flags (--visual, --systems, --solve, etc.):
 
-1. FIRST: Create the requirements folder at `.claude/requirements/YYYY-MM-DD-HHMM-slug/`
+1. FIRST: Create the requirements folder at `.orca/requirements/YYYY-MM-DD-HHMM-slug/`
 2. THEN: Run discovery questions (no cognition-mcp before AskUserQuestion)
 3. THEN: Run cognition analysis (if flagged) and save output INTO that folder
 4. THEN: Generate spec
 
 Cognition analysis is an INPUT to the requirements process, not a replacement for it.
-Never save /requirements output to `.claude/cognition/` -- that directory is for /shimmer and /contemplate only.
+Never save /requirements output to `.orca/cognition/` -- that directory is for /shimmer and /contemplate only.
 
 ---
 
@@ -126,13 +126,13 @@ The user can override the recommendation.
 | `--from-brief` | Convert exploration brief to spec | After `--explore`, when ready to commit |
 
 **`--from-brief` behavior:**
-- No path argument: Auto-detects most recent exploration brief in `.claude/requirements/`
+- No path argument: Auto-detects most recent exploration brief in `.orca/requirements/`
 - With path: Uses specified brief (for older briefs or specific selection)
 
 ```bash
 /requirements "Fix login timeout" --debug
 /requirements --from-brief                           # Auto-detect recent brief
-/requirements --from-brief .claude/requirements/2026-02-04-1840-my-idea/06-exploration-brief.md
+/requirements --from-brief .orca/requirements/2026-02-04-1840-my-idea/06-exploration-brief.md
 ```
 
 These flags are processed in Section 2 AFTER the requirements folder is created.
@@ -159,16 +159,16 @@ All cognitive work in /requirements MUST use the correct tool. Do not rely on de
 
 **THIS SECTION RUNS FIRST -- BEFORE ANY COGNITION ANALYSIS.**
 
-**CRITICAL PATH RULE**: ALL requirements artifacts go in `.claude/requirements/`, NEVER in `requirements/` at project root.
-- CORRECT: `.claude/requirements/2025-11-29-1430-dark-mode/`
+**CRITICAL PATH RULE**: ALL requirements artifacts go in `.orca/requirements/`, NEVER in `requirements/` at project root.
+- CORRECT: `.orca/requirements/2025-11-29-1430-dark-mode/`
 - WRONG: `requirements/2025-11-29-1430-dark-mode/`
-- Before ANY Write/mkdir: verify path starts with `.claude/`
+- Before ANY Write/mkdir: verify path starts with `.orca/`
 
 1. If there is NO active requirement:
    - Slugify the request (e.g. `"New onboarding flow"` -> `new-onboarding-flow`).
-   - Create a timestamped folder at `.claude/requirements/YYYY-MM-DD-HHMM-[slug]`:
-     - First ensure `.claude/requirements/` exists
-     - Path MUST be: `.claude/requirements/YYYY-MM-DD-HHMM-[slug]`
+   - Create a timestamped folder at `.orca/requirements/YYYY-MM-DD-HHMM-[slug]`:
+     - First ensure `.orca/requirements/` exists
+     - Path MUST be: `.orca/requirements/YYYY-MM-DD-HHMM-[slug]`
      - Inside that folder create:
        - `00-initial-request.md` -- write the user's request and any initial notes.
        - `metadata.json` with:
@@ -176,7 +176,7 @@ All cognitive work in /requirements MUST use the correct tool. Do not rely on de
          - `progress.discovery: { answered: 0, total: 5 }`.
          - `progress.detail: { answered: 0, total: 5 }`.
          - `contextFiles: []`, `relatedFeatures: []`.
-     - Write the folder name to `.claude/requirements/.current-requirement`.
+     - Write the folder name to `.orca/requirements/.current-requirement`.
    - Call `mcp__project-context__query_context` with:
      - `domain`: inferred from the request (e.g. `"nextjs"`, `"ios"`, `"expo"`, `"data"`, `"seo"`),
      - `task`: `$ARGUMENTS`,
@@ -186,7 +186,7 @@ All cognitive work in /requirements MUST use the correct tool. Do not rely on de
    - Use the ContextBundle to:
      - Identify key files and existing features,
      - Populate `metadata.json.contextFiles`,
-     - Initialize `.claude/orchestration/phase_state.json.requirements` with:
+     - Initialize `.orca/orchestration/phase_state.json.requirements` with:
        - `status: "in_progress"`,
        - `requirement_id`: the slug,
        - `folder`: the requirements folder path.
@@ -591,7 +591,7 @@ Use the same `sessionId` across all modes to maintain exploration continuity.
 
 Save exploration to TWO locations:
 
-1. **Cognition archive**: `.claude/cognition/YYYYMMDD-HHMM-<slug>.md`
+1. **Cognition archive**: `.orca/cognition/YYYYMMDD-HHMM-<slug>.md`
    - Full exploration output with all mode results
    - Preserves thinking for future `/contemplate --import` reference
 
@@ -675,7 +675,7 @@ How would we decide whether to proceed to full planning?
 
 ---
 *This is an exploration brief, not a committed specification.*
-*Exploration preserved at: .claude/cognition/YYYYMMDD-HHMM-<slug>.md*
+*Exploration preserved at: .orca/cognition/YYYYMMDD-HHMM-<slug>.md*
 ```
 
 **CRITICAL**: Section 5 (Go/No-Go Criteria) is REQUIRED, not optional. This is what distinguishes an exploration brief from a committed spec.
@@ -691,7 +691,7 @@ Update `metadata.json` with explore-specific fields:
   "status": "exploratory",
   "exploration": {
     "sessionId": "<cognition session ID>",
-    "cognitionFile": ".claude/cognition/YYYYMMDD-HHMM-<slug>.md",
+    "cognitionFile": ".orca/cognition/YYYYMMDD-HHMM-<slug>.md",
     "modesRun": ["MAP", "PERSPECTIVES", "EDGES"],
     "harvestTimestamp": "<ISO timestamp>"
   }
@@ -703,10 +703,10 @@ Update `metadata.json` with explore-specific fields:
 Output to user:
 
 ```
-Exploration complete: .claude/requirements/<id>/06-exploration-brief.md
+Exploration complete: .orca/requirements/<id>/06-exploration-brief.md
 Status: exploratory (NOT committed)
 
-Full exploration saved to: .claude/cognition/YYYYMMDD-HHMM-<slug>.md
+Full exploration saved to: .orca/cognition/YYYYMMDD-HHMM-<slug>.md
 
 Next steps:
   - Review the brief and Go/No-Go criteria
@@ -731,7 +731,7 @@ Next steps:
 ### Step 0: Locate Brief
 
 **If no path provided (auto-detect):**
-1. Scan `.claude/requirements/*/06-exploration-brief.md`
+1. Scan `.orca/requirements/*/06-exploration-brief.md`
 2. Find the most recently modified brief
 3. Confirm with user: "Found brief at [path]. Convert this brief? [y/n]"
 
@@ -852,7 +852,7 @@ At the end of this phase, the requirements folder should contain:
 When enough questions are answered (or the user explicitly asks for a blueprint):
 
 1. Generate a blueprint-style spec file:
-   - Path: `.claude/requirements/<id>/06-requirements-spec.md`
+   - Path: `.orca/requirements/<id>/06-requirements-spec.md`
    - Contents:
      - Problem statement and solution overview,
      - Functional requirements,
@@ -868,9 +868,9 @@ When enough questions are answered (or the user explicitly asks for a blueprint)
    - `phase: "complete"`,
    - `lastUpdated`.
 
-3. Update `.claude/requirements/index.md` with an entry for this requirement.
+3. Update `.orca/requirements/index.md` with an entry for this requirement.
 
-4. Update `.claude/orchestration/phase_state.json.requirements`:
+4. Update `.orca/orchestration/phase_state.json.requirements`:
    - `status: "completed"`,
    - `spec_path`: path to `06-requirements-spec.md`.
 
@@ -912,7 +912,7 @@ After `/requirements` completes, suggest the matching domain command with the **
 
 Example output:
 ```
-Spec complete: .claude/requirements/2025-11-27-1430-dark-mode/06-requirements-spec.md
+Spec complete: .orca/requirements/2025-11-27-1430-dark-mode/06-requirements-spec.md
 Tier: default
 Domain detected: nextjs
 
@@ -921,7 +921,7 @@ Suggested next step:
 ```
 
 The domain command will:
-1. Detect the spec at `.claude/requirements/<id>/06-requirements-spec.md`
+1. Detect the spec at `.orca/requirements/<id>/06-requirements-spec.md`
 2. Read the `tier` from spec metadata and match execution depth
 3. Pass the spec + RA tags to the grand architect
 4. Treat the spec as **source of truth** for requirements and planning
@@ -931,9 +931,9 @@ The domain command will:
 For `--explore` mode, the output is different because the brief is NOT committed:
 
 ```
-Exploration complete: .claude/requirements/2025-11-27-1430-new-feature/06-exploration-brief.md
+Exploration complete: .orca/requirements/2025-11-27-1430-new-feature/06-exploration-brief.md
 Status: exploratory (NOT committed)
-Full exploration: .claude/cognition/20251127-1430-new-feature.md
+Full exploration: .orca/cognition/20251127-1430-new-feature.md
 
 Next steps:
   - Review brief and Go/No-Go criteria

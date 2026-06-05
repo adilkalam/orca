@@ -63,26 +63,26 @@ Before writing ANY code, you MUST have:
 ## 1.2 Required Skills
 
 You MUST apply these skills to all work:
-- `skills/cursor-code-style/SKILL.md` - Variable naming, control flow, comments
-- `skills/lovable-pitfalls/SKILL.md` - Common mistakes to avoid
-- `skills/search-before-edit/SKILL.md` - Always grep before modifying files
-- `skills/linter-loop-limits/SKILL.md` - Max 3 attempts on linter errors
-- `skills/debugging-first/SKILL.md` - Debug tools before code changes
-- `skills/alignment-verification/SKILL.md` - Self-verify alignment claims before completion
-- `skills/web-interface-guidelines/SKILL.md` - Web UI quality (forms, a11y, loading, animations)
-- `skills/react-performance/SKILL.md` - React/Next.js performance patterns
-- `skills/stripe-integration/SKILL.md` - Payment integration patterns (when Stripe work detected)
+- `~/.claude/skills/cursor-code-style/SKILL.md` - Variable naming, control flow, comments
+- `~/.claude/skills/lovable-pitfalls/SKILL.md` - Common mistakes to avoid
+- `~/.claude/skills/search-before-edit/SKILL.md` - Always grep before modifying files
+- `~/.claude/skills/linter-loop-limits/SKILL.md` - Max 3 attempts on linter errors
+- `~/.claude/skills/debugging-first/SKILL.md` - Debug tools before code changes
+- `~/.claude/skills/alignment-verification/SKILL.md` - Self-verify alignment claims before completion
+- `~/.claude/skills/web-interface-guidelines/SKILL.md` - Web UI quality (forms, a11y, loading, animations)
+- `~/.claude/skills/react-performance/SKILL.md` - React/Next.js performance patterns
+- `~/.claude/skills/stripe-integration/SKILL.md` - Payment integration patterns (when Stripe work detected)
 
 ---
-## NO ROOT POLLUTION (MANDATORY)
+## ARTIFACT PATH RULES (MANDATORY)
 
-**NEVER create files outside `.claude/` directory:**
-- `requirements/` -> `.claude/requirements/`
-- `docs/completion-drive-plans/` -> `.claude/orchestration/temp/`
-- `orchestration/` -> `.claude/orchestration/`
-- `evidence/` -> `.claude/orchestration/evidence/`
+**Artifact directories at project root:**
+- `requirements/` -> `.orca/requirements/`
+- `docs/completion-drive-plans/` -> `.orca/orchestration/temp/`
+- `orchestration/` -> `.orca/orchestration/`
+- `evidence/` -> `.orca/orchestration/evidence/`
 
-**Before ANY file creation:** Check if path starts with `.claude/`. If NOT -> fix the path.
+**Before ANY file creation:** Check if path starts with `.orca/`. If NOT -> fix the path.
 Source code is the ONLY exception.
 
 ---
@@ -119,6 +119,13 @@ For every Django+React pipeline task:
   - Use design tokens for spacing, typography, colors.
   - Components under 50 lines; refactor if larger.
   - No inline styles except rare, justified cases.
+
+- **Centralization discipline WITHIN the detected CSS approach (doctrine B — NOT a Tailwind ban)**
+  - The project's CSS approach (Tailwind / CSS Modules / styled-components) is auto-detected — follow it; do not impose a different one. Enforce centralization *within* it.
+  - Design authority lives in a named role/token vocabulary; you COMPOSE from it, you do not invent design decisions inline.
+  - **No raw palette utilities** (`bg-blue-500`, `text-gray-700`) — refused in every approach (P0, per the `colors.md` rule). Token-mapped values only.
+  - **Repeated utility clusters → named role classes.** Recurring 6+-token `className` clusters get extracted to a named role (`@apply` into a component, a CSS Module class, or a styled-component). Advisory smell signal: the `utility-sprawl` detector rule (logs, never blocks).
+  - **Taxonomy-first for greenfield.** Name the role and bind it to tokens before implementing; read the project's DESIGN.md `roles:` block. Reference `~/.claude/docs/concepts/design-contract/preferences/css-architecture.md`.
 
 - **Edit, don't rewrite (by default)**
   - Prefer modifying existing files using minimal diffs.

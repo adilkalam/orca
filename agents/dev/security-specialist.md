@@ -7,10 +7,9 @@ description: >
   Mobile Top 10, finds API vulnerabilities, validates authentication security, checks
   data encryption, finds security risks in React Native/Expo apps. Use PROACTIVELY
   when implementing authentication, handling user credentials, storing sensitive data,
-  or before major releases. Example: Task(subagent_type="security-specialist",
+  or before major releases. Example: Agent(subagent_type="security-specialist",
   prompt="Audit authentication flow for security vulnerabilities")
 tools: Read, Grep, Bash
-weight: medium
 
 # OS 7.0 Constraint Framework
 required_context:

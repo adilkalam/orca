@@ -9,9 +9,9 @@ allowed-tools:
 
 **PURPOSE**: Capture current session state, tasks, and decisions for automatic loading on next session start.
 
-**EXPECTED OUTCOME**: Create `.claude/orchestration/active-task.md` that SessionStart hook will auto-load.
+**EXPECTED OUTCOME**: Create `.orca/orchestration/active-task.md` that SessionStart hook will auto-load.
 
-**NOTE**: File is stored in `.claude/orchestration/` (not `temp/`) to avoid accidental cleanup. The SessionStart hook automatically outputs this to STDOUT with 5 safeguards:
+**NOTE**: File is stored in `.orca/orchestration/` (not `temp/`) to avoid accidental cleanup. The SessionStart hook automatically outputs this to STDOUT with 5 safeguards:
 - 48h freshness check (skips stale context)
 - 2000 char limit (truncates with indicator)
 - Graceful missing file (silent continue)
@@ -89,7 +89,7 @@ basename $(git rev-parse --show-toplevel)
 
 ## Step 3: Generate Session Context File
 
-**Create `.claude/orchestration/active-task.md`:**
+**Create `.orca/orchestration/active-task.md`:**
 
 ```markdown
 # Active Task Context - [DATE]
@@ -148,7 +148,7 @@ _This file is automatically loaded by SessionStart hook_
 **Write the file:**
 
 ```bash
-Write(.claude/orchestration/active-task.md, [generated content])
+Write(.orca/orchestration/active-task.md, [generated content])
 ```
 
 ---
@@ -158,7 +158,7 @@ Write(.claude/orchestration/active-task.md, [generated content])
 ```
 SESSION SAVED
 
-Context saved to: .claude/orchestration/active-task.md
+Context saved to: .orca/orchestration/active-task.md
 Auto-loads on: Next session start via SessionStart hook (output to STDOUT)
 
 What was saved:

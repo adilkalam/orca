@@ -10,7 +10,7 @@ Use this template to define clear, testable acceptance criteria for visual work.
 **Automatic Design QA:**
 - Design QA agents run automatically in Phase 5 (after implementation)
 - No manual design review commands needed
-- Evidence captured automatically in `.claude/orchestration/evidence/`
+- Evidence captured automatically in `.orca/orchestration/evidence/`
 - Design QA gate enforces ≥90 score
 
 **Related commands (OS 7.0):**
@@ -20,9 +20,9 @@ Use this template to define clear, testable acceptance criteria for visual work.
 - `/design-dna init/audit` → Initialize or audit design system
 
 **Evidence locations (OS 7.0):**
-- Screenshots: `.claude/orchestration/evidence/screenshots/`
-- Design QA reports: `.claude/orchestration/evidence/design-qa-*.md`
-- Gate scores: `.claude/orchestration/phase_state.json`
+- Screenshots: `.orca/orchestration/evidence/screenshots/`
+- Design QA reports: `.orca/orchestration/evidence/design-qa-*.md`
+- Gate scores: `.orca/orchestration/phase_state.json`
 
 ---
 

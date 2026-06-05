@@ -52,7 +52,7 @@ If the work is primarily:
 All data pipeline work shares a common phase state file:
 
 ```text
-.claude/orchestration/phase_state.json
+.orca/orchestration/phase_state.json
 ```
 
 For `domain: "data"`, the contract is:
@@ -205,7 +205,7 @@ Tasks:
   - Visualization and reporting targets.
 
 Artifacts:
-- Plan doc: `.claude/orchestration/specs/data-analysis-plan-YYYY-MM-DD.md`.
+- Plan doc: `.orca/orchestration/specs/data-analysis-plan-YYYY-MM-DD.md`.
 - Path recorded in `phase_state.json`.
 
 ---
@@ -261,7 +261,7 @@ Gate:
 
 Tasks:
 - Evaluate the work against the **Data & Analytics Rubric**:
-  - `.claude/orchestration/reference/quality-rubrics/data-analytics-rubric.md`
+  - `.orca/orchestration/reference/quality-rubrics/data-analytics-rubric.md`
 - Produce:
   - Overall `quality_score` (0–100).
   - `gate_status` (`PASS`, `CAUTION`, `FAIL`, `BLOCK`).

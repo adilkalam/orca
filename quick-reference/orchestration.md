@@ -69,7 +69,7 @@ For anything beyond trivial changes:
 This runs:
 1. **5 discovery questions** - scope, approach, constraints
 2. **5 detail questions** - specific implementation choices
-3. **Spec generation** - `.claude/requirements/.../06-requirements-spec.md`
+3. **Spec generation** - `.orca/requirements/.../06-requirements-spec.md`
 
 The spec becomes the source of truth. Decisions are locked. The builder follows the plan, not its own ideas.
 
@@ -304,7 +304,7 @@ When `/audit` finds the same RA assumption recurring (e.g., "mobile breakpoint 7
 
 ## Phase State
 
-Work persists in `.claude/orchestration/phase_state.json`:
+Work persists in `.orca/orchestration/phase_state.json`:
 
 ```json
 {
@@ -379,9 +379,9 @@ The main `/orca` command auto-detects domain based on project files and routes a
 
 | Location | Purpose |
 |----------|---------|
-| `.claude/requirements/` | Specs from /requirements |
-| `.claude/orchestration/phase_state.json` | Current task state |
-| `.claude/orchestration/evidence/` | Gate reports, audit logs |
+| `.orca/requirements/` | Specs from /requirements |
+| `.orca/orchestration/phase_state.json` | Current task state |
+| `.orca/orchestration/evidence/` | Gate reports, audit logs |
 
 ---
 

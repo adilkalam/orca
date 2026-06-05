@@ -5,10 +5,10 @@
 # Usage:
 #   scripts/diagnostic-export.sh [--verbose]
 #
-# Output: .claude/orchestration/evidence/diagnostic-YYYY-MM-DD-HHMM/
+# Output: .orca/orchestration/evidence/diagnostic-YYYY-MM-DD-HHMM/
 #   - workshop-recent.json    (last 50 Workshop entries)
 #   - recording-sessions.json (all sessions from recording.db)
-#   - cognition-files.txt     (list of .claude/cognition/ files)
+#   - cognition-files.txt     (list of .orca/cognition/ files)
 #   - phase-state.json        (current orchestration state)
 #   - mcp-health.json         (health check results for all MCPs)
 #   - timeline.md             (human-readable narrative)
@@ -40,7 +40,7 @@ find_project_root() {
 
 PROJECT_ROOT=$(find_project_root)
 TIMESTAMP=$(date '+%Y-%m-%d-%H%M')
-OUTPUT_DIR="$PROJECT_ROOT/.claude/orchestration/evidence/diagnostic-$TIMESTAMP"
+OUTPUT_DIR="$PROJECT_ROOT/.orca/orchestration/evidence/diagnostic-$TIMESTAMP"
 
 log "Starting diagnostic export"
 log "Project root: $PROJECT_ROOT"
@@ -85,7 +85,7 @@ fi
 # 3. Cognition files list
 log "Listing cognition files..."
 COGNITION_FILE="$OUTPUT_DIR/cognition-files.txt"
-COGNITION_DIR="$PROJECT_ROOT/.claude/cognition"
+COGNITION_DIR="$PROJECT_ROOT/.cognition"
 if [[ -d "$COGNITION_DIR" ]]; then
     find "$COGNITION_DIR" -name "*.md" -type f -exec ls -la {} \; 2>/dev/null > "$COGNITION_FILE" || \
     echo "No cognition files found" > "$COGNITION_FILE"
@@ -99,7 +99,7 @@ fi
 # 4. Phase state
 log "Exporting phase state..."
 PHASE_FILE="$OUTPUT_DIR/phase-state.json"
-PHASE_STATE="$PROJECT_ROOT/.claude/orchestration/phase_state.json"
+PHASE_STATE="$PROJECT_ROOT/.orca/orchestration/phase_state.json"
 if [[ -f "$PHASE_STATE" ]]; then
     cp "$PHASE_STATE" "$PHASE_FILE"
     log_verbose "Phase state: copied"

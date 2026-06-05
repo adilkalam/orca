@@ -125,7 +125,7 @@ violation → /audit → save_standard → code-index.db → future relatedStand
 All Expo pipeline work shares a common phase state file:
 
 ```text
-.claude/orchestration/phase_state.json
+.orca/orchestration/phase_state.json
 ```
 
 For Expo, the contract is:
@@ -442,7 +442,7 @@ Agents communicate through `phase_state.json` to coordinate multi-phase workflow
 {
   "phases": {
     "power_checks": {
-      "perf_findings_ref": ".claude/orchestration/evidence/perf-report-2025-11-19.md",
+      "perf_findings_ref": ".orca/orchestration/evidence/perf-report-2025-11-19.md",
       "status": "in_progress"
     }
   }
@@ -454,7 +454,7 @@ Agents communicate through `phase_state.json` to coordinate multi-phase workflow
 {
   "phases": {
     "power_checks": {
-      "security_findings_ref": ".claude/orchestration/evidence/security-report-2025-11-19.md",
+      "security_findings_ref": ".orca/orchestration/evidence/security-report-2025-11-19.md",
       "status": "completed"
     }
   },
@@ -491,7 +491,7 @@ pending → in_progress → completed
 
 **Rule 5: Artifact Tracking**
 - Agents add report paths to `artifacts` array
-- Use repo-relative paths (`.claude/orchestration/evidence/...`)
+- Use repo-relative paths (`.orca/orchestration/evidence/...`)
 - Never absolute paths
 
 ---
@@ -556,8 +556,8 @@ pending → in_progress → completed
   "gates_passed": ["design_tokens", "a11y", "aesthetics", "performance", "verification"],
   "gates_failed": [],
   "artifacts": [
-    ".claude/orchestration/evidence/design-tokens-report.md",
-    ".claude/orchestration/evidence/a11y-report.md"
+    ".orca/orchestration/evidence/design-tokens-report.md",
+    ".orca/orchestration/evidence/a11y-report.md"
   ]
 }
 ```
@@ -712,7 +712,7 @@ Decision Point:
    - Design/a11y/perf/security enforcers.
 
 **Artifacts:**
-- Plan file (optional for complex work): `.claude/orchestration/specs/expo-feature-YYYY-MM-DD.md`.
+- Plan file (optional for complex work): `.orca/orchestration/specs/expo-feature-YYYY-MM-DD.md`.
 - Plan summary stored in `phase_state.json`.
 
 ---
@@ -730,7 +730,7 @@ Use parallel deployment when:
 -  No inter-dependencies (component A doesn't need B's output)
 -  Same implementation scope (all UI wiring, or all data layer work, etc.)
 
-See `commands/orca.md` Section 7.3 and `.claude/orchestration/playbooks/parallel-agent-deployment.md` for implementation details.
+See `commands/orca.md` Section 7.3 and `.orca/orchestration/playbooks/parallel-agent-deployment.md` for implementation details.
 
 **Constraints (HARD):**
 - Respect Expo/React Native best practices:
@@ -751,7 +751,7 @@ See `commands/orca.md` Section 7.3 and `.claude/orchestration/playbooks/parallel
 
 **Artifacts:**
 - Modified files (tracked in `phase_state.json`).
-- Implementation log: `.claude/orchestration/temp/expo-implementation-TIMESTAMP.md`.
+- Implementation log: `.orca/orchestration/temp/expo-implementation-TIMESTAMP.md`.
 
 ---
 
@@ -872,7 +872,7 @@ Same agents and constraints as Phase 4, but:
 **Tasks:**
 1. Confirm:
    - All relevant gates passed or are explicitly waived by the user.
-   - Artifacts (reports, logs) are stored in `.claude/orchestration/evidence/`.
+   - Artifacts (reports, logs) are stored in `.orca/orchestration/evidence/`.
 2. Save task history:
    - Domain: `expo`.
    - Task description.
@@ -1059,7 +1059,7 @@ This section documents common failure modes and standard recovery protocols for 
 {
   "phases": {
     "power_checks": {
-      "security_findings_ref": ".claude/orchestration/evidence/security-report-2025-11-19.md",
+      "security_findings_ref": ".orca/orchestration/evidence/security-report-2025-11-19.md",
       "status": "completed"
     }
   },

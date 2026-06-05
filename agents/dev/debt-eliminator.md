@@ -4,10 +4,9 @@ description: >
   Technical debt identification and reduction specialist. Finds shortcuts, TODOs,
   deprecated patterns, and accumulated cruft across any codebase. Use PROACTIVELY
   when codebase feels sluggish, before major refactors, during code reviews, or
-  when onboarding to understand code quality. Example: Task(subagent_type=
+  when onboarding to understand code quality. Example: Agent(subagent_type=
   "debt-eliminator", prompt="Audit src/ for technical debt and prioritize fixes")
 tools: Read, Grep, Glob, Bash
-weight: heavy
 ---
 
 # Debt Eliminator - Technical Debt Specialist

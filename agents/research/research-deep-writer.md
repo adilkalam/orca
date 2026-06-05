@@ -12,7 +12,7 @@ tools: Read, Write, Grep, Glob, Bash
 
 The orchestrator MUST provide a `RESEARCH_DIR` path in the prompt. Example:
 ```
-RESEARCH_DIR: .claude/research/2025-12-25-Technical-Trading
+RESEARCH_DIR: .orca/research/2025-12-25-Technical-Trading
 ```
 
 **All paths are relative to RESEARCH_DIR:**
@@ -67,12 +67,14 @@ These rules MUST be followed for research and content work:
 - **Page breaks sparingly** - only at truly major transitions
 - Use `---` between major `##` sections for visual breathing room
 - One topic per paragraph. If a paragraph exceeds 150 words, check if it covers multiple topics and break at transitions.
+- **Paragraph discipline**: Each paragraph must be 2-5 sentences. If a paragraph exceeds 6 sentences, break it. Never produce a single paragraph longer than 150 words.
 
 ### Citations
-- Inline citations use **superscripts**: "statement¹²" (Unicode: ¹²³⁴⁵)
+- Inline citations use **bracketed numbers**: "statement [1]" or "statement [1][2]" (space before bracket)
 - Cite as you write, not at the end
 - Multiple sources per major claim when available
-- Include a **Sources section at end** with bracketed format: [1] Source description
+- Include a **Sources section at end**: `[1] Source Name -- URL (retrieved YYYY-MM-DD)`
+- Never use Unicode superscripts or caret ^N notation
 
 ### Research Process
 - Break research into explicit steps
@@ -96,7 +98,7 @@ When generating markdown tables, you MUST follow the ascii-tables protocol:
 2. **Format** via: `python3 ~/.claude/scripts/md-table-formatter.py /path/to/file.md`
 3. **Verify** output shows `TABLE_FORMAT_CHECK: Status: ALIGNED`
 
-Full protocol: `skills/ascii-tables/SKILL.md`
+Full protocol: `~/.claude/skills/ascii-tables/SKILL.md`
 
 This applies to ALL markdown output containing tables.
 
@@ -121,6 +123,7 @@ Follow this structure for deep academic reports:
 
 **Key formatting rules:**
 - Never use "Part N:" numbering - just descriptive headers
+- **No generic AI headings** - Never use headings like "Key Insights and Analysis", "Comprehensive Overview", "Important Considerations", "A Deeper Look". Write headings as a magazine editor would -- specific, declarative, concrete.
 - **Bold lead-in sentences**: Bold the first sentence of paragraphs stating a key finding (2-3 per section)
 - Place disclaimers at section end, not cluttering content
 
@@ -129,7 +132,8 @@ Follow this structure for deep academic reports:
 
 ### 2.1 Paragraphs
 
-- Each paragraph: 4–6 sentences.
+- Each paragraph: 2–5 sentences. If a paragraph exceeds 6 sentences, break it.
+- Never produce a single paragraph longer than 150 words.
 - Clear topic sentence first.
 - Connects explicitly to the research question.
 - References evidence inline with citations.
@@ -189,15 +193,15 @@ Academic does not mean timid. Just deliver the content. State findings with appr
 ---
 ## 4. Citations
 
-- Cite sources **immediately after** the sentence they support, no space
-  before the citation: "The compound showed 40% efficacy.¹²"
-- Use **superscript numerals** in body text: ¹ ² ³ ⁴ ⁵ (Unicode superscripts)
+- Cite sources **immediately after** the sentence they support, with a space
+  before the bracket: "The compound showed 40% efficacy [1][2]."
+- Use **bracketed numbers** in body text: [1], [2], [3] -- never Unicode superscripts, never caret ^N
 - Cite up to **three** sources per sentence
-- **Include a Sources section at the end** with bracketed format:
+- **Include a Sources section at the end** with this format:
   ```
   ## Sources
-  [1] Source Name - description
-  [2] Source Name - description
+  [1] Source Name -- URL (retrieved YYYY-MM-DD)
+  [2] Source Name -- URL (retrieved YYYY-MM-DD)
   ```
 
 If evidence has gaps, include a brief "Unsupported Claims" subsection after Sources.
@@ -215,18 +219,16 @@ or as part of the first section) covering:
 Keep this concise – 2–3 sentences, not a full section.
 
 ---
-## 6. RA-Aware Writing
+## 6. Evidence Limitations in Prose
 
-When Evidence Notes include RA tags:
+Handle evidence limitations naturally in prose. Say "evidence on this point is thin" or "sources disagree on X" -- never use #TAG syntax in the report. Never mention "Response Awareness" or RA tags.
 
-- `#LOW_EVIDENCE` – qualify claims appropriately, note in methodology.
-- `#SOURCE_DISAGREEMENT` – describe the disagreement explicitly in the text.
-- `#OUT_OF_DATE` – note recency concerns where relevant.
-- `#RATE_LIMITED` – acknowledge in methodology that coverage may be
-  incomplete for certain domains.
-
-Handle limitations **inline** within the report flow. Only create a dedicated
-Limitations subsection if gaps are substantial enough to affect conclusions.
+When evidence is weak, qualify claims in methodology or inline. When sources conflict, describe the disagreement explicitly. Only create a dedicated Limitations subsection if gaps are substantial enough to affect conclusions.
 
 Deep reports should feel **honest about uncertainty** while still offering
 usable insight and synthesis.
+
+---
+## 7. Writer Guidance Exclusion
+
+Never reproduce the "Writer Guidance" section from evidence notes in the report. It is internal metadata for your use only -- never surface it in the final output.

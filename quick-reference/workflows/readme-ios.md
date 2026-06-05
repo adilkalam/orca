@@ -38,7 +38,7 @@ Examples:
 For non‑trivial iOS work:
 
 - Run `/requirements "..."` to create a spec:
-  - `.claude/requirements/YYYY-MM-DD-HHMM-<slug>/`
+  - `.orca/requirements/YYYY-MM-DD-HHMM-<slug>/`
   - Q/A files (`01–05-*`) and final spec `06-requirements-spec.md`
   - RA tags in the spec indicate important decisions and assumptions.
 
@@ -91,7 +91,7 @@ File: `commands/ios.md`
      - `-tweak` → **Tweak mode** (light path WITHOUT gates, user verifies)
      - `--complex` → **Complex mode** (full pipeline, spec required)
   3. **Spec gating** (for `complex`):
-     - Requires `.claude/requirements/<id>/06-requirements-spec.md`.
+     - Requires `.orca/requirements/<id>/06-requirements-spec.md`.
   4. **Routing**:
      - Default/tweak → `ios-light-orchestrator` (gates on default only)
      - Complex → full iOS lane with grand‑architect and gates.
@@ -110,7 +110,7 @@ File: `commands/ios.md`
 ### 3.2 Phase Config and `phase_state.json`
 
 - `docs/reference/phase-configs/ios-phase-config.yaml`
-- Uses `.claude/orchestration/phase_state.json`
+- Uses `.orca/orchestration/phase_state.json`
 - Key phases:
   - `context_query` – ProjectContext query for `domain: "ios"`.
   - `requirements_impact` – change_type, impact, risks.

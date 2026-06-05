@@ -64,7 +64,7 @@ Phase 2: Sequential Dimension Execution (DISCOVER -> VERIFY -> RECORD)
     |    Evidence trail per dimension, Scan-Verify-Release context cycle
 Phase 3: Aggregation -- weighted scores, severity ranking, stable IDs
     |
-Phase 4: Report -- markdown to .claude/audit/, update index, cleanup
+Phase 4: Report -- markdown to .orca/audit/, update index, cleanup
 ```
 
 ---
@@ -82,7 +82,7 @@ Every verification step produces structured evidence. A verdict without stating 
   Deduction:    -N (rule_name) | 0
 ```
 
-Written to `.claude/audit/temp/<dimension>.md` per dimension, aggregated into the final report.
+Written to `.orca/audit/temp/<dimension>.md` per dimension, aggregated into the final report.
 
 ---
 
@@ -90,9 +90,9 @@ Written to `.claude/audit/temp/<dimension>.md` per dimension, aggregated into th
 
 | Artifact | Location |
 |----------|----------|
-| Report | `.claude/audit/YYYY-MM-DD-<mode>.md` |
-| Index | `.claude/audit/audit-index.json` |
-| Temp (during run) | `.claude/audit/temp/` (cleaned up after report) |
+| Report | `.orca/audit/YYYY-MM-DD-<mode>.md` |
+| Index | `.orca/audit/audit-index.json` |
+| Temp (during run) | `.orca/audit/temp/` (cleaned up after report) |
 
 ---
 

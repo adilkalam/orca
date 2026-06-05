@@ -221,10 +221,10 @@ Special tags flag issues:
 
 ## Where Reports Are Saved
 
-Research artifacts persist in per-session folders under `.claude/research/`:
+Research artifacts persist in per-session folders under `research/`:
 
 ```
-.claude/research/
+research/
  YYYY-MM-DD-Topic-Slug/
    evidence/       ← Raw evidence notes from subagents
    synthesis.md    ← Synthesized findings

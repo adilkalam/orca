@@ -265,7 +265,7 @@ Decision Point:
 
 **Artifacts:**
 - Plan stored in `phase_state.json`.
-- Optional plan spec: `.claude/orchestration/specs/ios-feature-YYYY-MM-DD.md`.
+- Optional plan spec: `.orca/orchestration/specs/ios-feature-YYYY-MM-DD.md`.
 
 ---
 
@@ -400,7 +400,7 @@ Same implementation agents as Phase 4, but:
 4. Capture:
    - Build status
    - Test results and failures
-   - Screenshots saved to `.claude/orchestration/evidence/`
+   - Screenshots saved to `.orca/orchestration/evidence/`
 
 **Visual Verification Protocol:**
 - Zero tolerance for pixel mismatches when expected value exists
@@ -532,7 +532,7 @@ Same implementation agents as Phase 4, but:
 
 ### Phase State Structure
 
-Agents communicate via a shared `phase_state.json` file located at `.claude/orchestration/phase_state.json`.
+Agents communicate via a shared `phase_state.json` file located at `.orca/orchestration/phase_state.json`.
 
 **Structure:**
 ```json
@@ -594,8 +594,8 @@ Agents communicate via a shared `phase_state.json` file located at `.claude/orch
   },
 
   "artifacts": {
-    "standards_report": ".claude/orchestration/evidence/ios-standards-20251122-1430.md",
-    "ui_review": ".claude/orchestration/evidence/ios-ui-review-20251122-1432.md"
+    "standards_report": ".orca/orchestration/evidence/ios-standards-20251122-1430.md",
+    "ui_review": ".orca/orchestration/evidence/ios-ui-review-20251122-1432.md"
   }
 }
 ```

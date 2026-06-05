@@ -4,10 +4,9 @@ description: >
   Cross-domain crash and error analysis specialist. Parses stack traces, crash logs,
   and error reports to identify root causes across any language or framework. Use
   PROACTIVELY when encountering unhandled exceptions, app crashes, mysterious
-  failures, or when debugging complex error chains. Example: Task(subagent_type=
+  failures, or when debugging complex error chains. Example: Agent(subagent_type=
   "crash-analyzer", prompt="Analyze this stack trace and identify root cause")
 tools: Read, Grep, Glob, Bash
-weight: medium
 ---
 
 # Crash Analyzer - Cross-Domain Error Specialist

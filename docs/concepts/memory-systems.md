@@ -293,7 +293,7 @@ Memory is automatically managed via hooks:
 
 The SessionStart hook outputs saved task context to STDOUT so Claude sees it immediately. This is the solution to session persistence - context saved via `/session-save` automatically loads on next session.
 
-**File:** `.claude/orchestration/active-task.md`
+**File:** `.orca/orchestration/active-task.md`
 
 **5 Safeguards:**
 1. **48h freshness** - Skips if file older than 48 hours (stale context is worse than no context)
@@ -410,7 +410,7 @@ mcp__project-context__recall({
 - Archives are keyed by date directory and a unique timestamp-random ID (e.g., ~/.claude/archives/2026-02-07/1707312456-a8b3c9d1.txt)
 - ProjectContextServer provides `recall` tool for retrieval
 
-## Cognition Persistence (.claude/cognition/)
+## Cognition Persistence (.orca/cognition/)
 
 **What:** File-based persistence for cognitive command outputs.
 
@@ -469,7 +469,7 @@ workshop why "topic from analysis"
 - `/root-cause` - Heavyweight (individual files)
 - `/think` - Lightweight (daily log)
 
-**Location:** `.claude/cognition/`
+**Location:** `.orca/cognition/`
 
 ## See Also
 

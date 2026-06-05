@@ -6,8 +6,6 @@ description: >
   This is the ONLY iOS agent that launches simulators. Mechanical task - runs
   commands and reports results.
 tools: Read, Grep, Bash, mcp__XcodeBuildMCP__buildProject, mcp__XcodeBuildMCP__runTests, mcp__XcodeBuildMCP__listSimulators, mcp__XcodeBuildMCP__bootSimulator, mcp__XcodeBuildMCP__getSimulatorStatus, mcp__XcodeBuildMCP__listSchemes, mcp__XcodeBuildMCP__screenshot, mcp__XcodeBuildMCP__describe_ui
-model: haiku
-weight: lightweight
 ---
 
 # iOS Verification – Build, Test & Visual Gate

@@ -49,7 +49,7 @@
 
 1. Extract keywords from problem statement
 2. Query Workshop: `workshop search "<keywords>" --limit 5`
-3. Query cognition files: `ls .claude/cognition/*<topic>*`
+3. Query cognition files: `ls .orca/cognition/*<topic>*`
 4. If prior context found, include in ORIENT phase
 ```
 
@@ -68,7 +68,7 @@
 
 **Verified by**: `grep -r 'workshop\|Workshop' mcp/cognition-mcp/src/` → no matches
 
-**Finding**: Cognition-mcp stores session reasoning in `.claude/cognition/`. It has:
+**Finding**: Cognition-mcp stores session reasoning in `.orca/cognition/`. It has:
 - Zero Workshop integration
 - Zero project-context MCP integration
 - Each session is an island
@@ -183,7 +183,7 @@ Hook-based gates work. Blueprint gate blocks code during planning. Verification 
                                       │                                           │
 ┌─────────────────────────────────────┴───────────────────────────────────────────┘
 │                                                                                  │
-│                       COGNITION (.claude/cognition/)                             │
+│                       COGNITION (.orca/cognition/)                             │
 │                                                                                  │
 │   Session files persisted per exploration                                        │
 │   [FIX] Explorations list related files before starting                          │
@@ -221,7 +221,7 @@ Hook-based gates work. Blueprint gate blocks code during planning. Verification 
 **Files**:
 - `commands/deepthink.md`
 - `commands/think.md`
-- `commands/problem-solve.md`
+- `commands/problem-solve-local.md`
 
 **Change**: Add Phase 0.5 Memory Query (~30 lines each)
 
@@ -244,7 +244,7 @@ workshop --workspace .claude/memory why "<topic>" 2>/dev/null || true
 
 ### 0.5.3 Query Cognition Files
 ```bash
-ls -la .claude/cognition/*<topic>* 2>/dev/null | head -5
+ls -la .orca/cognition/*<topic>* 2>/dev/null | head -5
 ```
 
 If relevant files found, read the first 50 lines for summary.

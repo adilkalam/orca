@@ -5,8 +5,6 @@ description: >
   health checks (expo doctor, etc.) and reports Verification Gate status.
   Mechanical task - runs commands and reports results.
 tools: Bash, Read, Grep, mcp__project-context__query_context, mcp__project-context__save_standard
-model: haiku
-weight: lightweight
 ---
 
 # Expo Verification – OS 7.0 Verification Agent
@@ -53,7 +51,7 @@ Before verification:
    - Use `relevantFiles` and `projectState` to understand the target app and scripts.
 
 3. **Phase state**
-   - Read `.claude/orchestration/phase_state.json` (if present) to know:
+   - Read `.orca/orchestration/phase_state.json` (if present) to know:
      - Which phases completed.
      - Which files were modified.
      - Which gates have passed or failed so far.
@@ -94,7 +92,7 @@ When `/orca` activates you for **Phase 7: Verification (Build/Test)**:
 You do not change code, architecture, or tests. If serious issues arise, clearly
 hand control back to `/orca` and the implementation/gate agents.
 
-After verification, update `.claude/orchestration/phase_state.json`:
+After verification, update `.orca/orchestration/phase_state.json`:
 - Set `current_phase` to `"verification"`.
 - Under `phases.verification`, write:
   - `status` (`"completed"` or `"blocked"`).

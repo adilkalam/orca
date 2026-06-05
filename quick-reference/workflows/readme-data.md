@@ -78,7 +78,7 @@ Use for:
 ## 5. Output Location
 
 ```
-.claude/orchestration/
+.orca/orchestration/
  temp/           ← Working analysis files (clean up after)
  evidence/       ← Final reports and visualizations
 ```

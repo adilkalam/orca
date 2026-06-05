@@ -394,7 +394,7 @@ workshop gotcha "{issue}"
 
 ## Phase State Contract
 
-Location: `.claude/orchestration/phase_state.json`
+Location: `.orca/orchestration/phase_state.json`
 
 For `domain: "typography"`:
 

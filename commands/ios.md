@@ -2,7 +2,7 @@
 description: "OS 7.0 orchestrator entrypoint for native iOS tasks"
 argument-hint: "[--light | -tweak | --complex] <task description or requirement ID>"
 allowed-tools:
-  - Task
+  - Agent
   - AskUserQuestion
   - mcp__project-context__query_context
   - mcp__project-context__save_decision
@@ -28,7 +28,7 @@ This slash command EXISTS to delegate work to agents. Not to do work directly.
 **ALWAYS required:**
 1. Parse the arguments
 2. Determine routing (-tweak, default, --complex)
-3. **Delegate via Task tool**
+3. **Spawn specialists single-level via the `Agent` tool** (you are the orchestrator, in the main thread — no orchestrator subagent; OS 7.1)
 
 Even `-tweak` delegates to a builder. It skips gates, not agents.
 
@@ -45,7 +45,7 @@ Use this command for native iOS work (Swift/SwiftUI/UIKit, Xcode, device feature
 ```bash
 /ios "add haptic feedback to save button"       # Default: light path + design gates
 /ios -tweak "fix button padding"                # Fast: light path, no gates
-/ios --complex "multi-screen feature"           # Full: grand-architect + all gates
+/ios --complex "multi-screen feature"           # Full: architect + builder + all gates
 /ios "implement requirement 2025-11-25-0930-workspace-sharing"  # Full path with spec
 ```
 
@@ -55,7 +55,7 @@ Use this command for native iOS work (Swift/SwiftUI/UIKit, Xcode, device feature
 
 - **DO NOT** use Edit/Write tools
 - **DO NOT** bypass the agent system
-- **DELEGATE** via Task tool only
+- **DELEGATE** via the `Agent` tool only (single-level, from the main thread)
 - Update phase_state.json to track progress
 - Resume from interruptions without abandoning pipeline
 
@@ -122,7 +122,7 @@ the delegation prompt. If present, use it directly and skip the query below.
 **Check for requirement ID:**
 ```
 $ARGUMENTS matches "requirement <id>" or "<YYYY-MM-DD-HHMM-*>"
-  → Look for .claude/requirements/<id>/06-requirements-spec.md
+  → Look for .orca/requirements/<id>/06-requirements-spec.md
   → If found, this is a SPEC-DRIVEN task (see Section 1.3)
 ```
 
@@ -193,7 +193,7 @@ When `--audit` is detected:
      - `maxFiles`: larger than usual (e.g. 30–50)
      - `includeHistory: true`
 
-3. **Assemble an audit squad (via Task)**
+3. **Assemble an audit squad (via Agent, single-level)**
    - Based on focus, delegate to relevant agents:
      - Standards/architecture:
        - `ios-standards-enforcer`
@@ -257,36 +257,14 @@ Recommendation: For agentic coding, semantic CSS produces better output. The sty
 
 **Tweak mode**: Skip gate. Manifesto priming above is sufficient.
 
-**Default mode**:
-1. Check: `test -f design-dna.json` (or `.claude/design-dna/*.json`)
-2. If EXISTS: Record path in delegation prompt as `DESIGN_DNA_PATH: <path>`
-3. If MISSING: Invoke design-system-architect as subagent:
-   ```
-   Task({
-     subagent_type: "design-system-architect",
-     description: "Create design-dna for UI task",
-     prompt: `Analyze this project's existing CSS/components and produce design-dna.json.
-     Task context: $ARGUMENTS
-     Project: $PROJECT_PATH
-     Follow your CSS Methodology Awareness workflow.`
-   })
-   ```
-4. After subagent returns, record design-dna.json path and continue to delegation.
+> **OS 7.1 / design-fork note:** `design-system-architect` and `design-dna.json` are archived. Design intent now lives in the per-project design contract (`{project}/.claude/PRODUCT.md` + `DESIGN.md`) and the `/impeccable` command + the `impeccable-hub` skill (the register; `interfaces-that-feel` is the felt-state spine the hub points to). There is no design-system-architect subagent to spawn.
 
-**Complex mode**:
-1. ALWAYS invoke design-system-architect as subagent (even if design-dna.json exists):
-   ```
-   Task({
-     subagent_type: "design-system-architect",
-     description: "Review/create design-dna for complex UI task",
-     prompt: `Review or create design-dna.json for this complex task.
-     Task context: $ARGUMENTS
-     Project: $PROJECT_PATH
-     Existing design-dna: <path if exists>
-     Follow your CSS Methodology Awareness workflow.`
-   })
-   ```
-2. Block delegation until design-system-architect confirms design-dna.json is ready.
+**Default mode (UI tasks):**
+1. Check for a project design contract: `test -f {project}/.claude/PRODUCT.md` and `test -f {project}/.claude/DESIGN.md` (the two-file split; the single-file `aesthetic.md` is deprecated).
+2. If EITHER EXISTS: note `has_design_contract: true`, record the paths, and pass them to `ios-builder` as `PRODUCT_CONTRACT_PATH` (`.claude/PRODUCT.md`) and `DESIGN_CONTRACT_PATH` (`.claude/DESIGN.md`).
+3. If BOTH MISSING: note `has_design_contract: false`; the UI gate (`ios-ui-reviewer`) applies the `interfaces-that-feel` baseline. Optionally suggest the user run `/impeccable --teach` (writes PRODUCT.md) then `/document` (writes DESIGN.md) to set up a contract.
+
+**Complex mode (UI tasks):** same, plus require the `ios-ui-reviewer` gate to run regardless of contract presence.
 
 ### Design Weight Escalation
 
@@ -336,7 +314,7 @@ This helps agents avoid repeating past mistakes.
 **If user passed `--complex` flag:**
 
 1. Check if request references a requirement ID
-2. Look for `.claude/requirements/<id>/06-requirements-spec.md`
+2. Look for `.orca/requirements/<id>/06-requirements-spec.md`
 3. **If spec NOT found:**
    ```
     BLOCKED: Complex task requires a spec.
@@ -361,55 +339,17 @@ Default (no flag) now goes to Section 3 for confirmation first.
 
 ### 2.1 --light Flag - Light Path WITHOUT Confirmation
 
-Delegate to `ios-light-orchestrator` directly. Skip Section 3.
+Run the light path **yourself, in the main thread** (no orchestrator subagent — OS 7.1). Skip Section 3. Spawn specialists single-level via `Agent()`, one at a time, reading each result before the next. See `docs/reference/flatten-orchestration-pattern.md`.
 
-**Context Inheritance Protocol (--light mode):**
+**Flat phase script (--light):**
 
-```
-Task({
-  subagent_type: "ios-light-orchestrator",
-  description: "iOS task with design verification (fast, no confirmation)",
-  prompt: `
-=== CONTEXT BUNDLE (INHERITED) ===
-CONTEXT_SOURCE: /ios
-CONTEXT_MODE: full
-DO_NOT_QUERY: true
+1. **Build** — `Agent({ subagent_type: "ios-builder", description: "iOS task (light)", prompt: <REQUEST + inherited ContextBundle + memory hits + STANDARDS from prior gate failures> })`. Tell the builder: context is inherited, do NOT call `query_context` (may narrow-query maxFiles:5 if missing).
+2. **Design/standards gate** — `Agent({ subagent_type: "ios-standards-enforcer", ... })`; read its `standards_score` (hard block < 90).
+3. **UI gate** — `Agent({ subagent_type: "ios-ui-reviewer", ... })`; read its verdict.
+4. If a gate ERRORs/BLOCKs, route the violations back to `ios-builder` once, then re-gate.
+5. Ephemeral phase_state only (scores for this run; no spec ceremony). Persist scores to `.orca/orchestration/phase_state.json`.
 
-<ContextBundle JSON if queried, or "narrow query needed" if memory-first>
-
-STANDARDS (from previous gate failures):
-<list each relatedStandard.rule as a bullet, prefixed by domain>
-===
-
-CRITICAL: You received context above. DO NOT call mcp__project-context__query_context.
-Use the inherited bundle. You MAY query with narrow scope (maxFiles: 5) if context missing.
-
-
-=== DESIGN AWARENESS ===
-When working with CSS/styling, be aware of these verified failure patterns:
-1. I autocomplete utility classes from training data rather than designing.
-2. With utilities, every session produces different combinations for the same element.
-3. Semantic CSS constrains my output to design coherence; utilities make me an unsupervised designer.
-4. 'Change all labels' is one CSS edit with semantic classes, a codebase-wide hunt with utilities.
-5. The stylesheet IS the design document. Utilities scatter design across every JSX file.
-Recommendation: For agentic coding, semantic CSS produces better output. The stylesheet constrains all downstream work.
-===
-
-Handle this iOS task via the light path WITH design verification gates.
-
-REQUEST: $ARGUMENTS
-
-MEMORY CONTEXT (if any):
-<memory hits from 1.1>
-
-ROUTING MODE: --light (light + gates, no confirmation)
-- Run ios-builder + specialists
-- Run design verification gates (standards-enforcer, ui-reviewer)
-- Ephemeral phase_state only (scores for this run, no ceremony)
-- NO grand-architect, NO spec requirement
-  `
-})
-```
+(The old `ios-light-orchestrator` delegation is dissolved — the command owns this sequence.)
 
 ---
 
@@ -425,7 +365,7 @@ ROUTING MODE: --light (light + gates, no confirmation)
 **Context Inheritance Protocol (-tweak mode):**
 
 ```
-Task({
+Agent({
   subagent_type: "ios-builder",
   description: "Fast iOS tweak (no gates)",
   prompt: `
@@ -475,8 +415,8 @@ Continue with full orchestration below (Section 3).
 ## 3. Pipeline Flow with Confirmation (Default and --complex modes)
 
 This section applies when:
-- **Default (no flag)**: Routes to light-orchestrator AFTER confirmation
-- **--complex flag**: Routes to grand-architect AFTER confirmation
+- **Default (no flag)**: runs the light flow (Section 2.1) AFTER confirmation
+- **--complex flag**: runs the full pipeline (Section 3.2+) AFTER confirmation
 
 ### 3.1 Team Confirmation (MANDATORY - BLOCKING)
 
@@ -498,14 +438,14 @@ This section applies when:
 
 ### Phases
 1. Context Query (ProjectContext)
-2. Light Orchestrator (ios-light-orchestrator) - coordination
+2. Coordination — /ios command (main thread)
 3. Implementation (ios-builder + specialists)
 4. Gates (ios-standards-enforcer, ios-ui-reviewer)
 
 ### Agent Team
 | Role | Agent |
 |------|-------|
-| Coordination | ios-light-orchestrator |
+| Coordination | /ios command (main thread) |
 | Implementation | ios-builder |
 | Specialists | [list relevant ones based on 3.1.1] |
 | Standards Gate | ios-standards-enforcer |
@@ -528,8 +468,8 @@ This section applies when:
 
 ### Phases
 1. Context Query (ProjectContext)
-2. Grand Architect (ios-grand-architect) - architecture decisions
-3. Planning (ios-architect) - detailed plan
+2. Coordination — /ios command (main thread)
+3. Planning + architecture decisions (ios-architect)
 4. Implementation (ios-builder + specialists)
 5. Gates (ios-standards-enforcer, ios-ui-reviewer)
 6. Verification (ios-verification)
@@ -537,8 +477,8 @@ This section applies when:
 ### Agent Team
 | Role | Agent |
 |------|-------|
-| Coordination | ios-grand-architect |
-| Architecture | ios-architect |
+| Coordination | /ios command (main thread) |
+| Architecture + Planning | ios-architect |
 | Implementation | ios-builder |
 | Specialists | [list relevant ones based on 3.1.1] |
 | Standards Gate | ios-standards-enforcer |
@@ -575,11 +515,11 @@ AskUserQuestion({
 1. STOP and wait for user response
 2. If user says "Yes, proceed" → Route based on mode (see below)
 3. If user says "Modify team" → ask what to change, update, re-output team, re-confirm
-4. If user says "Switch to --light" → delegate to ios-light-orchestrator directly (Section 2.1)
+4. If user says "Switch to --light" → run the light flow yourself (Section 2.1)
 
-**After confirmation received - ROUTING:**
-- If `--complex` flag → Delegate to `ios-grand-architect` (full pipeline, Section 3.2+)
-- If default (no flag) → Delegate to `ios-light-orchestrator` (fast, with gates)
+**After confirmation received - ROUTING (you run these in the main thread; no orchestrator subagent):**
+- If `--complex` flag → run the full pipeline (Section 3.2+): architect → builder → all gates, each spawned single-level via `Agent()`
+- If default (no flag) → run the light flow (Section 2.1): builder + design/UI gates
 
 **Anti-patterns (WRONG):**
 - Putting the team list inside AskUserQuestion options
@@ -634,61 +574,18 @@ Initialize phase_state.json:
 }
 ```
 
-### 3.3 Grand Architect (Opus)
+### 3.3 Coordination (main thread — OS 7.1)
 
-Delegate to `ios-grand-architect` with Context Inheritance:
+> The `ios-grand-architect` coordinator tier is dissolved. **You** (the command, in the main thread) own coordination: you sequence the phases below and spawn each specialist single-level via `Agent()`. Architecture decisions are produced by `ios-architect` in 3.4 (it is the planner). See `docs/reference/flatten-orchestration-pattern.md`.
 
-**Context Inheritance Protocol (OS 7.0):**
+Decide flow from **visual context** (from Section 0) before planning:
+- If `has_visual_reference: true` → pass the user's visual context straight to `ios-builder` in 3.5.
+- If `needs_diagnosis: true` → spawn `ios-ui-reviewer` in DIAGNOSE mode first, feed its findings into 3.4.
 
-When delegating, wrap the ContextBundle with inheritance headers:
+Context to pass into every `Agent()` call this run (inherited — instruct each agent NOT to call `query_context`; targeted file reads OK):
+- ContextBundle from Section 3.2, memory summary, requirements spec (if any), and STANDARDS from prior gate failures.
 
-```
-=== CONTEXT BUNDLE (INHERITED) ===
-CONTEXT_SOURCE: /ios
-CONTEXT_MODE: full
-DO_NOT_QUERY: true
-
-<ContextBundle JSON from Section 3.2>
-
-STANDARDS (from previous gate failures):
-<list each relatedStandard.rule as a bullet, prefixed by domain>
-===
-
-CRITICAL: You received context above. DO NOT call mcp__project-context__query_context.
-Use the inherited bundle. You MAY supplement with targeted file reads if needed.
-
-
-=== DESIGN AWARENESS ===
-When working with CSS/styling, be aware of these verified failure patterns:
-1. I autocomplete utility classes from training data rather than designing.
-2. With utilities, every session produces different combinations for the same element.
-3. Semantic CSS constrains my output to design coherence; utilities make me an unsupervised designer.
-4. 'Change all labels' is one CSS edit with semantic classes, a codebase-wide hunt with utilities.
-5. The stylesheet IS the design document. Utilities scatter design across every JSX file.
-Recommendation: For agentic coding, semantic CSS produces better output. The stylesheet constrains all downstream work.
-===
-```
-
-Inputs:
-- ContextBundle (wrapped with inheritance header)
-- Memory summary
-- Requirements spec (if complex)
-- **Visual context** (from Section 0):
-  - `has_visual_reference`: Did user provide screenshot?
-  - `needs_diagnosis`: Should reviewer diagnose first?
-
-**CRITICAL:** Grand-architect will use visual context to decide flow:
-- If `has_visual_reference: true` → Builder gets user's visual context directly
-- If `needs_diagnosis: true` → Run `ios-ui-reviewer` in DIAGNOSE mode first
-
-Outputs:
-- Architecture path (SwiftUI vs MVVM/TCA/UIKit)
-- Data strategy (SwiftData vs Core Data/GRDB)
-- Design DNA presence check
-- Risk assessment
-- Task force plan
-
-Save decision via `mcp__project-context__save_decision`.
+Architecture/data decisions (SwiftUI vs MVVM/TCA/UIKit; SwiftData vs Core Data/GRDB; risk assessment) are the output of 3.4, recorded via `mcp__project-context__save_decision`.
 
 ### 3.4 Planning (ios-architect)
 
@@ -711,9 +608,8 @@ Update phase_state.planning.
 
 Delegate to `ios-builder`:
 
-Specialists as needed:
+Specialists as needed (each spawned single-level via `Agent()` from this command):
 - UI: `ios-swiftui-specialist` or `ios-uikit-specialist`
-- Tokens: `design-dna-guardian`
 - Data: `ios-persistence-specialist`
 - Networking: `ios-networking-specialist`
 - Testing: `ios-testing-specialist`, `ios-ui-testing-specialist`
@@ -759,7 +655,7 @@ Update phase_state.gates.
 
 1. Read phase_state.json:
    ```bash
-   cat .claude/orchestration/phase_state.json
+   cat .orca/orchestration/phase_state.json
    ```
 
 2. Acknowledge and process new information

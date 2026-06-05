@@ -24,7 +24,7 @@ Output: a durable `06-requirements-spec.md` that upstreams into `/orca` domain p
 
 ### When Requirements Are Created
 
-- **User runs `/requirements <description>`** → Creates `.claude/requirements/<id>/06-requirements-spec.md`
+- **User runs `/requirements <description>`** → Creates `.orca/requirements/<id>/06-requirements-spec.md`
 - **Complex task detected by `/orca-{domain}`** → User prompted to run `/requirements` first
 
 ### When Requirements Are Consumed
@@ -104,7 +104,7 @@ DIVERGENT (--explore)                    CONVERGENT (default/tweak/complex)
 Requirements live under:
 
 ```text
-.claude/requirements/
+.orca/requirements/
  .current-requirement          # Name of active requirement folder (if any)
  index.md                      # Summary of all requirements
  YYYY-MM-DD-HHMM-slug/         # Individual requirement folders
@@ -159,17 +159,17 @@ read the spec and map it into their own phases.
 
 Tasks:
 - Create timestamped requirement folder:
-  - `.claude/requirements/YYYY-MM-DD-HHMM-[slug]`
+  - `.orca/requirements/YYYY-MM-DD-HHMM-[slug]`
 - Write:
   - `00-initial-request.md` with user request.
   - `metadata.json` with:
     - `id`, `started`, `lastUpdated`, `status`, `phase`, `progress`, `contextFiles`.
-  - Update `.claude/requirements/.current-requirement` with folder name.
+  - Update `.orca/requirements/.current-requirement` with folder name.
 - Call `ProjectContextServer.query_context`:
   - `domain`: inferred from request (`nextjs`, `expo`, etc.).
   - `task`: user request.
   - `projectPath`: repo root.
-- Seed `.claude/orchestration/phase_state.json`:
+- Seed `.orca/orchestration/phase_state.json`:
   - Add/merge a `requirements` phase with:
     - `status`, `requirement_id`, `folder`, `spec_path` (once available).
 
@@ -261,7 +261,7 @@ Tasks:
   - **Assumptions** for any unanswered questions (prefixed `ASSUMED:`).
 - Update `metadata.json.status` to `"complete"` or `"incomplete"` depending on user choice.
 - Clear or update `.current-requirement` (depending on end option).
-- Append/refresh entry in `.claude/requirements/index.md`.
+- Append/refresh entry in `.orca/requirements/index.md`.
 - Log a `save_decision` to `code-index.db` summarizing the requirement.
 - Update `phase_state.json`:
   - Mark `requirements` phase as `"completed"`.

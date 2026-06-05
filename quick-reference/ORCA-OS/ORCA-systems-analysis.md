@@ -35,8 +35,8 @@ User entry points invoked via `/command`.
 | Research | 7 | `agents/research/` | research-web-search-subagent, research-answer-writer, research-fact-checker |
 | RVRY | 7 | `agents/rvry/` | rvry-grand-architect, rvry-engine-builder, rvry-web-builder, rvry-protocol-gate |
 | Typography | 6 | `agents/typography/` | typography-orchestrator, glyph-editor, ttf-exporter, path-guardian |
-| SEO | 5 | `agents/seo/` | seo-research-specialist, seo-brief-strategist, seo-draft-writer, seo-optimizer |
-| **TOTAL** | **119** | **12 dirs** | |
+| SEO | 4 | `agents/seo/` | seo-research-specialist, seo-brief-strategist, seo-draft-writer, seo-quality-guardian |
+| **TOTAL** | **118** | **12 dirs** | |
 
 Note: OS-Dev (6) and Orca-Pipeline (5) share the `agents/os-dev/` directory, totaling 11 agents there.
 
@@ -79,7 +79,7 @@ Workflow documentation in `docs/pipelines/`.
 | expo-pipeline.md | React Native/Expo |
 | research-pipeline.md | Deep web research |
 | seo-pipeline.md | SEO content creation |
-| seo-optimizer-pipeline.md | SEO optimization |
+| seo-optimizer-pipeline.md | SEO optimization (DEPRECATED 2026-05-17 -- reference only) |
 | data-pipeline.md | Data analysis |
 | design-pipeline.md | Design system work |
 | os-dev-pipeline.md | ORCA-OS development |
@@ -97,7 +97,7 @@ Each pipeline doc contains:
 - Gate configurations
 - Specialist trigger conditions
 
-State persisted to `.claude/orchestration/phase_state.json` for resumption across sessions.
+State persisted to `.orca/orchestration/phase_state.json` for resumption across sessions.
 
 ---
 
@@ -361,7 +361,7 @@ Templates live at `quick-reference/thinking-models/*.md`.
 ### Cognition Persistence
 
 ```
-.claude/cognition/
+.orca/cognition/
   YYYYMMDD-daily.md              # Daily log (/think)
   YYYYMMDD-HHMM-<slug>.md       # Per-session (/deepthink, /problem-solve, /challenge, /root-cause)
 
@@ -604,7 +604,7 @@ Verification questions that repeatedly fail become permanent mandatory checks, t
 ### 5. Cognition Persistence Loop
 
 ```
-/think or /deepthink -> cognition-mcp stores session -> .claude/cognition/ file -> Workshop entry -> future session recall
+/think or /deepthink -> cognition-mcp stores session -> .orca/cognition/ file -> Workshop entry -> future session recall
 ```
 
 Cognitive analysis persists as files on disk. When the context window compacts, the analysis remains readable. Future sessions can query Workshop for past cognitive work.
@@ -619,7 +619,7 @@ Cognitive analysis persists as files on disk. When the context window compacts, 
 4. **Graduated scoring**: >=90 PASS, 80-89 WARN, 70-79 ERROR, <70 BLOCK
 5. **Context mandatory**: All agents call ProjectContext MCP first
 6. **State preserved**: phase_state.json enables resumption across sessions
-7. **All Opus 4.6**: Default model across all 102 agents, never specified
+7. **All Opus 4.6**: Default model across all 124 agents, never specified
 8. **Four-tier routing**: --light (fast, no confirmation) / default (fast+gates) / -tweak (builder direct) / --complex (full pipeline)
 9. **User approval required**: Agents never auto-modify; improvements need explicit approval
 

@@ -1,10 +1,10 @@
 # OS 7.0 Agents Quick Reference
 
-**Last Updated:** 2026-03-23
-**Version:** OS 7.0
-**Total Agents:** 126
+**Last Updated:** 2026-06-03
+**Version:** OS 7.1
+**Total Agents:** 72
 
-> **Scope Note:** This quick-reference covers all 126 agents across 10 domains. See `docs/reference/os-dependency-graph.yaml` for complete registry.
+> **Scope Note:** This quick-reference covers all agents across 18 domains. See `docs/reference/os-dependency-graph.yaml` for complete registry.
 
 ---
 
@@ -38,12 +38,15 @@
 | Audit | 0 (agentless) | `commands/audit.md` |
 | Research | 7 | `agents/research/` |
 | Typography | 6 | `agents/typography/` |
-| SEO | 5 | `agents/seo/` |
+| SEO | 4 | `agents/seo/` |
+| SEO-Optimize | 1 | `agents/seo-optimize/` |
+| AIO | 3 | `agents/aio/` |
 | Data | 4 | `agents/data/` |
 | Cross-Domain | 1 | `agents/cross-domain/` |
+| Design | 2 | `agents/design/` |
 | 3D Printing | 0 (MCP+skill) | bambu-3mf, openscad-mcp |
 | Creative Design | 0 (MCP+skill) | adb-mcp (Photoshop, Illustrator) |
-| **TOTAL** | **126** | |
+| **TOTAL** | **137** | |
 
 ---
 
@@ -95,25 +98,18 @@
 ### Implementation
 | Agent | Purpose |
 |-------|---------|
-| `nextjs-builder` | Next.js implementation specialist with proactive design thinking (Design Intent phase) |
-| `nextjs-layout-analyzer` | Structure-first layout analysis |
-| `nextjs-layout-specialist` | Complex layout implementation |
-| `nextjs-css-specialist` | Semantic CSS, @layer, design tokens |
-| `nextjs-css-architecture-gate` | CSS architecture validation |
-| `tailwind-specialist` | Tailwind CSS (auto-detected; in `agents/dev/`) |
-| `shadcn-specialist` | shadcn/ui components (auto-detected; in `agents/dev/`) |
+| `nextjs-builder` | Next.js implementation specialist |
 | `nextjs-typescript-specialist` | TypeScript best practices |
 | `nextjs-performance-specialist` | Bundle optimization, lazy loading |
 | `nextjs-seo-specialist` | SEO optimization |
 | `nextjs-accessibility-specialist` | WCAG compliance, semantic HTML |
-| `nextjs-animation-specialist` | GSAP ScrollTrigger, Lenis smooth scroll, CSS scroll-driven animations |
-| `nextjs-3d-specialist` | Vanilla Three.js scenes, GLTF models, particle systems, WebGL |
+
+> **Note (2026-04-22 design-system fork):** The design, CSS, animation, 3D, and layout Next.js specialists (`nextjs-design-reviewer`, `nextjs-css-specialist`, `nextjs-css-architecture-gate`, `nextjs-animation-specialist`, `nextjs-3d-specialist`, `nextjs-layout-specialist`, `nextjs-layout-analyzer`) plus `design-system-architect`, `design-token-guardian`, `design-dna-guardian`, `tailwind-specialist`, and `shadcn-specialist` were archived. Design work now routes through the `/impeccable` skill system (see ORCA-skills.md). `/nextjs` pipeline is non-functional pending follow-up reshape.
 
 ### Gates
 | Agent | Purpose | Threshold |
 |-------|---------|-----------|
 | `nextjs-standards-enforcer` | Code standards, token usage, feature completeness (loading/error/form/nav checks) | >=90 |
-| `nextjs-design-reviewer` | Design QA, visual compliance | >=90 |
 | `nextjs-verification-agent` | Build/test/lint verification | PASS/FAIL |
 
 **MCP Requirements:** chrome-devtools
@@ -222,7 +218,7 @@ Orchestrated directly by `/research` command (no lead agent).
 
 ---
 
-## SEO Pipeline (5 Agents)
+## SEO Pipeline (4 Agents)
 
 | Agent | Purpose |
 |-------|---------|
@@ -230,9 +226,40 @@ Orchestrated directly by `/research` command (no lead agent).
 | `seo-brief-strategist` | Content strategy and brief generation |
 | `seo-draft-writer` | Long-form SEO content creation |
 | `seo-quality-guardian` | SEO content quality assurance |
-| `seo-optimizer` | Content optimization against SERP competitors |
 
 **MCP Requirements:** ahrefs, crawl4ai, cognition-mcp (--think)
+
+> `seo-optimizer` was archived 2026-05-17 (`.archived/agents/seo-optimizer.md`).
+> Optimization lives in the `/seo-optimize` and `/aio` lanes below -- see
+> `.orca/requirements/2026-05-17-1903-seo-geo-optimization-capability/`.
+
+---
+
+## SEO-Optimize Lane (1 Agent)
+
+Advisory technical-SEO optimization lane -- a command plus one working agent, not
+an orchestrator-ceremony lane.
+
+| Agent | Purpose |
+|-------|---------|
+| `seo-technical-advisor` | Turns deterministic technical-SEO detector findings + GSC/GA4 analytics into a prioritized, evidence-backed report; every recommendation traces to a detector `check_id` |
+
+**MCP Requirements:** analytics-mcp, mcp-gsc
+
+---
+
+## AIO Lane (3 Agents)
+
+Advisory GEO / generative-engine optimization lane, the deeper of the two
+optimization surfaces -- a command plus a focused working agent set.
+
+| Agent | Purpose |
+|-------|---------|
+| `geo-diagnose-recommend` | Core agent: detector GEO findings + doctrine-scored audit + measurement context into prioritized GEO recommendations, each tracing to a doctrine `rule_id` or detector `check_id` |
+| `geo-rewrite` | Optional rewrite agent (on `--rewrite`); doctrine-aligned content rewrite -- the single deliberate feedback edge into content generation |
+| `measurement-analyst` | Reads the AI-answer capture store via `scripts/aio-measurement/cli.py`; reports citation status + competitive gap; degrades gracefully to "no capture data yet" |
+
+**MCP Requirements:** none (detector + measurement tool are local CLIs)
 
 ---
 
@@ -303,6 +330,7 @@ MCP-native reasoning orchestration engine with escape detection, prompt assembly
 
 ---
 
+
 ## OS-Dev + Orca-Pipeline (11 Agents)
 
 Located in `agents/os-dev/`. Includes both OS-Dev (6) and Orca-Pipeline (5) agents.
@@ -360,7 +388,7 @@ Meta-pipeline for creating new domain pipelines. 5-phase wizard: Interview → R
 **Modes:** `--quick` (3 dimensions), `--core` (5), `--comprehensive` (all 8)
 **Documentation:** `--documentation` runs specialized doc verification with evidence spot-checks
 **Scoring:** Deduction-based (100 - rule violations), weighted aggregation
-**Output:** `.claude/audit/YYYY-MM-DD-<mode>.md`
+**Output:** `.orca/audit/YYYY-MM-DD-<mode>.md`
 
 ---
 
@@ -373,15 +401,10 @@ Located in `agents/dev/`. These agents work across multiple pipelines:
 | `a11y-enforcer` | Expo, Next.js | WCAG 2.2 compliance |
 | `crash-analyzer` | All lanes | Cross-domain crash and error analysis |
 | `debt-eliminator` | All lanes | Technical debt identification and prioritization |
-| `design-dna-guardian` | iOS, Expo, Django-React | Design DNA/token presence and compliance enforcement |
-| `design-system-architect` | All UI lanes | Phase 0 pre-implementation subagent: CSS methodology awareness, design-dna.json creation/review, multi-format detection (JSON/MD/CSS) |
-| `design-token-guardian` | Expo, Next.js | Token enforcement, no hardcoded values |
 | `performance-enforcer` | Expo, Next.js | Bundle size, performance budgets |
 | `performance-prophet` | Expo | Predictive performance analysis |
 | `screenshot-analyzer` | All UI lanes | Screenshot analysis and visual comparison |
 | `security-specialist` | Expo, iOS | OWASP Mobile Top 10, secure storage |
-| `shadcn-specialist` | Next.js | shadcn/ui components (auto-detected) |
-| `tailwind-specialist` | Next.js | Tailwind CSS (auto-detected) |
 | `version-shield` | All lanes | Dependency version management and breaking changes |
 
 ---
@@ -429,6 +452,19 @@ No dedicated agent directory. Capabilities provided by MCP servers, skills, and 
 
 ---
 
+## Design Lane (2 Agents)
+
+Full-separation design lane (2026-06-03 design-system totality rethink, Phase 2). A thin orchestrator (the design command, main thread) binds typed FORBIDDEN/FORWARD constraints via a cognition `checkpoint`, spawns a **separate** builder, then a **separate fresh-context** validator, and branches on the verdict (N=2 → escalate). Shared lane definition: `docs/reference/design-lane.md` (referenced, never copy-pasted). Hub skill: `skills/impeccable/SKILL.md` (the register; points to `design-contract/` refs, no inlining).
+
+| Agent | Purpose |
+|-------|---------|
+| `design-builder` | Separate producer. Builds the front-end artifact under the bound constraint ids; hub injected via prompt (reload-safe) / `skills: [impeccable]` (post-reload). Does NOT self-grade. |
+| `design-validator` | Separate **fresh-context** judge. Runs the LOCAL detector (`node mcp/design-detector/bin/designcheck.js`), judges bound ids, returns `GATE_VERDICT: PASS\|BLOCK`. Hard-on-named-slop, advisory-on-taste. Never sees the builder's reasoning. |
+
+> **Status (2026-06-03):** agents authored in-repo; a new agent is NOT spawnable until a Claude Code session reload, so the lane is **built, pending post-reload live proof** — not yet live-verified. Worked example: `/impeccable` (thin). The other 12 design commands are NOT yet converted (post-reload one-pass apply).
+
+---
+
 ## Quality Gates (All Pipelines)
 
 ### Numerical Scoring
@@ -459,7 +495,9 @@ No dedicated agent directory. Capabilities provided by MCP servers, skills, and 
   audit/            # (agentless)
   research/         # 7 agents
   typography/       # 6 agents
-  seo/              # 5 agents
+  seo/              # 4 agents
+  seo-optimize/     # 1 agent (advisory lane)
+  aio/              # 3 agents (advisory lane)
   data/             # 4 agents
 ```
 

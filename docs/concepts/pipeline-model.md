@@ -100,7 +100,7 @@ Gates:
 In some lanes (starting with Next.js), gates are backed by **programmatic enforcement**:
 
 - Design QA gates require:
-  - A structured design review report saved under `.claude/orchestration/evidence/`
+  - A structured design review report saved under `.orca/orchestration/evidence/`
   - Explicit coverage declaration and pixel measurements
   - Evidence paths recorded in `phase_state.gates.design_qa.evidence_paths`
   - A pre-tool hook (`hooks/gate-enforcement.sh`) that blocks any attempt

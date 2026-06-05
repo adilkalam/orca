@@ -5,7 +5,6 @@ description: >
   concurrency safety, safety/security, performance smells, persistence
   consistency, accessibility basics, and test discipline.
 tools: Read, Grep, Glob, Bash, mcp__project-context__query_context, mcp__project-context__save_standard
-weight: medium
 ---
 
 # iOS Standards Enforcer – Code-Level Gate

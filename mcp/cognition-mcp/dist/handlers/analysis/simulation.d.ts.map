@@ -1,0 +1,1 @@
+{"version":3,"file":"simulation.d.ts","sourceRoot":"","sources":["../../../src/handlers/analysis/simulation.ts"],"names":[],"mappings":"AAAA;;;;;GAKG;AAEH,OAAO,KAAK,EAAE,gBAAgB,EAAE,aAAa,EAAqB,MAAM,gBAAgB,CAAC;AAEzF,OAAO,EAAE,YAAY,EAAE,MAAM,wBAAwB,CAAC;AAItD,wBAAsB,gBAAgB,CACpC,IAAI,EAAE,gBAAgB,EACtB,OAAO,EAAE,YAAY,GACpB,OAAO,CAAC,aAAa,CAAC,CAuDxB"}

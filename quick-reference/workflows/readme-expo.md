@@ -37,7 +37,7 @@ Examples:
 
 For non‑trivial Expo tasks:
 
-- `/requirements "..."` creates a spec under `.claude/requirements/`.
+- `/requirements "..."` creates a spec under `.orca/requirements/`.
 - Complex flows (multi‑screen auth, offline, sensitive data) should
   have a spec before the full Expo lane runs.
 
@@ -84,7 +84,7 @@ File: `commands/expo.md`
      - `-tweak` → **Tweak mode** (light path WITHOUT gates, user verifies)
      - `--complex` → **Complex mode** (full pipeline, spec required)
   3. **Spec gating**:
-     - For `complex`, require `.claude/requirements/<id>/06-requirements-spec.md`.
+     - For `complex`, require `.orca/requirements/<id>/06-requirements-spec.md`.
   4. **Routing**:
      - Default/tweak → `expo-light-orchestrator` (gates on default only)
      - Complex → full Expo pipeline with grand‑orchestrator and gates.
@@ -101,7 +101,7 @@ File: `commands/expo.md`
 ### 3.2 Phase Config and `phase_state.json`
 
 - `docs/reference/phase-configs/expo-phase-config.yaml`
-- Uses `.claude/orchestration/phase_state.json` with `domain: "expo"`.
+- Uses `.orca/orchestration/phase_state.json` with `domain: "expo"`.
 - Key phases:
   - `context_query`, `planning`, `implementation`, `design_tokens`, `accessibility`, `aesthetics`, and verification/summary.
 - Expo implementation outputs `ra_events` to capture RA tags.

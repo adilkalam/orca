@@ -2,7 +2,7 @@
 description: "Clone a website's UI into an OS 7.0 project using SAME.dev-style web analysis and structured specs"
 argument-hint: "<url_or_image_path> [clone_mode]"
 allowed-tools:
-  - Task
+  - Agent
   - Read
   - Write
   - Edit
@@ -42,7 +42,7 @@ If the argument appears to be a file path (contains `/`, ends in `.png`, `.jpg`,
 1. Confirm the file exists using `Read` tool
 2. Instead of web analysis, delegate to `screenshot-analyzer` agent:
    ```
-   Task({
+   Agent({
      subagent_type: 'screenshot-analyzer',
      description: 'Analyze screenshot for clone spec',
      prompt: 'Analyze this screenshot: <path>. Produce component inventory and implementation spec.'
@@ -98,7 +98,7 @@ Run page fetches in parallel where possible (SAME.dev’s maximize‑parallel‑
 Synthesize a spec rather than raw code. Create a spec file under:
 
 ```text
-.claude/orchestration/evidence/clone-website-<slug>.md
+.orca/orchestration/evidence/clone-website-<slug>.md
 ```
 
 The spec SHOULD include:
@@ -147,7 +147,7 @@ After spec creation:
      - Detect design system, past decisions, standards.
 
 2. **Phase state:**
-   - Initialize or update `.claude/orchestration/phase_state.json`:
+   - Initialize or update `.orca/orchestration/phase_state.json`:
      - `domain`: `"nextjs"` or `"expo"`.
      - `current_phase`: `"requirements_impact"` (for the relevant pipeline).
      - Attach the clone spec path under `artifacts`.
@@ -167,7 +167,7 @@ Finally, present the user with a clear next step:
 
 Suggest running:
 ```
-/orca Implement clone of {url} ({clone_mode}) using spec at .claude/orchestration/evidence/clone-website-<slug>.md
+/orca Implement clone of {url} ({clone_mode}) using spec at .orca/orchestration/evidence/clone-website-<slug>.md
 ```
 
 The unified `/orca` command will:

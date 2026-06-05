@@ -14,11 +14,11 @@ and end-to-end testing for React applications.
 ## Required Skills
 
 You MUST apply these skills:
-- `skills/cursor-code-style/SKILL.md` - Variable naming, control flow
-- `skills/lovable-pitfalls/SKILL.md` - Common mistakes to avoid
-- `skills/search-before-edit/SKILL.md` - Always grep before modifying
-- `skills/linter-loop-limits/SKILL.md` - Max 3 linter attempts
-- `skills/debugging-first/SKILL.md` - Debug before code changes
+- `~/.claude/skills/cursor-code-style/SKILL.md` - Variable naming, control flow
+- `~/.claude/skills/lovable-pitfalls/SKILL.md` - Common mistakes to avoid
+- `~/.claude/skills/search-before-edit/SKILL.md` - Always grep before modifying
+- `~/.claude/skills/linter-loop-limits/SKILL.md` - Max 3 linter attempts
+- `~/.claude/skills/debugging-first/SKILL.md` - Debug before code changes
 
 ---
 

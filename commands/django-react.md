@@ -2,7 +2,7 @@
 description: "OS 7.0 orchestrator entrypoint for Django + React TypeScript full-stack tasks"
 argument-hint: "[--light | -tweak | --complex] <task description or requirement ID>"
 allowed-tools:
-  - Task
+  - Agent
   - AskUserQuestion
   - mcp__project-context__query_context
   - mcp__project-context__save_decision
@@ -28,7 +28,7 @@ This slash command EXISTS to delegate work to agents. Not to do work directly.
 **ALWAYS required:**
 1. Parse the arguments
 2. Determine routing (-tweak, default, --complex)
-3. **Delegate via Task tool**
+3. **Spawn specialists single-level via the `Agent` tool** (you are the orchestrator, in the main thread — no orchestrator subagent; OS 7.1)
 
 Even `-tweak` delegates to a builder. It skips gates, not agents.
 
@@ -45,7 +45,7 @@ Use this command for full-stack Django backend + React TypeScript frontend work.
 ```bash
 /django-react "add user profile API"       # Default: light path + design gates
 /django-react -tweak "fix form validation" # Fast: light path, no gates
-/django-react --complex "multi-step checkout flow"  # Full: grand-architect + all gates
+/django-react --complex "multi-step checkout flow"  # Full: architect + builder + all gates
 /django-react "implement requirement 2025-01-15-0930-auth-system"  # Full path with spec
 ```
 
@@ -55,7 +55,7 @@ Use this command for full-stack Django backend + React TypeScript frontend work.
 
 - **DO NOT** use Edit/Write tools
 - **DO NOT** bypass the agent system
-- **DELEGATE** via Task tool only
+- **DELEGATE** via the `Agent` tool only (single-level, from the main thread)
 - Update phase_state.json to track progress
 - Resume from interruptions without abandoning pipeline
 
@@ -128,7 +128,7 @@ the delegation prompt. If present, use it directly and skip the query below.
    })
    ```
 
-3. Include in delegation prompt to grand-architect:
+3. Include in the delegation prompt to each spawned agent:
    ```
    === RECORDING CONTEXT ===
    <narrative.summary, max 500 chars>
@@ -142,7 +142,7 @@ the delegation prompt. If present, use it directly and skip the query below.
 **Check for requirement ID:**
 ```
 $ARGUMENTS matches "requirement <id>" or "<YYYY-MM-DD-HHMM-*>"
-  -> Look for .claude/requirements/<id>/06-requirements-spec.md
+  -> Look for .orca/requirements/<id>/06-requirements-spec.md
   -> If found, this is a SPEC-DRIVEN task (see Section 1.3)
 ```
 
@@ -191,7 +191,7 @@ When `--audit` is detected:
      - `maxFiles`: larger than usual (e.g. 30-50)
      - `includeHistory: true`
 
-3. **Assemble an audit squad (via Task)**
+3. **Assemble an audit squad (via `Agent`, single-level)**
    - Based on focus, delegate to relevant agents:
      - Backend standards:
        - `django-react-standards-enforcer`
@@ -253,47 +253,25 @@ Recommendation: For agentic coding, semantic CSS produces better output. The sty
 
 **Tweak mode**: Skip gate. Manifesto priming above is sufficient.
 
-**Default mode**:
-1. Check: `test -f design-dna.json` (or `.claude/design-dna/*.json`)
-2. If EXISTS: Record path in delegation prompt as `DESIGN_DNA_PATH: <path>`
-3. If MISSING: Invoke design-system-architect as subagent:
-   ```
-   Task({
-     subagent_type: "design-system-architect",
-     description: "Create design-dna for UI task",
-     prompt: `Analyze this project's existing CSS/components and produce design-dna.json.
-     Task context: $ARGUMENTS
-     Project: $PROJECT_PATH
-     Follow your CSS Methodology Awareness workflow.`
-   })
-   ```
-4. After subagent returns, record design-dna.json path and continue to delegation.
+> **OS 7.1 / design-fork note:** `design-system-architect` and `design-dna.json` are archived. Design intent now lives in the per-project design contract (`{project}/.claude/PRODUCT.md` + `DESIGN.md`) and the `/impeccable` command + the `impeccable-hub` skill (the register; `interfaces-that-feel` is the felt-state spine the hub points to). There is no design-system-architect subagent to spawn.
 
-**Complex mode**:
-1. ALWAYS invoke design-system-architect as subagent (even if design-dna.json exists):
-   ```
-   Task({
-     subagent_type: "design-system-architect",
-     description: "Review/create design-dna for complex UI task",
-     prompt: `Review or create design-dna.json for this complex task.
-     Task context: $ARGUMENTS
-     Project: $PROJECT_PATH
-     Existing design-dna: <path if exists>
-     Follow your CSS Methodology Awareness workflow.`
-   })
-   ```
-2. Block delegation until design-system-architect confirms design-dna.json is ready.
+**Default mode (frontend tasks):**
+1. Check for a project design contract: `test -f {project}/.claude/PRODUCT.md` and `test -f {project}/.claude/DESIGN.md` (the two-file split; the single-file `aesthetic.md` is deprecated).
+2. If EITHER EXISTS: note `has_design_contract: true`, record the paths, and pass them to `django-react-builder` as `PRODUCT_CONTRACT_PATH` (`.claude/PRODUCT.md`) and `DESIGN_CONTRACT_PATH` (`.claude/DESIGN.md`).
+3. If BOTH MISSING: note `has_design_contract: false`; the standards gate (`django-react-standards-enforcer`) applies the `interfaces-that-feel` baseline. Optionally suggest the user run `/impeccable --teach` (writes PRODUCT.md) then `/document` (writes DESIGN.md) to set up a contract.
+
+**Complex mode (frontend tasks):** same, plus require the `django-react-standards-enforcer` gate to run regardless of contract presence.
 
 ### Design Weight Escalation
 
 When a requirements spec is detected (via requirement ID in arguments):
 1. Read `metadata.json` from the requirements folder
 2. Check `design_weight` field:
-   - `high`: Escalate gate behavior -- default mode uses complex-mode gate (always invoke design-system-architect, block until confirmed)
+   - `high`: Escalate gate behavior -- default mode uses complex-mode gate (always run the standards/UI gate, block until confirmed)
    - `medium`: Keep current tier's gate behavior
    - `low`: Keep current tier's gate behavior
 
-This ensures design-heavy tasks get mandatory design-system-architect review even in default mode.
+This ensures design-heavy tasks get mandatory gate review even in default mode.
 
 
 ---
@@ -338,7 +316,7 @@ This helps agents avoid repeating past mistakes.
 **If user passed `--complex` flag:**
 
 1. Check if request references a requirement ID
-2. Look for `.claude/requirements/<id>/06-requirements-spec.md`
+2. Look for `.orca/requirements/<id>/06-requirements-spec.md`
 3. **If spec NOT found:**
    ```
    BLOCKED: Complex task requires a spec.
@@ -363,15 +341,18 @@ Default (no flag) now goes to Section 3 for confirmation first.
 
 ### 2.1 --light Flag - Light Path WITHOUT Confirmation
 
-Delegate to `django-react-light-orchestrator` directly. Skip Section 3.
+Run the light path **yourself, in the main thread** (no orchestrator subagent — OS 7.1). Skip Section 3. Spawn specialists single-level via `Agent()`, one at a time, reading each result before the next. See `docs/reference/flatten-orchestration-pattern.md`.
 
-**Context Inheritance Protocol (--light mode):**
+**Flat phase script (--light):**
+
+1. **Build** — `Agent({ subagent_type: "django-react-builder", description: "Django + React task (light)", prompt: <REQUEST + inherited ContextBundle + memory hits + STANDARDS from prior gate failures + the DESIGN AWARENESS block + uv/bun tool requirements> })`. Tell the builder: context is inherited, do NOT call `query_context` (may narrow-query maxFiles:5 if missing). Pull in Django/React specialists as needed (see 3.6/3.8 lists), each spawned single-level via `Agent()`.
+2. **Standards gate** — `Agent({ subagent_type: "django-react-standards-enforcer", ... })`; read its score (hard block < 90 on either stack).
+3. If the gate ERRORs/BLOCKs, route the violations back to `django-react-builder` once, then re-gate.
+4. Ephemeral phase_state only (scores for this run; no spec ceremony). Persist scores to `.orca/orchestration/phase_state.json`.
+
+The delegation prompt to `django-react-builder` carries the inheritance header so the builder does not re-query context:
 
 ```
-Task({
-  subagent_type: "django-react-light-orchestrator",
-  description: "Django + React task with verification (fast, no confirmation)",
-  prompt: `
 === CONTEXT BUNDLE (INHERITED) ===
 CONTEXT_SOURCE: /django-react
 CONTEXT_MODE: full
@@ -386,7 +367,6 @@ STANDARDS (from previous gate failures):
 CRITICAL: You received context above. DO NOT call mcp__project-context__query_context.
 Use the inherited bundle. You MAY query with narrow scope (maxFiles: 5) if context missing.
 
-
 === DESIGN AWARENESS ===
 When working with CSS/styling, be aware of these verified failure patterns:
 1. I autocomplete utility classes from training data rather than designing.
@@ -396,22 +376,9 @@ When working with CSS/styling, be aware of these verified failure patterns:
 5. The stylesheet IS the design document. Utilities scatter design across every JSX file.
 Recommendation: For agentic coding, semantic CSS produces better output. The stylesheet constrains all downstream work.
 ===
-
-Handle this full-stack task via the light path WITH verification gates.
-
-REQUEST: $ARGUMENTS
-
-MEMORY CONTEXT (if any):
-<memory hits from 1.1>
-
-ROUTING MODE: --light (light + gates, no confirmation)
-- Run django-react-builder + specialists
-- Run verification gates (standards-enforcer)
-- Ephemeral phase_state only (scores for this run, no ceremony)
-- NO grand-architect, NO spec requirement
-  `
-})
 ```
+
+(The old `django-react-light-orchestrator` delegation is dissolved — the command owns this sequence.)
 
 ---
 
@@ -427,7 +394,7 @@ ROUTING MODE: --light (light + gates, no confirmation)
 **Context Inheritance Protocol (-tweak mode):**
 
 ```
-Task({
+Agent({
   subagent_type: "django-react-builder",
   description: "Fast full-stack tweak (no gates)",
   prompt: `
@@ -468,7 +435,7 @@ ROUTING MODE: tweak (pure speed)
 
 ---
 
-### --complex Flag - Full Pipeline (Grand-Architect + All Gates)
+### --complex Flag - Full Pipeline (Architect + Builder + All Gates)
 
 Continue with full orchestration below (Section 3).
 
@@ -477,8 +444,8 @@ Continue with full orchestration below (Section 3).
 ## 3. Pipeline Flow with Confirmation (Default and --complex modes)
 
 This section applies when:
-- **Default (no flag)**: Routes to light-orchestrator AFTER confirmation
-- **--complex flag**: Routes to grand-architect AFTER confirmation
+- **Default (no flag)**: runs the light flow (Section 2.1) AFTER confirmation
+- **--complex flag**: runs the full pipeline (Section 3.2+) AFTER confirmation
 
 ### 3.1 Team Confirmation (MANDATORY - BLOCKING)
 
@@ -500,14 +467,14 @@ This section applies when:
 
 ### Phases
 1. Context Query (ProjectContext)
-2. Light Orchestrator (django-react-light-orchestrator) - coordination
+2. Coordination — /django-react command (main thread)
 3. Implementation (django-react-builder + specialists)
 4. Gates (django-react-standards-enforcer)
 
 ### Agent Team
 | Role | Agent |
 |------|-------|
-| Coordination | django-react-light-orchestrator |
+| Coordination | /django-react command (main thread) |
 | Implementation | django-react-builder |
 | Backend Specialists | [django-master, django-api-specialist] |
 | Frontend Specialists | [react-typescript-wizard] |
@@ -531,7 +498,7 @@ This section applies when:
 
 ### Phases
 1. Context Query (ProjectContext)
-2. Grand Architect (django-react-grand-architect) - architecture decisions
+2. Coordination — /django-react command (main thread)
 3. API Contract Design (api-contract-specialist) - OpenAPI schema
 4. Backend Planning (django-react-architect) - Django plan
 5. Frontend Planning (django-react-architect) - React plan
@@ -544,7 +511,7 @@ This section applies when:
 ### Agent Team
 | Role | Agent |
 |------|-------|
-| Coordination | django-react-grand-architect |
+| Coordination | /django-react command (main thread) |
 | Architecture | django-react-architect |
 | Implementation | django-react-builder |
 | Backend Specialists | [django-master, django-api-specialist, django-security-specialist] |
@@ -584,11 +551,11 @@ AskUserQuestion({
 1. STOP and wait for user response
 2. If user says "Yes, proceed" -> Route based on mode (see below)
 3. If user says "Modify team" -> ask what to change, update, re-output team, re-confirm
-4. If user says "Switch to --light" -> delegate to django-react-light-orchestrator directly (Section 2.1)
+4. If user says "Switch to --light" -> run the light flow yourself (Section 2.1)
 
-**After confirmation received - ROUTING:**
-- If `--complex` flag -> Delegate to `django-react-grand-architect` (full pipeline, Section 3.2+)
-- If default (no flag) -> Delegate to `django-react-light-orchestrator` (fast, with gates)
+**After confirmation received - ROUTING (you run these in the main thread; no orchestrator subagent):**
+- If `--complex` flag -> run the full pipeline (Section 3.2+): API contract -> architect -> builder (backend then frontend) -> all gates -> verification, each spawned single-level via `Agent()`
+- If default (no flag) -> run the light flow (Section 2.1): builder + standards gate
 
 **Anti-patterns (WRONG):**
 - Putting the team list inside AskUserQuestion options
@@ -643,13 +610,11 @@ Initialize phase_state.json:
 }
 ```
 
-### 3.3 Grand Architect (Opus)
+### 3.3 Coordination (main thread — OS 7.1)
 
-Delegate to `django-react-grand-architect` with Context Inheritance:
+> The `django-react-grand-architect` coordinator tier is dissolved. **You** (the command, in the main thread) own coordination: you sequence the phases below and spawn each specialist single-level via `Agent()`. Architecture decisions are produced by `django-react-architect` in 3.5 (it is the planner). See `docs/reference/flatten-orchestration-pattern.md`.
 
-**Context Inheritance Protocol (OS 7.0):**
-
-When delegating, wrap the ContextBundle with inheritance headers:
+Context to pass into every `Agent()` call this run (inherited — instruct each agent NOT to call `query_context`; targeted file reads OK):
 
 ```
 === CONTEXT BUNDLE (INHERITED) ===
@@ -678,25 +643,14 @@ Recommendation: For agentic coding, semantic CSS produces better output. The sty
 ===
 ```
 
-Inputs:
-- ContextBundle (wrapped with inheritance header)
-- Memory summary
-- Requirements spec (if complex)
+Also pass: memory summary, requirements spec (if complex), and the `uv`/`bun` tool requirements.
 
-**CRITICAL:** Grand-architect decides the architecture strategy:
+The architecture strategy is the output of 3.5 (`django-react-architect`), recorded via `mcp__project-context__save_decision`:
 - Backend architecture (DRF viewsets vs generic views, auth method)
 - Frontend architecture (React patterns, state management)
 - API contract strategy (OpenAPI generation required?)
 - Type generation strategy
-
-Outputs:
-- Architecture path
-- API contract decision
-- Type safety flow decision
 - Risk assessment
-- Task force plan
-
-Save decision via `mcp__project-context__save_decision`.
 
 ### 3.4 API Contract Design (if applicable)
 
@@ -816,7 +770,7 @@ Update phase_state.verification.
 
 1. Read phase_state.json:
    ```bash
-   cat .claude/orchestration/phase_state.json
+   cat .orca/orchestration/phase_state.json
    ```
 
 2. Acknowledge and process new information

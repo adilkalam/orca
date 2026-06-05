@@ -96,7 +96,7 @@ A CLEAN result without stating the verification performed is invalid. Gaps in ev
 
 ## Per-Dimension Protocols
 
-Dimensions execute sequentially in fixed order. Each follows DISCOVER -> VERIFY -> RECORD. Evidence is written to `.claude/audit/temp/<dimension>.md` after each dimension.
+Dimensions execute sequentially in fixed order. Each follows DISCOVER -> VERIFY -> RECORD. Evidence is written to `.orca/audit/temp/<dimension>.md` after each dimension.
 
 **Execution order:** Structure -> Security -> Dependencies -> Patterns -> Architecture -> Tests -> Documentation -> Design
 
@@ -182,7 +182,7 @@ When `--documentation` is specified, the standard dimension pipeline is bypassed
 
 ### Phases
 
-1. **Build Inventory** (~1-2 min): Enumerate ground-truth counts AND item names via bash/glob. Store in `.claude/audit/temp/inventory.md`.
+1. **Build Inventory** (~1-2 min): Enumerate ground-truth counts AND item names via bash/glob. Store in `.orca/audit/temp/inventory.md`.
 2. **Per-File Verification** (sequential): Apply all 6 OPs per file with explicit evidence.
 3. **Self-Validation**: Coverage, suspicious patterns, evidence spot-check.
 4. **Root Cause Deduplication**: Group findings, rank by instance count.
@@ -220,7 +220,7 @@ Each dimension starts at 100 with deductions per finding (rules listed in per-di
 | 60-69 | D | High | SIGNIFICANT REMEDIATION REQUIRED |
 | 0-59 | F | Critical | DO NOT PROCEED / MAJOR OVERHAUL |
 
-Finding IDs persist across audits via content hash: `sha256(type:location:title).slice(0,8)`. Format: `AUD-YYYY-NNN`. The audit index at `.claude/audit/audit-index.json` tracks firstSeen, lastSeen, and status for trend tracking.
+Finding IDs persist across audits via content hash: `sha256(type:location:title).slice(0,8)`. Format: `AUD-YYYY-NNN`. The audit index at `.orca/audit/audit-index.json` tracks firstSeen, lastSeen, and status for trend tracking.
 
 ---
 
@@ -232,9 +232,9 @@ When `--since <commit>` is specified: get changed files via `git diff --name-onl
 
 ## Report Output
 
-Standard reports: `.claude/audit/YYYY-MM-DD-<mode>.md` -- header, TL;DR, recommendation, score trend, per-dimension scorecards with evidence, findings ranked by severity.
+Standard reports: `.orca/audit/YYYY-MM-DD-<mode>.md` -- header, TL;DR, recommendation, score trend, per-dimension scorecards with evidence, findings ranked by severity.
 
-Documentation reports: `.claude/audit/YYYY-MM-DD-documentation.md` -- root cause analysis and per-operation statistics.
+Documentation reports: `.orca/audit/YYYY-MM-DD-documentation.md` -- root cause analysis and per-operation statistics.
 
 ---
 

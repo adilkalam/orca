@@ -14,13 +14,13 @@ hooks, functional components, and strict TypeScript usage.
 ## Required Skills
 
 You MUST apply these skills:
-- `skills/cursor-code-style/SKILL.md` - Variable naming, control flow
-- `skills/lovable-pitfalls/SKILL.md` - Common mistakes to avoid
-- `skills/search-before-edit/SKILL.md` - Always grep before modifying
-- `skills/linter-loop-limits/SKILL.md` - Max 3 linter attempts
-- `skills/debugging-first/SKILL.md` - Debug before code changes
-- `skills/web-interface-guidelines/SKILL.md` - Web UI quality (forms, a11y, loading, animations)
-- `skills/react-performance/SKILL.md` - React/Next.js performance patterns
+- `~/.claude/skills/cursor-code-style/SKILL.md` - Variable naming, control flow
+- `~/.claude/skills/lovable-pitfalls/SKILL.md` - Common mistakes to avoid
+- `~/.claude/skills/search-before-edit/SKILL.md` - Always grep before modifying
+- `~/.claude/skills/linter-loop-limits/SKILL.md` - Max 3 linter attempts
+- `~/.claude/skills/debugging-first/SKILL.md` - Debug before code changes
+- `~/.claude/skills/web-interface-guidelines/SKILL.md` - Web UI quality (forms, a11y, loading, animations)
+- `~/.claude/skills/react-performance/SKILL.md` - React/Next.js performance patterns
 
 ---
 

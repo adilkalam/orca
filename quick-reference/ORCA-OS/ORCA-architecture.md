@@ -1,6 +1,6 @@
 # OS 7.0 Architecture Quick Reference
 
-**Last Updated:** 2026-03-16
+**Last Updated:** 2026-03-31
 **Version:** OS 7.0
 
 ---
@@ -9,8 +9,8 @@
 
 ORCA-OS is a Claude Code orchestration system that counteracts trained defaults -- the tendency toward quick, shallow, agreeable output that LLM training optimizes for casual users rather than agentic development workflows. The architecture provides structure that prevents bypassing the capability that already exists in the model.
 
-- **102 agents** across 10 domains
-- **37 commands** (13 lane orchestrators + utilities) + orca-record CLI
+- **132 agents** across 17 domains
+- **52 commands** (14 lane orchestrators + utilities + the 3 composable `/aio` sub-commands) + orca-record CLI
 - **Project-scoped MCPs** to minimize token usage
 - **Recording layer** for session event tracking and observability
 - **Dependency graph** for change impact tracking
@@ -21,12 +21,12 @@ ORCA-OS is a Claude Code orchestration system that counteracts trained defaults 
 
 ## Lane Architecture
 
-### Active Lanes (14)
+### Active Lanes (18)
 
 | Lane | Command | Agents | MCPs |
 |------|---------|--------|------|
 | iOS | `/ios` | 18 | XcodeBuildMCP |
-| Next.js | `/nextjs` | 15 | chrome-devtools |
+| Next.js | `/nextjs` | 8 (design specialists archived) | chrome-devtools |
 | Django-React | `/django-react` | 13 | (none) |
 | Expo | `/expo` | 12 | (none) |
 | Dev (cross-cutting) | - | 13 | - |
@@ -36,9 +36,23 @@ ORCA-OS is a Claude Code orchestration system that counteracts trained defaults 
 | Research | `/research` | 7 | crawl4ai |
 | Typography | `/typography` | 6 | (none) |
 | SEO | `/seo` | 5 | ahrefs, crawl4ai, cognition-mcp (--think) |
+| SEO-Optimize | `/seo-optimize` | 1 (advisory lane) | analytics-mcp, mcp-gsc |
+| AIO | `/aio` | 3 (advisory lane) | (none) |
+
+> **AIO sub-commands (2026-05-18):** `/aio` is the umbrella command running the
+> full chain (diagnose -> recommend -> optional rewrite -> measure). Its three
+> agents are also exposed as composable standalone commands -- `/geo-diagnose`
+> (geo-diagnose-recommend), `/geo-rewrite` (geo-rewrite), `/geo-measure`
+> (measurement-analyst) -- so diagnosis can be reviewed before a rewrite is
+> committed. Additive: no new agents, `/aio` unchanged.
 | Data | (none) | 4 | (none) |
-| 3D Printing | `/design` | 0 (MCP+skill) | bambu-3mf, openscad-mcp |
-| Creative Design | `/design`, `/illustrate` | 0 (MCP+skill) | adb-mcp (Photoshop, Illustrator) |
+| Design | `/impeccable` (+ design verbs) | 2 (design-builder, design-validator) | design-detector (local CLI), cognition-mcp |
+| 3D Printing | (MCP+skill driven) | 0 | bambu-3mf, openscad-mcp |
+| Creative Design | `/illustrate` + `/impeccable` skills | 0 | adb-mcp (Photoshop, Illustrator) |
+
+> **2026-04-22 design-system fork:** `/design`, `/design-dna`, `/design-review` commands were archived. `/nextjs` pipeline is non-functional pending follow-up reshape spec (design/css/animation/3D/layout specialists archived). Design work now routes through the `/impeccable` skill family. See `ORCA-skills.md`.
+
+> **2026-06-03 design-system totality rethink (Phase 2 — the design lane):** the design command family now routes through a **full-separation lane** — a thin orchestrator (the design command, main thread) binds typed FORBIDDEN/FORWARD constraints via a cognition `checkpoint`, spawns a **separate** `design-builder`, then a **separate fresh-context** `design-validator` (returns `GATE_VERDICT: PASS\|BLOCK` via the LOCAL detector), and branches (N=2 → escalate). The model never grades its own output. Shared definition: `docs/reference/design-lane.md` (referenced, never copy-pasted). Hub skill: `skills/impeccable-hub/SKILL.md` (the register; points to `design-contract/` refs, no inlining — distinct from the `/impeccable` command). All 9 design commands load the hub. **Build-producers route the lane:** `/refine`, `/simplify`, `/fortify`, `/recraft` (Routes A/B), `/motion-design`, and `/impeccable`'s build paths. **Diagnostic/contract commands do NOT route the lane:** `/document`, `/design-audit`, `/design-critique`, `/recraft` Route C. **Status:** built, **pending post-reload live proof** (a new agent is not spawnable until a session reload). Honest ceiling: hard-on-named-slop, advisory-on-taste — **the user's eye is the taste ceiling**.
 
 ---
 
@@ -180,7 +194,7 @@ User prompt
 ### Source (ORCA-OS Repo)
 ```
 $ORCA_OS_PATH/
-  agents/             # 124 agent definitions
+  agents/             # 130 agent definitions
     iOS/              # 18 agents
     nextjs/           # 15 agents
     django-react/     # 13 agents

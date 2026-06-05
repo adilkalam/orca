@@ -33,6 +33,13 @@ Heavy MCPs defined in project `.mcp.json` + enabled via `enabledMcpjsonServers`:
 These MCPs are used internally but excluded from public distribution:
 - `cognition-mcp` - Sequential thinking storage (49 operations). Moving to RVRY.
 
+### Exception to Convention — CLI tools housed in `mcp/`
+The following two tools live under `mcp/` but are **NOT MCP servers** — they are CLI tools, housed there pragmatically alongside other support tooling. Both are **local-only** (never deployed to `~/.claude`, excluded from rsync).
+
+- `design-detector` (at `mcp/design-detector/`) is **NOT an MCP server** — it is a CLI tool (`npx designcheck`). It lives in `mcp/` pragmatically alongside other support tooling. Fork of Bakaus's Impeccable detector. Hybrid JSON-rules + named-handler architecture. Rules read from `docs/concepts/design-contract/detector-rules.json` (override via `DESIGN_COLLECTION_PATH`) and applied live via `runExternalRules` in `src/detect-antipatterns.mjs`. 10 pattern-based rules are live (tailwind-palette-utilities, tailwind-hex-values, reflex-fonts, geist-imports, purple-pink-gradients, gradient-text, side-stripe-borders, inset-highlight-shadow, default-ease-transition, bouncy-easing). 6 handler-based rules (chamfer-stack, ios-calculator-default, pretend-variation, asymmetric-heading-margins-missing, pixel-misalignment, missing-typography-junctions) are deferred pending handler implementation in `src/detectors/index.ts`. See `mcp/design-detector/README.md`.
+
+- `seo-geo-detector` (at `mcp/seo-geo-detector/`) is **NOT an MCP server** — it is a CLI tool (`seo-geo-detect`), the Phase 2 detector of the SEO/GEO optimization capability. Python (3.10+), not TypeScript. JSON check definitions (`checks/technical-seo.json`, `checks/geo.json`) + Python handlers (`src/seo_geo_detector/handlers/`), ~42 curated checks (~21 technical-SEO + ~21 GEO; hard cap ~45). Deterministic: no JS rendering, no live timestamps in check logic, no randomness. Reads the doctrine rule corpus from `docs/concepts/optimization-doctrine/` (override via `SEO_DOCTRINE_PATH`, the design-detector pattern); each GEO check carries a `rule_id` resolving into `corpus.v*.json`. Emits findings conforming to the Phase 0 findings schema. Exposes a pluggable `Scorer` interface (FR-1.7) — the slot Phase 6's learned scorer plugs into. See `mcp/seo-geo-detector/README.md`.
+
 ---
 
 ## Global MCP Configurations
@@ -251,7 +258,7 @@ Keyword research and SERP intelligence for the SEO content pipeline. npx-based M
 - `keywords_explorer_related_terms` - LSI keywords, "also rank for" terms
 - `serp_overview_serp_overview` - Top 10 SERP results, features, PAA
 
-**Used by:** seo-research-specialist, seo-optimizer
+**Used by:** seo-research-specialist
 **Projects:** Project-scoped (configured in project `.mcp.json` + `enabledMcpjsonServers`)
 
 ### adb-mcp (Adobe Creative Suite)
@@ -385,7 +392,7 @@ Google Analytics 4 data access for SEO effectiveness reporting. Authenticates vi
 - `get_custom_dimensions_and_metrics` - Custom GA4 dimensions/metrics
 - `list_google_ads_links` - Google Ads links for the property
 
-**Used by:** seo-optimizer (audit mode + auto-pull during optimization)
+**Used by:** (forthcoming) `/seo-optimize` lane -- the prior consumer `seo-optimizer` was archived 2026-05-17
 **Projects:** peptidefox, obsidian-peptides, rvry (project-scoped via .mcp.json)
 **Scope:** Project-scoped only (configured in each project's `.mcp.json`, NOT global)
 
@@ -416,7 +423,7 @@ Google Search Console data for search query performance. npm package is `mcp-ser
 - `enhanced_search_analytics` - Search performance data with built-in quick wins detection (queries, impressions, clicks, CTR, position)
 - `index_inspect` - Inspect URL indexing status
 
-**Used by:** seo-optimizer (audit mode + auto-pull), seo-research-specialist (pre-research check)
+**Used by:** seo-research-specialist (pre-research check); (forthcoming) `/seo-optimize` lane for audit data -- the prior consumer `seo-optimizer` was archived 2026-05-17
 **Projects:** peptidefox, obsidian-peptides, rvry (project-scoped via .mcp.json)
 **Scope:** Project-scoped only (configured in each project's `.mcp.json`, NOT global)
 

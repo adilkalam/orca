@@ -1,0 +1,140 @@
+{
+  "version": 1,
+  "_note": "Handler-based rules not yet wired. DEFERRED (implementable as CSS AST walks, re-add to rules[] when handlers compiled): chamfer-stack, asymmetric-heading-margins-missing, missing-typography-junctions. REMOVED FROM SCOPE: ios-calculator-default (too specific, already covered by generic-ui-defaults rant); pretend-variation (requires cross-candidate structural similarity, not a per-file scan); pixel-misalignment (requires rendered layout measurements, belongs in Chrome DevTools MCP review path, not static CSS scanner). Pattern-based rules below run live via runExternalRules in detect-antipatterns.mjs. ADVISORY UTILITY-SPRAWL NOTE: the utility-sprawl rule (P1, source_rant rants/css-architecture.md, target source) is a coarse smell detector for scattered design authority (doctrine B) — it regex-matches className/class strings carrying 6+ utility-like tokens. It is ADVISORY: it logs and never blocks, so false positives are acceptable. It is NOT a Tailwind ban — raw palette utilities are the blocking concern, owned by tailwind-palette-utilities (P0). A precise count-based JSX handler (parse the className token list, threshold the count, dedupe across components) is a future refinement, NOT built now.",
+  "collection_reference": "docs/concepts/design-contract/",
+  "rules": [
+    {
+      "id": "tailwind-palette-utilities",
+      "severity": "P0",
+      "source_rant": "rants/colors.md",
+      "patterns": [
+        {
+          "type": "regex",
+          "target": "css",
+          "pattern": "\\b(bg|text|border|ring|divide|outline|fill|stroke)-(red|orange|amber|yellow|lime|green|emerald|teal|cyan|sky|blue|indigo|violet|purple|fuchsia|pink|rose|slate|gray|zinc|neutral|stone)-\\d+\\b"
+        }
+      ]
+    },
+    {
+      "id": "tailwind-hex-values",
+      "severity": "P0",
+      "source_rant": "rants/colors.md",
+      "patterns": [
+        {
+          "type": "regex",
+          "target": "css",
+          "pattern": "#(ef4444|f97316|eab308|22c55e|3b82f6|a855f7|ec4899|6b7280|8b5cf6|d946ef)"
+        }
+      ]
+    },
+    {
+      "id": "reflex-fonts",
+      "severity": "P0",
+      "source_rant": "rants/fonts.md",
+      "patterns": [
+        {
+          "type": "regex",
+          "target": "css",
+          "pattern": "font-family:\\s*[\"']?(Geist|Inter|Roboto|Arial|Open Sans|DM Sans|Plus Jakarta Sans|Outfit|Satoshi|Manrope|Space Grotesk|Space Mono|IBM Plex Sans|IBM Plex Mono|IBM Plex Serif|Instrument Sans|Instrument Serif|Fraunces|Newsreader|Lora|Crimson|Crimson Pro|Playfair Display|Cormorant|Cormorant Garamond|Syne|DM Serif Display|DM Serif Text)[\"']?"
+        }
+      ]
+    },
+    {
+      "id": "geist-imports",
+      "severity": "P0",
+      "source_rant": "rants/fonts.md",
+      "patterns": [
+        {
+          "type": "regex",
+          "target": "source",
+          "pattern": "fonts\\.vercel\\.com|next/font.*Geist|import.*Geist.*from.*'geist"
+        }
+      ]
+    },
+    {
+      "id": "purple-pink-gradients",
+      "severity": "P0",
+      "source_rant": "rants/gradients.md",
+      "patterns": [
+        {
+          "type": "regex",
+          "target": "css",
+          "pattern": "(linear|radial|conic)-gradient[^;]*#(a855f7|d946ef|ec4899|8b5cf6|c084fc|e879f9)"
+        }
+      ]
+    },
+    {
+      "id": "gradient-text",
+      "severity": "P0",
+      "source_rant": "rants/gradients.md",
+      "patterns": [
+        {
+          "type": "regex",
+          "target": "css",
+          "pattern": "background-clip:\\s*text.*\\n.*(linear|radial|conic)-gradient"
+        }
+      ]
+    },
+    {
+      "id": "side-stripe-borders",
+      "severity": "P0",
+      "source_rant": "rants/chamfered-buttons.md",
+      "patterns": [
+        {
+          "type": "regex",
+          "target": "css",
+          "pattern": "border-(left|right):\\s*[2-9]px|border-(left|right):\\s*\\d{2,}px"
+        }
+      ]
+    },
+    {
+      "id": "inset-highlight-shadow",
+      "severity": "P0",
+      "source_rant": "rants/chamfered-buttons.md",
+      "patterns": [
+        {
+          "type": "regex",
+          "target": "css",
+          "pattern": "box-shadow:[^;]*inset[^;]*(rgba\\(255,\\s*255,\\s*255|#fff)"
+        }
+      ]
+    },
+    {
+      "id": "default-ease-transition",
+      "severity": "P1",
+      "source_rant": "rants/motion-suddenness.md",
+      "patterns": [
+        {
+          "type": "regex",
+          "target": "css",
+          "pattern": "transition:\\s*all\\s+\\d+m?s\\s*[;}]"
+        }
+      ]
+    },
+    {
+      "id": "bouncy-easing",
+      "severity": "P1",
+      "source_rant": "rants/motion-suddenness.md",
+      "patterns": [
+        {
+          "type": "regex",
+          "target": "css",
+          "pattern": "cubic-bezier\\([^)]*,\\s*[-]?[0-9.]+,\\s*[-]?[0-9.]+,\\s*(1\\.[0-9]+|-[0-9]+|1[0-9]+)"
+        }
+      ]
+    },
+    {
+      "id": "utility-sprawl",
+      "severity": "P1",
+      "source_rant": "rants/css-architecture.md",
+      "advisory": true,
+      "patterns": [
+        {
+          "type": "regex",
+          "target": "source",
+          "pattern": "class(Name)?\\s*=\\s*[\"'`][^\"'`]*?((?:\\b(?:flex|grid|gap-[\\w./-]+|p[xytrbl]?-\\d+|m[xytrbl]?-\\d+|text-(?:xs|sm|base|lg|xl)|font-(?:medium|semibold|bold)|rounded[\\w-]*|shadow[\\w-]*|border[\\w-]*|items-[\\w-]+|justify-[\\w-]+|w-[\\w./-]+|h-[\\w./-]+)\\b[^\"'`]*?){6,})"
+        }
+      ]
+    }
+  ]
+}

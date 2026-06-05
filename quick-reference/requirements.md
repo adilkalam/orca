@@ -10,7 +10,7 @@ The `/requirements` command creates blueprint-quality requirements specs before 
 /requirements Add dark mode toggle to settings
 ```
 
-This creates a requirements folder at `.claude/requirements/YYYY-MM-DD-HHMM-dark-mode/` and guides you through discovery questions.
+This creates a requirements folder at `.orca/requirements/YYYY-MM-DD-HHMM-dark-mode/` and guides you through discovery questions.
 
 ---
 
@@ -81,7 +81,7 @@ It runs a convergent decision pipeline automatically, producing:
 ## What Gets Created
 
 ```
-.claude/requirements/2025-12-05-1430-dark-mode/
+.orca/requirements/2025-12-05-1430-dark-mode/
   00-initial-request.md         # Your original request
   00-cognition-analysis.md      # (if single --flag used)
   00-problem-solve-analysis.md  # (if --problem-solve used - full pipeline output)
@@ -137,7 +137,7 @@ Note: `--explore` mode creates different files: `00-exploration-analysis.md`, `0
 The command suggests your next step:
 
 ```
-Spec complete: .claude/requirements/.../06-requirements-spec.md
+Spec complete: .orca/requirements/.../06-requirements-spec.md
 Tier: default
 Domain detected: nextjs
 

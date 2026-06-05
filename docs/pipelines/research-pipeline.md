@@ -68,7 +68,7 @@ In both modes, `/research` is an **orchestrator-only** command:
 All Research pipeline work shares a common phase state file:
 
 ```text
-.claude/orchestration/phase_state.json
+.orca/orchestration/phase_state.json
 ```
 
 For `domain: "research"`, see

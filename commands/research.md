@@ -2,7 +2,7 @@
 description: "OS 7.0 Research lane entrypoint for deep, cited research"
 argument-hint: "[--deep] [--time N] <research question>"
 allowed-tools:
-  - Task
+  - Agent
   - Read
   - Write
   - Grep
@@ -15,8 +15,10 @@ allowed-tools:
 
 ## YOUR ROLE: DIRECT ORCHESTRATION
 
-You are the orchestrator. You spawn all subagents directly - there is no lead agent.
-Claude Code does not support nested subagent spawning, so YOU must do all delegation.
+You are the orchestrator, running in the main thread. You spawn all subagents
+directly via the `Agent` tool — there is no lead agent. Claude Code forbids
+subagents from spawning subagents, so all delegation happens here, single-level,
+one at a time. See `docs/reference/flatten-orchestration-pattern.md`.
 
 **Your subagents:**
 - `research-web-search-subagent` - WebSearch + Crawl4AI for web queries
@@ -35,7 +37,7 @@ Claude Code does not support nested subagent spawning, so YOU must do all delega
 ```bash
 # Generate folder name: YYYY-MM-DD-Topic-Slug
 # Example: 2025-12-25-Technical-Trading-Patterns
-RESEARCH_DIR=".claude/research/$(date +%Y-%m-%d)-<Topic-Slug>"
+RESEARCH_DIR=".orca/research/$(date +%Y-%m-%d)-<Topic-Slug>"
 mkdir -p "$RESEARCH_DIR/evidence"
 ```
 
@@ -108,17 +110,20 @@ Claude Code runs on Node.js with ~4GB heap. Even 2 parallel subagents can crash.
 
 For EACH subquestion:
 
-1. **Spawn ONE subagent** (pass $RESEARCH_DIR in prompt):
+1. **Spawn ONE subagent** (single-level via `Agent`, pass $RESEARCH_DIR in prompt):
 ```
-Task tool call:
-  subagent_type: "research-web-search-subagent"
-  prompt: |
+Agent({
+  subagent_type: "research-web-search-subagent",
+  description: "Evidence gathering for one subquestion",
+  prompt: `
     Research subquestion: [specific question]
     Timeframe: [recency requirements if any]
 
-    RESEARCH_DIR: [full path, e.g., .claude/research/2025-12-25-Technical-Trading]
+    RESEARCH_DIR: [full path, e.g., .orca/research/2025-12-25-Technical-Trading]
     Write Evidence Note to: $RESEARCH_DIR/evidence/
     Use temp folder: $RESEARCH_DIR/temp/
+  `
+})
 ```
 
 2. **Wait for it to complete and return**
@@ -159,26 +164,32 @@ Spawn the appropriate writer:
 
 **For standard research (no --deep flag):**
 ```
-Task tool call:
-  subagent_type: "research-answer-writer"
-  prompt: |
+Agent({
+  subagent_type: "research-answer-writer",
+  description: "Write standard research report",
+  prompt: `
     Write research report on: [topic]
 
     RESEARCH_DIR: [full path]
     Evidence files: $RESEARCH_DIR/evidence/*.md
     Output to: $RESEARCH_DIR/report.md
+  `
+})
 ```
 
 **For --deep research:**
 ```
-Task tool call:
-  subagent_type: "research-deep-writer"
-  prompt: |
+Agent({
+  subagent_type: "research-deep-writer",
+  description: "Write long-form deep research report",
+  prompt: `
     Write deep research report on: [topic]
 
     RESEARCH_DIR: [full path]
     Evidence files: $RESEARCH_DIR/evidence/*.md
     Output to: $RESEARCH_DIR/report.md
+  `
+})
 ```
 
 ---
@@ -189,20 +200,28 @@ After writer returns, run gates sequentially:
 
 1. **Citation gate:**
 ```
-Task tool call:
-  subagent_type: "research-citation-gate"
-  prompt: |
+Agent({
+  subagent_type: "research-citation-gate",
+  description: "Verify citations in draft",
+  prompt: `
     Verify citations in: [draft path]
     Evidence files: [list]
+  `
+})
 ```
+Read the returned verdict before proceeding.
 
 2. **Consistency gate:**
 ```
-Task tool call:
-  subagent_type: "research-consistency-gate"
-  prompt: |
+Agent({
+  subagent_type: "research-consistency-gate",
+  description: "Check consistency of draft",
+  prompt: `
     Check consistency of: [draft path]
+  `
+})
 ```
+Read the returned verdict; branch on pass/fail.
 
 ---
 
@@ -211,7 +230,6 @@ Task tool call:
 Return the final report to user with:
 - The research findings
 - Source citations
-- Any RA tags from evidence (LOW_EVIDENCE, SOURCE_DISAGREEMENT, etc.)
 - **Full path to the research folder**: `$RESEARCH_DIR`
 - Contents: `$RESEARCH_DIR/report.md`, `$RESEARCH_DIR/synthesis.md`, `$RESEARCH_DIR/evidence/`
 
@@ -231,15 +249,6 @@ For synthesis PDF: `bash ~/.claude/scripts/utilities/md-to-pdf.sh $RESEARCH_DIR/
 Supports `--serif` (Financier) and `--sans` (Calibre) flags. Default is Founders Grotesk.
 
 ---
-
-## Response Awareness Tags
-
-Propagate these from subagent reports:
-- `#LOW_EVIDENCE` - few/weak sources found
-- `#SOURCE_DISAGREEMENT` - sources conflict
-- `#TOOL_ERROR` - subagent reported tool failures
-- `#RETRY_EXHAUSTED` - subquestion failed after 3 attempts
-- `#OUT_OF_DATE` - sources outside recency window
 
 ---
 

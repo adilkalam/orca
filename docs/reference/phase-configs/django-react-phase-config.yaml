@@ -320,8 +320,8 @@ design_gate:
 config:
   max_implementation_passes: 2
   gate_failure_behavior: block_and_correct
-  evidence_path: .claude/orchestration/evidence/
-  phase_state_path: .claude/orchestration/phase_state.json
+  evidence_path: .orca/orchestration/evidence/
+  phase_state_path: .orca/orchestration/phase_state.json
 
 # Tooling Configuration
 tooling:

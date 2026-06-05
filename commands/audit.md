@@ -127,7 +127,7 @@ Include `verbose: false` in every cognition MCP call from /audit. This is a mult
 
 4. **Initialize**
    ```bash
-   mkdir -p .claude/audit/temp/
+   mkdir -p .orca/audit/temp/
    ```
 
 5. **Cognition Checkpoint: Enter**
@@ -218,7 +218,7 @@ This format is mandatory. A CLEAN result without stating what verification was p
 | Poor organization | Check max directory depth, files in root that belong in subdirs, scattered concerns | -5 to -15 |
 
 **RECORD:**
-- Write evidence to `.claude/audit/temp/structure.md`
+- Write evidence to `.orca/audit/temp/structure.md`
 - Cognition checkpoint with phase: "structure", score, key findings
 
 ---
@@ -240,7 +240,7 @@ This format is mandatory. A CLEAN result without stating what verification was p
 | Insecure storage | Grep for localStorage/sessionStorage with sensitive data patterns (token, password, secret, key) | -15 each |
 
 **RECORD:**
-- Write evidence to `.claude/audit/temp/security.md`
+- Write evidence to `.orca/audit/temp/security.md`
 - Cognition checkpoint with phase: "security", score, key findings
 
 ---
@@ -263,7 +263,7 @@ This format is mandatory. A CLEAN result without stating what verification was p
 **Note:** If audit tools are not installed or fail, note this in evidence and skip with a deferred finding.
 
 **RECORD:**
-- Write evidence to `.claude/audit/temp/dependencies.md`
+- Write evidence to `.orca/audit/temp/dependencies.md`
 - Cognition checkpoint with phase: "dependencies", score, key findings
 
 ---
@@ -284,7 +284,7 @@ This format is mandatory. A CLEAN result without stating what verification was p
 | Style inconsistency | Beyond linting: inconsistent file organization, inconsistent export patterns, inconsistent naming across directories | -2 each (cap -10) |
 
 **RECORD:**
-- Write evidence to `.claude/audit/temp/patterns.md`
+- Write evidence to `.orca/audit/temp/patterns.md`
 - Cognition checkpoint with phase: "patterns", score, key findings
 
 ---
@@ -306,7 +306,7 @@ This format is mandatory. A CLEAN result without stating what verification was p
 | Boundary violations | UI components importing directly from data layer, shared utilities importing from feature modules | -5 each (cap -20) |
 
 **RECORD:**
-- Write evidence to `.claude/audit/temp/architecture.md`
+- Write evidence to `.orca/audit/temp/architecture.md`
 - Cognition checkpoint with phase: "architecture", score, key findings
 
 ---
@@ -328,7 +328,7 @@ This format is mandatory. A CLEAN result without stating what verification was p
 | Flakiness indicators | Grep test files for setTimeout, sleep, Date.now, Math.random usage that indicates timing-dependent tests | -3 each (cap -15) |
 
 **RECORD:**
-- Write evidence to `.claude/audit/temp/tests.md`
+- Write evidence to `.orca/audit/temp/tests.md`
 - Cognition checkpoint with phase: "tests", score, key findings
 
 ---
@@ -350,7 +350,7 @@ This format is mandatory. A CLEAN result without stating what verification was p
 | Incomplete documentation | Key exported functions/components with no JSDoc/docstring. Modules with no README | -3 each (cap -15) |
 
 **RECORD:**
-- Write evidence to `.claude/audit/temp/documentation.md`
+- Write evidence to `.orca/audit/temp/documentation.md`
 - Cognition checkpoint with phase: "documentation", score, key findings
 
 ---
@@ -374,7 +374,7 @@ This format is mandatory. A CLEAN result without stating what verification was p
 | Token compliance | If a design token system exists, check that components use tokens rather than raw values | -3 each (cap -15) |
 
 **RECORD:**
-- Write evidence to `.claude/audit/temp/design.md`
+- Write evidence to `.orca/audit/temp/design.md`
 - Cognition checkpoint with phase: "design", score, key findings
 
 ---
@@ -407,7 +407,7 @@ Phase 2D-3: Self-Validation
 Phase 2D-4: Deduplicate into Root Causes
     |
     v
-Phase 3: Report (.claude/audit/YYYY-MM-DD-documentation.md)
+Phase 3: Report (.orca/audit/YYYY-MM-DD-documentation.md)
 ```
 
 #### Phase 2D-1: Build Inventory
@@ -440,7 +440,7 @@ grep -i "Version.*OS\|OS.*[0-9]\+\.[0-9]" CLAUDE.md | head -1
 
 **Critical requirement:** Enumerate item NAMES, not just counts. The inventory must include the list of agent names, command names, etc. This enables OP-6 set-diff verification.
 
-Store inventory in `.claude/audit/temp/inventory.md` as a structured reference.
+Store inventory in `.orca/audit/temp/inventory.md` as a structured reference.
 
 #### Phase 2D-2: Per-File Verification
 
@@ -568,7 +568,7 @@ Rank root causes by instance count (descending).
    ```
    For each finding:
      hash = sha256("${type}:${location}:${title}").slice(0, 8)
-     Check .claude/audit/audit-index.json for existing ID
+     Check .orca/audit/audit-index.json for existing ID
      If exists: reuse ID, update lastSeen
      If new: assign AUD-${year}-${counter}
    ```
@@ -577,7 +577,7 @@ Rank root causes by instance count (descending).
 
 1. **Generate Markdown Report**
 
-   Write to `.claude/audit/YYYY-MM-DD-<mode>.md`:
+   Write to `.orca/audit/YYYY-MM-DD-<mode>.md`:
 
    ```markdown
    # Due Diligence Audit: [Project Name]
@@ -621,7 +621,7 @@ Rank root causes by instance count (descending).
 
 2. **Update Audit Index**
 
-   Write to `.claude/audit/audit-index.json` with audit history, finding persistence, and trend data.
+   Write to `.orca/audit/audit-index.json` with audit history, finding persistence, and trend data.
 
 3. **Display Terminal Summary**
 
@@ -648,7 +648,7 @@ Rank root causes by instance count (descending).
 
    Recommendation: [recommendation]
 
-   Report: .claude/audit/YYYY-MM-DD-<mode>.md
+   Report: .orca/audit/YYYY-MM-DD-<mode>.md
    ```
 
    For `--documentation` mode, use the documentation-specific terminal summary format:
@@ -672,7 +672,7 @@ Rank root causes by instance count (descending).
      OP-5 Infrastructure:        N checks, N findings
      OP-6 List Completeness:     N checks, N findings
 
-   Report: .claude/audit/YYYY-MM-DD-documentation.md
+   Report: .orca/audit/YYYY-MM-DD-documentation.md
    ```
 
 ---
@@ -812,7 +812,7 @@ Run all applicable dimensions scoped to the matched files/directory only.
 
 After report generation:
 ```bash
-rm -rf .claude/audit/temp/
+rm -rf .orca/audit/temp/
 ```
 
 ---

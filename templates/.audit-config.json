@@ -1,0 +1,41 @@
+{
+  "_comment": "Per-project configuration for scripts/audit-design.sh. Defaults shown are peptidefox-equivalent. Override per project.",
+  "_schema": {
+    "monoCountCap": "int — max font-family declarations matching monoFontPattern per stylesheet (cap 8)",
+    "monoFontPattern": "string regex — name of the project mono font used in font-family declarations (e.g. 'Brown Mono', 'IBM Plex Mono')",
+    "monoWhitelist": "array of strings — class-name suffixes (regex fragments) that are permitted to use mono font; alternated with | and matched against the selector preceding the rule",
+    "classPrefix": "string — project class prefix (e.g. 'dp-', 'pf-'); informational only, not enforced",
+    "stylesheetGlob": "string — directory under project root containing component CSS files to audit (e.g. 'app/styles/components')"
+  },
+
+  "monoCountCap": 8,
+  "monoFontPattern": "Brown Mono",
+  "monoWhitelist": [
+    "__eyebrow",
+    "__tag",
+    "__unit",
+    "__chip",
+    "__axis",
+    "__footnote",
+    "__terminal",
+    "__code",
+    "__meta",
+    "__readout",
+    "__cell-mono",
+    "__measure-unit",
+    "axis-tick",
+    "hover-readout",
+    "provenance-tag",
+    "annotation-tag",
+    "empty-tag",
+    "pair-tag",
+    "arm-warn",
+    "arm-meta",
+    "canvas-meta",
+    "group-label",
+    "controls__label",
+    "mono-register"
+  ],
+  "classPrefix": "pf-",
+  "stylesheetGlob": "app/styles/components"
+}

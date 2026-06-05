@@ -2,7 +2,7 @@
 description: "Root cause analysis orchestrator – identify why something is failing and route to the right agents"
 argument-hint: "<symptom description or failing test/error>"
 allowed-tools:
-  - Task
+  - Agent
   - AskUserQuestion
   - mcp__project-context__query_context
   - mcp__project-context__save_task_history
@@ -27,7 +27,7 @@ This command:
 - Uses memory and ProjectContext to gather context
 - Identifies the most likely **domain/lane**
 - Assembles a small **root-cause squad** of relevant agents
-- Delegates investigation via `Task` (no implementation)
+- Delegates investigation via `Agent` (no implementation)
 - Produces a root cause report (not a fix)
 
 **Role boundary:** `/root-cause` is an **orchestrator only** command.
@@ -145,7 +145,7 @@ Select the confirmed domain and proceed.
 ## 2. Assemble a Root-Cause Squad (Per Domain)
 
 You now assemble a **diagnostic team**, not an implementation team.
-You do this via `Task`, using agents from the relevant lane.
+You do this via `Agent` (single-level, from the main thread), using agents from the relevant lane.
 
 ### 2.1 iOS Root-Cause Squad
 
@@ -163,7 +163,7 @@ Likely agents (from `agents/iOS/`):
 You can orchestrate a small investigation pipeline:
 
 ```typescript
-Task({
+Agent({
   subagent_type: "ios-testing-specialist",
   description: "Analyze failing tests and error output",
   prompt: `
@@ -186,7 +186,7 @@ Your job:
 Then:
 
 ```typescript
-Task({
+Agent({
   subagent_type: "ios-verification",
   description: "Run targeted build/test to validate hypotheses",
   prompt: `
@@ -216,7 +216,7 @@ Likely agents (from `agents/nextjs/`):
 You can call:
 
 ```typescript
-Task({
+Agent({
   subagent_type: "nextjs-verification-agent",
   description: "Investigate Next.js failure",
   prompt: `
@@ -299,7 +299,7 @@ After the root-cause squad agents respond:
 - It may:
   - Read files/logs as needed to understand behavior.
   - Run safe commands via delegated verification agents.
-  - Call Task to coordinate domain-specific specialists.
+  - Call Agent to coordinate domain-specific specialists (single-level).
 
 Fixing the issue should be done via the appropriate pipeline:
 
@@ -317,14 +317,14 @@ After completing the analysis, persist for future reference.
 ### Step 1: Create Cognition Directory
 
 ```bash
-mkdir -p "$PWD/.claude/cognition"
+mkdir -p "$PWD/.orca/cognition"
 ```
 
-NOTE: This is the PROJECT's `.claude/`, NOT `~/.claude/`. Always use $PWD to ensure project-local path.
+NOTE: This creates the project's `.orca/cognition/` directory. Always use $PWD to ensure project-local path.
 
 ### Step 2: Generate Summary File
 
-Create file at `$PWD/.claude/cognition/YYYYMMDD-HHMM-<slug>.md` where:
+Create file at `$PWD/.orca/cognition/YYYYMMDD-HHMM-<slug>.md` where:
 - YYYYMMDD = current date (no dashes)
 - HHMM = current time
 - slug = first 30 chars of symptom, kebab-cased
@@ -363,7 +363,7 @@ To resume full analysis:
 
 ```bash
 workshop --workspace .claude/memory note \
-  "/root-cause: [Symptom] - [Root cause identified]. Session: <sessionId>. File: .claude/cognition/<filename>" \
+  "/root-cause: [Symptom] - [Root cause identified]. Session: <sessionId>. File: .orca/cognition/<filename>" \
   -t root-cause -t cognition
 ```
 
@@ -373,7 +373,7 @@ Output:
 ```
 ---
 Analysis persisted:
-  File: .claude/cognition/YYYYMMDD-HHMM-slug.md
+  File: .orca/cognition/YYYYMMDD-HHMM-slug.md
   Workshop: Tagged with root-cause, cognition
   Recovery: /contemplate --import <sessionId>
 ---

@@ -172,7 +172,7 @@ Then return with:
   /ios "implement requirement <id>"
 ```
 
-Specs live at: `.claude/requirements/<id>/06-requirements-spec.md`
+Specs live at: `.orca/requirements/<id>/06-requirements-spec.md`
 
 Created by `/requirements`, consumed by domain orchestrators.
 

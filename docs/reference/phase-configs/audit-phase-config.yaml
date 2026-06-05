@@ -58,7 +58,7 @@ phases:
           core: ["structure", "security", "dependencies", "patterns", "documentation"]
           comprehensive: "all 8 (7 for non-UI)"
       - init_workspace:
-          path: ".claude/audit/temp/"
+          path: ".orca/audit/temp/"
       - cognition_checkpoint:
           operation: checkpoint
           phase: enter
@@ -127,7 +127,7 @@ phases:
     dimensions:
       structure:
         weight: 0.10
-        output: ".claude/audit/temp/structure.md"
+        output: ".orca/audit/temp/structure.md"
         checks:
           - giant_files_500plus: "-5 each (cap -20)"
           - dead_code_files: "-5 each (cap -25)"
@@ -135,7 +135,7 @@ phases:
           - poor_organization: "-5 to -15"
       security:
         weight: 0.20
-        output: ".claude/audit/temp/security.md"
+        output: ".orca/audit/temp/security.md"
         checks:
           - exposed_secrets: "-25 each (CRITICAL, caps dimension at 50)"
           - http_endpoints: "-10 each (cap -30)"
@@ -143,7 +143,7 @@ phases:
           - insecure_storage: "-15 each"
       dependencies:
         weight: 0.15
-        output: ".claude/audit/temp/dependencies.md"
+        output: ".orca/audit/temp/dependencies.md"
         checks:
           - critical_vulnerability: "-15 each"
           - high_vulnerability: "-8 each"
@@ -151,7 +151,7 @@ phases:
           - unused_dependency: "-2 each (cap -10)"
       patterns:
         weight: 0.10
-        output: ".claude/audit/temp/patterns.md"
+        output: ".orca/audit/temp/patterns.md"
         checks:
           - anti_pattern: "-5 each (cap -25)"
           - inconsistent_error_handling: "-3 each (cap -15)"
@@ -159,7 +159,7 @@ phases:
           - style_inconsistency: "-2 each (cap -10)"
       architecture:
         weight: 0.15
-        output: ".claude/audit/temp/architecture.md"
+        output: ".orca/audit/temp/architecture.md"
         checks:
           - circular_dependency: "-10 each (no cap)"
           - high_coupling: "-5 each (cap -20)"
@@ -167,7 +167,7 @@ phases:
           - boundary_violation: "-5 each (cap -20)"
       tests:
         weight: 0.15
-        output: ".claude/audit/temp/tests.md"
+        output: ".orca/audit/temp/tests.md"
         checks:
           - low_coverage: "-10 (if <60%)"
           - missing_assertions: "-5 per file (cap -20)"
@@ -175,7 +175,7 @@ phases:
           - flakiness_indicator: "-3 each (cap -15)"
       documentation:
         weight: 0.10
-        output: ".claude/audit/temp/documentation.md"
+        output: ".orca/audit/temp/documentation.md"
         checks:
           - missing_critical_doc: "-10 each (no cap)"
           - stale_documentation: "-5 each (cap -20)"
@@ -184,7 +184,7 @@ phases:
       design:
         weight: 0.05
         condition: "UI projects only; weight redistributed if N/A"
-        output: ".claude/audit/temp/design.md"
+        output: ".orca/audit/temp/design.md"
         checks:
           - hardcoded_value: "-3 each (cap -15)"
           - inconsistent_component: "-5 each (cap -15)"
@@ -201,7 +201,7 @@ phases:
     outputs:
       - dimension_scores  # Map of dimension -> score
       - all_findings  # Array of evidence-backed findings
-      - temp_evidence_files  # Written to .claude/audit/temp/
+      - temp_evidence_files  # Written to .orca/audit/temp/
 
   - name: aggregation
     description: Calculate weighted scores, rank findings, assign stable IDs
@@ -215,7 +215,7 @@ phases:
       - assign_stable_ids:
           method: "sha256(type:location:title).slice(0,8)"
           format: "AUD-YYYY-NNN"
-          persistence: ".claude/audit/audit-index.json"
+          persistence: ".orca/audit/audit-index.json"
           behavior:
             existing: "Reuse ID, update lastSeen"
             new: "Assign next AUD-YYYY-NNN"
@@ -230,7 +230,7 @@ phases:
     duration_target: "~2 min"
     actions:
       - generate_markdown:
-          output: ".claude/audit/YYYY-MM-DD-<mode>.md"
+          output: ".orca/audit/YYYY-MM-DD-<mode>.md"
           sections:
             - header  # Score, risk, duration, files analyzed
             - tldr  # Summary bullets
@@ -240,7 +240,7 @@ phases:
             - findings  # Ranked by severity
             - evidence_summary  # Table of verification methodology per dimension
       - update_index:
-          file: ".claude/audit/audit-index.json"
+          file: ".orca/audit/audit-index.json"
           data:
             - audit_entry
             - finding_entries
@@ -252,7 +252,7 @@ phases:
       - display_terminal_summary:
           format: "Structured terminal output with scores, finding counts, top priority, recommendation"
       - cleanup_temp:
-          command: "rm -rf .claude/audit/temp/"
+          command: "rm -rf .orca/audit/temp/"
     outputs:
       - report_path
       - index_updated
@@ -299,7 +299,7 @@ modes:
     phases:
       inventory:
         description: "Build ground-truth counts and item names via bash/glob"
-        output: ".claude/audit/temp/inventory.md"
+        output: ".orca/audit/temp/inventory.md"
         duration_target: "1-2 min"
         data_collected:
           - agent_counts_per_domain
@@ -339,7 +339,7 @@ modes:
         flag: "--documentation --comprehensive"
     invalid_combinations:
       - "--documentation --since"  # Requires full file reads, not diffs
-    output: ".claude/audit/YYYY-MM-DD-documentation.md"
+    output: ".orca/audit/YYYY-MM-DD-documentation.md"
     duration_target:
       sampled: "20-30 min"
       comprehensive: "no time limit"
@@ -364,13 +364,13 @@ scoring:
 
 outputs:
   report:
-    location: ".claude/audit/YYYY-MM-DD-<mode>.md"
+    location: ".orca/audit/YYYY-MM-DD-<mode>.md"
     format: "markdown"
   index:
-    location: ".claude/audit/audit-index.json"
+    location: ".orca/audit/audit-index.json"
     format: "json"
   temp:
-    location: ".claude/audit/temp/"
+    location: ".orca/audit/temp/"
     cleanup: "after report generation"
 
 guardrails:

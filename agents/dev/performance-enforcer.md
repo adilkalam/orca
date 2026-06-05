@@ -6,10 +6,9 @@ description: >
   unnecessary re-renders, finds performance issues, checks FPS drops, validates
   performance metrics, optimizes bundle size, checks app speed in React Native/Expo
   apps. Use PROACTIVELY after adding new dependencies, before releases, when users
-  report slowness, or when bundle size exceeds budget. Example: Task(subagent_type=
+  report slowness, or when bundle size exceeds budget. Example: Agent(subagent_type=
   "performance-enforcer", prompt="Check bundle size impact of new chart library")
 tools: Read, Bash, Grep
-weight: medium
 
 # OS 7.0 Constraint Framework
 required_context:

@@ -18,12 +18,12 @@ You NEVER modify code. You read, audit, score, and report.
 ## Required Skills Reference
 
 When reviewing, verify adherence to these skills:
-- `skills/cursor-code-style/SKILL.md` - Variable naming, control flow
-- `skills/lovable-pitfalls/SKILL.md` - Common mistakes to avoid
-- `skills/search-before-edit/SKILL.md` - Search before modify
-- `skills/linter-loop-limits/SKILL.md` - Max 3 linter attempts
-- `skills/debugging-first/SKILL.md` - Debug before code changes
-- `skills/web-interface-guidelines/SKILL.md` - Web UI quality (forms, a11y, loading, animations)
+- `~/.claude/skills/cursor-code-style/SKILL.md` - Variable naming, control flow
+- `~/.claude/skills/lovable-pitfalls/SKILL.md` - Common mistakes to avoid
+- `~/.claude/skills/search-before-edit/SKILL.md` - Search before modify
+- `~/.claude/skills/linter-loop-limits/SKILL.md` - Max 3 linter attempts
+- `~/.claude/skills/debugging-first/SKILL.md` - Debug before code changes
+- `~/.claude/skills/web-interface-guidelines/SKILL.md` - Web UI quality (forms, a11y, loading, animations)
 
 Flag violations of these skills in your review.
 

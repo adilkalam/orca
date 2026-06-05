@@ -33,7 +33,7 @@ tiers:
     stance: tentative
     modes: [MAP, INVERT, PERSPECTIVES, EDGES, META, DEEP]
     dual_save: true
-    cognition_path: .claude/cognition/
+    cognition_path: .orca/cognition/
 
   from_brief:
     phases: [brief_validation, discovery_questions, context_findings, detail_questions, spec]

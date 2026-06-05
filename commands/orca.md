@@ -2,7 +2,8 @@
 description: "OS 7.0 Pure Orchestrator - Coordinates pipelines, never writes code"
 argument-hint: "[--audit <scope>] <task description or requirement ID>"
 allowed-tools:
-  - Task
+  - Agent
+  - SlashCommand
   - Read
   - Grep
   - Glob
@@ -40,8 +41,8 @@ When `--audit` is detected:
 1. **Parse Scope** - Extract scope from arguments after `--audit` (default: "last 5 tasks")
 
 2. **Load Evidence** - Gather from:
-   - `.claude/orchestration/phase_state.json` (phase/gate history)
-   - `.claude/orchestration/evidence/` (logs)
+   - `.orca/orchestration/phase_state.json` (phase/gate history)
+   - `.orca/orchestration/evidence/` (logs)
    - `mcp__project-context__query_context` with task: "Summarize recent task_history and standards for audit"
 
 3. **Apply Response Awareness Lens** - Analyze for:
@@ -52,7 +53,7 @@ When `--audit` is detected:
    - Scope creep, skipped phases, over-diffing
    - Violations that should become standards
 
-4. **Write Audit Report** - Create `.claude/orchestration/evidence/audit-<timestamp>.md`:
+4. **Write Audit Report** - Create `.orca/orchestration/evidence/audit-<timestamp>.md`:
    ```markdown
    # Behavior Audit Report
 
@@ -98,12 +99,12 @@ When `--audit` is detected:
      task: "Behavior audit: <scope>",
      outcome: "success",
      learnings: "Key RA findings summary",
-     files_modified: [".claude/orchestration/evidence/audit-<timestamp>.md"]
+     files_modified: [".orca/orchestration/evidence/audit-<timestamp>.md"]
    })
    ```
 
 7. **Optional: Self-Improvement Analysis** - If `--self-improve` flag included:
-   Analyze recent audit evidence in `.claude/orchestration/evidence/` for recurring patterns.
+   Analyze recent audit evidence in `.orca/orchestration/evidence/` for recurring patterns.
    Present improvement proposals to user, apply approved changes to agents.
 
 **After audit completes, STOP. Do not continue to normal pipeline flow.**
@@ -124,9 +125,9 @@ When `--audit` is detected:
 
 When `fix <finding-id>` is detected:
 
-1. **Load Finding Details** - Read `.claude/audit/audit-index.json`:
+1. **Load Finding Details** - Read `.orca/audit/audit-index.json`:
    ```typescript
-   const index = JSON.parse(fs.readFileSync('.claude/audit/audit-index.json'));
+   const index = JSON.parse(fs.readFileSync('.orca/audit/audit-index.json'));
    const finding = index.findings[findingId];
 
    if (!finding) {
@@ -163,49 +164,20 @@ When `fix <finding-id>` is detected:
    }
    ```
 
-4. **Route to Lane** - Pass finding context:
+4. **Route to Lane** - Write the finding context to `.orca/orchestration/handoff.json`, then route to the domain command in the main thread via SlashCommand (`-tweak` = light path with gates for the finding's dimension):
    ```typescript
-   Task({
-     subagent_type: `${lane}-light-orchestrator`,
-     description: `Fix audit finding ${findingId}`,
-     prompt: `
-AUDIT FINDING FIX REQUEST
-
-Finding ID: ${findingId}
-Type: ${finding.type}
-Severity: ${finding.severity}
-Dimension: ${finding.dimension}
-
-ISSUE:
-Title: ${finding.title}
-Location: ${finding.location}
-Description: ${finding.description}
-
-EVIDENCE:
-${finding.evidence}
-
-RECOMMENDATION:
-${finding.recommendation}
-
-EFFORT: ${finding.effort}
-
-YOUR TASK:
-1. Navigate to ${finding.location}
-2. Apply the recommendation: ${finding.recommendation}
-3. Verify the fix resolves the issue
-4. Run appropriate tests/gates for ${finding.dimension} dimension
-
-ROUTING: Light path with appropriate gates for ${finding.dimension}
-     `
-   });
+   // handoff.json: { findingId, type, severity, dimension, title, location,
+   //                 description, evidence, recommendation, effort }
+   SlashCommand({ command: `/${lane} -tweak Fix audit finding ${findingId} (see .orca/orchestration/handoff.json)` })
    ```
+   The domain command runs inline and spawns its builder + dimension gate single-level. (OS 7.1 — no `*-light-orchestrator` subagent; that tier is dissolved.)
 
 5. **Update Finding Status** - After fix completes:
    ```typescript
    // Update audit-index.json
    index.findings[findingId].status = 'fixed';
    index.findings[findingId].fixedAt = new Date().toISOString();
-   fs.writeFileSync('.claude/audit/audit-index.json', JSON.stringify(index, null, 2));
+   fs.writeFileSync('.orca/audit/audit-index.json', JSON.stringify(index, null, 2));
    ```
 
 **After fix routing completes, STOP. Do not continue to normal pipeline flow.**
@@ -227,14 +199,16 @@ ROUTING: Light path with appropriate gates for ${finding.dimension}
 - Think "this is simple, I'll just do it myself"
 - Use Edit/Write/MultiEdit tools
 
-**STOP. You are violating /orca protocol. You MUST delegate to a grand-architect agent via the Task tool.**
+**STOP. You are violating /orca protocol. You MUST route to the domain command via SlashCommand.**
 
 ## YOUR ONLY JOB IS:
 1. Detect pipeline type (nextjs/ios/expo/data/seo/design)
 2. Query ProjectContext ONCE
 3. Confirm with user via AskUserQuestion
-4. Call Task tool with appropriate grand-architect
-5. That's it. You're done. The grand-architect does the work.
+4. Route to the domain command via `SlashCommand({ command: "/{domain} ..." })`
+5. That's it. The domain command runs inline in the main thread and orchestrates its own specialists single-level.
+
+> **OS 7.1 — no nested subagents.** Subagents cannot spawn subagents. `/orca` does NOT spawn a grand-architect agent. It routes via `SlashCommand` so the (already-flattened) domain command runs in the main thread and spawns its specialists directly. See `docs/reference/flatten-orchestration-pattern.md`.
 
 ## FIRST ACTION MUST BE:
 Your very first tool call MUST be one of:
@@ -358,13 +332,13 @@ Check if `/requirements` has been run and load the spec:
 
 ```bash
 # Check for active requirement
-if [ -f .claude/requirements/.current-requirement ]; then
-  REQ_FOLDER=$(cat .claude/requirements/.current-requirement)
+if [ -f .orca/requirements/.current-requirement ]; then
+  REQ_FOLDER=$(cat .orca/requirements/.current-requirement)
   echo "Active requirement: $REQ_FOLDER"
 
   # Check for spec file
-  if [ -f ".claude/requirements/$REQ_FOLDER/06-requirements-spec.md" ]; then
-    echo "Spec found: .claude/requirements/$REQ_FOLDER/06-requirements-spec.md"
+  if [ -f ".orca/requirements/$REQ_FOLDER/06-requirements-spec.md" ]; then
+    echo "Spec found: .orca/requirements/$REQ_FOLDER/06-requirements-spec.md"
   fi
 fi
 ```
@@ -373,7 +347,7 @@ fi
 
 1. **READ THE SPEC** - This is your source of truth:
    ```bash
-   cat .claude/requirements/$REQ_FOLDER/06-requirements-spec.md
+   cat .orca/requirements/$REQ_FOLDER/06-requirements-spec.md
    ```
 
 2. **Extract RA tags** from the spec:
@@ -417,8 +391,8 @@ AskUserQuestion({
 
 - **"Start planning now"** → Execute `/requirements` inline:
    **PATH CHECK**: ALL paths MUST start with `.claude/` - NEVER create `requirements/` in project root
-  1. Create requirements folder: `.claude/requirements/YYYY-MM-DD-HHMM-[slug]/`
-     -  `.claude/requirements/...` |  `requirements/...`
+  1. Create requirements folder: `.orca/requirements/YYYY-MM-DD-HHMM-[slug]/`
+     -  `.orca/requirements/...` |  `requirements/...`
   2. Begin 5 discovery questions via AskUserQuestion
   3. After discovery, continue with 5 detail questions
   4. Generate spec file (`06-requirements-spec.md`)
@@ -432,7 +406,7 @@ AskUserQuestion({
       header: "Plan Path",
       multiSelect: false,
       options: [
-        { label: ".claude/requirements/ folder", description: "Check for existing requirement specs" },
+        { label: ".orca/requirements/ folder", description: "Check for existing requirement specs" },
         { label: "Provide path", description: "I'll tell you the file path" }
       ]
     }]
@@ -578,7 +552,7 @@ What failed: Deep linking - needed ios-architect input first
 Create or update phase tracking:
 
 ```typescript
-// Create .claude/orchestration/phase_state.json
+// Create .orca/orchestration/phase_state.json
 {
   "pipeline": "nextjs",
   "task": "$ARGUMENTS",
@@ -599,7 +573,7 @@ Create or update phase tracking:
     "has_design_system": true,
     "past_decisions_count": 5
   },
-  "plan_used": ".claude/requirements/2025-11-24-1730-add-dark-mode" || null,
+  "plan_used": ".orca/requirements/2025-11-24-1730-add-dark-mode" || null,
   "gates_passed": [],
   "gates_failed": [],
   "artifacts": []
@@ -703,72 +677,13 @@ Domains that route through a coordinating grand-architect agent. Each has a matc
 | ios | ios-grand-architect | iOS Grand Architect | ios-architect, ios-builder, ios-swiftui-specialist, ios-uikit-specialist, ios-persistence-specialist, ios-standards-enforcer, ios-ui-reviewer, ios-verification | docs/pipelines/ios-pipeline.md |
 | expo | expo-grand-orchestrator | Expo Grand Orchestrator | expo-architect-agent, expo-builder-agent, design-token-guardian, a11y-enforcer, performance-enforcer, security-specialist, expo-verification-agent | docs/pipelines/expo-pipeline.md |
 
-For any grand-architect domain, prefer the SlashCommand shortcut:
+**Route via `SlashCommand` — the only path.** This runs the domain command inline in the main thread, where it can legally spawn its specialists single-level. Do NOT spawn a grand-architect agent (it would run as a subagent and could not delegate — OS 7.1 no-nested-subagents rule).
 
 ```typescript
 SlashCommand({ command: `/${domain} ${$ARGUMENTS}` })
 ```
 
-Or use the parameterized Task template (substitute values from the table above):
-
-```typescript
-Task({
-  subagent_type: "<subagent_type from table>",
-  description: "<Role Name> pipeline coordination",
-  prompt: `
-You are the <Role Name> for OS 7.0.
-
-USER HAS ALREADY CONFIRMED THE PLAN. DO NOT ASK FOR CONFIRMATION AGAIN.
-EXECUTE IMMEDIATELY. NO QUESTIONS. DELEGATE TO SPECIALISTS NOW.
-
-CONTEXT BUNDLE (from Orca - DO NOT query again):
-${JSON.stringify(contextBundle, null, 2)}
-
-AGENT OUTCOMES (past successes/failures on this project):
-${agentOutcomes || "No prior outcomes recorded for this pipeline"}
-
-${RECORDING_CONTEXT ? `=== RECORDING CONTEXT ===\n${RECORDING_CONTEXT}\n===` : ""}
-
-REQUEST: ${$ARGUMENTS}
-
-=== REQUIREMENTS SPEC (SOURCE OF TRUTH) ===
-${specContent || "No spec - use your architectural judgment"}
-
-=== RESPONSE AWARENESS TAGS FROM SPEC ===
-${raTagsSummary || "No RA tags found"}
-
-CRITICAL RA TAG RULES:
-- #PATH_DECISION items are SETTLED. Do not re-decide them.
-- #COMPLETION_DRIVE items need VERIFICATION during implementation.
-- #POISON_PATH patterns must be AVOIDED.
-- #CONTEXT_DEGRADED areas need EXTRA CONTEXT gathering.
-
-PHASE STATE LOCATION:
-.claude/orchestration/phase_state.json
-
-YOUR ROLE:
-- YOU ARE "<Role Name>" - identify yourself in all outputs
-- Coordinate the pipeline end-to-end
-- You received ContextBundle from Orca - DO NOT query ProjectContext again
-- RESPECT the spec - it's the plan. Don't reinvent decisions.
-- DELEGATE TO SPECIALISTS: <Key Specialists from table>
-- Enforce quality gates (>=90 scores)
-- Update phase_state.json after each phase
-- Record decisions via mcp__project-context__save_decision
-
-DO NOT:
-- Ask "should I proceed?" - YES, PROCEED
-- Ask "which phase?" - ALL PHASES
-- Ask for confirmation - YOU HAVE IT
-- Use "I" ambiguously - say "<Role Name> delegating to..."
-
-Follow the pipeline specification in:
-- <Pipeline Doc from table>
-
-EXECUTE NOW.
-  `
-})
-```
+**Context handoff:** before routing, write the assembled bundle to `.orca/orchestration/handoff.json` (contextBundle, agentOutcomes, specContent, raTagsSummary, recordingContext). The domain command reads it instead of re-querying ProjectContext. The domain command owns phase_state.json, phase sequencing, specialist spawning, and gate enforcement — per `docs/reference/flatten-orchestration-pattern.md`.
 
 #### Specialist-Based Domain Routing
 
@@ -786,41 +701,7 @@ Domains that route to a lead specialist directly (no grand-architect wrapper). T
 - **seo:** 1. Context & Intent 2. Research 3. Brief Refinement 4. Content Drafting 5. Quality Assurance 6. Completion
 - **design:** 1. Context & Brief 2. Design Exploration 3. System & Components 4. Exports & Handoff 5. Design QA Gate 6. Completion
 
-**Note:** The SEO domain can also route via `/seo` SlashCommand: `SlashCommand({ command: `/seo ${$ARGUMENTS}` })`
-
-For any specialist-based domain, use the parameterized Task template (substitute values from the tables above):
-
-```typescript
-Task({
-  subagent_type: "<Lead Specialist from table>",
-  description: "<Role Name> pipeline",
-  prompt: `
-You are leading the <Domain> pipeline for OS 7.0.
-
-MEMORY CONTEXT:
-${memorySummary || "No prior memory hits"}
-
-CONTEXT BUNDLE:
-${JSON.stringify(contextBundle, null, 2)}
-
-REQUEST: ${$ARGUMENTS}
-
-=== REQUIREMENTS SPEC (if available) ===
-${specContent || "No spec - use your analytical judgment"}
-
-YOUR ROLE:
-- Lead the <Domain> workflow
-- Coordinate with specialists: <Other Specialists from table>
-- Follow <Pipeline Doc from table>
-- Update phase_state.json with domain: "<domain>"
-
-PHASES:
-<Domain-specific phases from list above>
-
-EXECUTE NOW.
-  `
-})
-```
+**Route via `SlashCommand`** to the domain command (e.g. `SlashCommand({ command: `/seo ${$ARGUMENTS}` })`). The domain command runs in the main thread and spawns its lead specialist + other specialists single-level. For specialist-based domains that route to a lead specialist directly: if that lead specialist agent does NOT itself spawn subagents, the domain command may `Agent({ subagent_type: "<lead specialist>" })` once; if it coordinates multiple specialists, those calls must originate from the command (main thread), not the lead. Write the bundle to `.orca/orchestration/handoff.json` for the domain command to read. See `docs/reference/flatten-orchestration-pattern.md`.
 
 ---
 
@@ -917,7 +798,7 @@ When grand-architect signals completion:
    ```
 
 5. **Clean up:**
-   - Archive temp files to .claude/orchestration/evidence/ if needed
+   - Archive temp files to .orca/orchestration/evidence/ if needed
    - Mark phase_state.json as "completed"
 
 ---

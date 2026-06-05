@@ -151,3 +151,20 @@ gsap.matchMedia().add('(max-width: 767px)', () => {
 - **Will-change budget:** Apply to max 3-5 elements simultaneously
 - **Lazy ScrollTrigger:** Use `ScrollTrigger.create()` with lazy refresh for off-screen content
 - **Pin spacing:** Always set `pinSpacing: true` (default) unless layout requires otherwise
+
+---
+
+## Rant-capture at handback
+
+After completing the work, before returning to the user, ask:
+
+> "Returned to bench. Anything here you'd rant about?"
+
+If the user responds, append the entry to the current project's `.orca/design-rants-pending.md` in this format:
+
+```
+## YYYY-MM-DD HH:MM — [verb-name]
+[user's response verbatim]
+```
+
+Create `.orca/` in the current project if absent. Do NOT write to `~/.claude/` or to the ORCA-OS source tree directly. Pending entries are swept and categorized later via `/impeccable extract rants`.

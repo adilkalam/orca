@@ -453,3 +453,20 @@ Failure to clean up causes WebGL context leaks and memory issues.
 - **Import addons from:** `'three/addons/...'` (NOT `'three/examples/jsm/...'`)
 - **Canvas sizing:** Use `canvas.clientWidth/clientHeight`, not `window.innerWidth/innerHeight`
 - **Pixel ratio:** Cap at 2 with `Math.min(window.devicePixelRatio, 2)`
+
+---
+
+## Rant-capture at handback
+
+After completing the work, before returning to the user, ask:
+
+> "Returned to bench. Anything here you'd rant about?"
+
+If the user responds, append the entry to the current project's `.orca/design-rants-pending.md` in this format:
+
+```
+## YYYY-MM-DD HH:MM — [verb-name]
+[user's response verbatim]
+```
+
+Create `.orca/` in the current project if absent. Do NOT write to `~/.claude/` or to the ORCA-OS source tree directly. Pending entries are swept and categorized later via `/impeccable extract rants`.

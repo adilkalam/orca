@@ -13,7 +13,7 @@ echo "━━━━━━━━━━━━━━━━━━━━━━━━�
 echo ""
 
 # Create test file in allowed location
-echo "Test 1: FileRegistry.write() to .claude/orchestration/temp/temp/"
+echo "Test 1: FileRegistry.write() to .orca/orchestration/temp/temp/"
 echo "Expected: Success"
 
 cat > /tmp/test-file-registry.js << 'EOF'
@@ -38,19 +38,19 @@ echo "Expected: Block forbidden paths"
 export TOOL_NAME="Write"
 
 # Test allowed path
-export TOOL_ARG_file_path=".claude/orchestration/temp/test.txt"
+export TOOL_ARG_file_path=".orca/orchestration/temp/test.txt"
 if bash hooks/pre-tool-use.sh 2>/dev/null; then
-  echo "✓ Allowed path: .claude/orchestration/temp/test.txt"
+  echo "✓ Allowed path: .orca/orchestration/temp/test.txt"
 else
-  echo "✗ Should have allowed .claude/orchestration/temp/test.txt"
+  echo "✗ Should have allowed .orca/orchestration/temp/test.txt"
 fi
 
 # Test forbidden path
-export TOOL_ARG_file_path=".claude/orchestration/test.txt"
+export TOOL_ARG_file_path=".orca/orchestration/test.txt"
 if bash hooks/pre-tool-use.sh 2>/dev/null; then
-  echo "✗ Should have blocked .claude/orchestration/test.txt"
+  echo "✗ Should have blocked .orca/orchestration/test.txt"
 else
-  echo "✓ Blocked forbidden path: .claude/orchestration/test.txt"
+  echo "✓ Blocked forbidden path: .orca/orchestration/test.txt"
 fi
 
 echo ""
@@ -86,7 +86,7 @@ mkdir -p .test-workshop
 echo "test" > .test-workshop/test.db
 
 # Run find command from verification agent
-FORBIDDEN=$(find . -maxdepth 1 -type d \( -name ".claude/orchestration" -o -name ".workshop" -o -name ".test-workshop" \) 2>/dev/null)
+FORBIDDEN=$(find . -maxdepth 1 -type d \( -name ".orchestration" -o -name ".workshop" -o -name ".test-workshop" -o -name ".cognition" \) 2>/dev/null)
 
 if [ -n "$FORBIDDEN" ]; then
   echo "✓ Verification agent would detect: $FORBIDDEN"
@@ -104,11 +104,11 @@ echo "Test 5: Performance Check"
 echo "Expected: All operations <10ms"
 
 # Check performance logs
-if [ -f .claude/orchestration/temp/memory/hook-performance.jsonl ]; then
+if [ -f .orca/orchestration/temp/memory/hook-performance.jsonl ]; then
   echo "✓ Hook performance log exists"
 
   # Show recent slow operations
-  SLOW=$(grep -c '"durationMs":[0-9]\+\.[0-9]*' .claude/orchestration/temp/memory/hook-performance.jsonl 2>/dev/null || echo "0")
+  SLOW=$(grep -c '"durationMs":[0-9]\+\.[0-9]*' .orca/orchestration/temp/memory/hook-performance.jsonl 2>/dev/null || echo "0")
   echo "  Total hook operations logged: $SLOW"
 fi
 

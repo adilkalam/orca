@@ -211,7 +211,7 @@ memory:
 
 # Phase State Location
 phase_state:
-  location: ".claude/orchestration/phase_state.json"
+  location: ".orca/orchestration/phase_state.json"
   domain: "typography"
 
   top_level_fields:
@@ -307,4 +307,4 @@ phase_state:
 config:
   temp_path: .claude/temp/
   backup_path: .claude/backups/
-  phase_state_path: .claude/orchestration/phase_state.json
+  phase_state_path: .orca/orchestration/phase_state.json

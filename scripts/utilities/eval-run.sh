@@ -8,7 +8,7 @@ ROOT_DIR="$(git rev-parse --show-toplevel 2>/dev/null || pwd)"
 cd "$ROOT_DIR"
 
 TS_GLOBAL=$(date -u '+%Y%m%dT%H%M%SZ')
-EVAL_DIR=".claude/orchestration/temp/verification/eval/$TS_GLOBAL"
+EVAL_DIR=".orca/orchestration/temp/verification/eval/$TS_GLOBAL"
 WS_DIR="$EVAL_DIR/workspaces"
 LOG_DIR="$EVAL_DIR/logs"
 mkdir -p "$WS_DIR" "$LOG_DIR"
@@ -25,7 +25,7 @@ copy_workspace() {
   mkdir -p "$dst"
   rsync -a --delete \
     --exclude ".git" \
-    --exclude ".claude/orchestration/temp/verification/eval" \
+    --exclude ".orca/orchestration/temp/verification/eval" \
     ./ "$dst/" >/dev/null 2>&1
   echo "$dst"
 }
@@ -43,7 +43,7 @@ PY
 write_log_with_tags() {
   local ws="$1"
   local img_rel="$2"
-  cat > "$ws/.claude/orchestration/temp/implementation-log.md" << EOF
+  cat > "$ws/.orca/orchestration/temp/implementation-log.md" << EOF
 #FILE_CREATED: $img_rel (binary)
   Description: Seed image for evaluation
 
@@ -71,7 +71,7 @@ run_finalize() {
 
 parse_field() {
   local ws="$1"; local key="$2"
-  local rep="$ws/.claude/orchestration/temp/verification/verification-report.md"
+  local rep="$ws/.orca/orchestration/temp/verification/verification-report.md"
   if [ ! -f "$rep" ]; then
     echo ""
     return 0
@@ -105,8 +105,8 @@ main() {
   local ws=$(copy_workspace pass_artifact)
   rm -rf "$ws/.orchestration" || true
   mkdir -p "$ws/out" && echo '<html>ok</html>' > "$ws/out/index.html"
-  seed_png "$ws/.claude/orchestration/temp/evidence/eval/seed.png"
-  write_log_with_tags "$ws" ".claude/orchestration/temp/evidence/eval/seed.png"
+  seed_png "$ws/.orca/orchestration/temp/evidence/eval/seed.png"
+  write_log_with_tags "$ws" ".orca/orchestration/temp/evidence/eval/seed.png"
   read rc dur < <(run_finalize "$ws")
   local status="$( [ "$rc" -eq 0 ] && echo PASS || echo FAIL)"
   local score="$(parse_field "$ws" "Evidence Score" | sed 's/ (.*//')"
@@ -117,8 +117,8 @@ main() {
   rm -rf "$ws/.orchestration" || true
   mkdir -p "$ws/out" && echo '<html>ok</html>' > "$ws/out/index.html"
   # ensure zero-tag condition (empty log)
-  mkdir -p "$ws/.claude/orchestration/temp/logs" "$ws/.claude/orchestration/temp/verification"
-  : > "$ws/.claude/orchestration/temp/implementation-log.md"
+  mkdir -p "$ws/.orca/orchestration/temp/logs" "$ws/.orca/orchestration/temp/verification"
+  : > "$ws/.orca/orchestration/temp/implementation-log.md"
   # Force zero-tag failure in finalize
   (
     cd "$ws"
@@ -134,9 +134,9 @@ main() {
   rm -rf "$ws/.orchestration" || true
   mkdir -p "$ws/out" && echo '<html>ok</html>' > "$ws/out/index.html"
   # Write log referencing a non-existent file
-  mkdir -p "$ws/.claude/orchestration/temp"
-  cat > "$ws/.claude/orchestration/temp/implementation-log.md" << 'EOF'
-#SCREENSHOT_CLAIMED: .claude/orchestration/temp/evidence/missing.png
+  mkdir -p "$ws/.orca/orchestration/temp"
+  cat > "$ws/.orca/orchestration/temp/implementation-log.md" << 'EOF'
+#SCREENSHOT_CLAIMED: .orca/orchestration/temp/evidence/missing.png
   Description: Intentional missing file for eval
 EOF
   # Force screenshot failure in finalize
@@ -157,8 +157,8 @@ EOF
   cat > "$ws/styles/violations.css" << 'EOF'
 .bad { color: #ff0000; padding: 5px; letter-spacing: 0.5em; font-weight: 900; }
 EOF
-  seed_png "$ws/.claude/orchestration/temp/evidence/eval/seed.png"
-  write_log_with_tags "$ws" ".claude/orchestration/temp/evidence/eval/seed.png"
+  seed_png "$ws/.orca/orchestration/temp/evidence/eval/seed.png"
+  write_log_with_tags "$ws" ".orca/orchestration/temp/evidence/eval/seed.png"
   read rc dur < <(run_finalize "$ws")
   status="$( [ "$rc" -eq 0 ] && echo PASS || echo FAIL)"
   score="$(parse_field "$ws" "Evidence Score" | sed 's/ (.*//')"

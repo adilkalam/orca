@@ -39,7 +39,7 @@ Examples:
 For non-trivial work, always start with `/requirements`:
 
 - Creates a requirements folder:
-  - `.claude/requirements/YYYY-MM-DD-HHMM-<slug>/`
+  - `.orca/requirements/YYYY-MM-DD-HHMM-<slug>/`
 - Populates:
   - `00-initial-request.md`
   - Discovery & detail Q/A (`01-05-*`)
@@ -95,7 +95,7 @@ File: `commands/django-react.md`
      - `-tweak` -> **Tweak mode** (light path WITHOUT gates, user verifies)
      - `--complex` -> **Complex mode** (full pipeline, spec required)
   3. **Spec gating** (complex only):
-     - Requires `.claude/requirements/<id>/06-requirements-spec.md`.
+     - Requires `.orca/requirements/<id>/06-requirements-spec.md`.
   4. **Routing**:
      - Default/tweak -> `django-react-light-orchestrator` (gates on default only)
      - Complex -> full Django + React lane with grand-architect and gates.
@@ -115,7 +115,7 @@ File: `commands/django-react.md`
 
 - `docs/reference/phase-configs/django-react-phase-config.yaml`
 - State is stored in:
-  - `.claude/orchestration/phase_state.json`
+  - `.orca/orchestration/phase_state.json`
 - Key phases for heavy tasks:
   - `context_query` - ProjectContext + memory summary
   - `api_contract_design` - OpenAPI schema design (unique to this lane)

@@ -2,7 +2,7 @@
 description: "OS 7.0 Expo/React Native Orchestrator – coordinates the Expo lane pipeline, never writes code"
 argument-hint: "[--light | -tweak | --complex] <task description or requirement ID>"
 allowed-tools:
-  - Task
+  - Agent
   - AskUserQuestion
   - mcp__project-context__query_context
   - mcp__project-context__save_decision
@@ -28,7 +28,7 @@ This slash command EXISTS to delegate work to agents. Not to do work directly.
 **ALWAYS required:**
 1. Parse the arguments
 2. Determine routing (-tweak, default, --complex)
-3. **Delegate via Task tool**
+3. **Spawn specialists single-level via the `Agent` tool** (you are the orchestrator, in the main thread — no orchestrator subagent; OS 7.1)
 
 Even `-tweak` delegates to a builder. It skips gates, not agents.
 
@@ -45,7 +45,7 @@ Use this command for Expo/React Native mobile work.
 ```bash
 /expo "add pull-to-refresh to product list"        # Default: light path + design gates
 /expo -tweak "fix button spacing"                  # Fast: light path, no gates
-/expo --complex "multi-screen auth flow"           # Full: grand-architect + all gates
+/expo --complex "multi-screen auth flow"           # Full: architect + builder + all gates
 /expo "implement requirement 2025-11-25-auth"      # Full path with spec
 ```
 
@@ -55,7 +55,7 @@ Use this command for Expo/React Native mobile work.
 
 - **DO NOT** use Edit/Write tools
 - **DO NOT** bypass the agent system
-- **DELEGATE** via Task tool only
+- **DELEGATE** via the `Agent` tool only (single-level, from the main thread)
 - Update phase_state.json to track progress
 - Resume from interruptions without abandoning pipeline
 
@@ -108,7 +108,7 @@ the delegation prompt. If present, use it directly and skip the query below.
    })
    ```
 
-3. Include in delegation prompt to grand-architect:
+3. Include in delegation prompts to the agents you spawn:
    ```
    === RECORDING CONTEXT ===
    <narrative.summary, max 500 chars>
@@ -122,7 +122,7 @@ the delegation prompt. If present, use it directly and skip the query below.
 **Check for requirement ID:**
 ```
 $ARGUMENTS matches "requirement <id>" or "<YYYY-MM-DD-HHMM-*>"
-  → Look for .claude/requirements/<id>/06-requirements-spec.md
+  → Look for .orca/requirements/<id>/06-requirements-spec.md
   → If found, this is a SPEC-DRIVEN task (see Section 1.3)
 ```
 
@@ -141,7 +141,7 @@ return a report instead of implementing changes.
 If task involves UI/UX (keywords: "UI", "layout", "styling", "broken", "fucked", "spacing", "visual"):
   → Check if user attached screenshot/image
   → If YES: record has_visual_reference: true
-  → If NO: record has_visual_reference: false (grand-orchestrator will diagnose first)
+  → If NO: record has_visual_reference: false (the command will diagnose first)
 ```
 
 Record in phase_state:
@@ -155,7 +155,7 @@ Record in phase_state:
 }
 ```
 
-This is passed to grand-orchestrator who uses it to decide whether to run
+This is used by the command (Section 3.3) to decide whether to run
 expo-aesthetics-specialist in DIAGNOSE mode before implementation.
 
 ---
@@ -192,7 +192,7 @@ When `--audit` is detected:
      - `maxFiles`: larger than usual (e.g. 30–50)
      - `includeHistory: true`
 
-3. **Assemble an audit squad (via Task)**
+3. **Assemble an audit squad (via Agent, single-level)**
    - Based on focus, delegate to relevant agents:
      - Architecture/navigation:
        - `expo-architect-agent`
@@ -256,47 +256,25 @@ Recommendation: For agentic coding, semantic CSS produces better output. The sty
 
 **Tweak mode**: Skip gate. Manifesto priming above is sufficient.
 
-**Default mode**:
-1. Check: `test -f design-dna.json` (or `.claude/design-dna/*.json`)
-2. If EXISTS: Record path in delegation prompt as `DESIGN_DNA_PATH: <path>`
-3. If MISSING: Invoke design-system-architect as subagent:
-   ```
-   Task({
-     subagent_type: "design-system-architect",
-     description: "Create design-dna for UI task",
-     prompt: `Analyze this project's existing CSS/components and produce design-dna.json.
-     Task context: $ARGUMENTS
-     Project: $PROJECT_PATH
-     Follow your CSS Methodology Awareness workflow.`
-   })
-   ```
-4. After subagent returns, record design-dna.json path and continue to delegation.
+> **OS 7.1 / design-fork note:** `design-system-architect` and `design-dna.json` are archived. Design intent now lives in the per-project design contract (`{project}/.claude/PRODUCT.md` + `DESIGN.md`) and the `/impeccable` command + the `impeccable-hub` skill (the register; `interfaces-that-feel` is the felt-state spine the hub points to). There is no design-system-architect subagent to spawn.
 
-**Complex mode**:
-1. ALWAYS invoke design-system-architect as subagent (even if design-dna.json exists):
-   ```
-   Task({
-     subagent_type: "design-system-architect",
-     description: "Review/create design-dna for complex UI task",
-     prompt: `Review or create design-dna.json for this complex task.
-     Task context: $ARGUMENTS
-     Project: $PROJECT_PATH
-     Existing design-dna: <path if exists>
-     Follow your CSS Methodology Awareness workflow.`
-   })
-   ```
-2. Block delegation until design-system-architect confirms design-dna.json is ready.
+**Default mode (UI tasks):**
+1. Check for a project design contract: `test -f {project}/.claude/PRODUCT.md` and `test -f {project}/.claude/DESIGN.md` (the two-file split; the single-file `aesthetic.md` is deprecated).
+2. If EITHER EXISTS: note `has_design_contract: true`, record the paths, and pass them to `expo-builder-agent` as `PRODUCT_CONTRACT_PATH` (`.claude/PRODUCT.md`) and `DESIGN_CONTRACT_PATH` (`.claude/DESIGN.md`).
+3. If BOTH MISSING: note `has_design_contract: false`; the aesthetics gate (`expo-aesthetics-specialist`) applies the `interfaces-that-feel` baseline. Optionally suggest the user run `/impeccable --teach` (writes PRODUCT.md) then `/document` (writes DESIGN.md) to set up a contract.
+
+**Complex mode (UI tasks):** same, plus require the `expo-aesthetics-specialist` gate to run regardless of contract presence.
 
 ### Design Weight Escalation
 
 When a requirements spec is detected (via requirement ID in arguments):
 1. Read `metadata.json` from the requirements folder
 2. Check `design_weight` field:
-   - `high`: Escalate gate behavior -- default mode uses complex-mode gate (always invoke design-system-architect, block until confirmed)
+   - `high`: Escalate gate behavior -- default mode uses complex-mode gate (always run the `expo-aesthetics-specialist` gate, block until confirmed)
    - `medium`: Keep current tier's gate behavior
    - `low`: Keep current tier's gate behavior
 
-This ensures design-heavy tasks get mandatory design-system-architect review even in default mode.
+This ensures design-heavy tasks get mandatory aesthetics-gate review even in default mode.
 
 
 ---
@@ -335,7 +313,7 @@ This helps agents avoid repeating past mistakes.
 **If user passed `--complex` flag:**
 
 1. Check if request references a requirement ID
-2. Look for `.claude/requirements/<id>/06-requirements-spec.md`
+2. Look for `.orca/requirements/<id>/06-requirements-spec.md`
 3. **If spec NOT found:**
    ```
     BLOCKED: Complex task requires a spec.
@@ -360,55 +338,20 @@ Default (no flag) now goes to Section 3 for confirmation first.
 
 ### 2.1 --light Flag - Light Path WITHOUT Confirmation
 
-Delegate to `expo-light-orchestrator` directly. Skip Section 3.
+Run the light path **yourself, in the main thread** (no orchestrator subagent — OS 7.1). Skip Section 3. Spawn specialists single-level via `Agent()`, one at a time, reading each result before the next. See `docs/reference/flatten-orchestration-pattern.md`.
 
-**Context Inheritance Protocol (--light mode):**
+**Flat phase script (--light):**
 
-```
-Task({
-  subagent_type: 'expo-light-orchestrator',
-  description: 'Expo task with design verification (fast, no confirmation)',
-  prompt: `
-=== CONTEXT BUNDLE (INHERITED) ===
-CONTEXT_SOURCE: /expo
-CONTEXT_MODE: full
-DO_NOT_QUERY: true
+1. **Build** — `Agent({ subagent_type: "expo-builder-agent", description: "Expo task (light)", prompt: <REQUEST + inherited ContextBundle + memory hits + STANDARDS from prior gate failures + DESIGN AWARENESS block> })`. Tell the builder: context is inherited, do NOT call `query_context` (may narrow-query maxFiles:5 if missing).
+2. **Design/standards gate** — `Agent({ subagent_type: "expo-standards-enforcer", ... })`; read its `standards_score` (hard block < 90).
+3. **A11y gate** — `Agent({ subagent_type: "a11y-enforcer", ... })`; read its verdict (hard block on any critical violation).
+4. **Performance gate** — `Agent({ subagent_type: "performance-enforcer", ... })`; read its verdict (hard block on budget violations).
+5. **Aesthetics gate** — `Agent({ subagent_type: "expo-aesthetics-specialist", ... })`; read its verdict (soft gate ≥ 75, block < 60 AI-slop).
+6. **Verification** — `Agent({ subagent_type: "expo-verification-agent", ... })`; run npm test / expo doctor, record status.
+7. If a gate ERRORs/BLOCKs, route the violations back to `expo-builder-agent` once, then re-gate.
+8. Ephemeral phase_state only (scores for this run; no spec ceremony). Persist scores to `.orca/orchestration/phase_state.json`.
 
-<ContextBundle JSON if queried, or "narrow query needed" if memory-first>
-
-STANDARDS (from previous gate failures):
-<list each relatedStandard.rule as a bullet, prefixed by domain>
-===
-
-CRITICAL: You received context above. DO NOT call mcp__project-context__query_context.
-Use the inherited bundle. You MAY query with narrow scope (maxFiles: 5) if context missing.
-
-
-=== DESIGN AWARENESS ===
-When working with CSS/styling, be aware of these verified failure patterns:
-1. I autocomplete utility classes from training data rather than designing.
-2. With utilities, every session produces different combinations for the same element.
-3. Semantic CSS constrains my output to design coherence; utilities make me an unsupervised designer.
-4. 'Change all labels' is one CSS edit with semantic classes, a codebase-wide hunt with utilities.
-5. The stylesheet IS the design document. Utilities scatter design across every JSX file.
-Recommendation: For agentic coding, semantic CSS produces better output. The stylesheet constrains all downstream work.
-===
-
-Handle this Expo/React Native task via the light path WITH design verification gates.
-
-REQUEST: $ARGUMENTS
-
-MEMORY CONTEXT (if any):
-<memory hits from 1.1>
-
-ROUTING MODE: --light (light + gates, no confirmation)
-- Run expo-builder-agent + specialists
-- Run design verification gates (design-token-guardian, a11y-enforcer, expo-aesthetics-specialist)
-- Ephemeral phase_state only (scores for this run, no ceremony)
-- NO grand-architect, NO spec requirement
-  `
-})
-```
+(The old `expo-light-orchestrator` delegation is dissolved — the command owns this sequence.)
 
 ---
 
@@ -424,7 +367,7 @@ ROUTING MODE: --light (light + gates, no confirmation)
 **Context Inheritance Protocol (-tweak mode):**
 
 ```
-Task({
+Agent({
   subagent_type: 'expo-builder-agent',
   description: 'Fast Expo tweak (no gates)',
   prompt: `
@@ -465,7 +408,7 @@ ROUTING MODE: tweak (pure speed)
 
 ---
 
-### --complex Flag - Full Pipeline (Grand-Architect + All Gates)
+### --complex Flag - Full Pipeline (Architect + Builder + All Gates)
 
 Continue with full orchestration below (Section 3).
 
@@ -474,8 +417,8 @@ Continue with full orchestration below (Section 3).
 ## 3. Pipeline Flow with Confirmation (Default and --complex modes)
 
 This section applies when:
-- **Default (no flag)**: Routes to light-orchestrator AFTER confirmation
-- **--complex flag**: Routes to grand-orchestrator AFTER confirmation
+- **Default (no flag)**: runs the light flow (Section 2.1) AFTER confirmation
+- **--complex flag**: runs the full pipeline (Section 3.2+) AFTER confirmation
 
 ### 3.1 Team Confirmation (MANDATORY - BLOCKING)
 
@@ -497,18 +440,19 @@ This section applies when:
 
 ### Phases
 1. Context Query (ProjectContext)
-2. Light Orchestrator (expo-light-orchestrator) - coordination
+2. Coordination — /expo command (main thread)
 3. Implementation (expo-builder-agent + specialists)
-4. Gates (design-token-guardian, a11y-enforcer, expo-aesthetics-specialist)
+4. Gates (expo-standards-enforcer, a11y-enforcer, performance-enforcer, expo-aesthetics-specialist)
 
 ### Agent Team
 | Role | Agent |
 |------|-------|
-| Coordination | expo-light-orchestrator |
+| Coordination | /expo command (main thread) |
 | Implementation | expo-builder-agent |
 | Specialists | [list relevant ones based on 3.1.1] |
-| Design Gate | design-token-guardian |
+| Standards Gate | expo-standards-enforcer |
 | A11y Gate | a11y-enforcer |
+| Performance Gate | performance-enforcer |
 | Aesthetics Gate | expo-aesthetics-specialist |
 
 ### Files Likely Affected
@@ -528,21 +472,21 @@ This section applies when:
 
 ### Phases
 1. Context Query (ProjectContext)
-2. Grand Orchestrator (expo-grand-orchestrator) - architecture decisions
-3. Planning (expo-architect-agent) - detailed plan
+2. Coordination — /expo command (main thread)
+3. Planning + architecture decisions (expo-architect-agent)
 4. Implementation (expo-builder-agent + specialists)
-5. Gates (design-token-guardian, a11y-enforcer, performance-enforcer)
+5. Gates (expo-standards-enforcer, a11y-enforcer, performance-enforcer)
 6. Power Checks (performance-prophet, security-specialist) - if needed
 7. Verification (expo-verification-agent)
 
 ### Agent Team
 | Role | Agent |
 |------|-------|
-| Coordination | expo-grand-orchestrator |
-| Architecture | expo-architect-agent |
+| Coordination | /expo command (main thread) |
+| Architecture + Planning | expo-architect-agent |
 | Implementation | expo-builder-agent |
 | Specialists | [list relevant ones based on 3.1.1] |
-| Design Gate | design-token-guardian |
+| Standards Gate | expo-standards-enforcer |
 | A11y Gate | a11y-enforcer |
 | Performance Gate | performance-enforcer |
 | Verification | expo-verification-agent |
@@ -577,11 +521,11 @@ AskUserQuestion({
 1. STOP and wait for user response
 2. If user says "Yes, proceed" → Route based on mode (see below)
 3. If user says "Modify team" → ask what to change, update, re-output team, re-confirm
-4. If user says "Switch to --light" → delegate to expo-light-orchestrator directly (Section 2.1)
+4. If user says "Switch to --light" → run the light flow yourself (Section 2.1)
 
-**After confirmation received - ROUTING:**
-- If `--complex` flag → Delegate to `expo-grand-orchestrator` (full pipeline, Section 3.2+)
-- If default (no flag) → Delegate to `expo-light-orchestrator` (fast, with gates)
+**After confirmation received - ROUTING (you run these in the main thread; no orchestrator subagent):**
+- If `--complex` flag → run the full pipeline (Section 3.2+): architect → builder → all gates → verification, each spawned single-level via `Agent()`
+- If default (no flag) → run the light flow (Section 2.1): builder + design/a11y/perf/aesthetics gates
 
 **Anti-patterns (WRONG):**
 - Putting the team list inside AskUserQuestion options
@@ -642,30 +586,18 @@ Initialize phase_state.json:
 }
 ```
 
-### 3.3 Grand Architect (Opus)
+### 3.3 Coordination (main thread — OS 7.1)
 
-Delegate to `expo-grand-orchestrator` with Context Inheritance:
+> The `expo-grand-orchestrator` coordinator tier is dissolved. **You** (the command, in the main thread) own coordination: you sequence the phases below and spawn each specialist single-level via `Agent()`. Architecture decisions are produced by `expo-architect-agent` in 3.4 (it is the planner). See `docs/reference/flatten-orchestration-pattern.md`.
 
-**Context Inheritance Protocol (OS 7.0):**
+Decide flow from **visual context** (from Section 0) before planning:
+- If `has_visual_reference: true` → pass the user's visual context straight to `expo-builder-agent` in 3.5.
+- If `needs_diagnosis: true` → spawn `expo-aesthetics-specialist` in DIAGNOSE mode first, feed its findings into 3.4.
 
-When delegating, wrap the ContextBundle with inheritance headers:
+Context to pass into every `Agent()` call this run (inherited — instruct each agent NOT to call `query_context`; targeted file reads OK):
+- ContextBundle from Section 3.2, memory summary, requirements spec (if any), STANDARDS from prior gate failures, and the DESIGN AWARENESS block.
 
 ```
-=== CONTEXT BUNDLE (INHERITED) ===
-CONTEXT_SOURCE: /expo
-CONTEXT_MODE: full
-DO_NOT_QUERY: true
-
-<ContextBundle JSON from Section 3.2>
-
-STANDARDS (from previous gate failures):
-<list each relatedStandard.rule as a bullet, prefixed by domain>
-===
-
-CRITICAL: You received context above. DO NOT call mcp__project-context__query_context.
-Use the inherited bundle. You MAY supplement with targeted file reads if needed.
-
-
 === DESIGN AWARENESS ===
 When working with CSS/styling, be aware of these verified failure patterns:
 1. I autocomplete utility classes from training data rather than designing.
@@ -677,25 +609,7 @@ Recommendation: For agentic coding, semantic CSS produces better output. The sty
 ===
 ```
 
-Inputs:
-- ContextBundle (wrapped with inheritance header)
-- Memory summary
-- Requirements spec (if complex)
-- **Visual context** (from Section 0):
-  - `has_visual_reference`: Did user provide screenshot?
-  - `needs_diagnosis`: Should reviewer diagnose first?
-
-**CRITICAL:** Grand-orchestrator will use visual context to decide flow:
-- If `has_visual_reference: true` → Builder gets user's visual context directly
-- If `needs_diagnosis: true` → Run `expo-aesthetics-specialist` in DIAGNOSE mode first
-
-Outputs:
-- Architecture path (navigation, state, data patterns)
-- Design DNA presence check
-- Risk assessment
-- Task force plan
-
-Save decision via `mcp__project-context__save_decision`.
+Architecture/data decisions (navigation, state, data patterns; risk assessment) are the output of 3.4, recorded via `mcp__project-context__save_decision`.
 
 ### 3.4 Planning (expo-architect-agent)
 
@@ -782,7 +696,7 @@ Update phase_state.verification.
 
 1. Read phase_state.json:
    ```bash
-   cat .claude/orchestration/phase_state.json
+   cat .orca/orchestration/phase_state.json
    ```
 
 2. Acknowledge and process new information
@@ -833,7 +747,7 @@ violation → /audit → save_standard → code-index.db → future relatedStand
 ## 6. Notes
 
 - Use **Customization Gate** to block when design-dna is missing for UI work
-- Keep expo-grand-orchestrator in pure orchestration mode (Opus)
+- Coordination runs in the main thread (the /expo command); there is no orchestrator subagent (OS 7.1)
 - All agents use Opus 4.6 (default model)
 - Complex tasks MUST have specs
 - Simple tasks use light path for speed

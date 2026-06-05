@@ -188,7 +188,7 @@ def extract_signals(messages: List[Dict]) -> List[Dict]:
 
 def load_journal(project_path: str) -> Dict:
     """
-    Load or initialize the reflect journal from .claude/orchestration/temp/
+    Load or initialize the reflect journal from .orca/orchestration/temp/
     """
     project_path = os.path.abspath(os.path.expanduser(project_path))
     journal_path = Path(project_path) / '.claude' / 'orchestration' / 'temp' / 'reflect-journal.json'
@@ -220,7 +220,7 @@ def load_journal(project_path: str) -> Dict:
 
 
 def save_journal(project_path: str, journal: Dict) -> None:
-    """Save journal to .claude/orchestration/temp/reflect-journal.json"""
+    """Save journal to .orca/orchestration/temp/reflect-journal.json"""
     project_path = os.path.abspath(os.path.expanduser(project_path))
     journal_path = Path(project_path) / '.claude' / 'orchestration' / 'temp' / 'reflect-journal.json'
 

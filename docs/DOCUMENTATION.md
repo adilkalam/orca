@@ -60,7 +60,7 @@ Each development lane has its own pipeline with specific agents, phases, and gat
 | RVRY | [rvry-pipeline.md](pipelines/rvry-pipeline.md) | `/rvry` |
 | Research | [research-pipeline.md](pipelines/research-pipeline.md) | `/research` |
 | SEO Content | [seo-pipeline.md](pipelines/seo-pipeline.md) | `/seo` |
-| SEO Optimizer | [seo-optimizer-pipeline.md](pipelines/seo-optimizer-pipeline.md) | via `/seo` |
+| SEO Optimizer (DEPRECATED 2026-05-17) | [seo-optimizer-pipeline.md](pipelines/seo-optimizer-pipeline.md) | retired -- see SEO/GEO optimization capability spec |
 | Data Analysis | [data-pipeline.md](pipelines/data-pipeline.md) | via `/orca` |
 | Design | [design-pipeline.md](pipelines/design-pipeline.md) | via `/orca` |
 | Audit | [audit-pipeline.md](pipelines/audit-pipeline.md) | `/audit` |
@@ -105,7 +105,7 @@ For day-to-day usage, see the quick-reference guides:
 - [Data Workflow](../quick-reference/workflows/readme-data.md)
 - [Audit Workflow](../quick-reference/workflows/readme-audit.md)
 - [OS-Dev Workflow](../quick-reference/workflows/readme-os-dev.md)
-- [SEO Optimizer Workflow](../quick-reference/workflows/readme-seo-optimizer.md)
+- [SEO Optimizer Workflow](../quick-reference/workflows/readme-seo-optimizer.md) (DEPRECATED 2026-05-17)
 - [Visual Design Workflow](../quick-reference/workflows/readme-visual-design.md)
 - [Orca Pipeline Workflow](../quick-reference/workflows/readme-orca-pipeline.md)
 

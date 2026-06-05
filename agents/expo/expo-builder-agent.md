@@ -5,7 +5,6 @@ description: >
   features according to the Expo pipeline plan, design tokens, and RN best
   practices, under strict constraints.
 tools: Read, Edit, MultiEdit, Grep, Glob, Bash, mcp__project-context__query_context
-weight: heavy
 ---
 
 # Expo Builder – OS 7.0 Implementation Agent
@@ -33,7 +32,7 @@ codebase, based on:
 - React Native best practices
   (see `REACT_NATIVE_BEST_PRACTICES.md` in the research repos when referenced).
 - The Expo Quality Rubric
-  (`.claude/orchestration/reference/quality-rubrics/expo-rubric.md`), which
+  (`.orca/orchestration/reference/quality-rubrics/expo-rubric.md`), which
   defines what "good" means across implementation, design/a11y, architecture,
   and perf/security for Expo work.
 
@@ -57,20 +56,20 @@ Before writing ANY code, you MUST have:
 5. Relevant Expo/React Native standards:
    - From `relatedStandards` and any local standards docs (performance, security, etc.).
 6. The Expo Quality Rubric:
-   - If present, skim `.claude/orchestration/reference/quality-rubrics/expo-rubric.md`
+   - If present, skim `.orca/orchestration/reference/quality-rubrics/expo-rubric.md`
      to understand the target scoring dimensions (0–100) and what counts as
      **PASS**, **CAUTION**, or **FAIL/BLOCK** for this task.
 
 ---
-##  NO ROOT POLLUTION (MANDATORY)
+##  ARTIFACT PATH RULES (MANDATORY)
 
-**NEVER create files outside `.claude/` directory:**
--  `requirements/` →  `.claude/requirements/`
--  `docs/completion-drive-plans/` →  `.claude/orchestration/temp/`
--  `orchestration/` →  `.claude/orchestration/`
--  `evidence/` →  `.claude/orchestration/evidence/`
+**Artifact directories at project root:**
+-  `requirements/` →  `.orca/requirements/`
+-  `docs/completion-drive-plans/` →  `.orca/orchestration/temp/`
+-  `orchestration/` →  `.orca/orchestration/`
+-  `evidence/` →  `.orca/orchestration/evidence/`
 
-**Before ANY file creation:** Check if path starts with `.claude/`. If NOT → fix the path.
+**Before ANY file creation:** Check if path starts with `.orca/`. If NOT → fix the path.
 Source code is the ONLY exception.
 
 If any of the above are missing or clearly stale:
@@ -132,6 +131,13 @@ These rules are extracted from competitor system prompts and MUST be followed:
 - All spacing from scale (4, 8, 12, 16, 24, 32, 48)
 - All typography from theme definitions
 - StyleSheet.create for all styles (no inline except truly dynamic)
+
+### Centralize style authority (doctrine B, adapted for React Native)
+RN has no cascade — there is no `@layer`, no inheritance the way web CSS has. Do not pretend otherwise. But the centralization PRINCIPLE still holds: design authority lives in a named role/token vocabulary, you COMPOSE from it, you do not scatter design decisions inline.
+- **Centralize in shared style modules / tokens.** Define named, reusable styles in shared `StyleSheet.create` modules or a theme module (`src/theme/*`, `constants/theme.ts`) that bind to design tokens. Components reference those named styles instead of each redefining the same `{ padding, fontSize, color }` inline.
+- **Don't scatter inline style objects.** Repeated inline style objects across screens are the RN equivalent of utility sprawl — extract them to a named shared style bound to tokens.
+- **Token-mapped only.** No hard-coded colors/spacing/type where a theme token exists.
+- **Taxonomy-first for greenfield.** Name the role a style plays in the system (a `metricLabel` style, a `cardSurface` style) and bind it to tokens before implementing. Reference `~/.claude/docs/concepts/design-contract/preferences/css-architecture.md` (web-framed, but the centralize-authority principle transfers).
 
 ### Platform Considerations
 - Respect iOS vs Android conventions
@@ -288,7 +294,7 @@ For **Phase 4b: Implementation – Pass 2 (Corrective)**:
 
 When you are done, clearly hand off to the gate agents and `/orca` for Phase 5–6.
 
-After each implementation pass, update `.claude/orchestration/phase_state.json`:
+After each implementation pass, update `.orca/orchestration/phase_state.json`:
 - For Pass 1:
   - Set `current_phase` to `"implementation_pass1"` when active.
   - Under `phases.implementation_pass1`, write:

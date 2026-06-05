@@ -40,11 +40,11 @@ These files are ALREADY in your context (loaded via SessionStart hooks):
 
 ```bash
 # Check if question relates to loaded context
-ls .claude/orchestration/temp/session-context.md 2>/dev/null
+ls .orca/orchestration/temp/session-context.md 2>/dev/null
 ```
 
 **Files to check:**
-- `.claude/orchestration/temp/session-context.md` - Recent work, decisions, Workshop context
+- `.orca/orchestration/temp/session-context.md` - Recent work, decisions, Workshop context
 - `CLAUDE.md` - Project instructions, learned rules, workflow guidance
 - Workshop database - Query via `workshop --workspace .claude/memory <command>`
 

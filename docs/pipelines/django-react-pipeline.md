@@ -29,7 +29,7 @@ The Django + React pipeline handles **full-stack development** combining Django 
 
 **Orchestration:**
 - Django + React work SHOULD be run via the `/django-react` command.
-- Phase state is tracked in `.claude/orchestration/phase_state.json` using the contract in `docs/reference/phase-configs/django-react-phase-config.yaml`.
+- Phase state is tracked in `.orca/orchestration/phase_state.json` using the contract in `docs/reference/phase-configs/django-react-phase-config.yaml`.
 
 ---
 

@@ -212,8 +212,8 @@ fi
 # ============================================================
 # C4: cognition harvest creates file (REAL - full round-trip)
 # ============================================================
-echo "--- C4: cognition harvest creates .claude/cognition/ file ---"
-COGNITION_DIR="$PROJECT_ROOT/.claude/cognition"
+echo "--- C4: cognition harvest creates .orca/cognition/ file ---"
+COGNITION_DIR="$PROJECT_ROOT/.cognition"
 if [[ -f ~/.claude/mcp/cognition-mcp/dist/index.js ]]; then
     # Count files before
     FILES_BEFORE=$(find "$COGNITION_DIR" -name "*.md" -type f 2>/dev/null | wc -l | tr -d ' ')

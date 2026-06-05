@@ -13,7 +13,7 @@ ROOT_DIR="$(git rev-parse --show-toplevel 2>/dev/null || pwd)"
 cd "$ROOT_DIR" || exit 0
 
 WORKSHOP_DIR=".claude/memory"
-SNAPSHOT_FILE=".claude/orchestration/temp/pre-compact-snapshot.md"
+SNAPSHOT_FILE=".orca/orchestration/temp/pre-compact-snapshot.md"
 
 # Read JSON from stdin (Claude Code passes hook data via stdin)
 HOOK_INPUT=$(cat 2>/dev/null || echo "")

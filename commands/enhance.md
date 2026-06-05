@@ -4,7 +4,7 @@ allowed-tools:
   - exit_plan_mode
   - Read
   - Glob
-  - Task
+  - Agent
   - AskUserQuestion
 argument-hint: [--debug] [-clarify] <request to enhance>
 ---

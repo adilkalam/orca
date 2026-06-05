@@ -216,7 +216,7 @@ When you start Claude Code, `session-start.sh` runs automatically:
 3. Loads Workshop context and recent entries into session-context.md (NOT stdout)
 4. Initializes code-index (telemetry deprecated -- replaced by orca-record recording layer)
 5. Outputs recording status and recent ORCA-Mem episodes (compact)
-6. Writes detailed session metadata to `.claude/orchestration/temp/session-context.md`
+6. Writes detailed session metadata to `.orca/orchestration/temp/session-context.md`
 7. Makes context available to all subsequent work
 
 STDOUT is kept minimal (~2KB) because Claude Code injects it into system-reminder. Detailed context lives in session-context.md for agents that need it.
@@ -231,7 +231,7 @@ PREVIOUS SESSION CONTEXT
 
 ===============================================================
 
-SessionStart: success. Context: .claude/orchestration/temp/session-context.md
+SessionStart: success. Context: .orca/orchestration/temp/session-context.md
 Recording: N session(s) tracked. Use /continue to resume, /orca-status for details.
 ```
 
@@ -248,7 +248,7 @@ Recording: N session(s) tracked. Use /continue to resume, /orca-status for detai
 # Context automatically loads next time you open Claude Code
 ```
 
-**File:** `.claude/orchestration/active-task.md`
+**File:** `.orca/orchestration/active-task.md`
 
 **5 Safeguards protect this system:**
 1. **48h freshness** - Skips stale context (older than 48 hours)
@@ -263,7 +263,7 @@ Recording: N session(s) tracked. Use /continue to resume, /orca-status for detai
 
 Cognitive commands (`/deepthink`, `/problem-solve`, `/challenge`) persist their output as **files**, not as tokens in a context window. When Claude's context compacts mid-session, the analysis is still on disk:
 
-- `.claude/cognition/YYYYMMDD-HHMM-slug.md` - Summary files
+- `.orca/cognition/YYYYMMDD-HHMM-slug.md` - Summary files
 - `~/.orca-cognition/sessions/` - Full session logs
 - Workshop entries tagged `#cognition`
 
@@ -315,7 +315,7 @@ Both systems feed agents through ProjectContext, so every task starts with both 
 | Preferences | "Prefer functional components" | Workshop |
 | Standards | "All API responses must include timestamp" | Workshop |
 | Code context | Semantic embeddings of codebase | code-index.db |
-| Cognitive output | Deepthink analyses, decision trails | `.claude/cognition/` files |
+| Cognitive output | Deepthink analyses, decision trails | `.orca/cognition/` files |
 | Learned rules | Your accumulated corrections | CLAUDE.md |
 
 ---

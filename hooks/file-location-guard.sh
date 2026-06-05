@@ -28,15 +28,15 @@ fi
 
 # Check if path is in a location that might be a mistake
 SUSPICIOUS_PATTERNS=(
-    "/.claude/orchestration/[^/]*\\.md$"  # Files directly in orchestration (should be in temp/ or evidence/)
+    "/.orca/orchestration/[^/]*\\.md$"  # Files directly in orchestration (should be in temp/ or evidence/)
     "^/tmp/.*\\.(md|json|yaml)$"          # Temp files that should be in project
 )
 
 for pattern in "${SUSPICIOUS_PATTERNS[@]}"; do
     if [[ "$FILE_PATH" =~ $pattern ]]; then
         echo -e "${YELLOW}FILE-LOCATION-GUARD: Potentially misplaced file: $FILE_PATH${NC}"
-        echo "Consider: .claude/orchestration/temp/ for working files"
-        echo "Consider: .claude/orchestration/evidence/ for final artifacts"
+        echo "Consider: .orca/orchestration/temp/ for working files"
+        echo "Consider: .orca/orchestration/evidence/ for final artifacts"
         # WARNING ONLY - do not block
         break
     fi

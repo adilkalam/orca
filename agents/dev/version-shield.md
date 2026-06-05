@@ -4,10 +4,9 @@ description: >
   Dependency version management and breaking change detection specialist. Analyzes
   package updates, identifies breaking changes, and suggests migration paths. Use
   PROACTIVELY before major dependency upgrades, when updating frameworks, or when
-  security advisories require updates. Example: Task(subagent_type="version-shield",
+  security advisories require updates. Example: Agent(subagent_type="version-shield",
   prompt="Analyze impact of upgrading React from 18 to 19")
 tools: Read, Grep, Glob, Bash, WebFetch
-weight: medium
 ---
 
 # Version Shield - Dependency Guardian

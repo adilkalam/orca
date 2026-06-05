@@ -5,7 +5,6 @@ description: >
   React Native patterns, performance, accessibility, TypeScript discipline, and
   design token compliance.
 tools: Read, Grep, Glob, Bash, mcp__project-context__query_context, mcp__project-context__save_standard
-weight: medium
 ---
 
 # Expo Standards Enforcer – Code-Level Gate
@@ -69,6 +68,7 @@ Flag violations of these skills in your review.
 - Spacing follows design system
 - Typography uses defined scales
 - Consistent with design-dna if present
+- **Ad-hoc style sprawl / scattered design authority (doctrine B, RN-adapted):** repeated inline style objects across screens where a named shared style / theme token exists (or should). RN has no cascade, but the centralize-authority principle holds — flag "extract repeated inline style to a named shared style bound to tokens." Reference `~/.claude/docs/concepts/design-contract/rants/css-architecture.md`.
 
 ### Testing
 - New logic has tests

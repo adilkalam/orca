@@ -18,11 +18,17 @@ NC='\033[0m'
 # and no gates/ directory exists). Pattern violation detection for CSS/style files is now handled
 # at the agent level rather than via a hook-based node script.
 GATE_RUNNER=""
-PHASE_STATE=".claude/orchestration/phase_state.json"
+PHASE_STATE=".orca/orchestration/phase_state.json"
 PHASE_DIR="$(dirname "$PHASE_STATE")"
 PHASE_TEMP_DIR="$PHASE_DIR/temp"
 DESIGN_EVIDENCE_VALIDATOR="$HOME/.claude/scripts/validate-design-review-evidence.sh"
 BASH_LOG="$PHASE_DIR/temp/bash-commands.log"
+
+# Design-lane deterministic floor: the named-slop detector (designcheck).
+# Absolute path resolves cross-project (it points at the ORCA-OS repo so the
+# floor works in any orchestration project, not just inside this repo).
+# `npx designcheck` is NOT a published package -- we invoke the local node bin.
+DESIGNCHECK_BIN="/Users/adilkalam/ORCA-OS/mcp/design-detector/bin/designcheck.js"
 
 # Read JSON from stdin (Claude Code passes hook data via stdin)
 HOOK_INPUT=$(cat)
@@ -76,7 +82,7 @@ if [[ "$TOOL_NAME" == "Bash" ]]; then
         echo -e "${YELLOW}Rule-004: Never deploy archived content${NC}"
         echo "Archived directories (_archive/, .archived-v1/, deprecated/) must NEVER"
         echo "be copied to ~/.claude. Use --exclude patterns or copy files individually."
-        exit 1
+        exit 2
     fi
 fi
 
@@ -116,7 +122,7 @@ if [[ "$TOOL_NAME" =~ ^(Write|Edit|MultiEdit|NotebookEdit)$ ]]; then
             echo "3. User will advance to Phase 2"
             echo ""
             echo -e "${RED}#POISON_PATH: Trying to code before blueprint approved${NC}"
-            exit 1
+            exit 2
         fi
     fi
 fi
@@ -144,7 +150,7 @@ if [[ "$GATE_RUNNER_EXISTS" = "true" ]] && [[ "$TOOL_NAME" =~ ^(Write|Edit)$ ]] 
                 echo "$VIOLATIONS"
                 echo ""
                 echo -e "${RED}#POISON_PATH: Forbidden design patterns detected${NC}"
-                exit 1
+                exit 2
             elif echo "$VIOLATIONS" | grep -q "WARNING"; then
                 echo -e "${YELLOW}⚠️  Pattern Warnings:${NC}"
                 echo "$VIOLATIONS"
@@ -165,7 +171,7 @@ fi
 if [[ "$TOOL_NAME" =~ ^(Write|Edit)$ ]]; then
     FILE_PATH=$(echo "$TOOL_PARAMS" | jq -r '.file_path // ""' 2>/dev/null || echo "")
 
-    if [[ "$FILE_PATH" == .claude/orchestration/evidence/design-review-* ]]; then
+    if [[ "$FILE_PATH" == .orca/orchestration/evidence/design-review-* ]]; then
         # Only enforce if validator script is installed
         if [ -x "$DESIGN_EVIDENCE_VALIDATOR" ]; then
             mkdir -p "$PHASE_TEMP_DIR" 2>/dev/null || true
@@ -188,7 +194,7 @@ if [[ "$TOOL_NAME" =~ ^(Write|Edit)$ ]]; then
                     echo "File attempted: $FILE_PATH"
                     echo ""
                     echo -e "${RED}#POISON_PATH: Design review claimed without structured measurements${NC}"
-                    exit 1
+                    exit 2
                 fi
             fi
         fi
@@ -244,15 +250,19 @@ if [[ "$TOOL_NAME" =~ ^(Write|Edit)$ ]]; then
                     echo ""
                     echo "design_qa.gate_decision = PASS but no gates.design_qa.evidence_paths were provided."
                     echo "Design reviewers must:"
-                    echo "- Save a structured design-review report under .claude/orchestration/evidence/"
+                    echo "- Save a structured design-review report under .orca/orchestration/evidence/"
                     echo "- Record its path in gates.design_qa.evidence_paths"
                     echo ""
                     echo -e "${RED}#POISON_PATH: Design gate PASS without explicit evidence paths${NC}"
-                    exit 1
+                    exit 2
                 fi
 
                 # Validate each referenced evidence file
                 # Use a while-read loop to preserve paths with spaces if needed.
+                # NOTE: the loop runs in a pipe subshell, so its `exit 2` only
+                # terminates the subshell. We capture that exit status and
+                # re-exit from the parent so the BLOCK actually reaches the hook
+                # harness (pre-existing pipe-subshell escape, fixed here).
                 echo "$EVIDENCE_PATHS" | while IFS= read -r evidence_path; do
                     [ -z "$evidence_path" ] && continue
 
@@ -263,7 +273,7 @@ if [[ "$TOOL_NAME" =~ ^(Write|Edit)$ ]]; then
                         echo "  $evidence_path"
                         echo ""
                         echo -e "${RED}#POISON_PATH: Design gate PASS with missing evidence file${NC}"
-                        exit 1
+                        exit 2
                     fi
 
                     if ! "$DESIGN_EVIDENCE_VALIDATOR" "$evidence_path" >/dev/null 2>&1; then
@@ -279,9 +289,121 @@ if [[ "$TOOL_NAME" =~ ^(Write|Edit)$ ]]; then
                         echo "- VERIFICATION RESULT"
                         echo ""
                         echo -e "${RED}#POISON_PATH: Design gate PASS with invalid evidence${NC}"
-                        exit 1
+                        exit 2
                     fi
                 done
+                EVIDENCE_LOOP_EXIT=$?
+                if [ "$EVIDENCE_LOOP_EXIT" -ne 0 ]; then
+                    exit "$EVIDENCE_LOOP_EXIT"
+                fi
+            fi
+
+            # ==================================================
+            # Design Lane Deterministic Floor (Anti-Fabrication)
+            # ==================================================
+
+            # When a phase_state write claims a design gate PASS -- via EITHER
+            # the legacy gates.design_qa.gate_decision OR the new design-lane
+            # gates.design_lane.gate_decision -- the model cannot also have the
+            # detector find named P0 slop in the produced artifacts. We run the
+            # detector OURSELVES on the claimed artifact paths and BLOCK (exit 2)
+            # if it reports dirty (detector exit 2). This is a deterministic
+            # floor: a clean-PASS claim is mechanically falsified by named slop.
+            DESIGN_QA_DECISION=$(jq -r '.gates.design_qa.gate_decision // empty' "$CANDIDATE_JSON" 2>/dev/null || echo "")
+            DESIGN_LANE_DECISION=$(jq -r '.gates.design_lane.gate_decision // empty' "$CANDIDATE_JSON" 2>/dev/null || echo "")
+
+            if [ "$DESIGN_QA_DECISION" = "PASS" ] || [ "$DESIGN_LANE_DECISION" = "PASS" ]; then
+                # FAIL-OPEN if the detector binary is missing: a missing detector
+                # must not hard-block every write in every project. Loud stderr
+                # note, allow (exit 0 fall-through), do not block.
+                if [ ! -f "$DESIGNCHECK_BIN" ]; then
+                    echo -e "${YELLOW}⚠️  design-lane floor: detector not found at${NC}" >&2
+                    echo "  $DESIGNCHECK_BIN" >&2
+                    echo "Skipping deterministic slop check (fail-open, not blocking)." >&2
+                else
+                    # Collect claimed artifact paths from the new design-lane
+                    # artifact_paths plus the existing evidence_paths arrays
+                    # (both gates), de-duplicated. These are the produced files
+                    # the PASS claims to have validated.
+                    ARTIFACT_PATHS=$(jq -r '
+                        [
+                          (.gates.design_lane.artifact_paths[]? // empty),
+                          (.gates.design_lane.evidence_paths[]?  // empty),
+                          (.gates.design_qa.artifact_paths[]?    // empty),
+                          (.gates.design_qa.evidence_paths[]?    // empty)
+                        ] | unique | .[]
+                    ' "$CANDIDATE_JSON" 2>/dev/null || echo "")
+
+                    # No artifact paths on a claimed design PASS -> cannot verify
+                    # -> BLOCK (the PASS is unfalsifiable without produced files).
+                    if [ -z "$ARTIFACT_PATHS" ]; then
+                        echo -e "${RED}🚫 DESIGN LANE FLOOR BLOCKED${NC}"
+                        echo ""
+                        echo "A design gate is marked PASS but no artifact paths were provided."
+                        echo "Provide the produced artifact paths under one of:"
+                        echo "- gates.design_lane.artifact_paths[]"
+                        echo "- gates.design_lane.evidence_paths[]"
+                        echo "- gates.design_qa.evidence_paths[]"
+                        echo "so the detector can verify them."
+                        echo ""
+                        echo -e "${RED}#POISON_PATH: Design PASS claimed with no artifacts to verify${NC}"
+                        exit 2
+                    fi
+
+                    # Run the detector on each claimed artifact. The EXIT CODE is
+                    # the authoritative signal: 2 = dirty (named P0 slop), 0 =
+                    # clean. Findings text may land on stdout or stderr, so we
+                    # capture both with 2>&1 only to surface the named ids.
+                    # A pipe subshell would swallow our exit, so iterate over a
+                    # here-string (no subshell) and exit directly from parent.
+                    while IFS= read -r artifact_path; do
+                        [ -z "$artifact_path" ] && continue
+
+                        # Skip non-existent / non-file paths: the evidence-path
+                        # existence check above already guards design_qa; for the
+                        # design-lane floor a missing file cannot be scanned, so
+                        # we treat absence as unverifiable -> BLOCK.
+                        if [ ! -f "$artifact_path" ]; then
+                            echo -e "${RED}🚫 DESIGN LANE FLOOR BLOCKED${NC}"
+                            echo ""
+                            echo "Claimed design artifact does not exist (cannot verify):"
+                            echo "  $artifact_path"
+                            echo ""
+                            echo -e "${RED}#POISON_PATH: Design PASS references a missing artifact${NC}"
+                            exit 2
+                        fi
+
+                        DETECT_OUT=$(node "$DESIGNCHECK_BIN" detect --json "$artifact_path" 2>&1)
+                        DETECT_EXIT=$?
+
+                        if [ "$DETECT_EXIT" -eq 2 ]; then
+                            SLOP_IDS=$(printf '%s' "$DETECT_OUT" \
+                                | jq -r '[.[].antipattern] | unique | join(", ")' 2>/dev/null || echo "")
+                            [ -z "$SLOP_IDS" ] && SLOP_IDS="unknown-p0"
+
+                            echo -e "${RED}🚫 DESIGN LANE FLOOR BLOCKED${NC}"
+                            echo ""
+                            echo "designcheck found P0 slop in a claimed-clean design PASS:"
+                            echo "  $artifact_path"
+                            echo "  named slop: $SLOP_IDS"
+                            echo ""
+                            echo "A design gate cannot be PASS while the detector reports named"
+                            echo "anti-patterns. Fix the slop, then re-mark the gate."
+                            echo ""
+                            echo -e "${RED}#POISON_PATH: Clean design PASS contradicted by detector slop${NC}"
+                            exit 2
+                        fi
+
+                        # Any non-0, non-2 exit means the detector could not run
+                        # cleanly (crash, bad path). FAIL-OPEN with a loud note so
+                        # we do not block every write on a broken detector; the
+                        # missing-binary case is already handled above.
+                        if [ "$DETECT_EXIT" -ne 0 ]; then
+                            echo -e "${YELLOW}⚠️  design-lane floor: detector exited ${DETECT_EXIT} on${NC}" >&2
+                            echo "  $artifact_path (fail-open, not blocking)." >&2
+                        fi
+                    done <<< "$ARTIFACT_PATHS"
+                fi
             fi
 
             # ==================================================
@@ -299,6 +421,7 @@ if [[ "$TOOL_NAME" =~ ^(Write|Edit)$ ]]; then
                 CLAIMED_CMDS=$(jq -r '.verification.commands_run[]? // empty' "$CANDIDATE_JSON" 2>/dev/null || echo "")
 
                 if [ -n "$CLAIMED_CMDS" ]; then
+                    # Same pipe-subshell escape applies here: capture and re-exit.
                     echo "$CLAIMED_CMDS" | while IFS= read -r claimed; do
                         [ -z "$claimed" ] && continue
                         # Require an exact line match in the Bash command log
@@ -313,9 +436,13 @@ if [[ "$TOOL_NAME" =~ ^(Write|Edit)$ ]]; then
                             echo "- Record the exact commands in verification.commands_run"
                             echo ""
                             echo -e "${RED}#POISON_PATH: Verification PASS with unexecuted commands_run entry${NC}"
-                            exit 1
+                            exit 2
                         fi
                     done
+                    VERIFY_LOOP_EXIT=$?
+                    if [ "$VERIFY_LOOP_EXIT" -ne 0 ]; then
+                        exit "$VERIFY_LOOP_EXIT"
+                    fi
                 fi
             fi
         fi

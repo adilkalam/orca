@@ -104,13 +104,13 @@ Orchestrated directly by `/research` command (flat hierarchy, no lead agent).
 Research artifacts are saved to:
 
 ```
-.claude/research/
+research/
  evidence/       ← Source notes from subagents
  reports/        ← Final and draft reports
  cache/          ← Cached search results
 ```
 
-**Note:** Unlike `.claude/orchestration/temp/`, research artifacts persist across sessions for follow-up queries.
+**Note:** Unlike `.orca/orchestration/temp/`, research artifacts persist across sessions for follow-up queries.
 
 ---
 

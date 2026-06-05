@@ -15,7 +15,7 @@ NC='\033[0m' # No Color
 BOLD='\033[1m'
 
 # Configuration
-ORCA_VERSION="7.0.0"
+ORCA_VERSION="7.1.0"
 CLAUDE_DIR="$HOME/.claude"
 BACKUP_DIR="$HOME/.claude-backup-$(date +%Y%m%d-%H%M%S)"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -184,6 +184,59 @@ backup_existing() {
     fi
 }
 
+# Lane selection (global flags). Opt-in model: lanes are off unless chosen,
+# except Research which defaults on. Core orchestration, cognition, design, and
+# the shared dev/cross-domain agents always install regardless of selection.
+LANE_RESEARCH="y"
+LANE_IOS="n"
+LANE_EXPO="n"
+LANE_NEXTJS="n"
+LANE_DJANGO_REACT="n"
+LANE_DATA="n"
+LANE_TYPOGRAPHY="n"
+
+select_lanes() {
+    section "Selecting domain lanes"
+    info "Core orchestration, cognition (/think, /deepthink, ...), and design install automatically."
+    info "Pick the build lanes you want. Re-run the installer anytime to add more."
+
+    if [ -t 0 ]; then
+        echo ""
+        echo -e "    ${YELLOW}Build lanes:${NC}"
+        read -p "    iOS -- native iOS pipeline (/ios)? [y/N]: " ans
+        if echo "$ans" | grep -qi '^y'; then LANE_IOS="y"; fi
+        read -p "    Expo / React Native (/expo)? [y/N]: " ans
+        if echo "$ans" | grep -qi '^y'; then LANE_EXPO="y"; fi
+        read -p "    Next.js (/nextjs)? [y/N]: " ans
+        if echo "$ans" | grep -qi '^y'; then LANE_NEXTJS="y"; fi
+        read -p "    Django + React (/django-react)? [y/N]: " ans
+        if echo "$ans" | grep -qi '^y'; then LANE_DJANGO_REACT="y"; fi
+        read -p "    Data analytics (python-analytics lane)? [y/N]: " ans
+        if echo "$ans" | grep -qi '^y'; then LANE_DATA="y"; fi
+        read -p "    Typography / fonts (/typography)? [y/N]: " ans
+        if echo "$ans" | grep -qi '^y'; then LANE_TYPOGRAPHY="y"; fi
+        read -p "    Research -- deep cited research (/research)? [Y/n]: " ans
+        if echo "$ans" | grep -qi '^n'; then LANE_RESEARCH="n"; fi
+        echo ""
+    else
+        # Non-interactive (e.g. curl | bash): fail-open so nothing is missing.
+        info "Non-interactive install -- enabling all build lanes"
+        LANE_IOS="y"; LANE_EXPO="y"; LANE_NEXTJS="y"; LANE_DJANGO_REACT="y"
+        LANE_DATA="y"; LANE_TYPOGRAPHY="y"; LANE_RESEARCH="y"
+    fi
+
+    local enabled=""
+    [ "$LANE_IOS" = "y" ]          && enabled="$enabled ios"
+    [ "$LANE_EXPO" = "y" ]         && enabled="$enabled expo"
+    [ "$LANE_NEXTJS" = "y" ]       && enabled="$enabled nextjs"
+    [ "$LANE_DJANGO_REACT" = "y" ] && enabled="$enabled django-react"
+    [ "$LANE_DATA" = "y" ]         && enabled="$enabled data"
+    [ "$LANE_TYPOGRAPHY" = "y" ]   && enabled="$enabled typography"
+    [ "$LANE_RESEARCH" = "y" ]     && enabled="$enabled research"
+    [ -z "$enabled" ] && enabled=" (core only)"
+    success "Lanes enabled:$enabled"
+}
+
 # Install ORCA files
 install_orca_files() {
     section "Installing ORCA-OS files"
@@ -192,7 +245,6 @@ install_orca_files() {
     local dirs=(
         "agents/dev"
         "agents/nextjs"
-        "agents/os-dev"
         "agents/iOS"
         "agents/expo"
         "agents/research"
@@ -206,6 +258,7 @@ install_orca_files() {
         "scripts/utilities"
         "bin"
         "mcp/project-context-server"
+        "mcp/cognition-mcp"
         "mcp/bambu-3mf"
         "mcp/bambu-mcp-agent"
         "docs/pipelines"
@@ -226,34 +279,62 @@ install_orca_files() {
 
     # Copy agents
     info "Installing agents..."
-    for domain in dev nextjs os-dev iOS expo research data django-react typography cross-domain; do
+    # Always-install core agent domains (shared utilities + cross-domain specialists)
+    for domain in dev cross-domain; do
         if [ -d "$ORCA_ROOT/agents/$domain" ]; then
             cp -r "$ORCA_ROOT/agents/$domain/"* "$CLAUDE_DIR/agents/$domain/" 2>/dev/null || true
         fi
     done
-    # Remove legacy/private directories from previous installs
-    # Remove legacy/private directories from previous installs
+    # Lane-gated agent domains (only the lanes the user selected)
+    [ "$LANE_IOS" = "y" ]          && cp -r "$ORCA_ROOT/agents/iOS/"*          "$CLAUDE_DIR/agents/iOS/"          2>/dev/null || true
+    [ "$LANE_EXPO" = "y" ]         && cp -r "$ORCA_ROOT/agents/expo/"*         "$CLAUDE_DIR/agents/expo/"         2>/dev/null || true
+    [ "$LANE_NEXTJS" = "y" ]       && cp -r "$ORCA_ROOT/agents/nextjs/"*       "$CLAUDE_DIR/agents/nextjs/"       2>/dev/null || true
+    [ "$LANE_DJANGO_REACT" = "y" ] && cp -r "$ORCA_ROOT/agents/django-react/"* "$CLAUDE_DIR/agents/django-react/" 2>/dev/null || true
+    [ "$LANE_DATA" = "y" ]         && cp -r "$ORCA_ROOT/agents/data/"*         "$CLAUDE_DIR/agents/data/"         2>/dev/null || true
+    [ "$LANE_TYPOGRAPHY" = "y" ]   && cp -r "$ORCA_ROOT/agents/typography/"*   "$CLAUDE_DIR/agents/typography/"   2>/dev/null || true
+    [ "$LANE_RESEARCH" = "y" ]     && cp -r "$ORCA_ROOT/agents/research/"*     "$CLAUDE_DIR/agents/research/"     2>/dev/null || true
+    # Remove legacy/private/excluded directories from previous installs
     rm -rf "$CLAUDE_DIR/agents/orca-dev" 2>/dev/null || true
     rm -rf "$CLAUDE_DIR/agents/shopify" 2>/dev/null || true
     rm -rf "$CLAUDE_DIR/agents/kg" 2>/dev/null || true
     rm -rf "$CLAUDE_DIR/agents/seo" 2>/dev/null || true
     rm -rf "$CLAUDE_DIR/agents/rvry" 2>/dev/null || true
     rm -rf "$CLAUDE_DIR/agents/audit" 2>/dev/null || true
+    rm -rf "$CLAUDE_DIR/agents/os-dev" 2>/dev/null || true
     success "Agents installed"
 
-    # Copy commands (excluding domain-specific)
+    # Copy commands (excluding private + deselected lanes)
     info "Installing commands..."
     for cmd in "$ORCA_ROOT/commands/"*.md; do
         local filename=$(basename "$cmd")
+        # Always-skip private/excluded commands.
+        # NOTE: cognition-mcp commands (think/deepthink/challenge/contemplate/
+        # shimmer/solve/adversarial/autonomous/problem-solve) and meta ARE installed
+        # -- cognition-mcp is bundled; meta's RVRY dep is set up below. orca-os-dev
+        # is excluded (LOCAL-to-repo lane).
         case "$filename" in
-            trading-*.md|kg.md|seo.md|rvry.md|shopify.md|contemplate.md|shimmer.md|solve.md|adversarial.md|deepthink.md|problem-solve.md|meta.md)
-                # Skip private/excluded commands
-                ;;
-            *)
-                cp "$cmd" "$CLAUDE_DIR/commands/"
-                ;;
+            trading-*.md|kg.md|seo.md|rvry-dev.md|shopify.md|problem-solve-local.md|orca-os-dev.md)
+                continue ;;
         esac
+        # Lane-gated commands -- skip if the owning lane was not selected
+        case "$filename" in
+            ios.md)          [ "$LANE_IOS" = "y" ]          || continue ;;
+            expo.md)         [ "$LANE_EXPO" = "y" ]         || continue ;;
+            nextjs.md)       [ "$LANE_NEXTJS" = "y" ]       || continue ;;
+            django-react.md) [ "$LANE_DJANGO_REACT" = "y" ] || continue ;;
+            typography.md)   [ "$LANE_TYPOGRAPHY" = "y" ]   || continue ;;
+            research.md)     [ "$LANE_RESEARCH" = "y" ]     || continue ;;
+        esac
+        cp "$cmd" "$CLAUDE_DIR/commands/"
     done
+    # Remove excluded/deselected-lane commands from previous installs
+    rm -f "$CLAUDE_DIR/commands/orca-os-dev.md" 2>/dev/null || true
+    [ "$LANE_IOS" = "y" ]          || rm -f "$CLAUDE_DIR/commands/ios.md" 2>/dev/null || true
+    [ "$LANE_EXPO" = "y" ]         || rm -f "$CLAUDE_DIR/commands/expo.md" 2>/dev/null || true
+    [ "$LANE_NEXTJS" = "y" ]       || rm -f "$CLAUDE_DIR/commands/nextjs.md" 2>/dev/null || true
+    [ "$LANE_DJANGO_REACT" = "y" ] || rm -f "$CLAUDE_DIR/commands/django-react.md" 2>/dev/null || true
+    [ "$LANE_TYPOGRAPHY" = "y" ]   || rm -f "$CLAUDE_DIR/commands/typography.md" 2>/dev/null || true
+    [ "$LANE_RESEARCH" = "y" ]     || rm -f "$CLAUDE_DIR/commands/research.md" 2>/dev/null || true
     success "Commands installed"
 
     # Copy skills (excluding domain-specific)
@@ -308,14 +389,21 @@ install_orca_files() {
     cp "$ORCA_ROOT/docs/concepts/"*.md "$CLAUDE_DIR/docs/concepts/" 2>/dev/null || true
     for pipeline in "$ORCA_ROOT/docs/pipelines/"*.md; do
         local filename=$(basename "$pipeline")
+        # Skip private + excluded (os-dev) pipeline docs
         case "$filename" in
-            kg-*|shopify-*|seo-*|rvry-*)
-                # Skip private pipeline docs
-                ;;
-            *)
-                cp "$pipeline" "$CLAUDE_DIR/docs/pipelines/"
-                ;;
+            kg-*|shopify-*|seo-*|rvry-*|os-dev-*)
+                continue ;;
         esac
+        # Lane-gated pipeline docs -- skip if the owning lane was not selected
+        case "$filename" in
+            ios-pipeline.md)          [ "$LANE_IOS" = "y" ]          || continue ;;
+            expo-pipeline.md)         [ "$LANE_EXPO" = "y" ]         || continue ;;
+            django-react-pipeline.md) [ "$LANE_DJANGO_REACT" = "y" ] || continue ;;
+            data-pipeline.md)         [ "$LANE_DATA" = "y" ]         || continue ;;
+            typography-pipeline.md)   [ "$LANE_TYPOGRAPHY" = "y" ]   || continue ;;
+            research-pipeline.md)     [ "$LANE_RESEARCH" = "y" ]     || continue ;;
+        esac
+        cp "$pipeline" "$CLAUDE_DIR/docs/pipelines/"
     done
     # Remove private docs if they exist from previous installs
     rm -f "$CLAUDE_DIR/docs/THESIS.md" 2>/dev/null || true
@@ -343,6 +431,15 @@ install_orca_files() {
     cp "$ORCA_ROOT/mcp/project-context-server/package.json" "$CLAUDE_DIR/mcp/project-context-server/" 2>/dev/null || true
     cp "$ORCA_ROOT/mcp/project-context-server/tsconfig.json" "$CLAUDE_DIR/mcp/project-context-server/" 2>/dev/null || true
     success "ProjectContext MCP installed"
+
+    # Copy Cognition MCP (structured reasoning notepad + recording extension)
+    info "Installing Cognition MCP..."
+    cp -r "$ORCA_ROOT/mcp/cognition-mcp/src" "$CLAUDE_DIR/mcp/cognition-mcp/" 2>/dev/null || true
+    cp -r "$ORCA_ROOT/mcp/cognition-mcp/dist" "$CLAUDE_DIR/mcp/cognition-mcp/" 2>/dev/null || true
+    cp "$ORCA_ROOT/mcp/cognition-mcp/package.json" "$CLAUDE_DIR/mcp/cognition-mcp/" 2>/dev/null || true
+    cp "$ORCA_ROOT/mcp/cognition-mcp/package-lock.json" "$CLAUDE_DIR/mcp/cognition-mcp/" 2>/dev/null || true
+    cp "$ORCA_ROOT/mcp/cognition-mcp/tsconfig.json" "$CLAUDE_DIR/mcp/cognition-mcp/" 2>/dev/null || true
+    success "Cognition MCP installed"
 
     # Copy Bambu 3MF MCP
     info "Installing Bambu 3MF MCP..."
@@ -488,6 +585,28 @@ install_mcp_dependencies() {
         cd - > /dev/null
     else
         warn "ProjectContext MCP package.json not found - skipping"
+    fi
+
+    # Install Cognition MCP dependencies
+    if [ -f "$CLAUDE_DIR/mcp/cognition-mcp/package.json" ]; then
+        info "Installing Cognition MCP dependencies..."
+        cd "$CLAUDE_DIR/mcp/cognition-mcp"
+
+        if npm install 2>&1 | tee /tmp/npm-install-cognition.log | grep -q "error"; then
+            error "Failed to install Cognition MCP dependencies"
+            warn "Check /tmp/npm-install-cognition.log for details"
+            ((mcp_errors++))
+        else
+            # Build if needed
+            if [ -f "tsconfig.json" ] && [ ! -d "dist" ]; then
+                info "Building Cognition MCP..."
+                npm run build 2>&1 || npx tsc 2>&1
+            fi
+            success "Cognition MCP ready"
+        fi
+        cd - > /dev/null
+    else
+        warn "Cognition MCP package.json not found - skipping"
     fi
 
     # Install Bambu 3MF MCP dependencies (if user opted in)
@@ -711,6 +830,12 @@ core_servers = {
         "args": [f"{claude_dir}/mcp/project-context-server/dist/index.js"],
         "env": {}
     },
+    "cognition-mcp": {
+        "type": "stdio",
+        "command": "node",
+        "args": [f"{claude_dir}/mcp/cognition-mcp/dist/index.js"],
+        "env": {}
+    },
     "crawl4ai": {
         "type": "sse",
         "url": "http://localhost:11235/mcp/sse"
@@ -845,9 +970,11 @@ print_completion() {
     echo -e "  ${BOLD}Core MCPs installed:${NC}"
     echo "     - context7 (library documentation)"
     echo "     - project-context (memory & semantic search)"
+    echo "     - cognition-mcp (structured reasoning -- powers /think, /deepthink,"
+    echo "                      /challenge, /contemplate, /shimmer, /solve, /adversarial,"
+    echo "                      /autonomous, /problem-solve)"
     echo "     - sequential-thinking (multi-step reasoning)"
-    echo "     - crawl4ai (web scraping for /research)"
-    echo "     - RVRY (/deepthink, /problem-solve)"
+    echo "     - RVRY (metacognitive substrate -- powers /meta)"
     echo ""
     if [ -f "$CLAUDE_DIR/bin/orca-record" ]; then
     echo -e "  ${BOLD}Recording layer:${NC}"
@@ -857,6 +984,9 @@ print_completion() {
     echo ""
     fi
     echo -e "  ${BOLD}Optional (configured during install):${NC}"
+    echo "     - Chrome DevTools: browser debugging, screenshots, design review"
+    echo "     - XcodeBuildMCP: iOS/macOS build + simulator"
+    echo "     - Crawl4AI: web scraping for /research (requires Docker)"
     echo "     - Bambu 3MF: 3D print settings manipulation"
     echo "     - OpenSCAD: 3D modeling and STL analysis"
     echo "     - Adobe Photoshop + Illustrator (requires uv, Adobe apps)"
@@ -878,11 +1008,14 @@ print_completion() {
     echo "  2. Start using ORCA-OS commands:"
     echo "     /requirements  - Plan a complex task"
     echo "     /orca          - Invoke the orchestrator"
-    echo "     /ios           - iOS development pipeline"
-    echo "     /nextjs        - Next.js development pipeline"
-    echo "     /expo          - Expo/React Native pipeline"
-    echo "     /research      - Deep research pipeline"
-    echo "     /design        - 3D printing and creative design"
+    echo "     /impeccable    - Distinctive, production-grade front-end work"
+    echo "     /deepthink     - Structured reasoning (cognition-mcp)"
+    [ "$LANE_IOS" = "y" ]          && echo "     /ios           - iOS development pipeline"
+    [ "$LANE_EXPO" = "y" ]         && echo "     /expo          - Expo/React Native pipeline"
+    [ "$LANE_NEXTJS" = "y" ]       && echo "     /nextjs        - Next.js development pipeline"
+    [ "$LANE_DJANGO_REACT" = "y" ] && echo "     /django-react  - Django + React full-stack pipeline"
+    [ "$LANE_TYPOGRAPHY" = "y" ]   && echo "     /typography    - Font/glyph pipeline"
+    [ "$LANE_RESEARCH" = "y" ]     && echo "     /research      - Deep research pipeline"
     echo ""
     echo -e "  ${BOLD}Validate installation:${NC}"
     echo "     ~/orca/dist/validate.sh"
@@ -897,10 +1030,10 @@ print_completion() {
     fi
 }
 
-# Install RVRY MCP (always runs at end -- provides /deepthink, /problem-solve)
+# Install RVRY MCP (always runs at end -- powers /meta, the metacognitive substrate)
 install_rvry_mcp() {
     section "Installing RVRY MCP"
-    info "RVRY provides /deepthink and /problem-solve commands"
+    info "RVRY powers the /meta command (metacognitive substrate observation)"
     info "Running RVRY MCP setup (auto-configures in ~/.claude.json)..."
     if npx -y @rvry/mcp setup 2>&1; then
         success "RVRY MCP configured"
@@ -915,6 +1048,7 @@ main() {
     print_banner
     check_prerequisites
     backup_existing
+    select_lanes
     install_orca_files
     install_mcp_dependencies
     configure_mcp_servers

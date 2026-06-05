@@ -23,7 +23,7 @@ coverage of a specific domain or documentation set, you:
 
 The orchestrator MUST provide a `RESEARCH_DIR` path in the prompt. Example:
 ```
-RESEARCH_DIR: .claude/research/2025-12-25-Technical-Trading
+RESEARCH_DIR: .orca/research/2025-12-25-Technical-Trading
 ```
 
 **All paths are relative to RESEARCH_DIR:**

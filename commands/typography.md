@@ -2,7 +2,7 @@
 description: "Typography pipeline - glyph editing, TTF export, font selection, exploration tools"
 argument-hint: "[--tweak|--complex|--explorer] <task description>"
 allowed-tools:
-  - Task
+  - Agent
   - Read
   - Grep
   - Glob
@@ -21,7 +21,7 @@ allowed-tools:
 
 ## Overview
 
-This command orchestrates typography workflows for the Fonts library:
+The `/typography` command (main thread) runs the typography workflow directly, spawning specialists single-level via `Agent()`. There is no intermediate orchestrator subagent — the command owns routing, checkpoints, and Workshop persistence. It handles:
 - **Glyph editing** - Surgical contour modifications with fontTools
 - **TTF export** - OTF to TTF conversion for Epson LabelWorks
 - **Font selection** - Recommendations and pairing suggestions
@@ -50,7 +50,7 @@ Parse `$ARGUMENTS` for complexity tier:
 
 ## Explorer Mode (`--explorer`)
 
-When `$ARGUMENTS` contains `--explorer`, route to the typography-explorer-generator agent.
+When `$ARGUMENTS` contains `--explorer`, the command spawns the typography-explorer-generator agent single-level.
 
 ### Usage
 
@@ -83,7 +83,7 @@ When `$ARGUMENTS` contains `--explorer`, route to the typography-explorer-genera
 ### Delegate to Explorer Generator
 
 ```
-Task(typography-explorer-generator): Generate typography exploration tool
+Agent(typography-explorer-generator): Generate typography exploration tool
   CONTEXT:
   - Format: {nextjs | html}
   - Context: {store | markdown}
@@ -138,7 +138,7 @@ Read CLAUDE.md and validate:
 Delegate path validation to `path-guardian`:
 
 ```
-Task(path-guardian): Validate paths for typography operation
+Agent(path-guardian): Validate paths for typography operation
   - Input paths: {input_paths}
   - Output paths: {output_paths}
   - Check sacred collections
@@ -205,7 +205,7 @@ for platID, encID, langID in [(1, 0, 0), (3, 1, 1033)]:
 
 **Glyph Editing:**
 ```
-Task(glyph-editor): {operation_summary}
+Agent(glyph-editor): {operation_summary}
   CONTEXT:
   - Font family: {font_family}
   - Target glyphs: {glyphs}
@@ -222,7 +222,7 @@ Task(glyph-editor): {operation_summary}
 
 **TTF Export:**
 ```
-Task(ttf-exporter): {operation_summary}
+Agent(ttf-exporter): {operation_summary}
   CONTEXT:
   - Source fonts: {otf_paths}
   - Output path: {canonical_ttf_path}
@@ -236,7 +236,7 @@ Task(ttf-exporter): {operation_summary}
 
 **Font Selection:**
 ```
-Task(typography-advisor): {query}
+Agent(typography-advisor): {query}
   CONTEXT:
   - Use case: {use_case}
   - Style preferences: {preferences}
@@ -271,7 +271,7 @@ AskUserQuestion:
 After all writes, verify via path-guardian:
 
 ```
-Task(path-guardian): Final path verification
+Agent(path-guardian): Final path verification
   - Verify all output paths
   - Check for nested directories
   - Confirm no sacred collection modifications

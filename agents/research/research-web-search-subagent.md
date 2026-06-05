@@ -22,7 +22,7 @@ writers.
 
 The orchestrator MUST provide a `RESEARCH_DIR` path in the prompt. Example:
 ```
-RESEARCH_DIR: .claude/research/2025-12-25-Technical-Trading
+RESEARCH_DIR: .orca/research/2025-12-25-Technical-Trading
 ```
 
 **All paths are relative to RESEARCH_DIR:**
@@ -125,7 +125,7 @@ The content MUST follow this structure:
 - Coverage: [good/partial/weak]
 - RA: any RA tags such as #LOW_EVIDENCE, #SOURCE_DISAGREEMENT, #OUT_OF_DATE
 
-## Notes for Writers
+## Writer Guidance (do not include in reports)
 - Any nuances, caveats, or framing the writer should be aware of.
 ```
 
