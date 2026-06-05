@@ -259,8 +259,6 @@ install_orca_files() {
         "bin"
         "mcp/project-context-server"
         "mcp/cognition-mcp"
-        "mcp/bambu-3mf"
-        "mcp/bambu-mcp-agent"
         "docs/pipelines"
         "docs/concepts"
         "docs/reference/phase-configs"
@@ -309,9 +307,9 @@ install_orca_files() {
         local filename=$(basename "$cmd")
         # Always-skip private/excluded commands.
         # NOTE: cognition-mcp commands (think/deepthink/challenge/contemplate/
-        # shimmer/solve/adversarial/autonomous/problem-solve) and meta ARE installed
-        # -- cognition-mcp is bundled; meta's RVRY dep is set up below. orca-os-dev
-        # is excluded (LOCAL-to-repo lane).
+        # shimmer/adversarial/problem-solve) and meta ARE installed -- cognition-mcp
+        # is bundled; meta's RVRY dep is set up below. orca-os-dev is excluded
+        # (LOCAL-to-repo lane).
         case "$filename" in
             trading-*.md|kg.md|seo.md|rvry-dev.md|shopify.md|problem-solve-local.md|orca-os-dev.md)
                 continue ;;
@@ -441,24 +439,6 @@ install_orca_files() {
     cp "$ORCA_ROOT/mcp/cognition-mcp/tsconfig.json" "$CLAUDE_DIR/mcp/cognition-mcp/" 2>/dev/null || true
     success "Cognition MCP installed"
 
-    # Copy Bambu 3MF MCP
-    info "Installing Bambu 3MF MCP..."
-    cp -r "$ORCA_ROOT/mcp/bambu-3mf/src" "$CLAUDE_DIR/mcp/bambu-3mf/" 2>/dev/null || true
-    cp -r "$ORCA_ROOT/mcp/bambu-3mf/dist" "$CLAUDE_DIR/mcp/bambu-3mf/" 2>/dev/null || true
-    cp "$ORCA_ROOT/mcp/bambu-3mf/package.json" "$CLAUDE_DIR/mcp/bambu-3mf/" 2>/dev/null || true
-    cp "$ORCA_ROOT/mcp/bambu-3mf/tsconfig.json" "$CLAUDE_DIR/mcp/bambu-3mf/" 2>/dev/null || true
-    success "Bambu 3MF MCP installed"
-
-    # Copy Bambu MCP Agent (Python-based analysis)
-    if [ -d "$ORCA_ROOT/mcp/bambu-mcp-agent" ]; then
-        info "Installing Bambu MCP Agent..."
-        mkdir -p "$CLAUDE_DIR/mcp/bambu-mcp-agent"
-        cp -r "$ORCA_ROOT/mcp/bambu-mcp-agent/src" "$CLAUDE_DIR/mcp/bambu-mcp-agent/" 2>/dev/null || true
-        cp "$ORCA_ROOT/mcp/bambu-mcp-agent/pyproject.toml" "$CLAUDE_DIR/mcp/bambu-mcp-agent/" 2>/dev/null || true
-        cp "$ORCA_ROOT/mcp/bambu-mcp-agent/requirements.txt" "$CLAUDE_DIR/mcp/bambu-mcp-agent/" 2>/dev/null || true
-        success "Bambu MCP Agent installed"
-    fi
-
     # Install orca-record (recording layer binary)
     info "Installing orca-record (session recording)..."
     if command_exists bun; then
@@ -489,15 +469,6 @@ install_orca_files() {
         fi
     fi
 
-    # Copy OpenSCAD MCP (Python-based, uses uv)
-    if [ -d "$ORCA_ROOT/mcp/openscad-mcp" ]; then
-        info "Installing OpenSCAD MCP..."
-        mkdir -p "$CLAUDE_DIR/mcp/openscad-mcp"
-        cp -r "$ORCA_ROOT/mcp/openscad-mcp/src" "$CLAUDE_DIR/mcp/openscad-mcp/" 2>/dev/null || true
-        cp "$ORCA_ROOT/mcp/openscad-mcp/pyproject.toml" "$CLAUDE_DIR/mcp/openscad-mcp/" 2>/dev/null || true
-        cp "$ORCA_ROOT/mcp/openscad-mcp/uv.lock" "$CLAUDE_DIR/mcp/openscad-mcp/" 2>/dev/null || true
-        success "OpenSCAD MCP installed"
-    fi
 
     # Copy reference docs for chrome-devtools-mcp and xcodebuildmcp (npx-based, no local install needed)
     for ref_mcp in chrome-devtools-mcp xcodebuildmcp; do
@@ -607,25 +578,6 @@ install_mcp_dependencies() {
         cd - > /dev/null
     else
         warn "Cognition MCP package.json not found - skipping"
-    fi
-
-    # Install Bambu 3MF MCP dependencies (if user opted in)
-    if echo "$install_bambu" | grep -qi '^y'; then
-        if [ -f "$CLAUDE_DIR/mcp/bambu-3mf/package.json" ]; then
-            info "Installing Bambu 3MF MCP dependencies..."
-            cd "$CLAUDE_DIR/mcp/bambu-3mf"
-            if npm install 2>&1 | grep -q "error"; then
-                warn "Failed to install Bambu 3MF MCP dependencies"
-                ((mcp_errors++))
-            else
-                if [ -f "tsconfig.json" ] && [ ! -d "dist" ]; then
-                    info "Building Bambu 3MF MCP..."
-                    npm run build 2>&1 || npx tsc 2>&1
-                fi
-                success "Bambu 3MF MCP ready"
-            fi
-            cd - > /dev/null
-        fi
     fi
 
     if [ $mcp_errors -gt 0 ]; then
@@ -741,8 +693,6 @@ configure_mcp_servers() {
     # Interactive: Ask about optional MCPs
     local install_xcode="n"
     local install_devtools="n"
-    local install_openscad="n"
-    local install_bambu="n"
     local install_adobe="n"
     local install_crawl4ai="n"
 
@@ -760,9 +710,7 @@ configure_mcp_servers() {
             info "Install Docker first, then run: docker pull unclecode/crawl4ai"
         fi
         echo ""
-        echo -e "    ${YELLOW}3D printing & creative tools:${NC}"
-        read -p "    Install Bambu 3MF MCP (Bambu Studio print settings, slicing analysis)? [y/N]: " install_bambu
-        read -p "    Install OpenSCAD MCP (3D modeling with OpenSCAD)? [y/N]: " install_openscad
+        echo -e "    ${YELLOW}Creative tools:${NC}"
         read -p "    Install Adobe Creative Cloud MCPs (Photoshop + Illustrator)? [y/N]: " install_adobe
         echo ""
     fi
@@ -869,24 +817,6 @@ if "${install_devtools}".lower() in ['y', 'yes']:
         "env": {}
     }
 
-if "${install_bambu}".lower() in ['y', 'yes']:
-    bambu_mcp_dir = f"{claude_dir}/mcp/bambu-3mf"
-    optional_servers["bambu-3mf"] = {
-        "type": "stdio",
-        "command": "node",
-        "args": [f"{bambu_mcp_dir}/dist/index.js"],
-        "env": {}
-    }
-
-if "${install_openscad}".lower() in ['y', 'yes']:
-    openscad_mcp_dir = f"{claude_dir}/mcp/openscad-mcp"
-    optional_servers["openscad-mcp"] = {
-        "type": "stdio",
-        "command": "uv",
-        "args": ["--directory", openscad_mcp_dir, "run", "openscad-mcp-server"],
-        "env": {}
-    }
-
 if "${install_adobe}".lower() in ['y', 'yes']:
     adb_mcp_dir = f"{claude_dir}/mcp/adb-mcp/mcp"
     optional_servers["adobe-photoshop"] = {
@@ -971,8 +901,8 @@ print_completion() {
     echo "     - context7 (library documentation)"
     echo "     - project-context (memory & semantic search)"
     echo "     - cognition-mcp (structured reasoning -- powers /think, /deepthink,"
-    echo "                      /challenge, /contemplate, /shimmer, /solve, /adversarial,"
-    echo "                      /autonomous, /problem-solve)"
+    echo "                      /challenge, /contemplate, /shimmer, /adversarial,"
+    echo "                      /problem-solve)"
     echo "     - sequential-thinking (multi-step reasoning)"
     echo "     - RVRY (metacognitive substrate -- powers /meta)"
     echo ""
@@ -987,8 +917,6 @@ print_completion() {
     echo "     - Chrome DevTools: browser debugging, screenshots, design review"
     echo "     - XcodeBuildMCP: iOS/macOS build + simulator"
     echo "     - Crawl4AI: web scraping for /research (requires Docker)"
-    echo "     - Bambu 3MF: 3D print settings manipulation"
-    echo "     - OpenSCAD: 3D modeling and STL analysis"
     echo "     - Adobe Photoshop + Illustrator (requires uv, Adobe apps)"
     echo ""
     if ! docker ps 2>/dev/null | grep -q crawl4ai; then

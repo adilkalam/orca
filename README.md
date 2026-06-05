@@ -4,7 +4,7 @@
 | | | | |_) | |     / _ \  | | | \___ \
 | |_| |  _ <| |___ / ___ \ | |_| |___) |
  \___/|_| \_\\____/_/   \_\ \___/|____/
-                                    v7.0
+                                    v7.1
 ```
 > **[QUICK-START.md](QUICK-START.md)**
 
@@ -32,7 +32,7 @@ The capability LLMs possess underneath that presentation layer is immensely powe
 
 ## What ORCA Provides
 
-At its core, ORCA is cognitive scaffolding for LLMs. It creates the conditions that allow Opus 4.6 to tap into its immense reasoning capacity -- and does so *before* trained defaults poison the output.
+At its core, ORCA is cognitive scaffolding for LLMs. It creates the conditions that allow Claude to tap into its immense reasoning capacity -- and does so *before* trained defaults poison the output.
 
 ### Structured Input
 
@@ -266,7 +266,7 @@ This changes both sides of the interaction. Claude produces output shaped by evi
 
 ### The 49 operations
 
-Beyond default observation, ORCA provides 49 structured reasoning operations via RVRY that Claude can execute but doesn't reach for unprompted. Read the [full guide on cognition](quick-reference/cognition.md).
+Beyond default observation, ORCA provides 49 structured reasoning operations via cognition-mcp that Claude can execute but doesn't reach for unprompted. Read the [full guide on cognition](quick-reference/cognition.md).
 
 | Category | Example |
 |----------|---------|
@@ -380,14 +380,14 @@ Multi-agent orchestration pipelines are a lens, not a source. It focuses whateve
 
 Send a vague prompt into a pipeline and you get a focused version of vague. Send a detailed spec and you get the thing you actually wanted.
 
-Agents across 11 domains (iOS, Next.js, Django-React, Expo, Research, Data, 3D Printing, Creative Design, Typography, OS-Dev, and more). Role separation is strict: orchestrators coordinate and never write code, specialists implement scoped tasks, gates validate and never fix.
+Agents across 10 domains (iOS, Next.js, Django-React, Expo, Research, Data, Design, Typography, Dev, and Cross-Domain). Role separation is strict: orchestrators coordinate and never write code, specialists implement scoped tasks, gates validate and never fix.
 
 The agents are effective because of what they know -- extracted from studying market leaders and others:
 
 - What does deep research look like?
 - What makes a good iOS data model?
 - What debugging patterns actually work?
-- What print settings couple with each other?
+- What makes an interface feel crafted rather than generic?
 
 Routing modes match complexity to effort:
 
@@ -436,7 +436,7 @@ ORCA learns at three levels:
 
 **Gate-level.** When a gate fails, it generates a reflexion: what failed, why, and what would have prevented it. These reflexions load before future runs of the same agent. Based on Reflexion (Shinn et al., NeurIPS 2023) -- structured memory of what went wrong, no weight updates.
 
-**Conversation-level.** `/reflect` extracts learning signals from your interactions. Correct Claude three times about the same thing ("no, use strict mode") and it becomes a permanent rule. Instructions accumulate. Corrections persist across sessions.
+**Conversation-level.** Repeated corrections get captured as durable rules. Correct Claude three times about the same thing ("no, use strict mode") and it becomes a permanent rule. Instructions accumulate. Corrections persist across sessions.
 
 All three levels feed back through Workshop memory. A gate failure triggers save_standard, which query_context retrieves for the next orchestrator run. A verification question that fails twice becomes a mandatory future check. Nothing stays siloed.
 
@@ -503,12 +503,13 @@ Claude Desktop gives you a capable one-pass analysis from training data. ORCA gi
 
 | Component | What it enables |
 |-----------|----------------|
-| **RVRY** | 49 structured reasoning operations via `/deepthink`, `/problem-solve`, `/challenge`. Stores thinking externally, never generates it. |
+| **cognition-mcp** | 49 structured reasoning operations via `/think`, `/deepthink`, `/problem-solve`, `/challenge`, `/contemplate`, `/shimmer`, `/adversarial`, `/think-model`. A structured reasoning notepad -- stores thinking externally, never generates it. |
+| **RVRY** | Sustained metacognitive substrate observation via `/meta`. Installed on demand (`npx @rvry/mcp setup`). |
 | **project-context** | Memory across sessions. Decisions, gotchas, preferences. Semantic code search. Context bundles per task. |
 | **sequential-thinking** | Multi-step reasoning with revision and backtracking. |
 | **context7** | Up-to-date library documentation instead of stale training data. |
 | **orca-record** | Session event tracking. Captures tool calls and file changes. Prior session context loads automatically before agents start work. |
-| **Verification MCPs** | Domain-specific proof. XcodeBuildMCP for iOS builds, Chrome DevTools for live debugging and screenshots, Crawl4AI for research. |
+| **Optional verification MCPs** | Domain-specific proof, prompted at install. XcodeBuildMCP for iOS builds, Chrome DevTools for live debugging and screenshots, Crawl4AI for research, Adobe Photoshop + Illustrator for visual work. |
 
 ---
 
@@ -517,6 +518,8 @@ Claude Desktop gives you a capable one-pass analysis from training data. ORCA gi
 [Quick Start Guide](QUICK-START.md) -- Installation and first commands.
 
 [Full Documentation](DOCUMENTATION.md) -- Architecture, concepts, pipeline specs.
+
+Install prompts you to pick build lanes (opt-in; Research defaults on). Selectable lanes: iOS, Expo, Next.js, Django+React, Data, Typography, Research. The core -- orchestration, cognition, the design family, and the shared dev + cross-domain agents -- always installs. Core MCPs (context7, sequential-thinking, project-context, cognition-mcp) auto-install; optional MCPs (Chrome DevTools, XcodeBuildMCP, Crawl4AI, Adobe Photoshop + Illustrator) are prompted.
 
 ```bash
 # Think through a problem
@@ -538,4 +541,4 @@ Claude Desktop gives you a capable one-pass analysis from training data. ORCA gi
 
 ---
 
-**ORCA OS v7.0** -- [Documentation](DOCUMENTATION.md) -- [Quick Start](QUICK-START.md)
+**ORCA OS v7.1** -- [Documentation](DOCUMENTATION.md) -- [Quick Start](QUICK-START.md)

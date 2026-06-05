@@ -8,23 +8,25 @@ The installer automatically configures these MCP servers in `~/.claude.json`:
 
 | MCP Server | Purpose | Package |
 |------------|---------|---------|
-| context7 | Up-to-date library documentation | `@upstash/context7-mcp` (npx) |
+| context7 | Up-to-date library documentation | `@upstash/context7-mcp` (npx, on-demand) |
 | sequential-thinking | Multi-step reasoning with revision | `@modelcontextprotocol/server-sequential-thinking` (npx) |
-| cognition-mcp | Structured notepad for reasoning (49 operations) | Custom (bundled) |
-| project-context | Project memory and semantic search | Custom (bundled) |
-| orca-record | Session event tracking -- tool calls, file changes | Custom CLI binary (`~/.claude/bin/orca-record`) |
-| crawl4ai | Web content extraction and research | Docker SSE (`localhost:11235`) |
+| project-context | Project memory and semantic code search | Custom (bundled, built from source) |
+| cognition-mcp | Structured reasoning notepad (49 operations) + recording extension | Custom (bundled, built from source) |
+| RVRY MCP | Powers `/meta` (metacognitive substrate observation) | `@rvry/mcp` (installed via `npx @rvry/mcp setup`) |
 
 **Optional (prompted during install):**
 
 | MCP Server | Purpose | Package |
 |------------|---------|---------|
-| chrome-devtools | Browser debugging, screenshots, design review | `chrome-devtools-mcp` (npx) |
-| XcodeBuildMCP | iOS/macOS build automation | `xcodebuildmcp` (npx) |
-| adobe-photoshop | Adobe Photoshop automation | Custom (adb-mcp, requires uv) |
-| adobe-illustrator | Adobe Illustrator automation | Custom (adb-mcp, requires uv) |
+| chrome-devtools | Browser debugging, screenshots, design review | `chrome-devtools-mcp@latest` (npx) |
+| XcodeBuildMCP | iOS/macOS build + simulator automation | `xcodebuildmcp@latest` (npx) |
+| crawl4ai | Web content extraction and research | Docker SSE (`localhost:11235`) |
+| adobe-photoshop | Adobe Photoshop automation | Custom (adb-mcp, requires uv + Adobe app) |
+| adobe-illustrator | Adobe Illustrator automation | Custom (adb-mcp, requires uv + Adobe app) |
 
-Core MCPs are auto-configured. Optional MCPs require user confirmation during install.
+Core MCPs are auto-configured by `install.sh`. The bundled custom servers (project-context, cognition-mcp) are built from source during install (`npm install` + build). RVRY MCP is installed at the end of the install via `npx @rvry/mcp setup`, which auto-configures `~/.claude.json`. Optional MCPs require user confirmation during install.
+
+**Session recording:** ORCA also installs `orca-record`, a Bun-compiled CLI binary at `~/.claude/bin/orca-record` (not an MCP server). It captures tool calls and file changes; cognition-mcp's recording operations read the database it writes. See the [orca-record](#orca-record-session-event-tracking) section below.
 
 ---
 
@@ -63,7 +65,9 @@ Enables multi-step reasoning with the ability to revise, branch, and backtrack.
 
 ### Cognition MCP (Structured Reasoning)
 
-A structured notepad for Claude's reasoning using the Accept-Store-Echo pattern. Provides 49 reasoning operations.
+A core, bundled custom server -- built from source at `~/.claude/mcp/cognition-mcp` (runs `node dist/index.js`); `install.sh` runs `npm install` + build. A structured notepad for Claude's reasoning using the Accept-Store-Echo pattern. Provides 49 reasoning operations plus a recording extension.
+
+Powers `/think`, `/deepthink`, `/challenge`, `/contemplate`, `/shimmer`, `/adversarial`, `/problem-solve`, and `/think-model`. Its recording operations (`recording_status`/`recording_query`/`recording_checkpoint`/`recording_compare`/`recording_quality`/`recording_explain`/`recording_rewind`) read the database written by `orca-record`.
 
 **Core Pattern:**
 - **ACCEPT**: Claude provides structured thoughts
@@ -141,13 +145,13 @@ Recording (7):
 - `recording_rewind` - Query rewind data from recording history
 
 **Usage:**
-Used by `/think` command for persistent thought tracking.
+Used by the cognition commands (`/think`, `/deepthink`, `/challenge`, `/contemplate`, `/shimmer`, `/adversarial`, `/problem-solve`, `/think-model`) for persistent thought tracking.
 
 ---
 
 ### Project Context
 
-ORCA's custom memory and context system.
+ORCA's custom memory and context system. A core, bundled custom server -- built from source at `~/.claude/mcp/project-context-server` (runs `node dist/index.js`); `install.sh` runs `npm install` + build. Provides project memory and semantic code search.
 
 **Tools:**
 - `query_context` - Get relevant project context for a task
@@ -159,6 +163,20 @@ ORCA's custom memory and context system.
 
 **Usage:**
 Automatically invoked by orchestrators to load project context before any work.
+
+---
+
+### RVRY MCP
+
+Powers the `/meta` command (sustained metacognitive substrate observation). Installed at the end of the ORCA install via `npx @rvry/mcp setup`, which auto-configures `~/.claude.json`.
+
+**Installation:**
+```bash
+npx @rvry/mcp setup
+```
+
+**Usage:**
+Invoked by the `/meta` command.
 
 ---
 

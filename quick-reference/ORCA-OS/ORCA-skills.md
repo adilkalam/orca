@@ -75,7 +75,7 @@ All design **commands** (`/impeccable`, `/recraft`, `/motion-design`, `/refine`,
 
 ## Other Skills (general engineering)
 
-See `skills/` directory. Non-design skills unchanged by this fork: `adobe-execution`, `adversarial-analysis`, `alignment-verification`, `article-extractor`, `ascii-tables`, `cursor-code-style`, `debugging-first`, `elements-of-style`, `hf-*`, `ios-*`, `linter-loop-limits`, `lovable-pitfalls`, `mm-*`, `nextjs-knowledge-skill`, `orca-confirm`, `os-dev-knowledge-skill`, `pg-style-editor`, `precision-discipline`, `print-prep`, `react-*`, `runpod`, `search-before-edit`, `security-basics`, `ship-learn-next`, `shopify-app-development`, `stripe-integration`, `tapestry`, `testing-strategy`, `using-loaded-knowledge`, `web-interface-guidelines`, `youtube-transcript`.
+See `skills/` directory. Non-design skills unchanged by this fork: `adobe-execution`, `adversarial-analysis`, `alignment-verification`, `article-extractor`, `ascii-tables`, `cursor-code-style`, `debugging-first`, `elements-of-style`, `ios-*`, `linter-loop-limits`, `lovable-pitfalls`, `nextjs-knowledge-skill`, `orca-confirm`, `pg-style-editor`, `precision-discipline`, `print-prep`, `react-*`, `search-before-edit`, `security-basics`, `ship-learn-next`, `tapestry`, `testing-strategy`, `using-loaded-knowledge`, `web-interface-guidelines`, `youtube-transcript`.
 
 ---
 

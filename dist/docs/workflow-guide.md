@@ -59,12 +59,9 @@ Run the appropriate domain command:
 | Next.js | `/nextjs <task>` |
 | Django + React | `/django-react <task>` |
 | Research | `/research <question>` |
-| 3D Printing / Creative Design | `/design <task>` |
-<!-- PRIVATE -->| Knowledge Graph | `/kg <query>` |<!-- /PRIVATE -->
+| Design (UI/UX, frontend) | `/impeccable <task>` |
 | Due Diligence Audit | `/audit <scope>` |
 | Typography | `/typography <task>` |
-| OS Development | `/orca-os-dev <task>` |
-| Pipeline Creation | `/orca-pipeline <domain>` |
 | General Orchestrator | `/orca <task>` |
 
 ### Complexity Flags
@@ -119,7 +116,7 @@ This runs adversarial analysis:
 - Maps causal chains of failure
 - Builds counter-arguments
 - Returns GO / CONDITIONAL GO / NO GO verdict
-- Sessions persisted to ~/.orca-cognition/ for review
+- Sessions persisted to .orca/cognition/ for review
 
 ### 3. Plan the Fix
 
@@ -295,7 +292,7 @@ Use complex mode for full architect involvement:
 
 4. **Match complexity to task** - Don't use `--complex` for typo fixes. Don't use `-tweak` for architecture changes.
 
-5. **Check the plan output** - `/requirements` creates specs in `.claude/requirements/`. Review before executing.
+5. **Check the plan output** - `/requirements` creates specs in `.orca/requirements/`. Review before executing.
 
 6. **Domain commands are smart** - They route to the right specialists automatically. Trust the orchestration.
 
@@ -314,23 +311,25 @@ Use complex mode for full architect involvement:
 | `/expo` | Expo/React Native development |
 | `/django-react` | Django + React full-stack development |
 | `/research` | Deep, cited research |
-| `/design` | 3D printing (OpenSCAD, STL), creative design (Photoshop, Illustrator) |
+| `/impeccable` | Distinctive, production-grade frontend interfaces (design lane) |
 | `/illustrate` | Measured Adobe Photoshop/Illustrator execution |
-<!-- PRIVATE -->| `/kg` | Knowledge graph mechanism + answer synthesis |<!-- /PRIVATE -->
 | `/audit` | Multi-agent due diligence auditing |
 | `/typography` | Typography pipeline (glyph editing, TTF export, font tools) |
-| `/orca-os-dev` | OS/Claude Code configuration development |
-| `/orca-pipeline` | Meta-pipeline for creating new domain pipelines |
 | `/orca` | General orchestrator (coordinates pipelines, never writes code) |
 
 ### Thinking and Analysis
 
 | Command | Purpose |
 |---------|---------|
-| `/think` | Structured reasoning with cognition-mcp (49 operations) |
-| `/deepthink` | Depth-first exploration with constraint chain and self-check |
-| `/problem-solve` | Convergent 8-step decision pipeline |
+| `/think` | Constraint chain exploration with cognitive scaffolding (cognition-mcp) |
+| `/think-model` | Apply a named mental model to a problem |
+| `/deepthink` | Pre-mortem exploration with adaptive failure analysis |
+| `/problem-solve` | Convergent 5-step decision pipeline |
 | `/challenge` | Adversarial analysis (attack a proposal to find weaknesses) |
+| `/adversarial` | Stress-test a proposal to find weaknesses before committing |
+| `/contemplate` | Reasoning strategist (recommends which thinking tools to use) |
+| `/shimmer` | Self-observation with constraint-guided answer |
+| `/meta` | Sustained metacognitive substrate observation (RVRY engine) |
 
 ### Project Setup
 
@@ -338,7 +337,7 @@ Use complex mode for full architect involvement:
 |---------|---------|
 | `/requirements` | Unified planner (requirements + RA blueprint, no implementation) |
 | `/project-setup` | Initialize or update CLAUDE.md with project conventions |
-| `/design-dna` | Initialize or update design-dna for project design system |
+| `/document` | Generate a project design contract (DESIGN.md) from code or interview |
 
 ### Memory and Context
 
@@ -354,8 +353,15 @@ Use complex mode for full architect involvement:
 
 | Command | Purpose |
 |---------|---------|
-| `/design` | Creative design thinking (Photoshop, Illustrator, OpenSCAD) |
-| `/design-review` | In-depth UI/UX visual audit with Puppeteer MCP |
+| `/impeccable` | Create distinctive, production-grade frontend interfaces (default design lane) |
+| `/recraft` | Redo/recraft an existing design (classifies scope and routes) |
+| `/refine` | Refinement router (--animate, --bolder, --colorize, --delight, --layout, --overdrive, --quieter, --typeset) |
+| `/simplify` | Simplification router (--adapt, --clarify, --distill) |
+| `/fortify` | Design-hardening router (--harden, --optimize, --polish) |
+| `/motion-design` | Heavy motion/animation orchestrator |
+| `/design-audit` | Technical quality audit (a11y, performance, responsive, anti-patterns) |
+| `/design-critique` | UX critique (visual hierarchy, cognitive load, anti-pattern scoring) |
+| `/document` | Generate a project design contract (DESIGN.md) |
 | `/illustrate` | Measured Adobe execution with mandatory self-review |
 | `/clone-website` | Clone a website's UI into a project using web analysis |
 
@@ -364,7 +370,6 @@ Use complex mode for full architect involvement:
 | Command | Purpose |
 |---------|---------|
 | `/enhance` | Transform vague requests into well-structured prompts |
-| `/reflect` | Self-improvement (learn from interactions) |
 | `/self-improve` | Show Workshop memory statistics and recent activity |
 | `/root-cause` | Root cause analysis (identify why something is failing) |
 | `/continue` | Resume previous recording sessions |

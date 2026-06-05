@@ -206,7 +206,7 @@ else
 fi
 
 # Crawl4AI - user installs separately
-echo "  Crawl4AI MCP (required for /research, /orca-pipeline)..."
+echo "  Crawl4AI MCP (optional, for /research web scraping)..."
 echo -e "    ${YELLOW}[INFO]${NC} Install separately: https://docs.crawl4ai.com/core/installation/"
 
 echo ""

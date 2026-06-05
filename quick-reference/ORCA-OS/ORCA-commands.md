@@ -2,7 +2,7 @@
 
 **Last Updated:** 2026-06-04 (design-command family doc-sync)
 **Version:** OS 7.1
-**Total Commands:** 44 (+ orca-record CLI with 7 subcommands (5 hook + 2 user))
+**Total Commands:** 40 (+ orca-record CLI with 7 subcommands (5 hook + 2 user))
 
 > **Count reconciled (2026-06-04):** `find commands -maxdepth 1 -name '*.md' | wc -l` returns **54**, and all 54 are git-tracked, deployable command files (none are archive/deprecated/local-only). The prior recorded count of 52 was stale: `think-model.md` (split out of `/think` on 2026-04-23 during the design-system fork) was the most-recent uncounted file, and the count was never bumped past 52 after the SEO/GEO additions. `total_commands: 54` here now agrees with `os-dependency-graph.yaml`. Note: a few command files share a single doc entry below — `/session-resume` is documented under the `/session-save` / `/session-resume` combined header, and `/think-model`, `/challenge`, `/solve`, `/shimmer-direct` are cognition siblings of `/think`/`/shimmer` reachable directly. The Design Commands (9) section count IS verified against on-disk files.
 

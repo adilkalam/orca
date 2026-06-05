@@ -8,13 +8,14 @@ ORCA-OS transforms Claude Code from a coding assistant into a sophisticated mult
 
 ## What's Inside
 
-- **Specialized Agents** across 11 domains (Next.js, iOS, Expo, Django-React, Research, Data, 3D Printing, Creative Design, Typography, OS-Dev, Orca-Pipeline)
-- **Slash Commands** for orchestration, planning, thinking, and design review
+- **72 Specialized Agents** across 10 domains (cross-domain, data, design, dev, django-react, expo, iOS, nextjs, research, typography)
+- **40 Slash Commands** for orchestration, planning, thinking, and design review
+- **54 Skills** -- reusable behavior patterns loaded on demand
 - **Persistent Memory** via Workshop and project-context MCP
 - **Session Recording** via orca-record (captures tool calls, file changes across sessions)
 - **Self-Improvement System** that learns rules from your interactions
 - **49 Reasoning Operations** via cognition-mcp
-- **Deep Thinking** via RVRY MCP (`/deepthink`, `/problem-solve`)
+- **Deep Thinking** via RVRY MCP (`/meta`)
 
 
 ---
@@ -24,7 +25,7 @@ ORCA-OS transforms Claude Code from a coding assistant into a sophisticated mult
 ### Requirements
 
 - **Node.js** v18+ and npm
-- **Python 3.10+** (required for web scraping MCP)
+- **Python 3.10+** (optional, for the Crawl4AI research MCP)
 - **Bun** (optional, for session recording -- https://bun.sh)
 - **Claude Code CLI** (`npm install -g @anthropic-ai/claude-code`)
 
@@ -42,9 +43,22 @@ cd orca-os
 The installer will:
 1. Check prerequisites
 2. Backup any existing `~/.claude` configuration
-3. Install ORCA-OS files to `~/.claude`
-4. Configure MCP servers in `~/.claude.json`
-5. Initialize memory systems
+3. Prompt you to select build lanes (opt-in; see below)
+4. Install ORCA-OS files to `~/.claude`
+5. Configure MCP servers in `~/.claude.json`
+6. Initialize memory systems
+
+### Lane Selection
+
+The installer prompts which build lanes to install. The **core** -- orchestration, cognition, design, and the shared dev + cross-domain agents -- always installs. The selectable lanes are opt-in (Research defaults ON):
+
+- iOS
+- Expo
+- Next.js
+- Django + React
+- Data
+- Typography
+- Research (default ON)
 
 ### Upgrade
 
@@ -88,20 +102,23 @@ claude
 ### Thinking & Reasoning
 | Command | Description |
 |---------|-------------|
-| `/deepthink` | Depth-first exploration with route-based modes (via RVRY) |
-| `/problem-solve` | Convergent 8-step decision pipeline (via RVRY) |
+| `/deepthink` | Pre-mortem exploration with adaptive failure analysis (via cognition-mcp) |
+| `/think` | Constraint-chain exploration with cognitive scaffolding |
+| `/problem-solve` | Convergent 5-step decision pipeline |
 | `/challenge` | Adversarial analysis of proposals |
+| `/contemplate` | Recommends which thinking tools to use, in what sequence |
+| `/meta` | Sustained metacognitive observation (via RVRY) |
 
 ### Utility
 | Command | Description |
 |---------|-------------|
-| `/audit` | Multi-agent due diligence code auditing |
-| `/reflect` | Learn rules from session interactions |
-| `/self-improve` | Process improvement signals from reflection |
+| `/audit` | Evidence-based due diligence code auditing |
+| `/self-improve` | Show Workshop memory stats and recent activity |
 | `/root-cause` | Structured root cause analysis |
 | `/enhance` | Transform vague prompts into structured requests |
 | `/clone-website` | Analyze and spec website cloning |
-| `/continue` | Resume interrupted pipeline execution |
+| `/continue` | Resume info for previous recording sessions |
+| `/document` | Generate a DESIGN.md visual contract from code |
 | `/orca-status` | System status and diagnostics |
 
 ## Domain Orchestrators
@@ -115,17 +132,20 @@ claude
 | `/django-react` | Django + React fullstack |
 | `/research` | Deep research with citations |
 | `/typography` | Font editing, TTF export, exploration tools |
-| `/design` | 3D printing (OpenSCAD, STL), creative design thinking |
 | `/illustrate` | Measured Adobe Photoshop/Illustrator execution |
-| `/orca-os-dev` | ORCA-OS development (for contributors) |
-| `/orca-pipeline` | Create new domain pipelines |
 
 ## Design & Memory Commands
 
 | Command | Description |
 |---------|-------------|
-| `/design-dna` | Initialize and manage design system tokens |
-| `/design-review` | Visual quality gate using design reviewer agents |
+| `/impeccable` | Create distinctive, production-grade frontend interfaces |
+| `/recraft` | Redo/recraft an interface; route by scope |
+| `/refine` | Design-refinement router (--animate, --bolder, --colorize, --delight, --layout, --overdrive, --quieter, --typeset) |
+| `/simplify` | Design-simplification router (--adapt, --clarify, --distill) |
+| `/fortify` | Design-hardening router (--harden, --optimize, --polish) |
+| `/motion-design` | Heavy motion/animation orchestrator |
+| `/design-audit` | Technical quality audit (a11y, performance, responsive, anti-patterns) |
+| `/design-critique` | UX critique with visual hierarchy and cognitive-load scoring |
 | `/project-memory` | Workshop memory management (decisions, gotchas) |
 | `/memory-search` | Unified search across all memory systems |
 | `/project-code` | Code context management (semantic search) |
@@ -138,17 +158,18 @@ claude
 
 | Domain | Agents | Purpose |
 |--------|--------|---------|
-| iOS | 19 | Native iOS/macOS development with SwiftUI, UIKit |
-| Next.js | 15 | Web development with React, TypeScript, CSS, design systems |
-| Django-React | 13 | Full-stack Django + React TypeScript |
-| Expo | 12 | React Native mobile development |
-| Dev (shared) | 12 | Cross-cutting specialists (a11y, performance, security, design) |
-| OS-Dev | 11 | ORCA-OS development and maintenance |
+| iOS | 16 | Native iOS/macOS development with SwiftUI, UIKit |
+| Django-React | 11 | Full-stack Django + React TypeScript |
+| Expo | 10 | React Native mobile development |
+| Next.js | 8 | Web development with React, TypeScript, CSS |
+| Dev (shared) | 8 | Cross-cutting specialists (a11y, performance, security) |
 | Research | 7 | Deep research with citations and fact-checking |
-| Typography | 6 | Font editing, TTF export, exploration tools |
+| Typography | 5 | Font editing, TTF export, exploration tools |
 | Data | 4 | Analytics, competitive analysis |
-| 3D Printing | -- | Skills + MCP driven (bambu-3mf, openscad-mcp, print-prep skill) |
-| Creative Design | -- | Skills + MCP driven (adb-mcp, adobe-execution skill) |
+| Design | 2 | Design lane specialists |
+| Cross-domain | 1 | Shared orchestration helper |
+
+Creative Design work is skills + MCP driven (the optional Adobe Photoshop/Illustrator MCP plus the `adobe-execution` skill). The `print-prep` skill ships as standalone print-settings guidance.
 
 ---
 
@@ -156,21 +177,20 @@ claude
 
 ### Core (Auto-Configured)
 
-- **context7** - Up-to-date library documentation
-- **sequential-thinking** - Multi-step reasoning
-- **cognition-mcp** - 49 reasoning operations + recording layer integration
-- **project-context** - Project memory and semantic search
-- **orca-record** - Session recording CLI (captures tool calls, file changes, injects history)
-- **crawl4ai** - Web scraping & research (Docker-based, powers `/research`)
-- **RVRY** - Deep thinking and problem solving (`/deepthink`, `/problem-solve`)
+- **context7** - Up-to-date library documentation (npx on-demand)
+- **sequential-thinking** - Multi-step reasoning (npx on-demand)
+- **project-context** - Project memory and semantic code search (built from bundled source)
+- **cognition-mcp** - 49 reasoning operations; powers `/think`, `/deepthink`, `/challenge`, `/contemplate`, `/shimmer`, `/adversarial`, `/problem-solve`, `/think-model` (built from bundled source)
+- **RVRY** - Sustained metacognitive observation; powers `/meta` (installed via `npx @rvry/mcp setup`)
+
+ORCA-OS also ships **orca-record**, a session-recording CLI (a bundled binary, not an MCP server) that captures tool calls and file changes per session.
 
 ### Optional (User Prompted)
 
-- **bambu-3mf** - Bambu Studio 3MF print settings (8 tools: presets, slicing, analysis)
-- **openscad-mcp** - 3D modeling with OpenSCAD (render, analyze STL, compare)
-- **chrome-devtools** - Browser debugging, screenshots, design review
-- **XcodeBuildMCP** - iOS/macOS build automation
-- **Adobe Photoshop + Illustrator** - Creative tools (requires uv, Adobe apps)
+- **chrome-devtools** - Browser debugging, screenshots, design review (npx)
+- **XcodeBuildMCP** - iOS/macOS build automation (npx)
+- **Crawl4AI** - Web scraping & research, powers `/research` (Docker)
+- **Adobe Photoshop + Illustrator** - Creative tools (requires uv + adb-mcp, Adobe apps)
 
 ---
 
@@ -184,7 +204,8 @@ claude
 │   ├── django-react/ # Django + React specialists
 │   ├── expo/         # React Native agents
 │   ├── dev/          # Cross-cutting specialists
-│   ├── os-dev/       # ORCA-OS development
+│   ├── design/       # Design lane specialists
+│   ├── cross-domain/ # Shared orchestration helper
 │   ├── research/     # Research pipeline agents
 │   ├── typography/   # Font and type specialists
 │   └── data/         # Analytics agents
@@ -192,7 +213,7 @@ claude
 │   └── orca-record   # Session recording binary
 ├── commands/         # Slash commands
 ├── skills/           # Reusable behavior patterns
-│   ├── print-prep/   # Bambu Studio settings oracle
+│   ├── print-prep/   # Print-settings guidance (advice only)
 │   └── adobe-execution/  # Photoshop/Illustrator guardrails
 ├── hooks/            # Session lifecycle hooks
 ├── scripts/          # Utility scripts
@@ -203,9 +224,7 @@ claude
 ├── quick-reference/  # Quick reference guides
 ├── mcp/              # Custom MCP servers
 │   ├── project-context-server/
-│   ├── cognition-mcp/
-│   ├── bambu-3mf/    # Bambu Studio 3MF manipulation
-│   └── bambu-mcp-agent/  # 3MF analysis agent (Python)
+│   └── cognition-mcp/
 └── memory/           # Workshop database
 ```
 
@@ -241,16 +260,13 @@ ORCA learns at two levels:
 
 **Automatic (gate-level).** When a quality gate fails, the violation is persisted as a standard in Workshop memory. Future runs in the same domain load these standards automatically via `query_context`, so builders see past failures as constraints. No manual intervention needed.
 
-**Manual (conversation-level).** The `/reflect` command extracts learning signals from your interactions:
+**Manual (conversation-level).** The `/self-improve` command surfaces Workshop memory statistics and recent activity so you can review what the system has learned:
 
 ```bash
-/reflect                    # Analyze recent session
-/reflect learn "rule"       # Add a new rule
-/reflect status             # Show active rules
-/reflect unlearn "rule-id"  # Remove a rule
+/self-improve   # Show Workshop memory stats and recent activity
 ```
 
-Rules from `/reflect` are stored in your project's CLAUDE.md. Standards from gate failures are stored in Workshop and loaded via ProjectContext MCP.
+Learned rules are stored in your project's CLAUDE.md. Standards from gate failures are stored in Workshop and loaded via ProjectContext MCP.
 
 ---
 
@@ -360,7 +376,7 @@ mv ~/.claude-backup-* ~/.claude
 
 ## Version
 
-ORCA-OS v7.0
+ORCA-OS v7.1.0
 
 ---
 
@@ -370,4 +386,4 @@ MIT License - See LICENSE file for details.
 
 ---
 
-Built with Claude Code. Powered by Opus 4.6.
+Built with Claude Code.
