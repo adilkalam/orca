@@ -9,7 +9,7 @@ Remove unnecessary complexity from designs, revealing the essential elements and
 
 ## MANDATORY PREPARATION
 
-**Run the cognition constraint loop (MANDATORY).** Invoked directly as `/distill <target>` (a human typed it)? This is an INDIVIDUAL command, outside the /impeccable pipeline -- so cognition IS the enforcement. Run the in-thread loop defined once at `~/.claude/docs/reference/cognition-constraint-loop.md`: R1 generate typed FORBIDDEN/FORWARD constraints via a cognition `checkpoint` -> R2 do the work in-thread using the craft below -> evaluate every bound constraint + detector self-check -> loop (MAX N=2) until none unsatisfied; you may NOT claim done with an open constraint. (The heavy /impeccable pipeline with its separate validator + hook is a different path; cognition is optional there.) If `design-builder` loaded this skill only for craft reference, ignore this block and use the craft below.
+**Run the cognition constraint loop (MANDATORY)** — see `~/.claude/docs/reference/cognition-constraint-loop.md`. (If `design-builder` loaded this skill only for craft reference, ignore this block and use the craft below.)
 
 Invoke {{command_prefix}}impeccable — it contains design principles, anti-patterns, and the **Context Gathering Protocol**. Follow the protocol before proceeding — if no design context exists yet, you MUST run {{command_prefix}}impeccable teach first.
 
@@ -121,6 +121,18 @@ If you removed features or options:
 - Note any user feedback to monitor
 
 Remember: You have great taste and judgment. Simplification is an act of confidence - knowing what to keep and courage to remove the rest. As Antoine de Saint-Exupéry said: "Perfection is achieved not when there is nothing more to add, but when there is nothing left to take away."
+
+---
+
+## SwiftUI target
+
+When the iOS architect passes `platform: swiftui`, the builder reads ONLY this section — the CSS craft above does NOT apply.
+
+- Reduce view depth: flatten nested containers/`ZStack`s, drop decorative `.background`/`.shadow`, remove cards that aren't real grouping (use `Spacing` + `Divider()`).
+- One primary action per screen (`.borderedProminent`); secondaries recede. Progressive disclosure via `NavigationStack`/`.sheet`/`DisclosureGroup`.
+- Collapse token variety: fewer type steps, 1–2 chroma tiers of blue plus neutrals.
+- Everything through tokens — NO OKLCH, NO `px`, NO `gap`, NO magic numbers.
+- Self-check with `swiftdesigncheck` (NOT `designcheck.js`).
 
 ---
 

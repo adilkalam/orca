@@ -205,17 +205,18 @@ Orchestrated directly by `/research` command (no lead agent).
 ### Writing
 | Agent | Purpose |
 |-------|---------|
-| `research-answer-writer` | Concise answer synthesis |
-| `research-deep-writer` | Long-form research content |
+| `research-answer-writer` | Concise answer synthesis (deltas only; shared spine in `docs/reference/research-writer-core.md`) |
+| `research-deep-writer` | Long-form research content (deltas only; shared spine in `docs/reference/research-writer-core.md`) |
 
 ### Gates
 | Agent | Purpose |
 |-------|---------|
-| `research-fact-checker` | Claim verification |
-| `research-citation-gate` | Citation quality |
-| `research-consistency-gate` | Logical consistency |
+| `research-fact-checker` | Re-verification gate — WIRED into `/research` (always-on under `--deep`, opt-in via `--verify`); checks claims against retained `sources/` first |
+| `research-citation-gate` | Citation quality (checks `[evidence?]` claims against retained `sources/`) |
+| `research-consistency-gate` | Logical consistency (reads `phase_state.json .research`) |
 
 **MCP Requirements:** crawl4ai
+**Shared reference:** `docs/reference/research-writer-core.md` (writer core, dedupes the two writers)
 
 ---
 

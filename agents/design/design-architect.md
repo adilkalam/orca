@@ -25,7 +25,7 @@ the lane directly for their one verb.
 
 - Expect a `=== CONTEXT BUNDLE (INHERITED) ===` header. If `DO_NOT_QUERY: true`, use the inherited
   bundle; do NOT call `query_context`. You MAY do targeted `Read`/`Grep`/`Glob`.
-- The orchestrator injects the hub register (`skills/impeccable/SKILL.md`). If absent, read it.
+- The orchestrator injects the hub register (`skills/impeccable-hub/SKILL.md`). If absent, read it.
 
 ## Inputs
 

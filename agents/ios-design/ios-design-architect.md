@@ -96,6 +96,12 @@ they keep running unchanged.
    delight→`delight`, harden→`harden`, polish→`polish`, distill→`distill`, adapt→`adapt`,
    clarify→`clarify`, animate→`animation-engineering`+`motion-design-principles`. (No overdrive/threejs
    mapping — excluded from v1.)
+   **Pass `platform: swiftui` with every mapped skill** (emit it on each task, below). The verb skills are
+   SHARED with the web lane and their main craft body teaches web reflexes (OKLCH, CSS `gap`, `px`,
+   `designcheck.js`) that the SwiftUI builder FORBIDS. Each verb skill now carries a `## SwiftUI target`
+   section; the `platform: swiftui` signal tells the builder to read ONLY that section, never the web craft
+   body. (`animation-engineering`/`motion-design-principles` are motion-spine peers, not verb skills — the
+   builder maps their intent to SwiftUI motion; the same no-web-reflex rule applies.)
 
 ## Which detector rule each verb tends to trip (seeding guide)
 
@@ -126,6 +132,7 @@ TASKS:
     verb: layout
     target: ["PeptideFox/Features/Dosing/DosingCardView.swift"]
     skill: layout
+    platform: swiftui   # builder reads the skill's `## SwiftUI target` section, NOT the web craft body
     forbidden_seeds:
       - "magic-number spacing — raw literals in padding/spacing (detector:magic-number-spacing)"
     forward_seeds:
@@ -134,6 +141,7 @@ TASKS:
     verb: colorize
     target: ["PeptideFox/Features/Dosing/DosingCardView.swift"]
     skill: colorize
+    platform: swiftui   # builder reads the skill's `## SwiftUI target` section, NOT the web craft body
     forbidden_seeds:
       - "off-palette hue / raw hex in a view (detector:off-palette-hue, detector:raw-hex-outside-tokens)"
       - "hue-coded categories the owner can't see (detector:hue-coded-category)"

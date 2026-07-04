@@ -1,5 +1,5 @@
 ---
-description: "OS 7.0 orchestrator entrypoint for Next.js frontend tasks"
+description: "OS 7.1 orchestrator entrypoint for Next.js frontend tasks"
 argument-hint: "[--light | --tweak | --complex | --audit] <task description or requirement ID>"
 allowed-tools:
   - Agent
@@ -36,14 +36,25 @@ Even `--tweak` delegates to a builder. It skips gates, not agents.
 
 ---
 
-# /nextjs - Next.js Lane Orchestrator (OS 7.0)
+# /nextjs - Next.js Lane Orchestrator (OS 7.1)
 
-Use this command for Next.js / frontend UI work.
+Use this command for Next.js / React frontend UI work (App Router, RSC, TypeScript, semantic CSS).
+
+**Flat pattern:** this command runs in the main thread and IS the orchestrator. It spawns
+the **8 real nextjs agents** single-level via `Agent()`: `nextjs-architect` (planning /
+analysis), `nextjs-builder` (implementation — owns CSS / layout / tokens),
+`nextjs-standards-enforcer` (standards gate), `nextjs-verification-agent` (verification),
+and the specialists `nextjs-typescript-specialist`, `nextjs-performance-specialist`,
+`nextjs-accessibility-specialist`, `nextjs-seo-specialist`. Design adjudication for
+UI-affecting tasks is the **shared web design lane floor** (`design-validator` + the
+`designcheck` detector, `docs/reference/design-lane.md`) — there are no CSS / layout /
+design-review specialist agents; that work is owned by the builder + the design floor.
+See `docs/pipelines/nextjs-pipeline.md` and `docs/reference/phase-configs/nextjs-phase-config.yaml`.
 
 ## Usage
 
 ```bash
-/nextjs "update the pricing page layout"           # Default: light path + design gates
+/nextjs "update the pricing page layout"           # Default: light path + gates
 /nextjs --tweak "fix button spacing"                # Fast: light path, no gates
 /nextjs --complex "multi-page feature"             # Full: architect + builder + all gates
 /nextjs "implement requirement 2025-11-25-0930-dashboard"  # Full path with spec
@@ -65,15 +76,15 @@ Use this command for Next.js / frontend UI work.
 
 **Check for flags:**
 ```
-$ARGUMENTS contains "--light" → Section 2.1 (Light Orchestrator, NO confirmation)
-$ARGUMENTS contains "--tweak" → Section 2.2 (Builder Direct, NO confirmation)
-$ARGUMENTS contains "--complex" → Section 3 (Full Pipeline with confirmation)
-No flag → Section 3 (Light Orchestrator WITH confirmation)
+$ARGUMENTS contains "--light" -> Section 2.1 (Light Path, NO confirmation)
+$ARGUMENTS contains "--tweak" -> Section 2.2 (Builder Direct, NO confirmation)
+$ARGUMENTS contains "--complex" -> Section 3 (Full Pipeline with confirmation)
+No flag -> Section 3 (Light Path WITH confirmation)
 ```
 
 ---
 
-## 0.1 Recording Context (OS 7.0)
+## 0.1 Recording Context (OS 7.1)
 
 > Session activity is captured automatically by **orca-record** hooks. Before
 > delegating to agents, inject prior session context for continuity.
@@ -122,15 +133,15 @@ the delegation prompt. If present, use it directly and skip the query below.
 **Check for requirement ID:**
 ```
 $ARGUMENTS matches "requirement <id>" or "<YYYY-MM-DD-HHMM-*>"
-  → Look for .orca/requirements/<id>/06-requirements-spec.md
-  → If found, this is a SPEC-DRIVEN task (see Section 1.3)
+  -> Look for .orca/requirements/<id>/06-requirements-spec.md
+  -> If found, this is a SPEC-DRIVEN task (see Section 1.2)
 ```
 
 **Check for `--audit` / audit mode:**
 ```
 $ARGUMENTS contains "--audit"
   OR starts with "audit" / "review"
-  → Enter Deep Audit Mode (skip normal planning/implementation flow)
+  -> Enter Deep Audit Mode (skip normal planning/implementation flow)
 ```
 
 If `--audit` is present, run the Deep Audit flow in Section 0.5 and then
@@ -138,25 +149,27 @@ return a report instead of implementing changes.
 
 **Check for visual context (UI tasks):**
 ```
-If task involves UI/UX (keywords: "UI", "layout", "styling", "broken", "fucked", "spacing", "visual"):
-  → Check if user attached screenshot/image
-  → If YES: record has_visual_reference: true
-  → If NO: record has_visual_reference: false (the command will run a diagnose pass first)
+If task involves UI/UX (keywords: "UI", "layout", "styling", "broken", "spacing", "visual"):
+  -> Check if user attached screenshot/image
+  -> If YES: record has_visual_reference: true
+  -> If NO: record has_visual_reference: false (the command runs a structure-mapping diagnose pass first)
 ```
 
 Record in phase_state:
 ```json
 {
   "visual_context": {
-    "has_visual_reference": true|false,
-    "user_provided_screenshot": true|false,
-    "needs_diagnosis": true|false
+    "has_visual_reference": true,
+    "user_provided_screenshot": true,
+    "needs_diagnosis": false
   }
 }
 ```
 
-The command (main thread) uses this to decide whether to run
-`nextjs-design-reviewer` in DIAGNOSE mode before implementation.
+The command (main thread) uses this to decide whether to run a diagnose pass
+before implementation. There is no design-reviewer agent: when a broken UI has
+**no screenshot**, either spawn `nextjs-architect` to map structure / layout, or
+route the aesthetic diagnosis to `/impeccable --audit` (see Section 3.5).
 
 ---
 
@@ -189,21 +202,21 @@ When `--audit` is detected:
    - Call `mcp__project-context__query_context` with a diagnostic task:
      - `domain: "nextjs"`
      - `task`: "Deep Next.js codebase audit"
-     - `maxFiles`: larger than usual (e.g. 30–50)
+     - `maxFiles`: larger than usual (e.g. 30-50)
      - `includeHistory: true`
 
 3. **Assemble an audit squad (via Agent, single-level)**
    - Based on user focus, delegate to relevant agents:
-     - Standards:
-       - `nextjs-standards-enforcer` – scan key app/routes/components for standards violations.
+     - Standards & architecture:
+       - `nextjs-standards-enforcer` - scan key app/routes/components for standards violations.
      - Design & UX:
-       - `nextjs-design-reviewer` – visual/layout/design DNA review.
+       - `design-validator` (audit/read mode) - run the detector + judge against the register, OR route to `/impeccable --audit` for a full aesthetic review.
      - Performance:
-       - `nextjs-performance-specialist` – hotspots, bundle/perf issues.
+       - `nextjs-performance-specialist` - hotspots, bundle/perf issues.
      - Accessibility:
-       - `nextjs-accessibility-specialist` – WCAG/a11y issues.
+       - `nextjs-accessibility-specialist` - WCAG/a11y issues.
      - SEO:
-       - `nextjs-seo-specialist` – metadata, structure, crawlability.
+       - `nextjs-seo-specialist` - metadata, structure, crawlability.
 
    - In prompts, make it explicit that:
      - They are in **audit** mode.
@@ -248,29 +261,94 @@ Recommendation: For agentic coding, semantic CSS produces better output. The sty
 ===
 ```
 
-### Design-DNA Gate (default and complex modes only)
+### Design Contract (passed to the builder)
 
-**Tweak mode**: Skip gate. Manifesto priming above is sufficient.
+> **OS 7.1 / design-fork note:** the old design-first Phase 0 gate and its `design-dna.json`
+> artifact are retired. Design intent now lives in the per-project design contract
+> (`{project}/.claude/PRODUCT.md` + `DESIGN.md`) and the `/impeccable` command + the
+> `impeccable-hub` skill (the register; `interfaces-that-feel` is the felt-state spine the
+> hub points to). There is no design-first architect subagent to spawn.
 
-> **OS 7.1 / design-fork note:** `design-system-architect` and `design-dna.json` are archived. Design intent now lives in the per-project design contract (`{project}/.claude/PRODUCT.md` + `DESIGN.md`) and the `/impeccable` command + the `impeccable-hub` skill (the register; `interfaces-that-feel` is the felt-state spine the hub points to). There is no design-system-architect subagent to spawn.
-
-**Default mode (UI tasks):**
-1. Check for a project design contract: `test -f {project}/.claude/PRODUCT.md` and `test -f {project}/.claude/DESIGN.md` (the two-file split; the single-file `aesthetic.md` is deprecated).
+1. Check for a project design contract: `test -f {project}/.claude/PRODUCT.md` and `test -f {project}/.claude/DESIGN.md` (the two-file split; the single-file `aesthetic.md` is retired).
 2. If EITHER EXISTS: note `has_design_contract: true`, record the paths, and pass them to `nextjs-builder` as `PRODUCT_CONTRACT_PATH` (`.claude/PRODUCT.md`) and `DESIGN_CONTRACT_PATH` (`.claude/DESIGN.md`).
-3. If BOTH MISSING: note `has_design_contract: false`; the design gate (`nextjs-design-reviewer`) applies the `interfaces-that-feel` baseline. Optionally suggest the user run `/impeccable --teach` (writes PRODUCT.md) then `/document` (writes DESIGN.md) to set up a contract.
+3. If BOTH MISSING: note `has_design_contract: false`; the design floor (Section 0.6.1) applies the `interfaces-that-feel` baseline. Optionally suggest the user run `/impeccable --teach` (writes PRODUCT.md) then `/document` (writes DESIGN.md) to set up a contract.
 
-**Complex mode (UI tasks):** same, plus require the `nextjs-design-reviewer` gate to run regardless of contract presence.
+### 0.6.1 The Design Lane Floor (UI-affecting tasks) — FR-5.2
+
+This is the **shared web design lane floor** (`docs/reference/design-lane.md`), run as a
+LIGHT per-task gate. It replaces the old design-review step (that reviewer agent is gone).
+Run it whenever the task is **UI-affecting** and gates are active (default / --light /
+--complex). It is referenced by the light path (Section 2.1) and the complex gates
+(Section 3.7).
+
+**UI-affecting definition.** The task is UI-affecting when it touches:
+- `*.css` / `*.scss` / `*.sass` / `*.less` / `*.module.css`, OR
+- `*.tsx` / `*.jsx` containing `className=`, `style=`, or a CSS import, OR
+- files under `app/`, `components/`, or `pages/`.
+
+Pure server-action / route-handler / config changes are **NOT** UI-affecting -> **skip the
+design gate** (the standards gate and verification still run).
+
+**Step 1 — LIGHTWEIGHT BIND (no cognition checkpoint).** Hand-build a small
+`BOUND_CONSTRAINTS` JSON in the main thread (do NOT call a cognition tool). Populate:
+- **FORBIDDEN** ids drawn from the web detector rule ids the task can trip — pick the ones
+  relevant to the change from: `tailwind-palette-utilities`, `tailwind-hex-values`,
+  `reflex-fonts`, `geist-imports`, `purple-pink-gradients`, `gradient-text`,
+  `side-stripe-borders`, `inset-highlight-shadow`, `default-ease-transition`,
+  `bouncy-easing`.
+- **At least one FORWARD** felt-state obligation derived from the task + the design
+  contract / `interfaces-that-feel` baseline.
+
+Assign ids `N1, N2, ...` and serialize to `.orca/orchestration/temp/nextjs-bound-constraints.json`:
+```json
+{
+  "bound_constraints": [
+    { "id": "N1", "type": "FORBIDDEN", "statement": "no raw Tailwind palette utilities", "detector_rule": "tailwind-palette-utilities", "severity": "P0" },
+    { "id": "N2", "type": "FORWARD", "statement": "the pricing cards must feel calm and legible (clear hierarchy, restrained motion)", "detector_rule": null, "severity": "P1" }
+  ]
+}
+```
+**MUST include >=1 FORBIDDEN AND >=1 FORWARD.** An empty bind makes the validator return
+`GATE_VERDICT: BLOCK` with `UNSATISFIED_CONSTRAINTS: ["NO-BOUND-CONSTRAINTS"]` — never a
+silent pass.
+
+**Step 2 — VALIDATE (fresh context).** Spawn a fresh-context `Agent(design-validator)`
+with ONLY: the builder's changed-file `ARTIFACT_PATHS` (non-empty), the `BOUND_CONSTRAINTS`
+JSON, and the hub (prompt-injected). **Never pass the builder's reasoning.** Instruct the
+validator to `export DESIGN_OVERRIDES_PATH={project}/.design-overrides.json` before the
+detector run so file-based owner overrides suppress correctly regardless of cwd. Parse the
+machine verdict — `GATE_VERDICT: PASS|BLOCK` is the ONLY field you branch on.
+
+**Step 3 — BRANCH.**
+- **PASS** -> write the design-lane gate so the live hook re-runs the detector as a hard floor:
+  ```json
+  { "gates": { "design_lane": {
+      "gate_decision": "PASS",
+      "artifact_paths": ["<non-empty builder-changed paths>"],
+      "validator_score": 95,
+      "bound_constraint_ids": ["N1", "N2"],
+      "attempts": 0,
+      "active_overrides": []
+  } } }
+  ```
+  `artifact_paths` MUST be non-empty. `hooks/gate-enforcement.sh` re-runs `designcheck`
+  on `artifact_paths` and exit-2 blocks a PASS if it finds a named P0 the validator missed.
+- **BLOCK** -> run ONE corrective `nextjs-builder` pass feeding it the validator's
+  `UNSATISFIED_CONSTRAINTS` + `FINDINGS`, then re-validate. **MAX N = 2** builder retries;
+  increment `gates.design_lane.attempts` on each respawn. After the 2nd failed retry,
+  ESCALATE to the user with the unresolved findings named, and set
+  `gates.design_lane.escalated: true` (the hook blocks a PASS past N=2 without it).
 
 ### Design Weight Escalation
 
 When a requirements spec is detected (via requirement ID in arguments):
 1. Read `metadata.json` from the requirements folder
 2. Check `design_weight` field:
-   - `high`: Escalate gate behavior -- default mode uses complex-mode gate (always run the design gate, block until confirmed)
+   - `high`: Escalate gate behavior — default mode runs the design floor (Section 0.6.1) regardless of contract presence
    - `medium`: Keep current tier's gate behavior
    - `low`: Keep current tier's gate behavior
 
-This ensures design-heavy tasks get a mandatory design gate even in default mode.
+This ensures design-heavy tasks get a mandatory design floor even in default mode.
 
 
 ---
@@ -293,7 +371,7 @@ If memory hits are relevant:
 - Note them for context
 - May skip or reduce ProjectContext query scope
 
-### 1.1.1 Reflexion Loading & Constraint Injection (OS 7.0)
+### 1.1.1 Reflexion Loading & Constraint Injection (OS 7.1)
 
 Load relevant reflexions from past gate failures:
 
@@ -304,7 +382,7 @@ workshop --workspace .claude/memory search "reflexion" -t nextjs --limit 5 2>/de
 Pass any reflexions found to agents in the ContextBundle under `prior_reflexions`.
 This helps agents avoid repeating past mistakes.
 
-**Constraint Injection (OS 7.0):**
+**Constraint Injection (OS 7.1):**
 
 For agents that generated past reflexions, synthesize constraint bullets and inject into `phase_state.plan.constraints`:
 
@@ -314,7 +392,7 @@ For agents that generated past reflexions, synthesize constraint bullets and inj
     "constraints": [
       "reflexion: Always include loading.tsx for async pages (from evt-20251201-003)",
       "reflexion: Verify 'use client' on hook-using components (from evt-20251128-007)"
-    ],
+    ]
   }
 }
 ```
@@ -368,15 +446,17 @@ Run the light path **yourself, in the main thread** (no orchestrator subagent �
 
 **Flat phase script (--light):**
 
-1. **Build** — `Agent({ subagent_type: "nextjs-builder", description: "Next.js task (light)", prompt: <REQUEST + inherited ContextBundle + memory hits + manifesto priming + tech-stack detection + STANDARDS from prior gate failures> })`. Tell the builder: context is inherited, do NOT call `query_context` (may narrow-query maxFiles:5 if missing).
-2. **Standards gate** — `Agent({ subagent_type: "nextjs-standards-enforcer", ... })`; read its `standards_score` (hard block < 90).
-3. **Design gate** — `Agent({ subagent_type: "nextjs-design-reviewer", ... })`; read its verdict.
-4. If a gate ERRORs/BLOCKs, route the violations back to `nextjs-builder` once, then re-gate.
-5. Ephemeral phase_state only (scores for this run; no spec ceremony). Persist scores to `.orca/orchestration/phase_state.json`.
+1. **Build** — `Agent({ subagent_type: "nextjs-builder", description: "Next.js task (light)", prompt: <REQUEST + inherited ContextBundle + memory hits + manifesto priming + tech-stack detection (css_approach) + STANDARDS from prior gate failures> })`. Tell the builder: context is inherited, do NOT call `query_context` (may narrow-query maxFiles:5 if missing).
+2. **Standards gate** — `Agent({ subagent_type: "nextjs-standards-enforcer", ... })`; read its `standards_score` and write the canonical dev-lane score contract (`docs/reference/gate-contract.md`) to phase_state:
+   `gates.standards = { "score": <standards_score>, "threshold": 90, "gate_decision": "PASS"|"BLOCK", "lane": "nextjs" }`.
+   **BINARY mapping (the live-hook safety hinge):** the enforcer emits a *graduated* decision (PASS / WARN / ERROR / BLOCK). Write `gate_decision: "PASS"` ONLY when the enforcer decision is `PASS` **AND** `score >= 90`; otherwise write `"BLOCK"`. ALWAYS write `score` as a NUMBER. A PASS written with WARN/ERROR text or a missing/non-numeric score is exit-2 blocked by `hooks/gate-enforcement.sh` (`docs/reference/gate-contract.md`).
+3. **Design gate (UI-affecting only)** — if the change is UI-affecting (Section 0.6.1 definition), run the Design Lane Floor (Section 0.6.1): lightweight bind -> `Agent(design-validator)` -> branch, writing `gates.design_lane`. Skip for pure server/route/config changes.
+4. If a gate ERRORs/BLOCKs, route the violations back to `nextjs-builder` once, then re-gate; increment `gates.standards.attempts` (standards) or `gates.design_lane.attempts` (design) on the respawn (mirrors the design-lane `attempts` convention, `docs/reference/design-lane.md`). MAX N=2 on the design lane, then escalate.
+5. Ephemeral phase_state only (scores for this run; no spec ceremony). Persist the `gates.standards` contract above (and `gates.design_lane` when UI-affecting) to `.orca/orchestration/phase_state.json`; a final PASS is written only once `score >= 90` and the design floor (if run) is PASS.
 
-(The old `nextjs-light-orchestrator` delegation is dissolved — the command owns this sequence.)
+(The old light-orchestrator delegation tier is dissolved — the command owns this sequence.)
 
-Inject this `=== DESIGN AWARENESS ===` block (the Manifesto Priming text from Section 0.6) into the builder prompt for the light path.
+Inject the `=== DESIGN AWARENESS ===` block (the Manifesto Priming text from Section 0.6) into the builder prompt for the light path.
 
 ---
 
@@ -428,7 +508,7 @@ ROUTING MODE: tweak (fast but thoughtful)
 - NO verification (no lint, no build, no tests)
 - NO gates, NO design review
 - YES reasoning about implications:
-  - Position change? Adjust spacing (top↔bottom), flip directional indicators
+  - Position change? Adjust spacing (top<->bottom), flip directional indicators
   - Order change? Check borders, visual hierarchy
   - Style change? Check sibling consistency
   `
@@ -471,7 +551,7 @@ This section applies when:
 1. Context Query (ProjectContext)
 2. Coordination — /nextjs command (main thread)
 3. Implementation (nextjs-builder + specialists)
-4. Gates (nextjs-standards-enforcer, nextjs-design-reviewer)
+4. Gates (nextjs-standards-enforcer, design floor for UI-affecting tasks)
 
 ### Agent Team
 | Role | Agent |
@@ -480,7 +560,7 @@ This section applies when:
 | Implementation | nextjs-builder |
 | Specialists | [list relevant ones based on 3.1.1] |
 | Standards Gate | nextjs-standards-enforcer |
-| Design Gate | nextjs-design-reviewer |
+| Design Gate | design-validator (web design floor) |
 
 ### Files Likely Affected
 - [list from ContextBundle or memory]
@@ -502,7 +582,7 @@ This section applies when:
 2. Coordination — /nextjs command (main thread)
 3. Planning + architecture decisions (nextjs-architect)
 4. Implementation (nextjs-builder + specialists)
-5. Gates (nextjs-standards-enforcer, nextjs-design-reviewer)
+5. Gates (nextjs-standards-enforcer, design floor for UI-affecting tasks)
 6. Verification (nextjs-verification-agent)
 
 ### Agent Team
@@ -513,7 +593,7 @@ This section applies when:
 | Implementation | nextjs-builder |
 | Specialists | [list relevant ones based on 3.1.1] |
 | Standards Gate | nextjs-standards-enforcer |
-| Design Gate | nextjs-design-reviewer |
+| Design Gate | design-validator (web design floor) |
 | Verification | nextjs-verification-agent |
 
 ### Files Likely Affected
@@ -544,13 +624,13 @@ AskUserQuestion({
 
 **After presenting the confirmation question:**
 1. STOP and wait for user response
-2. If user says "Yes, proceed" → Route based on mode (see below)
-3. If user says "Modify team" → ask what to change, update, re-output team, re-confirm
-4. If user says "Switch to --light" → run the light flow yourself (Section 2.1)
+2. If user says "Yes, proceed" -> Route based on mode (see below)
+3. If user says "Modify team" -> ask what to change, update, re-output team, re-confirm
+4. If user says "Switch to --light" -> run the light flow yourself (Section 2.1)
 
 **After confirmation received - ROUTING (you run these in the main thread; no orchestrator subagent):**
-- If `--complex` flag → run the full pipeline (Section 3.2+): architect → builder → all gates, each spawned single-level via `Agent()`
-- If default (no flag) → run the light flow (Section 2.1): builder + standards/design gates
+- If `--complex` flag -> run the full pipeline (Section 3.2+): architect -> builder -> all gates, each spawned single-level via `Agent()`
+- If default (no flag) -> run the light flow (Section 2.1): builder + standards gate + design floor
 
 **Anti-patterns (WRONG):**
 - Putting the team list inside AskUserQuestion options
@@ -565,14 +645,17 @@ AskUserQuestion({
 
 | Task Intent | EXCLUDE from team | USE instead |
 |-------------|-------------------|-------------|
-| "remove/eliminate/migrate from Tailwind" | `tailwind-specialist` | `nextjs-css-specialist`, `design-token-guardian` |
-| "remove/eliminate inline styles" | — | `nextjs-css-specialist`, `design-token-guardian` |
-| "CSS architecture/semantic CSS/@layer" | `tailwind-specialist` | `nextjs-css-specialist` |
-| "audit/review" (not implement) | `nextjs-builder` | Appropriate reviewer/enforcer agents |
+| "audit/review" (not implement) | `nextjs-builder` | Appropriate reviewer/enforcer agents + `design-validator` |
+| "performance audit" | `nextjs-builder` | `nextjs-performance-specialist` |
+| "accessibility audit" | `nextjs-builder` | `nextjs-accessibility-specialist` |
+| "SEO audit" | `nextjs-builder` | `nextjs-seo-specialist` |
 
 **Detection keywords:**
-- "remove", "eliminate", "get rid of", "migrate away from", "replace" → EXCLUDE that specialist
-- "audit", "review", "analyze", "check" → Use reviewers, NOT builders
+- "audit", "review", "analyze", "check" -> Use reviewers/enforcers, NOT builders
+
+> **CSS / layout / tokens are NOT specialist agents.** They are owned by `nextjs-builder`,
+> which auto-adapts to the detected `css_approach` (3.1.2), plus the design floor
+> (Section 0.6.1). Do not propose CSS / layout / design-review specialists — none exist.
 
 #### 3.1.2 Tech Stack Detection (Tailwind/shadcn)
 
@@ -597,16 +680,8 @@ if [ -f "components.json" ] || [ -d "components/ui" ]; then
 fi
 ```
 
-**Routing based on detection:**
+**Record `css_approach` in phase_state (there are NO CSS specialist agents — the builder adapts):**
 
-| Detection | Include Specialist |
-|-----------|-------------------|
-| Tailwind detected | `tailwind-specialist` |
-| shadcn detected | `shadcn-specialist` |
-| Neither detected | `nextjs-css-specialist` (semantic CSS) |
-| Both detected | `tailwind-specialist` + `shadcn-specialist` |
-
-**Record in phase_state:**
 ```json
 {
   "tech_stack": {
@@ -617,7 +692,13 @@ fi
 }
 ```
 
-**Pass to agents in ContextBundle:**
+Map the two booleans to `css_approach`: `tailwind+shadcn` / `tailwind` / `shadcn` /
+`semantic-css` (neither detected). Then **pass `css_approach` to `nextjs-builder` in the
+ContextBundle** — the builder owns CSS / layout / tokens and auto-adapts its output to the
+detected approach. The design floor (Section 0.6.1) enforces named-slop discipline
+regardless of approach.
+
+**Pass to the builder in the ContextBundle:**
 ```markdown
 TECH STACK DETECTED:
 - Tailwind: [yes/no]
@@ -657,14 +738,14 @@ Initialize phase_state.json:
 
 ### 3.3 Coordination (main thread — OS 7.1)
 
-> The `nextjs-grand-architect` coordinator tier is dissolved. **You** (the command, in the main thread) own coordination: you sequence the phases below and spawn each specialist single-level via `Agent()`. Architecture decisions are produced by `nextjs-architect` in 3.4 (it is the planner). See `docs/reference/flatten-orchestration-pattern.md`.
+> The `nextjs` coordinator tier is dissolved. **You** (the command, in the main thread) own coordination: you sequence the phases below and spawn each specialist single-level via `Agent()`. Architecture decisions are produced by `nextjs-architect` in 3.4 (it is the planner). See `docs/reference/flatten-orchestration-pattern.md`.
 
 Decide flow from **visual context** (from Section 0) before planning:
-- If `has_visual_reference: true` → pass the user's visual context straight to `nextjs-builder` in 3.6.
-- If `needs_diagnosis: true` → spawn `nextjs-design-reviewer` in DIAGNOSE mode first, feed its findings into 3.4.
+- If `has_visual_reference: true` -> pass the user's visual context straight to `nextjs-builder` in 3.6.
+- If `needs_diagnosis: true` -> run the diagnose pass from Section 3.5 first, feed its findings into 3.4.
 
 Context to pass into every `Agent()` call this run (inherited — instruct each agent NOT to call `query_context`; targeted file reads OK):
-- ContextBundle from Section 3.2, memory summary, requirements spec (if any), the `=== DESIGN AWARENESS ===` manifesto block (Section 0.6), tech-stack detection (3.1.2), and STANDARDS from prior gate failures.
+- ContextBundle from Section 3.2, memory summary, requirements spec (if any), the `=== DESIGN AWARENESS ===` manifesto block (Section 0.6), tech-stack detection / `css_approach` (3.1.2), and STANDARDS from prior gate failures.
 
 Architecture/data decisions (App Router structure, RSC vs client, data patterns; risk assessment) are the output of 3.4, recorded via `mcp__project-context__save_decision`.
 
@@ -685,9 +766,13 @@ Outputs:
 
 Update phase_state.planning.
 
-### 3.5 Analysis (layout structure)
+### 3.5 Analysis (structure / layout mapping)
 
-Layout structure, component hierarchy, and style sources are mapped by `nextjs-architect` as part of its plan in 3.4 (no separate analyzer agent). If deeper diagnosis is needed for a broken UI, the `nextjs-design-reviewer` DIAGNOSE pass from 3.3 supplies it.
+Component hierarchy, layout structure, and style sources are mapped by `nextjs-architect`
+as part of its plan in 3.4 (no separate analyzer agent). If deeper diagnosis is needed for
+a **broken UI with no screenshot**, spawn `nextjs-architect` in a read-only diagnose pass
+to map the structure / layout / style sources, OR route the aesthetic diagnosis to
+`/impeccable --audit`. There is no design-reviewer agent.
 
 Record the structure map in `phase_state.analysis`.
 
@@ -696,15 +781,13 @@ Record the structure map in `phase_state.analysis`.
 Spawn `nextjs-builder` single-level via `Agent()`, then any specialists single-level (each spawned by this command, one at a time):
 
 **Specialists as needed (per confirmed team from 3.1):**
-- Tailwind CSS: `tailwind-specialist` (if Tailwind detected - see 3.1.2)
-- shadcn/ui: `shadcn-specialist` (if shadcn detected - see 3.1.2)
-- CSS Architecture: `nextjs-css-specialist` (semantic CSS, @layer, design tokens)
-- Layout: `nextjs-layout-specialist`
 - Types: `nextjs-typescript-specialist`
-- Tokens: `design-token-guardian`
 - Performance: `nextjs-performance-specialist`
 - Accessibility: `nextjs-accessibility-specialist`
 - SEO: `nextjs-seo-specialist`
+
+CSS / layout / tokens are **owned by `nextjs-builder`** (it auto-adapts to the detected
+`css_approach` from 3.1.2). There are no CSS / layout / design-review specialist agents.
 
 ** Use ONLY the specialists confirmed in Section 3.1.**
 Do not add specialists that weren't in the confirmed team.
@@ -713,31 +796,40 @@ Update phase_state.implementation_pass1.
 
 ### 3.7 Gates
 
-Run gate agents:
+Run gate agents in order:
 
-1. **nextjs-standards-enforcer** - Code standards, token usage
-   - Threshold: 90/100
-   - Hard block if < 90
+1. **nextjs-standards-enforcer** — code standards, token usage, safety.
+   - Threshold: 90/100. Hard block if < 90.
+   - Write the canonical score contract to phase_state:
+     `gates.standards = { "score": <score>, "threshold": 90, "gate_decision": "PASS"|"BLOCK", "lane": "nextjs" }`
+     (`docs/reference/gate-contract.md`).
+   - **BINARY mapping:** the enforcer emits a graduated decision (PASS / WARN / ERROR / BLOCK).
+     Write `gate_decision: "PASS"` ONLY when the enforcer decision is `PASS` **AND**
+     `score >= 90`; otherwise `"BLOCK"`. ALWAYS write `score` as a NUMBER.
+     `hooks/gate-enforcement.sh` exit-2 blocks a PASS with a missing/non-numeric score,
+     a score below threshold, or WARN/ERROR text written as PASS.
 
-2. **nextjs-design-reviewer** - Visual QA, design DNA
-   - Threshold: 90/100
-   - Hard block if < 90
-    - MUST produce a structured design review report under
-      `.orca/orchestration/evidence/design-review-*.md` and record its path
-      in `phase_state.gates.design_qa.evidence_paths`. The gate enforcement
-      hook will block any attempt to set `gate_decision: "PASS"` without valid
-      evidence paths pointing to structurally valid reports (coverage
-      declaration, measurements, pixel comparison, verification result).
+2. **Design floor (UI-affecting tasks only)** — the web design lane floor (Section 0.6.1):
+   lightweight bind -> `Agent(design-validator)` (fresh context, detector + bound
+   constraints) -> branch, writing `gates.design_lane` with non-empty `artifact_paths`
+   (`docs/reference/design-lane.md`). Skip for pure server/route/config changes.
+   `hooks/gate-enforcement.sh` re-runs `designcheck` on `artifact_paths` and exit-2 blocks
+   a PASS on a missed P0.
 
 Update phase_state.gates.
 
-**If gates fail:** Allow one corrective pass (implementation_pass2) scoped to violations only.
+**If gates block:** Allow one corrective pass (implementation_pass2) scoped to violations
+only; increment `gates.standards.attempts` / `gates.design_lane.attempts` on the corrective
+respawn. MAX N=2 on the design lane, then escalate (`escalated: true`).
 
-### 3.8 Verification
+### 3.8 Verification (nextjs-verification-agent)
 
-Delegate to `nextjs-verification-agent`:
-- Run lint/typecheck/build
-- Record verification status
+Delegate to `nextjs-verification-agent` (the distinct verification gate — this lane keeps
+it separate from the standards gate):
+- Run lint / typecheck / build
+- Record `verification.verification_status` and `verification.commands_run` (the exact
+  commands executed — `hooks/gate-enforcement.sh` blocks a `"pass"` whose `commands_run`
+  entries were not actually run via the Bash tool this session)
 
 Update phase_state.verification.
 
@@ -745,7 +837,7 @@ Update phase_state.verification.
 
 - Summarize gate scores, verification results, risks
 - Save task history via `mcp__project-context__save_task_history`
-- Archive phase_state
+- Retire phase_state (write final status)
 
 ---
 
@@ -772,20 +864,22 @@ Update phase_state.verification.
    - Delegate to appropriate agent
 
 5. **Anti-Pattern Detection:**
-   - "Let me write this code" → WRONG. Delegate to nextjs-builder
-   - "I'll fix this directly" → WRONG. Delegate to specialist
-   - Using Edit/Write tools → WRONG. You're an orchestrator
-   - Resuming without confirmation → WRONG. Must re-confirm first
-   - "Based on feedback, re-confirming plan..." → CORRECT
-   - "Based on feedback, delegating to nextjs-builder..." → WRONG (skipped confirmation)
+   - "Let me write this code" -> WRONG. Delegate to nextjs-builder
+   - "I'll fix this directly" -> WRONG. Delegate to specialist
+   - Using Edit/Write tools -> WRONG. You're an orchestrator
+   - Resuming without confirmation -> WRONG. Must re-confirm first
+   - "Based on feedback, re-confirming plan..." -> CORRECT
+   - "Based on feedback, delegating to nextjs-builder..." -> WRONG (skipped confirmation)
 
 ---
 
 ## 5. Notes
 
-- Use the design gate to block when the design contract is missing for UI work
+- Use the design floor (Section 0.6.1) to keep named slop out of UI-affecting changes; skip it for pure server/route/config work
 - The command (main thread) owns coordination; specialists are spawned single-level via `Agent()` — no orchestrator subagent (OS 7.1)
-- All agents use Opus 4.6 (default model)
+- **/impeccable boundary:** `/nextjs` runs a LIGHT per-task design floor. Heavy / holistic aesthetic work (multi-verb, `--craft`, full cognition bind, register harvest) routes to `/impeccable` — mirroring the `/ios` <-> `/ios-impeccable` split
+- CSS / layout / tokens are owned by `nextjs-builder` + the design floor; the design/CSS/layout specialists were retired with the design-fork
+- All agents inherit the user's configured default model (never pinned in agent frontmatter)
 - Complex tasks MUST have specs
 - Simple tasks use light path for speed
-- **Visual Context Flow:** If UI task has no screenshot, diagnose before building
+- **Visual Context Flow:** If a UI task has no screenshot, run the structure-mapping diagnose pass (Section 3.5) before building

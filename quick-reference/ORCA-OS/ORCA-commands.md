@@ -2,7 +2,7 @@
 
 **Last Updated:** 2026-06-18 (ios-impeccable overlay added)
 **Version:** OS 7.1
-**Total Commands:** 33 (+ orca-record CLI with 7 subcommands (5 hook + 2 user))
+**Total Commands:** 34 (+ orca-record CLI with 7 subcommands (5 hook + 2 user))
 
 > **Count reconciled (2026-06-04, +1 on 2026-06-18):** `find commands -maxdepth 1 -name '*.md' | wc -l` returned **54** at the 2026-06-04 reconcile; the prior recorded count of 52 was stale (`think-model.md`, added on 2026-04-23 during the design-system fork, was the most-recent uncounted file). On 2026-06-18 `/ios-impeccable` (the additive iOS/SwiftUI design overlay, Phase 3 of `ios-impeccable-adaptation`) was added, bringing the total to **55**; `total_commands: 55` here now agrees with `os-dependency-graph.yaml`. Note: a few command files share a single doc entry below — `/session-resume` is documented under the `/session-save` / `/session-resume` combined header. The Design Commands section count IS verified against on-disk files. `/ios-impeccable` is documented within the Design Commands section as the iOS overlay sibling of `/impeccable`.
 
@@ -45,9 +45,9 @@ wraps one of the three aio agents); they are not counted as separate lanes. -->
 /nextjs --tweak "try padding"        # Tweak: no gates
 /nextjs --complex "dark mode"       # Complex: full pipeline
 ```
-**Agents:** nextjs-grand-architect, nextjs-builder, nextjs-standards-enforcer
+**Agents:** nextjs-architect, nextjs-builder, nextjs-standards-enforcer, nextjs-verification-agent, nextjs-typescript-specialist, nextjs-performance-specialist, nextjs-accessibility-specialist, nextjs-seo-specialist (8 total)
 
-> **Note (2026-04-22):** `/nextjs` pipeline is non-functional pending follow-up reshape. Design/CSS/animation/3D/layout specialists and `nextjs-design-reviewer` were archived with the design-system fork. Design work routes through `/impeccable` skills.
+> **Note (2026-07-03):** `/nextjs` restored as a flat-pattern lane (8 real agents, command-as-orchestrator). Standards gate writes `gates.standards` (>= 90, hook-enforced). UI-affecting tasks run the web design floor (design-validator + detector, `gates.design_lane`); heavy aesthetics route to `/impeccable`. Design/CSS/layout specialists remain archived — CSS/layout/tokens handled by nextjs-builder + the design floor.
 
 ### `/django-react` - Django + React TypeScript Lane
 ```bash
@@ -568,7 +568,7 @@ $ORCA_OS_PATH/commands/
 |---------|----------------|
 | `/ios` | ios-grand-architect, ios-builder, ios-verification |
 | `/ios-impeccable` | ios-design-architect, ios-design-builder, ios-design-validator (additive design overlay; composes with `/ios`) |
-| `/nextjs` | nextjs-grand-architect, nextjs-builder, nextjs-verification-agent |
+| `/nextjs` | nextjs-architect, nextjs-builder, nextjs-standards-enforcer, nextjs-verification-agent |
 | `/django-react` | django-react-grand-architect, django-react-builder, django-react-verification |
 | `/expo` | expo-grand-orchestrator, expo-builder-agent, expo-verification-agent |
 | `/research` | research-web-search-subagent, research-site-crawler-subagent, research-answer-writer |

@@ -1,17 +1,20 @@
 # Complexity Routing - Four-Tier Structure
 
-**Version:** OS 7.0 | **Last Updated:** 2026-02-26
+**Version:** OS 7.1 | **Last Updated:** 2026-07-04
 
-OS 7.0 uses **four-tier routing** to optimize for speed while maintaining quality gates.
+OS 7.1 uses **four-tier routing** to optimize for speed while maintaining quality gates.
+All tiers run FLAT: the domain command is the orchestrator in the main thread and spawns
+specialists single-level (`docs/reference/flatten-orchestration-pattern.md`). The
+orchestrator-agent tier (light-orchestrators, grand-architects) was archived 2026-05-27.
 
 ## Four-Tier Routing Table
 
 | Mode | Flag | Path | Gates | Use Case |
 |------|------|------|-------|----------|
-| **Light** | `--light` | Light orchestrator | YES | Confident users, skip confirmation |
-| **Default** | (none) | Light + Confirmation | YES | Most work -- fast with quality |
+| **Light** | `--light` | Command light path | YES | Confident users, skip confirmation |
+| **Default** | (none) | Light path + Confirmation | YES | Most work -- fast with quality |
 | **Tweak** | `--tweak` | Builder direct | NO | Speed iteration, user verifies |
-| **Complex** | `--complex` | Full pipeline | YES | Architecture, multi-file, specs |
+| **Complex** | `--complex` | Full pipeline (architect + all gates) | YES | Architecture, multi-file, specs |
 
 **Key Inversion:** Default now runs gates. Previous versions skipped them.
 
@@ -26,12 +29,12 @@ Most tasks take this path. User confirms the proposed team before execution. Fas
 - Copy/label changes
 - Simple logic changes
 
-**Route:** Confirmation → Light orchestrator → builder → gates → done
+**Route:** Confirmation → domain command runs the light path in the main thread (builder → gates) → done
 
 **Gates run (domain-specific):**
-- Next.js: `nextjs-standards-enforcer` + `nextjs-design-reviewer`
+- Next.js: `nextjs-standards-enforcer` (gates.standards, >= 90 hook-enforced) + `design-validator` (web design floor, UI-affecting tasks)
 - iOS: `ios-standards-enforcer` + `ios-ui-reviewer`
-- Expo: `design-token-guardian` + `expo-aesthetics-specialist`
+- Expo: `expo-standards-enforcer` + `a11y-enforcer` + `performance-enforcer`
 
 ## Light Mode (`--light`)
 
@@ -42,7 +45,7 @@ Same as default but skips the team confirmation step. For confident users who kn
 - You want to skip the confirmation dialog
 - You trust the default agent team
 
-**Route:** Light orchestrator → builder → gates → done (no confirmation)
+**Route:** Command light path → builder → gates → done (no confirmation)
 
 ## Tweak Mode (`--tweak`)
 
@@ -58,7 +61,7 @@ Pure speed path. User explicitly accepts responsibility for verification.
 
 ## Complex Mode (`--complex`)
 
-Full pipeline with grand-architect planning.
+Full pipeline with domain-architect planning (`nextjs-architect`, `ios-architect`, `expo-architect-agent`, `django-react-architect`), sequenced by the domain command in the main thread.
 
 **Indicators:**
 - Multiple screens/flows
@@ -76,14 +79,14 @@ Team size scales with routing mode:
 
 | Mode | Files | Agents | Team Composition |
 |------|-------|--------|------------------|
-| Light | 1-5 | 2-4 | Light orchestrator + builder + gates (no confirmation) |
-| Default | 1-5 | 2-4 | Confirmation + light orchestrator + builder + gates |
+| Light | 1-5 | 2-4 | Command light path: builder + gates (no confirmation) |
+| Default | 1-5 | 2-4 | Confirmation + builder + gates |
 | Tweak | 1-3 | 1-2 | Builder direct |
-| Complex | 5+ | 5-10 | Grand-architect + architect + builders + all gates |
+| Complex | 5+ | 5-10 | Domain architect + builders + all gates (command-sequenced) |
 
 ### Extended Thinking (Complex Mode)
 
-Grand-architects use thinking prompts for complex tasks:
+The command (main thread) uses thinking prompts for complex coordination:
 
 - "Let me think through the architecture and delegation strategy..."
 - "Think harder about the implications, dependencies, and potential failure modes..."
@@ -130,7 +133,7 @@ Use when iterating quickly and you'll verify yourself.
 
 ### `--complex` Flag
 
-Force full pipeline with grand-architect:
+Force the full pipeline (domain architect + all gates):
 
 ```bash
 /ios --complex "implement new auth flow"
@@ -174,18 +177,18 @@ Then return with:
 
 Specs live at: `.orca/requirements/<id>/06-requirements-spec.md`
 
-Created by `/requirements`, consumed by domain orchestrators.
+Created by `/requirements`, consumed by the domain commands.
 
 ## Routing Flow
 
 ```
 Parse Arguments
     
-     Contains "--light"? → Light Orchestrator (LIGHT MODE - gates, no confirmation)
+     Contains "--light"? → Command light path (LIGHT MODE - gates, no confirmation)
     
      Contains "--tweak"? → Builder Direct (TWEAK MODE - no gates)
     
-     Contains "--complex"? → Grand-Architect (full pipeline, with confirmation)
+     Contains "--complex"? → Full pipeline (architect + all gates, with confirmation)
     
      Contains "--audit"? → Audit Mode
     
@@ -193,28 +196,30 @@ Parse Arguments
         
         Team Confirmation
             
-             Confirmed → Light Orchestrator (DEFAULT MODE - with gates)
+             Confirmed → Command light path (DEFAULT MODE - with gates)
             
              Complexity detected:
                 
-                 Has spec? → Grand-Architect (full pipeline)
+                 Has spec? → Full pipeline (architect + all gates)
                 
                  No spec? → BLOCKED (run /requirements first)
 ```
 
-## Light Orchestrators
+## Lane Light Paths (flat pattern)
 
-Handle default and tweak modes:
+The light-orchestrator agent tier was archived 2026-05-27. Default/light/tweak modes are
+run by the domain COMMAND itself, in the main thread, spawning builder + gates
+single-level:
 
-| Lane | Light Orchestrator | Gates |
-|------|-------------------|-------|
-| iOS | `ios-light-orchestrator` | `ios-standards-enforcer`, `ios-ui-reviewer` |
-| Next.js | `nextjs-light-orchestrator` | `nextjs-standards-enforcer`, `nextjs-design-reviewer` |
-| Expo | `expo-light-orchestrator` | `design-token-guardian`, `expo-aesthetics-specialist` |
-| Django-React | `django-react-light-orchestrator` | `django-react-standards-enforcer` |
-| OS-Dev | `os-dev-light-orchestrator` | `os-dev-standards-enforcer` |
+| Lane | Light path owner | Gates |
+|------|------------------|-------|
+| iOS | `/ios` command (main thread) | `ios-standards-enforcer`, `ios-ui-reviewer` |
+| Next.js | `/nextjs` command (main thread) | `nextjs-standards-enforcer`, `design-validator` (design floor) |
+| Expo | `/expo` command (main thread) | `expo-standards-enforcer`, `a11y-enforcer`, `performance-enforcer` |
+| Django-React | `/django-react` command (main thread) | `django-react-standards-enforcer` |
+| OS-Dev | `/orca-os-dev` command (main thread) | `os-dev-standards-enforcer` |
 
-Light orchestrators:
+Light path behavior:
 - **LIGHT mode**: builder → gates → report (no confirmation)
 - **DEFAULT mode**: confirmation → builder → gates → report
 - **TWEAK mode**: builder direct → report (skip gates)

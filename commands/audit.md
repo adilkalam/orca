@@ -474,8 +474,8 @@ OP-3 | CLEAN: ORCA-commands.md:100 references "/audit --comprehensive" -- flag d
 **OP-4: Version String Verification**
 Check every `OS X.Y`, `vX.Y.Z`, `Version: X.Y` pattern against the canonical version from CLAUDE.md. Produce evidence:
 ```
-OP-4 | FINDING: README.md:1 says "ORCA-OS v6.4" but canonical version is OS 7.0
-OP-4 | CLEAN: ORCA-commands.md:5 says "OS 7.0" -- matches canonical
+OP-4 | FINDING: README.md:1 says "ORCA-OS v6.4" but canonical version is OS 7.1
+OP-4 | CLEAN: ORCA-commands.md:5 says "OS 7.1" -- matches canonical
 ```
 
 **OP-5: Infrastructure Verification**

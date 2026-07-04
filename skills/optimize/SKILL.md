@@ -9,7 +9,7 @@ Identify and fix performance issues to create faster, smoother user experiences.
 
 ## MANDATORY PREPARATION
 
-**Run the cognition constraint loop (MANDATORY).** Invoked directly as `/optimize <target>` (a human typed it)? This is an INDIVIDUAL command, outside the /impeccable pipeline -- so cognition IS the enforcement. Run the in-thread loop defined once at `~/.claude/docs/reference/cognition-constraint-loop.md`: R1 generate typed FORBIDDEN/FORWARD constraints via a cognition `checkpoint` -> R2 do the work in-thread using the craft below -> evaluate every bound constraint + detector self-check -> loop (MAX N=2) until none unsatisfied; you may NOT claim done with an open constraint. (The heavy /impeccable pipeline with its separate validator + hook is a different path; cognition is optional there.) If `design-builder` loaded this skill only for craft reference, ignore this block and use the craft below.
+**Run the cognition constraint loop (MANDATORY)** — see `~/.claude/docs/reference/cognition-constraint-loop.md`. (If `design-builder` loaded this skill only for craft reference, ignore this block and use the craft below.)
 
 ## Assess Performance Issues
 
@@ -268,6 +268,18 @@ Test that optimizations worked:
 
 Remember: Performance is a feature. Fast experiences feel more responsive, more polished, more professional. Optimize systematically, measure ruthlessly, and prioritize user-perceived performance.
 
+
+---
+
+## SwiftUI target
+
+When the iOS architect passes `platform: swiftui`, the builder reads ONLY this section — the web craft above (Core Web Vitals, bundle splitting, `srcset`, WebP) does NOT apply.
+
+- Optimize SwiftUI: stable `id`s in `List`/`LazyVStack`/`LazyVGrid`, `.task`/`AsyncImage` for async, avoid over-invalidation (`@Observable` scoping, `Equatable` views), `.drawingGroup()` only when profiled.
+- Move heavy work off `@MainActor` with `async`/`await`/`Task`; measure with Instruments (Time Profiler, SwiftUI), not Lighthouse.
+- Right-size images via asset catalog + `.resizable().scaledToFit()`; lazy-load off-screen rows.
+- Keep 60/120fps; gate motion on `accessibilityReduceMotion`. NO `px`, NO OKLCH, NO `gap`.
+- Self-check with `swiftdesigncheck` (NOT `designcheck.js`).
 
 ---
 

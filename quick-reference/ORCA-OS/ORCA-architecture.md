@@ -26,7 +26,7 @@ ORCA-OS is a Claude Code orchestration system that counteracts trained defaults 
 | Lane | Command | Agents | MCPs |
 |------|---------|--------|------|
 | iOS | `/ios` | 18 | XcodeBuildMCP |
-| Next.js | `/nextjs` | 8 (design specialists archived) | chrome-devtools |
+| Next.js | `/nextjs` | 8 (flat pattern; design floor + design specialists archived) | chrome-devtools |
 | Django-React | `/django-react` | 13 | (none) |
 | Expo | `/expo` | 12 | (none) |
 | Dev (cross-cutting) | - | 13 | - |
@@ -51,7 +51,7 @@ ORCA-OS is a Claude Code orchestration system that counteracts trained defaults 
 | 3D Printing | (MCP+skill driven) | 0 | bambu-3mf, openscad-mcp |
 | Creative Design | `/illustrate` + `/impeccable` skills | 0 | adb-mcp (Photoshop, Illustrator) |
 
-> **2026-04-22 design-system fork:** `/design`, `/design-dna`, `/design-review` commands were archived. `/nextjs` pipeline is non-functional pending follow-up reshape spec (design/css/animation/3D/layout specialists archived). Design work now routes through the `/impeccable` skill family. See `ORCA-skills.md`.
+> **2026-04-22 design-system fork:** `/design`, `/design-dna`, `/design-review` commands were archived. `/nextjs` is restored (flat pattern, 8 agents, design floor) — see the 2026-07-03 note below; design/css/animation/3D/layout specialists remain archived. Design work now routes through the `/impeccable` skill family. See `ORCA-skills.md`.
 
 > **2026-06-03 design-system totality rethink (Phase 2 — the design lane):** the design command family now routes through a **full-separation lane** — a thin orchestrator (the design command, main thread) binds typed FORBIDDEN/FORWARD constraints via a cognition `checkpoint`, spawns a **separate** `design-builder`, then a **separate fresh-context** `design-validator` (returns `GATE_VERDICT: PASS\|BLOCK` via the LOCAL detector), and branches (N=2 → escalate). The model never grades its own output. Shared definition: `docs/reference/design-lane.md` (referenced, never copy-pasted). Hub skill: `skills/impeccable-hub/SKILL.md` (the register; points to `design-contract/` refs, no inlining — distinct from the `/impeccable` command). All 9 design commands load the hub. **Build-producers route the lane:** `/refine`, `/simplify`, `/fortify`, `/recraft` (Routes A/B), `/motion-design`, and `/impeccable`'s build paths. **Diagnostic/contract commands do NOT route the lane:** `/document`, `/design-audit`, `/design-critique`, `/recraft` Route C. **Status:** built, **pending post-reload live proof** (a new agent is not spawnable until a session reload). Honest ceiling: hard-on-named-slop, advisory-on-taste — **the user's eye is the taste ceiling**.
 
@@ -201,7 +201,7 @@ User prompt
 $ORCA_OS_PATH/
   agents/             # 130 agent definitions
     iOS/              # 18 agents
-    nextjs/           # 15 agents
+    nextjs/           # 8 agents
     django-react/     # 13 agents
     expo/             # 12 agents
     dev/              # 13 agents (cross-cutting)

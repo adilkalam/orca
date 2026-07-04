@@ -159,10 +159,11 @@ Agent({ subagent_type: "design-builder", description: "Build <verb> on <target>"
 Read `ARTIFACT_PATHS`.
 
 **Step 3 — VALIDATE.** Spawn the validator (single-level, FRESH context — give it ONLY the artifact paths
-+ bound constraints + hub; NEVER the builder's reasoning):
++ bound constraints + hub; NEVER the builder's reasoning). Tell it to point the detector at the project
+override registry so file-based suppression works regardless of the validator's cwd:
 ```
 Agent({ subagent_type: "design-validator", description: "Validate <verb> output",
-  prompt: "=== DESIGN HUB (INJECTED) ===\n<hub register content>\n===\nARTIFACT_PATH: <ARTIFACT_PATHS>\nBOUND_CONSTRAINTS: <the typed JSON>\nACTIVE_OVERRIDES: <the ACTIVE_OVERRIDES JSON, may be empty — subtract owner-sanctioned findings (rule==suppresses within scope) BEFORE the verdict; a P0 the owner sanctioned does NOT force BLOCK>\nRun the detector, judge bound ids, emit the GATE_VERDICT block." })
+  prompt: "=== DESIGN HUB (INJECTED) ===\n<hub register content>\n===\nARTIFACT_PATH: <ARTIFACT_PATHS>\nBOUND_CONSTRAINTS: <the typed JSON>\nACTIVE_OVERRIDES: <the ACTIVE_OVERRIDES JSON, may be empty — subtract owner-sanctioned findings (rule==suppresses within scope) BEFORE the verdict; a P0 the owner sanctioned does NOT force BLOCK>\nBefore running the detector, export DESIGN_OVERRIDES_PATH={project}/.design-overrides.json so the detector self-suppresses owner overrides from the registry file regardless of your cwd.\nRun the detector, judge bound ids, emit the GATE_VERDICT block." })
 ```
 Parse `GATE_VERDICT`.
 
@@ -174,22 +175,36 @@ Parse `GATE_VERDICT`.
 - **PASS** → **write back the overrides, then arm the deterministic floor.**
 
   First, **write back each `OVERRIDE` so the win persists** (durability — this is what kills the circles).
-  As soon as an `OVERRIDE` is bound, append it to `{project}/.design-overrides.json` (read-array-push-write)
-  so the suppressed rule stops firing for its scope on all future runs, and surface a one-line owner-ratified
-  amendment to the project law. The override is owner-authored — ratified by construction. Write it BEFORE
-  the phase_state PASS write so the branch-time hook honors it:
+  As soon as an `OVERRIDE` is bound, append it to `{project}/.design-overrides.json` so the suppressed rule
+  stops firing for its scope on all future runs, and surface a one-line owner-ratified amendment to the
+  project law. The override is owner-authored — ratified by construction. Write it BEFORE the phase_state
+  PASS write so the branch-time hook honors it. **One canonical entry shape everywhere**
+  (`docs/concepts/design-overrides-schema.md`): `{suppresses, scope, value, provenance, created}`. **Dedup
+  on `suppresses` + `scope`** (skip the append when a matching entry already exists) and write
+  **atomically** (jq to a tmp file, then `mv` into place — never a partial in-place edit):
   ```bash
   # .design-overrides.json is a FLAT JSON array at {project}/.design-overrides.json.
-  # Read-array-push-write: append one entry per ACTIVE_OVERRIDES item (the detector self-suppresses from this file):
   f="{project}/.design-overrides.json"
-  [ -f "$f" ] || echo '[]' > "$f"
-  # for each override {suppresses, scope, value, provenance}: jq '. += [$o]' (or heredoc-merge) and write back
+  [ -f "$f" ] || printf '[]' > "$f"
+  # For each ACTIVE_OVERRIDES item, dedup on (suppresses + scope) then atomic-write:
+  tmp="$(mktemp)"
+  jq --arg suppresses "<ruleId>" --arg scope "<glob>" --arg value "<sanctioned value>" \
+     --arg provenance "<owner's exact words>" --arg created "$(date -u +%Y-%m-%dT%H:%M:%SZ)" '
+     if any(.[]; .suppresses == $suppresses and .scope == $scope) then .
+     else . + [{suppresses: $suppresses, scope: $scope, value: $value,
+                provenance: $provenance, created: $created}] end
+  ' "$f" > "$tmp" && mv "$tmp" "$f"
   ```
+  A non-empty `scope` is REQUIRED — an empty scope suppresses NOTHING (the narrowing invariant). Never
+  write an override with an empty/missing scope.
 
   Then **arm the deterministic floor**: write the design-lane gate to phase_state so
   `hooks/gate-enforcement.sh` runs `designcheck` itself on the artifacts and exit-2 blocks on any P0
   (this is the hard floor under the validator) — **including `active_overrides` so the branch-time hook
-  does NOT exit-2 on a covered `ruleId` + path**:
+  does NOT exit-2 on a covered `ruleId` + path**. Include `attempts` (the current builder-retry count,
+  0-2) so the hook's N=2 retry cap (FR-3.7) is enforced; set `escalated: true` ONLY after surfacing the
+  unresolved findings to the user (the sanctioned exit past the cap) — otherwise the hook exit-2 blocks a
+  PASS written with `attempts > 2`:
   ```bash
   # merge into .orca/orchestration/phase_state.json:
   # { "gates": { "design_lane": {
@@ -197,6 +212,7 @@ Parse `GATE_VERDICT`.
   #     "artifact_paths": [<ARTIFACT_PATHS>],
   #     "validator_score": <SCORE>,
   #     "bound_constraint_ids": [<C1,C2,...>],
+  #     "attempts": <retry count, 0-2>,
   #     "active_overrides": [{"suppresses": "<ruleId>", "scope": "<glob>", "provenance": "<words>"}, ...] } } }
   ```
   If that phase_state write is BLOCKED by the hook (the detector found a named P0 the validator missed,

@@ -9,7 +9,7 @@ Reduce visual intensity in designs that are too bold, aggressive, or overstimula
 
 ## MANDATORY PREPARATION
 
-**Run the cognition constraint loop (MANDATORY).** Invoked directly as `/quieter <target>` (a human typed it)? This is an INDIVIDUAL command, outside the /impeccable pipeline -- so cognition IS the enforcement. Run the in-thread loop defined once at `~/.claude/docs/reference/cognition-constraint-loop.md`: R1 generate typed FORBIDDEN/FORWARD constraints via a cognition `checkpoint` -> R2 do the work in-thread using the craft below -> evaluate every bound constraint + detector self-check -> loop (MAX N=2) until none unsatisfied; you may NOT claim done with an open constraint. (The heavy /impeccable pipeline with its separate validator + hook is a different path; cognition is optional there.) If `design-builder` loaded this skill only for craft reference, ignore this block and use the craft below.
+**Run the cognition constraint loop (MANDATORY)** — see `~/.claude/docs/reference/cognition-constraint-loop.md`. (If `design-builder` loaded this skill only for craft reference, ignore this block and use the craft below.)
 
 Invoke {{command_prefix}}impeccable — it contains design principles, anti-patterns, and the **Context Gathering Protocol**. Follow the protocol before proceeding — if no design context exists yet, you MUST run {{command_prefix}}impeccable teach first.
 
@@ -102,6 +102,18 @@ Ensure refinement maintains quality:
 - **Sophistication**: Does it feel more refined and premium?
 
 Remember: Quiet design is confident design. It doesn't need to shout. Less is more, but less is also harder. Refine with precision and maintain intentionality.
+
+---
+
+## SwiftUI target
+
+When the iOS architect passes `platform: swiftui`, the builder reads ONLY this section — the CSS craft above does NOT apply.
+
+- Reduce intensity through the token system: step down weight (`.heavy`→`.semibold`→`.regular`), widen `Spacing`-token breathing room, let neutrals dominate and blue recede to accent.
+- Prefer hairlines/`Divider()` + flat tint steps over reflexive `.shadow(...)`/`.ultraThinMaterial` (`shadow-reflex` P1).
+- Gentle, directional ease-out motion gated on `accessibilityReduceMotion`; no bounce/elastic.
+- All values via tokens — NO OKLCH, NO `px`, NO `gap`.
+- Self-check with `swiftdesigncheck` (NOT `designcheck.js`).
 
 ---
 

@@ -39,7 +39,7 @@ Parse `$ARGUMENTS` to determine mode:
 
 ## 2. Detect Project Type
 
-Run project type detection (same logic as `hooks/detect-project-type.sh`):
+Run project type detection (inspect package.json / requirements.txt / pyproject.toml / go.mod / Gemfile / Cargo.toml and framework markers):
 
 ```bash
 # iOS/Swift

@@ -49,13 +49,14 @@ complexity_tiers:
   default:
     description: Light path WITH quality gates (most work)
     flag: "(none)"
-    routing: expo-light-orchestrator
+    routing: "/expo command (main thread, flat pattern)"
     mode: default  # Runs gates
     spec_required: false
     gates_required: true   # DEFAULT NOW RUNS GATES
     gates:
-      - design-token-guardian
-      - expo-aesthetics-specialist
+      - expo-standards-enforcer
+      - a11y-enforcer
+      - performance-enforcer
     examples:
       - Fix button spacing
       - Change label text
@@ -66,7 +67,7 @@ complexity_tiers:
   tweak:
     description: Light path WITHOUT gates (pure speed)
     flag: "--tweak"
-    routing: expo-light-orchestrator
+    routing: "/expo command (main thread, flat pattern)"
     mode: tweak  # Skips gates
     spec_required: false
     gates_required: false  # User verifies
@@ -156,10 +157,12 @@ phases:
       integration: Follow RN best practices, maintain platform conventions
       resource: Run expo doctor, local tests before gates
 
-  # Phase 5: Design Token Guardian
+  # Phase 5: Design Token / Aesthetics Review
+  # (design-token-guardian archived 2026-04-22; token compliance is enforced by
+  # expo-standards-enforcer, aesthetics by expo-aesthetics-specialist)
   - name: design_tokens
-    agent: design-token-guardian
-    description: Validate design token usage, no hard-coded values
+    agent: expo-aesthetics-specialist
+    description: Validate design token usage and aesthetic cohesion, no hard-coded values
     dependencies:
       - implementation
     context_required: true
@@ -350,15 +353,14 @@ phases:
 
 # Gate Configuration
 # Design-First Gate (Phase 0)
+# design-system-architect / design-dna.json archived 2026-04-22 (design fork).
 design_gate:
   position: "before planning"
-  agent: design-system-architect
-  gate_type: structural
+  mechanism: aesthetics_review
   tiering:
     tweak: priming_only
-    default: soft_gate
-    complex: hard_gate
-  output: design-dna.json
+    default: expo-standards-enforcer     # token compliance within the standards gate
+    complex: expo-aesthetics-specialist  # aesthetic/anti-slop review for UI-heavy work
   manifesto_priming: universal
 
 gates:

@@ -9,7 +9,7 @@ Identify opportunities to add moments of joy, personality, and unexpected polish
 
 ## MANDATORY PREPARATION
 
-**Run the cognition constraint loop (MANDATORY).** Invoked directly as `/delight <target>` (a human typed it)? This is an INDIVIDUAL command, outside the /impeccable pipeline -- so cognition IS the enforcement. Run the in-thread loop defined once at `~/.claude/docs/reference/cognition-constraint-loop.md`: R1 generate typed FORBIDDEN/FORWARD constraints via a cognition `checkpoint` -> R2 do the work in-thread using the craft below -> evaluate every bound constraint + detector self-check -> loop (MAX N=2) until none unsatisfied; you may NOT claim done with an open constraint. (The heavy /impeccable pipeline with its separate validator + hook is a different path; cognition is optional there.) If `design-builder` loaded this skill only for craft reference, ignore this block and use the craft below.
+**Run the cognition constraint loop (MANDATORY)** — see `~/.claude/docs/reference/cognition-constraint-loop.md`. (If `design-builder` loaded this skill only for craft reference, ignore this block and use the craft below.)
 
 Invoke {{command_prefix}}impeccable — it contains design principles, anti-patterns, and the **Context Gathering Protocol**. Follow the protocol before proceeding — if no design context exists yet, you MUST run {{command_prefix}}impeccable teach first. Additionally gather: what's appropriate for the domain (playful vs professional vs quirky vs elegant).
 
@@ -315,6 +315,18 @@ Test that delight actually delights:
 - **Accessible**: Works with reduced motion, screen readers
 
 Remember: Delight is the difference between a tool and an experience. Add personality, surprise users positively, and create moments worth sharing. But always respect usability - delight should enhance, never obstruct.
+
+---
+
+## SwiftUI target
+
+When the iOS architect passes `platform: swiftui`, the builder reads ONLY this section — the CSS/JS craft above (Framer Motion, GSAP, canvas confetti, CSS keyframes) does NOT apply.
+
+- Delight with native motion: `.transition`, `withAnimation`, `matchedGeometryEffect`, `.symbolEffect` on SF Symbols, `.sensoryFeedback`/`UIImpactFeedbackGenerator` for haptics.
+- Earned-emotion proportionality holds: routine save → nothing extra; real milestone → a proportional, brief celebration. No confetti on routine saves.
+- Gate every effect on `accessibilityReduceMotion`; keep moments <1s and skippable.
+- Duration/curve from `MotionTokens` — NO CSS `transition`, NO `px`, NO OKLCH, NO `gap`.
+- Self-check with `swiftdesigncheck` (NOT `designcheck.js`); watch `spring-overshoot`.
 
 ---
 

@@ -1,5 +1,5 @@
 ---
-description: "OS 7.0 orchestrator entrypoint for native iOS tasks"
+description: "OS 7.1 orchestrator entrypoint for native iOS tasks"
 argument-hint: "[--light | --tweak | --complex | --audit] <task description or requirement ID>"
 allowed-tools:
   - Agent
@@ -36,7 +36,7 @@ Even `--tweak` delegates to a builder. It skips gates, not agents.
 
 ---
 
-# /ios - iOS Lane Orchestrator (OS 7.0)
+# /ios - iOS Lane Orchestrator (OS 7.1)
 
 Use this command for native iOS work (Swift/SwiftUI/UIKit, Xcode, device features).
 
@@ -73,7 +73,7 @@ No flag → Section 3 (Light Orchestrator WITH confirmation)
 
 ---
 
-## 0.1 Recording Context (OS 7.0)
+## 0.1 Recording Context (OS 7.1)
 
 > Session activity is captured automatically by **orca-record** hooks. Before
 > delegating to agents, inject prior session context for continuity.
@@ -298,7 +298,7 @@ If memory hits are relevant:
 - Note them for context
 - May skip or reduce ProjectContext query scope
 
-### 1.1.1 Reflexion Loading (OS 7.0)
+### 1.1.1 Reflexion Loading (OS 7.1)
 
 Load relevant reflexions from past gate failures:
 
@@ -344,10 +344,10 @@ Run the light path **yourself, in the main thread** (no orchestrator subagent �
 **Flat phase script (--light):**
 
 1. **Build** — `Agent({ subagent_type: "ios-builder", description: "iOS task (light)", prompt: <REQUEST + inherited ContextBundle + memory hits + STANDARDS from prior gate failures> })`. Tell the builder: context is inherited, do NOT call `query_context` (may narrow-query maxFiles:5 if missing).
-2. **Design/standards gate** — `Agent({ subagent_type: "ios-standards-enforcer", ... })`; read its `standards_score` (hard block < 90).
+2. **Design/standards gate** — `Agent({ subagent_type: "ios-standards-enforcer", ... })`; read its `standards_score` and write the canonical dev-lane score contract (`docs/reference/gate-contract.md`) to phase_state: `gates.standards = { "score": <standards_score>, "threshold": 90, "gate_decision": "PASS" (score ≥ 90) | "BLOCK", "lane": "ios" }`. The "hard block < 90" is now mechanical — `hooks/gate-enforcement.sh` exit-2s any `gates.standards` PASS whose score is absent, non-numeric, or below the threshold.
 3. **UI gate** — `Agent({ subagent_type: "ios-ui-reviewer", ... })`; read its verdict.
-4. If a gate ERRORs/BLOCKs, route the violations back to `ios-builder` once, then re-gate.
-5. Ephemeral phase_state only (scores for this run; no spec ceremony). Persist scores to `.orca/orchestration/phase_state.json`.
+4. If a gate ERRORs/BLOCKs, route the violations back to `ios-builder` once, then re-gate; increment `gates.standards.attempts` on the respawn (mirrors the design-lane `attempts` convention, `docs/reference/design-lane.md`).
+5. Ephemeral phase_state only (scores for this run; no spec ceremony). Persist the `gates.standards` contract above to `.orca/orchestration/phase_state.json`; a final PASS is written only once `score ≥ 90`.
 
 (The old `ios-light-orchestrator` delegation is dissolved — the command owns this sequence.)
 
@@ -637,9 +637,9 @@ Run gate agents:
    - Visual verification if requested or flagged by ios-ui-reviewer
    - Takes screenshots, measures pixels
 
-Update phase_state.gates.
+Update phase_state.gates. Write the `ios-standards-enforcer` result as the canonical score contract `gates.standards = { "score": <score>, "threshold": 90, "gate_decision": "PASS|BLOCK", "lane": "ios" }` (`docs/reference/gate-contract.md`) — `hooks/gate-enforcement.sh` exit-2s a PASS with a missing/non-numeric score or a score below threshold.
 
-**If gates fail:** Allow one corrective pass (implementation_pass2) scoped to violations only.
+**If gates fail:** Allow one corrective pass (implementation_pass2) scoped to violations only; increment `gates.standards.attempts` on the corrective respawn.
 
 ### 3.7 Completion
 

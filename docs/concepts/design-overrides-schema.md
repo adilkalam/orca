@@ -69,21 +69,38 @@ concern layered on top of this binary suppression, not a replacement for it.
 
 ## Path-resolution convention (identical in both detectors)
 
-Both detectors resolve the override file in this order, first hit wins:
+The two detectors resolve the override file with the **same intent** — env override
+first, then a sensible default, then empty `[]` — but their *implementations* differ
+in reach. Document the reality, not an idealized union:
+
+**Web detector (`design-detector`, `designcheck.js`)** — resolves the registry **once**
+at module top (Node-only, `IS_BROWSER`-guarded), keyed off:
+
+1. **Environment variable** — `DESIGN_OVERRIDES_PATH`.
+2. **Default** — `{cwd}/.design-overrides.json`.
+3. If neither resolves to a readable, parseable file → empty `[]`.
+
+It does **not** do a per-file walk-up and does **not** take a `--overrides` flag; because
+resolution runs once at module load, the **cwd matters**. So the caller MUST make the path
+explicit: the `design-validator` now **exports `DESIGN_OVERRIDES_PATH={project}/.design-overrides.json`
+before running the detector** (lane Step 3), and the gate hook exports it too before its own
+`designcheck` run (`hooks/gate-enforcement.sh`). This guarantees file-based suppression works
+regardless of where the detector is invoked from.
+
+**iOS detector (`swift-design-detector`, `swiftdesigncheck`)** — resolves **per scan** with the
+fuller order, first hit wins:
 
 1. **Explicit flag** — `--overrides <path>` on the CLI.
-2. **Environment variable** — `DESIGN_OVERRIDES_PATH` (web) / `SWIFT_DESIGN_OVERRIDES` (iOS).
+2. **Environment variable** — `SWIFT_DESIGN_OVERRIDES`.
 3. **Walk-up** from the scanned file's directory toward the repo root, looking for
    `.design-overrides.json`.
 4. **Default** — `{cwd}/.design-overrides.json`.
 5. If none of the above resolves to a readable, parseable file → empty `[]`.
 
-> Note: the web detector loads the override registry **once** at module top
-> (Node-only, `IS_BROWSER`-guarded), keyed off `DESIGN_OVERRIDES_PATH` else
-> `{cwd}/.design-overrides.json`, because its module-level rules are loaded the
-> same way. The iOS detector resolves per scan with the full walk-up (its config
-> already resolves that way). Both honor the same explicit→env→walk-up→default→`[]`
-> intent; the divergence is only *when* resolution runs, never the semantics.
+The `ios-design-validator` and the gate hook both export `SWIFT_DESIGN_OVERRIDES` explicitly for
+the same cwd-independence guarantee. The **schema, glob semantics, and narrowing invariant below are
+identical** across both detectors; only the path-resolution *reach* differs (web: env→cwd-default;
+iOS: flag→env→walk-up→cwd-default).
 
 ---
 

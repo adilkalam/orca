@@ -77,6 +77,13 @@ if command -v workshop >/dev/null 2>&1; then
   fi
 fi
 
+# 6. ORCA-LINT (reality checker; baseline-suppressed known debt)
+# Non-fatal on known debt: --baseline silences the seeded findings, --strict makes
+# a NON-baseline (i.e. NEW / regression) finding the only thing that flips this
+# check to FAIL. --no-drift keeps it fast; drift is informational only.
+check "orca-lint: no new findings (baseline OK)" \
+  "python3 \"$SCRIPT_DIR/orca-lint.py\" --strict --baseline \"$SCRIPT_DIR/orca-lint-baseline.txt\" --no-drift"
+
 echo "===================="
 echo "Result: $PASS/$TOTAL PASSED, $FAIL FAILED"
 [ "$FAIL" -eq 0 ] && exit 0 || exit 1

@@ -9,7 +9,7 @@ Strengthen interfaces against edge cases, errors, internationalization issues, a
 
 ## MANDATORY PREPARATION
 
-**Run the cognition constraint loop (MANDATORY).** Invoked directly as `/harden <target>` (a human typed it)? This is an INDIVIDUAL command, outside the /impeccable pipeline -- so cognition IS the enforcement. Run the in-thread loop defined once at `~/.claude/docs/reference/cognition-constraint-loop.md`: R1 generate typed FORBIDDEN/FORWARD constraints via a cognition `checkpoint` -> R2 do the work in-thread using the craft below -> evaluate every bound constraint + detector self-check -> loop (MAX N=2) until none unsatisfied; you may NOT claim done with an open constraint. (The heavy /impeccable pipeline with its separate validator + hook is a different path; cognition is optional there.) If `design-builder` loaded this skill only for craft reference, ignore this block and use the craft below.
+**Run the cognition constraint loop (MANDATORY)** — see `~/.claude/docs/reference/cognition-constraint-loop.md`. (If `design-builder` loaded this skill only for craft reference, ignore this block and use the craft below.)
 
 ---
 
@@ -399,6 +399,19 @@ Test thoroughly with edge cases:
 
 Remember: You're hardening for production reality, not demo perfection. Expect users to input weird data, lose connection mid-flow, and use your product in unexpected ways. Build resilience into every component.
 
+
+---
+
+## SwiftUI target
+
+When the iOS architect passes `platform: swiftui`, the builder reads ONLY this section — the CSS craft above (`text-overflow`, `-webkit-line-clamp`, `dir="rtl"`, `Intl` APIs) does NOT apply.
+
+- Harden with native APIs: `.lineLimit`/`.truncationMode`/`.minimumScaleFactor` for overflow; `.accessibilityLabel`/`.accessibilityAddTraits` + VoiceOver rotor; 44pt minimum hit targets.
+- Dynamic Type up to accessibility XXL without clipping; full dark-mode coverage; `.environment(\.layoutDirection, .rightToLeft)` for RTL — SwiftUI mirrors leading/trailing automatically.
+- Multi-state previews: loading / empty / error / success, designed for a user having a bad day.
+- Localize via `String(localized:)` + `AttributedString`; format with `.formatted()` / `Measurement`, not manual strings.
+- Gate motion on `accessibilityReduceMotion`. NO CSS units, NO OKLCH, NO `gap`.
+- Self-check with `swiftdesigncheck` (NOT `designcheck.js`).
 
 ---
 

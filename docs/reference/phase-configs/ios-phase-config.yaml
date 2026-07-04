@@ -44,7 +44,7 @@ complexity_tiers:
   default:
     description: Light path WITH quality gates (most work)
     flag: "(none)"
-    routing: ios-light-orchestrator
+    routing: "/ios command (main thread, flat pattern)"
     mode: default  # Runs gates
     spec_required: false
     gates_required: true   # DEFAULT NOW RUNS GATES
@@ -61,7 +61,7 @@ complexity_tiers:
   tweak:
     description: Light path WITHOUT gates (pure speed)
     flag: "--tweak"
-    routing: ios-light-orchestrator
+    routing: "/ios command (main thread, flat pattern)"
     mode: tweak  # Skips gates
     spec_required: false
     gates_required: false  # User verifies
@@ -71,7 +71,7 @@ complexity_tiers:
       - Quick experiments
 
   complex:
-    description: Full pipeline with grand-architect
+    description: Full pipeline (ios-architect + all gates, command-sequenced)
     flag: "--complex"
     routing: full_pipeline
     mode: complex
@@ -310,15 +310,16 @@ optional_phases:
 
 
 # Design-First Gate (Phase 0)
+# design-system-architect / design-dna.json archived 2026-04-22 (design fork).
+# The floor is now the /ios-impeccable overlay (ios-design-validator + swiftdesigncheck).
 design_gate:
   position: "before planning"
-  agent: design-system-architect
-  gate_type: structural
+  mechanism: design_lane_floor
   tiering:
     tweak: priming_only
-    default: soft_gate
-    complex: hard_gate
-  output: design-dna.json
+    default: ios-ui-reviewer            # code-level design/token review in the gate sequence
+    complex: ios-impeccable-overlay     # bind -> ios-design-builder -> ios-design-validator (gates.ios_design_lane)
+  detector: swiftdesigncheck            # deterministic anti-pattern floor (SWIFT_DESIGN_DETECTOR_BIN)
   manifesto_priming: universal
 
 # Configuration
@@ -366,5 +367,5 @@ specialists:
   ios-ui-testing-specialist:
     trigger: ui_flows OR xcuitest
 
-  design-dna-guardian:
-    trigger: ui_changes AND design_tokens_exist
+  # design-dna-guardian archived 2026-04-22; ios-design-validator (via /ios-impeccable)
+  # fills that role for aesthetic-weight work.

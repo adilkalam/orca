@@ -27,8 +27,10 @@ You never rewrite the report extensively; instead, you:
 
 - Final (or near-final) report with citations.
 - Evidence Notes (paths).
-- `tool_status` and `rate_limit_events` from `phase_state`.
-- Aggregated RA events (`research_ra_events`).
+- `tool_status` and aggregated RA events (`research_ra_events`) now read from
+  `.orca/orchestration/phase_state.json` under the top-level `.research` key
+  (`.research.tool_status`, `.research.research_ra_events`) — created and populated
+  by `commands/research.md`, so these inputs now actually exist.
 
 ---
 ## 2. Checks

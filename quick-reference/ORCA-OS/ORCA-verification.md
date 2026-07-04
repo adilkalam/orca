@@ -143,6 +143,89 @@ The CoVe table is **mandatory** in all verification output. Build/test success a
 
 ---
 
+## Design-Lane Deterministic Floor (`hooks/gate-enforcement.sh`)
+
+The design lanes (`/impeccable` web, `/ios-impeccable` iOS) sit under a hard deterministic floor in the
+gate-enforcement hook. When a phase_state write claims a design gate PASS, the hook re-runs the named-slop
+detector ITSELF on the claimed `artifact_paths` and exit-2 BLOCKS on any P0 the validator missed. A
+clean-PASS claim is mechanically falsified by named slop.
+
+### Both lanes armed (web + iOS)
+
+The hook fires when ANY of `gates.design_qa`, `gates.design_lane`, or `gates.ios_design_lane` is PASS.
+It selects the detector per lane: a **pure iOS-design PASS** (`ios_design_lane` PASS with no web design
+PASS) runs the Swift detector (`swiftdesigncheck`, env `SWIFT_DESIGN_DETECTOR_BIN`); otherwise the web
+CSS detector (`designcheck.js`, env `DESIGN_DETECTOR_PATH`). This prevents running the CSS detector on
+Swift sources. Both detector paths are env-overridable with the same var names the validators use, so the
+hook and the validator resolve identically.
+
+- **Web detector missing** → FAIL-OPEN: loud stderr note, no block (a missing detector must not hard-block
+  every write in every project).
+- **Swift detector missing** → NOT a silent pass and NOT a hard block: a loud
+  `WARN: swiftdesigncheck not found; iOS design floor skipped` plus an auditable sidecar marker
+  `.orca/orchestration/temp/ios-floor-status = skipped-no-detector`. The `ios-design-validator` already
+  failed CLOSED upstream if the binary was absent, so the floor need not re-block here. The orchestrator
+  mirrors this on the phase_state side as `gates.ios_design_lane.floor: "skipped-no-detector"`.
+
+### Validator fail-closed (web parity with iOS)
+
+The `design-validator` (web) keys its verdict off the detector exit code and is **fail-closed**, matching
+`ios-design-validator`:
+
+- `EXIT=0` (clean) or `EXIT=2` (findings) → the detector produced a verdict; proceed.
+- Any other exit (`1`, `127`, ...) → `GATE_VERDICT: BLOCK` with
+  `UNSATISFIED_CONSTRAINTS: ["DETECTOR-ERROR"]`, then STOP. No fall-through to a read-the-file PASS.
+- Detector binary / `node` missing → `GATE_VERDICT: BLOCK` with
+  `UNSATISFIED_CONSTRAINTS: ["DETECTOR-UNAVAILABLE"]`, then STOP.
+
+A design PASS now requires the detector to have actually run; a detector that did not run is a BLOCK,
+never a silent pass.
+
+### Scope-aware owner overrides
+
+The hook honors owner overrides (`{project}/.design-overrides.json` + `active_overrides` in phase_state).
+A detector finding is treated as covered ONLY IF an active override has `suppresses == finding-id` AND a
+**non-empty** `scope` glob (`**` / `*` / `?`, compiled to an anchored regex over the full path) that
+MATCHES the finding's file path. An empty/missing `scope` suppresses NOTHING — the narrowing invariant
+(`docs/concepts/design-overrides-schema.md`).
+
+### Attempts cap (N=2, then escalate)
+
+The lane caps builder retries at N=2. A design gate PASS written with `gates.<lane>.attempts > 2` and no
+sibling `gates.<lane>.escalated: true` is BLOCKED (exit 2) — the lane never silently ships a runaway loop.
+`escalated: true` is the sanctioned exit and is set only after the orchestrator surfaces the unresolved
+findings to the user.
+
+---
+
+## Dev-Lane Standards Score Gate (`hooks/gate-enforcement.sh`)
+
+Separate from the design-lane floor above, the dev lanes carry a **numeric** standards-score gate. The
+canonical contract lives in `docs/reference/gate-contract.md`: on the standards-enforcer result each lane
+writes
+
+```json
+{ "gates": { "standards": { "score": 93, "threshold": 90, "gate_decision": "PASS", "lane": "ios" } } }
+```
+
+to `phase_state.json`. When `gates.standards.gate_decision == "PASS"`, `hooks/gate-enforcement.sh`
+exit-2 BLOCKS if the `score` is absent or non-numeric (a fabricated PASS — a PASS with no measurement) or
+if `score < threshold` (default 90). This makes each lane's "hard block < 90" prose mechanically real.
+When the decision is not PASS, or there is no `gates.standards` object, the hook does nothing (non-adopting
+lanes are unaffected).
+
+**Adopting lanes:** iOS (`/ios`), Expo (`/expo`), Django + React (`/django-react`). **Next.js (`/nextjs`)
+adopts the same contract in Phase 5** when the command is restored. Planning commands, verb-skill cognition
+loops, and research prose gates are explicitly OUT of this numeric gate (calibration boundary, FR-4.4).
+
+**Django + React two-stack rule:** the enforced `score` is `min(backend_score, frontend_score)` (with
+`backend_score` / `frontend_score` kept as detail fields), so a single failing stack blocks.
+
+The corrective-pass loop increments `gates.standards.attempts`, mirroring the design-lane `attempts`
+convention (`docs/reference/design-lane.md`).
+
+---
+
 ## Where Evidence Lives
 
 ```
@@ -249,6 +332,48 @@ bash scripts/deploy-diff.sh --protected-list <path>   # override the protected l
 ```
 
 Exit is non-zero when any NON-protected drift class is non-empty, so `verify-health.sh` can consume the exit code. **DEPLOYED-NEWER on a non-protected file means reconcile before deploying; direction is the owner's call.** PROTECTED files (SC-1) are excluded from the drift exit code and never synced.
+
+---
+
+## orca-lint (repo reality checker)
+
+`scripts/orca-lint.py` is a stdlib-only Python 3 reality checker for the ORCA-OS repo itself (no pip deps). It is the acceptance instrument for the audit-remediation program: it independently rediscovers dead references, phantom agents, graph miscounts, and version drift so regressions are visible. It runs from any working directory (paths resolve against the repo root).
+
+### The seven checks
+
+| Check | What it flags |
+|-------|---------------|
+| **DEAD-FILE** | Path references in `commands/*.md`, `agents/**/*.md`, `skills/*/SKILL.md` that resolve to nothing. Only paths inside inline backticks or markdown links are considered (bare prose, table cells, and fenced code blocks are ignored). A `~/.claude/X` ref counts as satisfied when the repo-relative `X` exists (the repo is source of truth). |
+| **DEAD-AGENT** | `subagent_type=`/`subagent_type:` values and backtick roster names that have no matching agent file. Inventory-driven (every `agents/**/*.md` basename); Claude Code built-ins (`Explore`, `general-purpose`, ...) are allowlisted. |
+| **COLLISION** | `commands/<n>.md` that collides with `skills/<n>/` (Claude merges the namespace and the skill wins). |
+| **GRAPH** | `docs/reference/os-dependency-graph.yaml`: every file/agent/skill named exists; each lane's `agent_count` == listed agents == `agents/<lane>/` directory reality; `used_by` edges name existing commands. |
+| **VERSION** | `OS x.y` strings in `commands/*.md` and `docs/**` that differ from the canonical version read from the `CLAUDE.md` footer. Historical surfaces (`docs/research/`, `changelog.md`, `era:`-tagged docs) are excluded. |
+| **FRONTMATTER** | Agent `tools:` given as a YAML list instead of a comma-separated string; a `model:` key in agent frontmatter; command frontmatter with an unclosed `---` block. |
+| **DRIFT** | Delegates to `scripts/deploy-diff.sh --quiet` and surfaces its summary. **Informational only** -- never affects the exit code. |
+
+### Output and flags
+
+Findings print as `file:line: [CATEGORY] message`, followed by per-category counts (active / baseline / informational).
+
+- default: run all checks, print findings, **exit 0** (non-fatal) so first runs on a dirty tree are usable.
+- `--strict`: exit non-zero if ANY non-baseline, non-informational finding exists.
+- `--baseline <path>` (default `scripts/orca-lint-baseline.txt`): suppress listed known findings from the failure set; suppressed findings still print, tagged `[BASELINE]`. The match key is a normalized `category|identifier` line -- the format and per-category identifier normalization are documented in the baseline file header.
+- `--no-drift`: skip the DRIFT check (used by verify-health; drift is informational anyway).
+- `--json`: machine-readable output.
+
+### Baseline (known debt)
+
+`scripts/orca-lint-baseline.txt` seeds the pre-existing findings from the 2026-07-03 command-surface audit (dead hub path, phantom nextjs agents, archived orchestrator tiers, graph miscounts, `OS 7.0` strings, ...). It is **known debt to be burned down by later remediation phases**: as each item is fixed, its line is removed; the end-state goal is a header-only baseline. On today's tree `orca-lint.py --strict --baseline scripts/orca-lint-baseline.txt` exits 0 (only a NEW finding flips it).
+
+### Wired into verify-health
+
+`verify-health.sh` runs orca-lint as check section 6 with `--strict --baseline ... --no-drift`. Known debt is suppressed, so the health tally stays green; only a new (non-baseline) finding fails the check.
+
+```bash
+python3 scripts/orca-lint.py                                   # all checks, non-fatal
+python3 scripts/orca-lint.py --strict --baseline scripts/orca-lint-baseline.txt
+python3 scripts/orca-lint.py --json                            # machine output
+```
 
 ---
 

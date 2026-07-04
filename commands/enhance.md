@@ -87,8 +87,8 @@ Proceeding with design-aware enhancement...
 ```
 
 **For design work, ensure orchestration includes:**
-- `nextjs-design-reviewer` or `expo-aesthetics-specialist`
-- Design system context loading
+- the `/impeccable` design lane (or the `design-validator` floor in `/nextjs`, `/ios`), or `expo-aesthetics-specialist` for Expo
+- Design contract / token context loading
 - Visual review gates
 
 ### Read Project Rules
@@ -141,7 +141,7 @@ Mark operations that can run in parallel with
 
 ### Validation & Review Steps (11-15)
 11. **TEST_STRATEGY**: Define comprehensive test scenarios and coverage requirements
-12. **CODE_REVIEW**: If zen MCP available, trigger deep code analysis
+12. **CODE_REVIEW**: Trigger deep code analysis via the domain verification gate / cognition-mcp
 13. **ROLLBACK_PLAN**: Create recovery strategy for potential failures
 14. **MONITORING**: Define observability, metrics, and alerting requirements
 15. **VALIDATION_CRITERIA**: Set clear success metrics and acceptance criteria
@@ -201,17 +201,16 @@ CONTRARIAN ANALYSIS:
 
 MEMORY & PAST SOLUTIONS:
 [Check for relevant past work]
-- If claude-self-reflect available: Search for "[relevant terms]"
-- If not available: Check git log for similar changes
+- Search project memory: `/memory-search "[relevant terms]"` (Workshop + code-index + cognition harvests)
+- Check git log for similar changes
 - Expected insights: [what we might learn from history]
 
 EXTERNAL TOOLS & RESOURCES:
-[Recommend MCP tools based on task and availability]
-- If zen MCP available: Use [specific zen tools] for [purpose]
-- If context7 available: Fetch documentation for [libraries/frameworks]
-- If claude-self-reflect available: Search past solutions for [pattern]
-- If grep MCP available: Search GitHub for [code examples]
-- Fallback tools: Use Read/Glob/Task for [specific purposes]
+[Recommend MCP tools based on task -- configured globals only]
+- context7: fetch up-to-date documentation for [libraries/frameworks]
+- cognition-mcp: structured reasoning for hard sub-problems
+- project-context: query_context / recall for prior decisions and standards
+- Fallback tools: Use Read/Glob/Grep/Agent for [specific purposes]
 
 PROJECT RULES (from CLAUDE.md):
 [Detected context: list categories]
@@ -231,43 +230,45 @@ Based on selected steps, the requirements are:
 - [Include validation steps from selected steps]
 
 ORCHESTRATION PLAN:
-[Intelligently select agents and skills based on task context]
+[Intelligently select the domain command + agents based on task context.
+OS 7.1 flat pattern: the domain command IS the orchestrator and spawns specialists
+single-level -- there is no grand-architect/orchestrator tier.]
 
-**Required Skills:**
-- If UI/design work → design-dna-skill
-- If creating components → uxscii-component-creator skill
-- If needs clarification mid-workflow → Use AskUserQuestion (NOT brainstorming)
+**Design work:**
+- Any UI/aesthetic work → route to the `/impeccable` design lane (or, inside `/nextjs`
+  and `/ios`, the design-validator + detector floor). There is no design-dna-skill or
+  component-generator skill.
 
-**Agent Waves (execute in parallel where possible):**
+**Agent Waves (the domain command runs these single-level):**
 
-Wave 1 - Planning & Analysis:
-   [If needs architecture] → Domain grand-architect (nextjs-grand-architect, ios-grand-architect, expo-grand-orchestrator)
-   [If needs design/UX] → Design specialists (nextjs-design-reviewer, expo-aesthetics-specialist, design-token-guardian)
+Wave 1 - Planning:
+   → domain architect (nextjs-architect, ios-architect, expo-architect-agent, django-react-architect)
 
 Wave 2 - Implementation:
-  → [domain-specific specialists]:
+  → domain builder + specialists:
     - iOS: ios-swiftui-specialist, ios-uikit-specialist, ios-persistence-specialist
-    - Next.js: nextjs-typescript-specialist, tailwind-specialist, shadcn-specialist, nextjs-layout-specialist
+    - Next.js: nextjs-builder, nextjs-typescript-specialist, nextjs-performance-specialist, nextjs-seo-specialist, nextjs-accessibility-specialist
     - Expo: expo-builder-agent, refactor-surgeon
-  [Implementation specialists run after planning completes]
+  [CSS/layout/tokens are owned by the builder + the design floor -- no CSS specialist agents]
 
 Wave 3 - Quality Gates (MANDATORY):
-  → Domain verification agent (nextjs-verification-agent, ios-verification, expo-verification-agent)
+  → standards enforcer (gates.standards >= 90, hook-enforced) + design floor (design-validator, if UI-affecting)
+  → domain verification agent (nextjs-verification-agent, ios-verification, expo-verification-agent)
   → [If security-sensitive] security-specialist
 
 **Task List with Agent Assignments:**
-1. [Task description] → Use [specific skill/agent]
-2. [Task description] → Use [specific skill/agent]
-3. Review implementation → Use domain verification agent (MANDATORY)
+1. [Task description] → [domain command + specialist]
+2. [Task description] → [domain command + specialist]
+3. Review implementation → standards enforcer + verification agent (MANDATORY)
 
 **Agent Selection Guide:**
-- UI/CSS/styling/UX → Design specialists (nextjs-design-reviewer, expo-aesthetics-specialist, design-token-guardian)
-- React/Next.js/Web → nextjs-typescript-specialist, tailwind-specialist, shadcn-specialist, nextjs-builder
+- UI/CSS/styling/UX → `/impeccable` design lane (or design-validator gate in /nextjs, /ios)
+- React/Next.js/Web → nextjs-builder, nextjs-typescript-specialist, nextjs-performance-specialist
 - iOS/Swift/SwiftUI → ios-swiftui-specialist, ios-persistence-specialist, ios-testing-specialist
 - Expo/React Native → expo-builder-agent, refactor-surgeon, test-generator
 - Data/Research → python-analytics-expert, data-researcher, research-specialist
 - SEO → seo-research-specialist, seo-draft-writer, seo-quality-guardian
-- Code review → Domain verification agent (ALWAYS)
+- Code review → domain verification agent (ALWAYS)
 - Security → security-specialist
 - Complex orchestration → Use /orca command
 
@@ -341,16 +342,16 @@ REQUIREMENTS:
 [List 5-7 most important requirements with parallel markers]
 
 ORCHESTRATION PLAN:
-**Skills:** [e.g., design-dna-skill (if UI), uxscii-component-creator (if components)]
-**Agents:**
-- Wave 1: [Domain grand-architect, design specialists] 
-- Wave 2: [Domain-specific implementation agents]
-- Wave 3: Domain verification agent (MANDATORY)
+**Design:** [if UI/aesthetic → route to /impeccable (or design-validator gate in /nextjs, /ios)]
+**Agents (OS 7.1 flat -- the domain command orchestrates; no grand-architect tier):**
+- Wave 1: [domain architect: nextjs-architect / ios-architect / expo-architect-agent / django-react-architect]
+- Wave 2: [domain builder + specialists]
+- Wave 3: standards enforcer (>=90) + domain verification agent (MANDATORY)
 
 **Todos:**
-1. [Task] → [agent/skill to use]
-2. [Task] → [agent/skill to use]
-3. Review → Domain verification agent
+1. [Task] → [domain command + specialist]
+2. [Task] → [domain command + specialist]
+3. Review → standards enforcer + domain verification agent
 
 KEY CONSIDERATIONS:
 - [Most important edge case or risk]
@@ -390,12 +391,12 @@ This will create the Yes/No arrow selection modal for user approval.
 If the enhanced prompt leads to implementation work, the orchestration system will automatically apply Response Awareness methodology:
 
 - Implementation agents tag assumptions with meta-cognitive tags (#COMPLETION_DRIVE, #CARGO_CULT, etc.)
-- verification-agent verifies all tagged assumptions after implementation
-- quality-validator enforces Zero-Tag Gate before deployment
+- The domain standards enforcer + verification gate verify tagged assumptions after implementation
+- The gate mechanically blocks a fabricated or sub-threshold PASS (gates.standards, hooks/gate-enforcement.sh)
 
 **You don't need to include Response Awareness instructions in enhanced prompts** - the orchestration system handles this automatically.
 
-See: `docs/RESPONSE_AWARENESS_TAGS.md` for complete tag taxonomy.
+See: `docs/concepts/response-awareness.md` for the complete RA tag taxonomy.
 
 ---
 

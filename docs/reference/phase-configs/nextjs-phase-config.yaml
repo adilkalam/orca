@@ -1,0 +1,334 @@
+# Next.js Pipeline Phase Configuration - OS 7.1
+# Next.js / React frontend development workflow (flat pattern)
+#
+# Restored 2026-07-03 (spec .orca/requirements/2026-07-03-1938-orca-audit-remediation,
+# FR-5.4). FLAT PATTERN: the /nextjs command runs in the MAIN THREAD and IS the
+# orchestrator; it spawns the 8 real nextjs agents single-level via Agent(). There
+# are NO orchestrator-tier coordinator agents and no archived design specialists in this
+# lane (the flatten + design-fork migrations removed them). CSS / layout / tokens are owned by nextjs-builder +
+# the web design lane floor (docs/reference/design-lane.md); heavy aesthetic work
+# routes to /impeccable.
+
+pipeline:
+  name: nextjs
+  description: Next.js / React frontend pipeline (App Router, RSC, TypeScript)
+  version: "7.1"
+
+# The 8 real agents (agents/nextjs/) — the complete roster. Nothing else exists.
+roster:
+  planning_and_analysis: nextjs-architect     # planner (impact, plan, structure/layout map)
+  implementation: nextjs-builder              # owns CSS / layout / tokens (auto-adapts to css_approach)
+  standards_gate: nextjs-standards-enforcer   # gates.standards score gate
+  verification_gate: nextjs-verification-agent # build / lint / typecheck
+  specialists:
+    - nextjs-typescript-specialist
+    - nextjs-performance-specialist
+    - nextjs-accessibility-specialist
+    - nextjs-seo-specialist
+  # Design adjudication is the SHARED web design lane floor, not a nextjs agent:
+  design_floor: design-validator              # fresh-context judge + designcheck detector
+
+# Phase State Schema (OS 7.1)
+phase_state:
+  # Top-level fields
+  domain: nextjs
+  complexity_tier: simple | medium | complex
+  requirement_id: string | null           # Links to .orca/requirements/<id>
+  requirements_spec_path: string | null   # Path to 06-requirements-spec.md
+  current_phase: string
+  memory_summary: string | null           # Hits from memory-first search
+
+  # Mode Tracking
+  current_mode: planning | execution
+  mode_history:
+    - mode: string
+      timestamp: string
+      reason: string
+
+  # Tech-stack detection (3.1.2 in the command) — passed to nextjs-builder
+  tech_stack:
+    tailwind: boolean
+    shadcn: boolean
+    css_approach: string   # tailwind+shadcn | tailwind | shadcn | semantic-css
+
+  # Attempt Tracking (shared loop-control convention, docs/reference/design-lane.md)
+  current_phase_attempts: 0
+  max_attempts: 3
+
+  # Phase entries (each has status, timestamps, data)
+  phases:
+    context_query: object
+    planning: object
+    analysis: object
+    implementation_pass1: object
+    standards_gate: object
+    design_gate: object                   # design_lane floor (UI-affecting tasks only)
+    implementation_pass2: object | null   # Only if a gate blocked
+    verification: object
+
+# Four-Tier Routing (flat pattern — the command is the orchestrator)
+# Default runs gates. --tweak skips gates. --complex forces the full pipeline.
+# NO orchestrator tiers: routing is always "the /nextjs command in the main thread".
+complexity_tiers:
+  default:
+    description: Light path WITH quality gates (most work)
+    flag: "(none)"
+    routing: "/nextjs command (main thread, flat pattern)"
+    mode: default
+    spec_required: false
+    gates_required: true
+    gates:
+      - nextjs-standards-enforcer          # gates.standards (score >= 90)
+      - design_lane                        # design-validator + detector, UI-affecting only
+    examples:
+      - Fix button spacing
+      - Update the pricing page layout
+      - Add a loading state
+      - Adjust a color token
+
+  tweak:
+    description: Light path WITHOUT gates (pure speed)
+    flag: "--tweak"
+    routing: "/nextjs command (main thread, flat pattern)"
+    mode: tweak
+    spec_required: false
+    gates_required: false   # User verifies
+    examples:
+      - Rapid iteration
+      - Exploring options
+      - Quick experiments
+
+  complex:
+    description: Full pipeline (architect -> builder -> all gates -> verification)
+    flag: "--complex"
+    routing: "/nextjs command (main thread, flat pattern)"
+    mode: complex
+    spec_required: true    # BLOCKS without spec
+    gates_required: true
+    examples:
+      - Multi-page feature
+      - App Router restructure
+      - Data-layer / RSC boundary changes
+
+# Context Integration
+context:
+  provider: ProjectContextServer
+  required: true
+  query_on_start: true
+  memory_first: true      # Check Workshop / memory-search-unified before ProjectContext
+
+# Pipeline Phases
+phases:
+  # Phase 1: Requirements & Impact Analysis
+  - name: requirements_impact
+    agent: nextjs-architect
+    description: Analyze requirements and assess impact on the Next.js codebase
+    context_required: true
+    outputs:
+      - change_type
+      - affected_routes
+      - affected_components
+      - risks
+    constraints:
+      scope: Analysis only, no code changes
+      quality: Complete impact assessment (App Router structure, RSC vs client)
+
+  # Phase 2: Architecture & Planning
+  - name: planning
+    agent: nextjs-architect
+    description: Create the architecture plan with App Router / RSC / data patterns
+    dependencies:
+      - requirements_impact
+    context_required: true
+    outputs:
+      - architecture_path
+      - data_strategy
+      - plan_summary
+      - assigned_agents
+    constraints:
+      scope: Respect existing patterns (App Router, RSC boundaries, data fetching)
+      quality: Clear component boundaries and dependencies
+
+  # Phase 3: Analysis (layout / component / style-source map)
+  - name: analysis
+    agent: nextjs-architect
+    description: Map component hierarchy, layout structure, and style sources
+    dependencies:
+      - planning
+    context_required: true
+    outputs:
+      - component_hierarchy
+      - layout_structure
+      - style_sources          # where CSS / tokens live (feeds css_approach)
+    constraints:
+      scope: Read-only analysis, map existing patterns
+      quality: Complete dependency map
+
+  # Phase 4: Implementation - Pass 1
+  - name: implementation_pass1
+    agent: nextjs-builder
+    description: Primary implementation; nextjs-builder OWNS CSS / layout / tokens
+    dependencies:
+      - analysis
+    context_required: true
+    inputs:
+      - architecture_path
+      - data_strategy
+      - tech_stack             # css_approach passed in the ContextBundle
+    outputs:
+      - files_modified
+      - changes_manifest
+      - tests_added
+      - ra_events
+    constraints:
+      scope: Edit-not-rewrite, minimal diffs
+      quality: Modern React / Next.js semantics; auto-adapt to css_approach
+      integration: Semantic CSS discipline (design floor); no scattered raw-palette utilities
+
+  # Phase 5: Standards Gate (mechanical score contract)
+  - name: standards_gate
+    agent: nextjs-standards-enforcer
+    description: Code standards + safety; writes the gates.standards score contract
+    dependencies:
+      - implementation_pass1
+    context_required: true
+    inputs:
+      - files_modified
+      - related_standards
+    outputs:
+      - standards_score        # numeric, written to gates.standards.score
+      - violations
+      - gate_decision          # PASS only when enforcer decision PASS AND score >= 90
+    quality_gates:
+      standards_score:
+        threshold: 90
+        type: hard_block
+        message: Standards score must be >= 90 (gates.standards, docs/reference/gate-contract.md)
+    contract: docs/reference/gate-contract.md
+    # BINARY mapping: the enforcer emits a graduated decision (PASS/WARN/ERROR/BLOCK).
+    # Write gates.standards.gate_decision = "PASS" ONLY when decision == PASS AND
+    # score >= 90; otherwise "BLOCK". ALWAYS write score as a NUMBER. hooks/gate-enforcement.sh
+    # exit-2 blocks a PASS with a missing/non-numeric score or a score below threshold.
+
+  # Phase 6: Design Gate (the web design lane floor — UI-affecting tasks only)
+  - name: design_gate
+    agent: design-validator       # SHARED web design floor, not a nextjs agent
+    description: Fresh-context judge + designcheck detector on UI-affecting artifacts
+    condition: ui_affecting        # *.css/scss/sass/less, *.tsx/jsx with className=/style=/CSS import, or app/ components/ pages/
+    dependencies:
+      - implementation_pass1
+    context_required: false        # fresh context — receives ONLY changed-file paths + bound constraints + hub
+    inputs:
+      - artifact_paths             # non-empty builder-changed file paths
+      - bound_constraints          # >=1 FORBIDDEN + >=1 FORWARD (empty -> NO-BOUND-CONSTRAINTS BLOCK)
+    outputs:
+      - gate_verdict               # PASS | BLOCK (the only field branched on)
+      - validator_score
+      - unsatisfied_constraints
+      - findings
+    contract: docs/reference/design-lane.md
+    # On PASS: write gates.design_lane = { gate_decision:"PASS", artifact_paths:[...non-empty],
+    # validator_score, bound_constraint_ids:[...], attempts:<0-2>, active_overrides:[] }.
+    # hooks/gate-enforcement.sh re-runs designcheck on artifact_paths and exit-2 blocks a
+    # missed P0. On BLOCK: one corrective nextjs-builder pass, re-validate, MAX N=2, then escalate.
+
+  # Phase 4b: Implementation - Pass 2 (Corrective)
+  - name: implementation_pass2
+    agent: nextjs-builder
+    description: Corrective implementation for gate failures only
+    dependencies:
+      - standards_gate
+      - design_gate
+    condition: any_gate_blocked
+    context_required: true
+    inputs:
+      - violations
+      - unsatisfied_constraints
+      - findings
+    outputs:
+      - files_modified
+      - fixes_applied
+    constraints:
+      scope: Fix violations only, no new features
+      quality: Address all blocking issues; increment gates.<gate>.attempts
+      resource: Single corrective pass (MAX N=2 on the design lane, then escalate)
+
+  # Phase 7: Verification (build / lint / typecheck)
+  - name: verification
+    agent: nextjs-verification-agent
+    description: Run lint / typecheck / build and record verification status
+    dependencies:
+      - standards_gate
+      - design_gate
+    context_required: true
+    inputs:
+      - files_modified
+    outputs:
+      - build_status
+      - lint_status
+      - typecheck_status
+      - verification_status     # "pass" only with commands_run actually executed (anti-fabrication hook)
+    quality_gates:
+      build:
+        threshold: pass
+        type: hard_block
+        message: Build must succeed
+      lint:
+        threshold: pass
+        type: hard_block
+        message: Lint / typecheck must pass
+
+# Specialist Activation Matrix (spawned single-level by the command as needed)
+specialists:
+  nextjs-typescript-specialist:
+    trigger: complex_types OR generics OR type_errors
+
+  nextjs-performance-specialist:
+    trigger: performance_risk OR bundle_size OR render_hotspots
+
+  nextjs-accessibility-specialist:
+    trigger: ui_heavy_feature OR wcag_requirements
+
+  nextjs-seo-specialist:
+    trigger: metadata OR routing_structure OR crawlability
+
+# Design Floor (the shared web design lane — NOT a nextjs-specific gate)
+# Replaces the archived design-first Phase 0 gate (the old design-system tooling).
+# For UI-affecting tasks the command binds FORBIDDEN/FORWARD constraints, spawns a
+# fresh-context design-validator (detector + bound constraints), and writes
+# gates.design_lane so hooks/gate-enforcement.sh re-runs the detector as a hard floor.
+design_gate:
+  position: "after implementation, UI-affecting tasks only"
+  floor: design_lane
+  agent: design-validator
+  detector: designcheck (mcp/design-detector)
+  gate_field: gates.design_lane
+  contract: docs/reference/design-lane.md
+  boundary: >
+    /nextjs runs a LIGHT per-task design floor. Heavy / holistic aesthetic work
+    (multi-verb, --craft, full cognition bind) routes to /impeccable, mirroring the
+    /ios <-> /ios-impeccable split.
+
+# Configuration
+config:
+  max_implementation_passes: 2
+  gate_failure_behavior: block_and_correct
+  evidence_path: .orca/orchestration/evidence/
+  phase_state_path: .orca/orchestration/phase_state.json
+
+# Quality Gates (summary — the three mechanical floors)
+quality_gates:
+  standards_score:
+    threshold: 90
+    field: gates.standards
+    enforced_by: hooks/gate-enforcement.sh
+    contract: docs/reference/gate-contract.md
+  design_lane:
+    field: gates.design_lane
+    enforced_by: hooks/gate-enforcement.sh
+    contract: docs/reference/design-lane.md
+    applies_to: ui_affecting_tasks
+  verification:
+    field: verification.verification_status
+    enforced_by: hooks/gate-enforcement.sh   # commands_run must be actually executed
+    checks: [build, lint, typecheck]

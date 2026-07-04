@@ -9,7 +9,7 @@ Analyze a feature and strategically add animations and micro-interactions that e
 
 ## MANDATORY PREPARATION
 
-**Run the cognition constraint loop (MANDATORY).** Invoked directly as `/animate <target>` (a human typed it)? This is an INDIVIDUAL command, outside the /impeccable pipeline -- so cognition IS the enforcement. Run the in-thread loop defined once at `~/.claude/docs/reference/cognition-constraint-loop.md`: R1 generate typed FORBIDDEN/FORWARD constraints via a cognition `checkpoint` -> R2 do the work in-thread using the craft below -> evaluate every bound constraint + detector self-check -> loop (MAX N=2) until none unsatisfied; you may NOT claim done with an open constraint. (The heavy /impeccable pipeline with its separate validator + hook is a different path; cognition is optional there.) If `design-builder` loaded this skill only for craft reference, ignore this block and use the craft below.
+**Run the cognition constraint loop (MANDATORY)** — see `~/.claude/docs/reference/cognition-constraint-loop.md`. (If `design-builder` loaded this skill only for craft reference, ignore this block and use the craft below.)
 
 Invoke {{command_prefix}}impeccable — it contains design principles, anti-patterns, and the **Context Gathering Protocol**. Follow the protocol before proceeding — if no design context exists yet, you MUST run {{command_prefix}}impeccable teach first. Additionally gather: performance constraints.
 
@@ -193,6 +193,18 @@ Test animations thoroughly:
 - **Adds value**: Makes interface clearer or more delightful
 
 Remember: Motion should enhance understanding and provide feedback, not just add decoration. Animate with purpose, respect performance constraints, and always consider accessibility. Great animation is invisible - it just makes everything feel right.
+
+---
+
+## SwiftUI target
+
+When the iOS architect passes `platform: swiftui`, the builder reads ONLY this section — the CSS/JS craft above (`animation-timeline`, cubic-bezier tokens, Framer Motion, GSAP) does NOT apply.
+
+- Use SwiftUI motion: `withAnimation`, `.animation(_:value:)`, `.transition`, `matchedGeometryEffect`, `PhaseAnimator`/`KeyframeAnimator`, `.symbolEffect` on SF Symbols.
+- Curves and durations come from `MotionTokens`; directional ease-out only — no bounce/elastic spring overshoot (`spring-overshoot` P1). Exit at ~75% of enter duration.
+- Gate every animation on `accessibilityReduceMotion` with a static equivalent.
+- NO CSS easing strings, NO `px`, NO OKLCH, NO `gap`.
+- Self-check with `swiftdesigncheck` (NOT `designcheck.js`).
 
 ---
 

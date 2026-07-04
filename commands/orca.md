@@ -1,5 +1,5 @@
 ---
-description: "OS 7.0 Pure Orchestrator - Coordinates pipelines, never writes code"
+description: "OS 7.1 Pure Orchestrator - Coordinates pipelines, never writes code"
 argument-hint: "[--audit <scope>] <task description or requirement ID>"
 allowed-tools:
   - Agent
@@ -224,7 +224,7 @@ Your first tool call MUST NOT be:
 
 ---
 
-# /orca – OS 7.0 Pure Orchestrator
+# /orca – OS 7.1 Pure Orchestrator
 
 **Philosophy:** Orca is a pure coordinator. It NEVER writes code. It detects the pipeline type, queries context ONCE, integrates with /requirements if needed, and delegates to domain orchestrators.
 
@@ -237,14 +237,14 @@ Your first tool call MUST NOT be:
 6. **Domain Routing** - Routes to `/{domain}` commands for specialized handling
 7. **Never Codes** - Orchestrates agents, doesn't implement
 
-**OS 7.0 Updates:**
+**OS 7.1 Updates:**
 - Memory-first context (Workshop + code-index.db before ProjectContext)
 - Routes to domain-specific `/{domain}` commands which handle four-tier flag routing
 - Four-tier structure (Reverse Three-Tier):
   - Default (no flag): Light path WITH confirmation, then gates
   - `--light`: Light path WITHOUT confirmation (replaces old default behavior)
   - `--tweak`: Builder direct, pure speed, NO gates
-  - `--complex`: Full pipeline (grand-architect + all gates + confirmation)
+  - `--complex`: Full pipeline (domain architect + all gates + confirmation; flat pattern, no grand-architect tier)
 
 ---
 
@@ -258,7 +258,7 @@ pwd
 
 ---
 
-### Step 1.5: Memory-First Context (OS 7.0)
+### Step 1.5: Memory-First Context (OS 7.1)
 
 **Before expensive ProjectContext queries, check local memory:**
 
@@ -277,7 +277,7 @@ python3 ~/.claude/scripts/memory-search-unified.py "$TASK_KEYWORDS" --mode all -
 
 ---
 
-### Step 1.7: Recording Context (OS 7.0 -- OPTIONAL)
+### Step 1.7: Recording Context (OS 7.1 -- OPTIONAL)
 
 **Inject prior session context from the recording layer for continuity.**
 
@@ -322,7 +322,7 @@ fi
 
 **If `.orca/recording.db` does not exist:** skip silently, set `RECORDING_CONTEXT = ""`.
 
-RECORDING_CONTEXT is included in Step 7 delegation prompts to domain grand-architects.
+RECORDING_CONTEXT is included in Step 7 delegation prompts to the domain command (which runs flat in the main thread and spawns its own specialists).
 
 ---
 
@@ -425,38 +425,38 @@ Analyze the request and project structure to determine pipeline:
 **nextjs (webdev):**
 - Keywords: React, Next.js, frontend, web app, UI, component, design system, landing page
 - Files: `package.json` with `next`, `*.tsx`, `*.jsx`, `tailwind.config.js`, `app/` or `pages/` dirs
-- Grand Architect: `nextjs-grand-architect`
+- Routing: `/nextjs` command (flat, main thread; restored 2026-07-03)
 - Pipeline: `docs/pipelines/nextjs-pipeline.md`
 
 **ios:**
 - Keywords: iOS, SwiftUI, UIKit, Xcode, simulator, iPhone, iPad, Apple
 - Files: `*.xcodeproj`, `*.xcworkspace`, `*.swift`, `Info.plist`, `.swiftpm/`
-- Grand Architect: `ios-grand-architect`
+- Routing: `/ios` command (flat, main thread)
 - Pipeline: `docs/pipelines/ios-pipeline.md`
 
 **expo:**
 - Keywords: Expo, React Native, mobile app, Android, iOS app (but with Expo/RN)
 - Files: `app.json`, `app.config.*`, `package.json` with `expo` and `react-native`
-- Grand Architect: `expo-grand-orchestrator`
+- Routing: `/expo` command (flat, main thread)
 - Pipeline: `docs/pipelines/expo-pipeline.md`
 
 **data:**
 - Keywords: analysis, BFCM, sales, metrics, causality, performance, data analysis
 - Files: `*.csv`, `*.json` (data files), Python notebooks, data/ folder
-- Grand Architect: Use data specialists directly (no grand-architect yet)
+- Routing: `/orca` routes to data specialists directly (flat, main thread)
 - Pipeline: `docs/pipelines/data-pipeline.md`
 
 **seo:**
 - Keywords: content, blog, article, SEO, keywords, metadata, SERP
 - Files: `*.md` (content), SEO configs, content/ or blog/ folders
-- Grand Architect: Use SEO specialists directly (no grand-architect yet)
+- Routing: `/orca` routes to SEO specialists directly (flat, main thread)
 - Pipeline: `docs/pipelines/seo-pipeline.md`
 
 **design:**
-- Keywords: design system, design tokens, Figma, landing page design, visual design, mockup, layout exploration
-- Files: `design-system-v*.md`, `bento-system-v*.md`, `CSS-ARCHITECTURE.md`, `.claude/design-dna/*.json`
-- Grand Architect: Use design specialists directly (no grand-architect yet)
-- Pipeline: `docs/pipelines/design-pipeline.md`
+- Keywords: design system, design tokens, landing page design, visual design, mockup, layout exploration
+- Files: `PRODUCT.md`, `DESIGN.md`, `.design-overrides.json`, front-end sources (`*.tsx`, `*.css`)
+- Routing: the `/impeccable` design lane (design-architect -> design-builder -> design-validator, flat)
+- Lane doc: `docs/reference/design-lane.md`
 
 **Multi-Pipeline Work:**
 If request spans multiple pipelines (e.g., "Build iOS app with backend API"):
@@ -657,7 +657,7 @@ AskUserQuestion({
 
 ---
 
-### Step 7: Route to Domain Orchestrator (OS 7.0)
+### Step 7: Route to Domain Orchestrator (OS 7.1)
 
 **For pipelines with domain-specific `/{domain}` commands, route to them.**
 
@@ -805,7 +805,7 @@ When grand-architect signals completion:
 
 ## Memory Architecture
 
-OS 7.0 uses TWO memory systems:
+OS 7.1 uses TWO memory systems:
 
 1. **Workshop** (.claude/memory/workshop.db):
    - Decisions with reasoning

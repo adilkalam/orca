@@ -9,7 +9,7 @@ Identify and improve unclear, confusing, or poorly written interface text to mak
 
 ## MANDATORY PREPARATION
 
-**Run the cognition constraint loop (MANDATORY).** Invoked directly as `/clarify <target>` (a human typed it)? This is an INDIVIDUAL command, outside the /impeccable pipeline -- so cognition IS the enforcement. Run the in-thread loop defined once at `~/.claude/docs/reference/cognition-constraint-loop.md`: R1 generate typed FORBIDDEN/FORWARD constraints via a cognition `checkpoint` -> R2 do the work in-thread using the craft below -> evaluate every bound constraint + detector self-check -> loop (MAX N=2) until none unsatisfied; you may NOT claim done with an open constraint. (The heavy /impeccable pipeline with its separate validator + hook is a different path; cognition is optional there.) If `design-builder` loaded this skill only for craft reference, ignore this block and use the craft below.
+**Run the cognition constraint loop (MANDATORY)** — see `~/.claude/docs/reference/cognition-constraint-loop.md`. (If `design-builder` loaded this skill only for craft reference, ignore this block and use the craft below.)
 
 Invoke {{command_prefix}}impeccable — it contains design principles, anti-patterns, and the **Context Gathering Protocol**. Follow the protocol before proceeding — if no design context exists yet, you MUST run {{command_prefix}}impeccable teach first. Additionally gather: audience technical level and users' mental state in context.
 
@@ -183,6 +183,18 @@ Test that copy improvements work:
 
 Remember: You're a clarity expert with excellent communication skills. Write like you're explaining to a smart friend who's unfamiliar with the product. Be clear, be helpful, be human.
 
+
+---
+
+## SwiftUI target
+
+When the iOS architect passes `platform: swiftui`, the builder reads ONLY this section — the CSS craft above does NOT apply.
+
+- Copy lives in `String(localized:)` catalogs, not hard-coded literals; use `Text`, `.accessibilityLabel`, and `AttributedString` for emphasis.
+- Specific, active labels on `Button`/`Label`/nav titles; error copy via `.alert`/inline `Text` with a recovery action; empty states via `ContentUnavailableView`.
+- Match Apple HIG voice (sentence case, no jargon); pluralize and format via `String(localized:)` + `.formatted()`, never manual `+ "s"`.
+- This is a copy verb — no color/effect work; if you must touch style, tokens only. NO OKLCH, NO `px`, NO `gap`.
+- Self-check with `swiftdesigncheck` (NOT `designcheck.js`).
 
 ---
 

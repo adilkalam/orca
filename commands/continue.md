@@ -1,5 +1,5 @@
 ---
-description: Show resume info for previous recording sessions
+description: Show recent recording sessions (telemetry) and route to the correct resume path
 allowed-tools:
   - Bash
   - Read
@@ -7,9 +7,9 @@ allowed-tools:
 
 # /continue - Session Resume Info
 
-**PURPOSE**: Show resume information for previous recording sessions. Displays `claude --continue` commands for easy copy-paste to continue where you left off.
+**PURPOSE**: Show recent recording sessions (telemetry) and route you to the right resume path. Recording `sess-...` ids are internal to orca-record; they are NOT Claude Code conversation ids, so they are shown for context only and must never be passed to `--continue`/`--resume`.
 
-**EXPECTED OUTCOME**: List of recent sessions with ready-to-use continue commands.
+**EXPECTED OUTCOME**: A list of recent sessions plus the correct way to resume -- `/session-resume` when `active-task.md` is fresh, otherwise native `claude --continue`.
 
 ---
 
@@ -72,21 +72,17 @@ LIMIT 5;
 
 **Display session list with continue commands:**
 ```
-Recent sessions:
+Recent sessions (recording telemetry):
 
-  [1] sess-19c6983c46029c7 (today, 14:30)
-      5 steps, 12 files touched
-      > claude --continue sess-19c6983c46029c7
+  [1] sess-19c6983c46029c7  today, 14:30   -- 5 steps, 12 files, state: ended
+  [2] sess-abc123def456     yesterday      -- 12 steps, 28 files, state: ended
+  [3] sess-def789ghi012     2 days ago     -- 8 steps, 15 files, state: ended
 
-  [2] sess-abc123def456 (yesterday, 16:45)
-      12 steps, 28 files touched
-      > claude --continue sess-abc123def456
+To RESUME where you left off:
+  - If you saved intent this session: run /session-resume (reads .orca/orchestration/active-task.md)
+  - Otherwise: run `claude --continue` (native; reloads the most recent conversation -- takes NO id argument)
 
-  [3] sess-def789ghi012 (2 days ago, 10:15)
-      8 steps, 15 files touched
-      > claude --continue sess-def789ghi012
-
-To continue a session, run the command shown above.
+(The sess-... ids are orca-record internal identifiers for telemetry, not Claude conversation ids.)
 ```
 
 **Time formatting:**
@@ -122,10 +118,8 @@ Ended: 2026-02-17 16:45
 State: ended
 Shadow branch: orca/abc1234-def567
 
-To continue this session:
-  claude --continue sess-19c6983c46029c7
-
-This will restore your previous conversation context.
+To resume: run /session-resume (if active-task.md is fresh) or native `claude --continue`.
+(sess-... is an orca-record telemetry id -- not a Claude conversation id.)
 ```
 
 ---
@@ -163,6 +157,6 @@ If this is a new project, sessions will be recorded on next use.
 
 ---
 
-**Cross-Session Continuity:** The `claude --continue` command is a native Claude Code feature that loads the previous session's conversation transcript. Combined with the recording layer's checkpoints, you can resume exactly where you left off.
+**Cross-Session Continuity:** `active-task.md` (written by `/session-save`, read by `/session-resume`) is the primary continuity mechanism -- it carries your intent and next steps. Native `claude --continue` (no argument) reloads the most recent conversation transcript. The recording layer's sessions/checkpoints are telemetry that contextualize both; their `sess-...` ids are internal and cannot be passed to `--continue`/`--resume`.
 
-**Note:** `/continue` shows resume info; it does not perform the continue action itself. Copy the displayed command and run it in your terminal.
+**Note:** `/continue` shows resume info; it does not perform the resume itself. Use `/session-resume` or run `claude --continue` in your terminal.

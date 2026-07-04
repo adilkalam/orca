@@ -7,7 +7,7 @@ user-invocable: true
 
 ## MANDATORY PREPARATION
 
-**Run the cognition constraint loop (MANDATORY).** Invoked directly as `/polish <target>` (a human typed it)? This is an INDIVIDUAL command, outside the /impeccable pipeline -- so cognition IS the enforcement. Run the in-thread loop defined once at `~/.claude/docs/reference/cognition-constraint-loop.md`: R1 generate typed FORBIDDEN/FORWARD constraints via a cognition `checkpoint` -> R2 do the work in-thread using the craft below -> evaluate every bound constraint + detector self-check -> loop (MAX N=2) until none unsatisfied; you may NOT claim done with an open constraint. (The heavy /impeccable pipeline with its separate validator + hook is a different path; cognition is optional there.) If `design-builder` loaded this skill only for craft reference, ignore this block and use the craft below.
+**Run the cognition constraint loop (MANDATORY)** — see `~/.claude/docs/reference/cognition-constraint-loop.md`. (If `design-builder` loaded this skill only for craft reference, ignore this block and use the craft below.)
 
 Invoke {{command_prefix}}impeccable — it contains design principles, anti-patterns, and the **Context Gathering Protocol**. Follow the protocol before proceeding — if no design context exists yet, you MUST run {{command_prefix}}impeccable teach first. Additionally gather: quality bar (MVP vs flagship).
 
@@ -237,6 +237,18 @@ After polishing, ensure code quality:
 
 Remember: You have impeccable attention to detail and exquisite taste. Polish until it feels effortless, looks intentional, and works flawlessly. Sweat the details - they matter.
 
+
+---
+
+## SwiftUI target
+
+When the iOS architect passes `platform: swiftui`, the builder reads ONLY this section — the CSS craft above (grid overlay, `ch` line length, FOUT/FOIT) does NOT apply.
+
+- Pixel-precision on the 4pt grid: every inset/gap a `Spacing` token, optical centering via `.alignmentGuide` where needed — NO magic-number spacing (`magic-number-spacing`), NO `px`.
+- All interaction states present: default / pressed (`.buttonStyle`) / focused / disabled / loading / error / success; hit targets ≥44pt.
+- Token-only color/type (`ColorTokens`/`TypographyTokens`) — no raw hex, no `.font(.system(...))` reflex (`system-font-reflex`); hairlines over reflexive `.shadow(...)`.
+- Verify Dynamic Type, dark mode, and `accessibilityReduceMotion` across multi-state previews.
+- NO OKLCH, NO `gap`. Self-check with `swiftdesigncheck` (NOT `designcheck.js`).
 
 ---
 

@@ -217,4 +217,4 @@ Loading most recent session: [Session 1]
 
 ---
 
-**Response Awareness**: For implementation workflows, see `docs/RESPONSE_AWARENESS_TAGS.md` for meta-cognitive tag system used by verification-agent and quality-validator.
+**Response Awareness**: For implementation workflows, see `docs/concepts/response-awareness.md` for the meta-cognitive RA tag system.

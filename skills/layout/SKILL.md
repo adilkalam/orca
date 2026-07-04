@@ -9,7 +9,7 @@ Assess and improve layout and spacing that feels monotonous, crowded, or structu
 
 ## MANDATORY PREPARATION
 
-**Run the cognition constraint loop (MANDATORY).** Invoked directly as `/layout <target>` (a human typed it)? This is an INDIVIDUAL command, outside the /impeccable pipeline -- so cognition IS the enforcement. Run the in-thread loop defined once at `~/.claude/docs/reference/cognition-constraint-loop.md`: R1 generate typed FORBIDDEN/FORWARD constraints via a cognition `checkpoint` -> R2 do the work in-thread using the craft below -> evaluate every bound constraint + detector self-check -> loop (MAX N=2) until none unsatisfied; you may NOT claim done with an open constraint. (The heavy /impeccable pipeline with its separate validator + hook is a different path; cognition is optional there.) If `design-builder` loaded this skill only for craft reference, ignore this block and use the craft below.
+**Run the cognition constraint loop (MANDATORY)** — see `~/.claude/docs/reference/cognition-constraint-loop.md`. (If `design-builder` loaded this skill only for craft reference, ignore this block and use the craft below.)
 
 ---
 
@@ -132,6 +132,18 @@ Create a systematic plan:
 - **Responsiveness**: Does the layout adapt gracefully across screen sizes?
 
 Remember: Space is the most underused design tool. A layout with the right rhythm and hierarchy can make even simple content feel polished and intentional.
+
+---
+
+## SwiftUI target
+
+When the iOS architect passes `platform: swiftui`, the builder reads ONLY this section — the CSS craft above (flex/grid, `gap`, `clamp()`, media queries) does NOT apply.
+
+- Compose with `VStack`/`HStack`/`ZStack` for 1D and `Grid`/`LazyVGrid` for 2D; use `Spacer()` and layout priority for rhythm — not CSS flexbox/grid.
+- Every inset and gap is a `Spacing` token (pt) on the 4pt scale via `.padding(...)` / `spacing:` — NO `gap`, NO `px`/`rem`, NO magic numbers in views (`magic-number-spacing`).
+- Respect `.safeAreaInsets`/`.safeAreaPadding` and one-handed reach (primary target in the lower-thumb zone); adapt across size classes with `@Environment(\.horizontalSizeClass)`, not breakpoints.
+- Group with proximity + `Divider()`/hairlines; reserve `Section` for real grouping. Never nest cards.
+- Self-check with `swiftdesigncheck` (NOT `designcheck.js`).
 
 ---
 

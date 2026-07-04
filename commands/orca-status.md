@@ -84,6 +84,28 @@ Use /continue to see previous sessions.
 
 ---
 
+## Step 5: Surface Continuity State (active-task.md is primary)
+
+Recording is telemetry; the primary continuity artifact is `active-task.md`. Surface its
+freshness so the user knows whether `/session-resume` will restore intent:
+
+```bash
+AT=.orca/orchestration/active-task.md
+if [ -f "$AT" ]; then
+  mtime=$(stat -f %m "$AT" 2>/dev/null || stat -c %Y "$AT" 2>/dev/null)
+  age_h=$(( ( $(date +%s) - mtime ) / 3600 ))
+  if [ "$age_h" -lt 48 ]; then
+    echo "active-task.md: present, ${age_h}h old -- fresh; run /session-resume to restore intent"
+  else
+    echo "active-task.md: present, ${age_h}h old -- stale (>48h); re-run /session-save"
+  fi
+else
+  echo "active-task.md: none -- run /session-save to capture intent for the next session"
+fi
+```
+
+---
+
 ## Edge Cases
 
 **If CLI binary missing:**

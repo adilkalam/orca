@@ -1,5 +1,5 @@
 ---
-description: "OS 7.0 Expo/React Native Orchestrator – coordinates the Expo lane pipeline, never writes code"
+description: "OS 7.1 Expo/React Native Orchestrator – coordinates the Expo lane pipeline, never writes code"
 argument-hint: "[--light | --tweak | --complex | --audit] <task description or requirement ID>"
 allowed-tools:
   - Agent
@@ -36,7 +36,7 @@ Even `--tweak` delegates to a builder. It skips gates, not agents.
 
 ---
 
-# /expo - Expo Lane Orchestrator (OS 7.0)
+# /expo - Expo Lane Orchestrator (OS 7.1)
 
 Use this command for Expo/React Native mobile work.
 
@@ -73,7 +73,7 @@ No flag → Section 3 (Light Orchestrator WITH confirmation)
 
 ---
 
-## 0.1 Recording Context (OS 7.0)
+## 0.1 Recording Context (OS 7.1)
 
 > Session activity is captured automatically by **orca-record** hooks. Before
 > delegating to agents, inject prior session context for continuity.
@@ -296,7 +296,7 @@ If memory hits are relevant:
 - Note them for context
 - May skip or reduce ProjectContext query scope
 
-### 1.1.1 Reflexion Loading (OS 7.0)
+### 1.1.1 Reflexion Loading (OS 7.1)
 
 Load relevant reflexions from past gate failures:
 
@@ -342,13 +342,13 @@ Run the light path **yourself, in the main thread** (no orchestrator subagent �
 **Flat phase script (--light):**
 
 1. **Build** — `Agent({ subagent_type: "expo-builder-agent", description: "Expo task (light)", prompt: <REQUEST + inherited ContextBundle + memory hits + STANDARDS from prior gate failures + DESIGN AWARENESS block> })`. Tell the builder: context is inherited, do NOT call `query_context` (may narrow-query maxFiles:5 if missing).
-2. **Design/standards gate** — `Agent({ subagent_type: "expo-standards-enforcer", ... })`; read its `standards_score` (hard block < 90).
+2. **Design/standards gate** — `Agent({ subagent_type: "expo-standards-enforcer", ... })`; read its `standards_score` and write the canonical dev-lane score contract (`docs/reference/gate-contract.md`) to phase_state: `gates.standards = { "score": <standards_score>, "threshold": 90, "gate_decision": "PASS" (score ≥ 90) | "BLOCK", "lane": "expo" }`. The "hard block < 90" is now mechanical — `hooks/gate-enforcement.sh` exit-2s any `gates.standards` PASS whose score is absent, non-numeric, or below the threshold.
 3. **A11y gate** — `Agent({ subagent_type: "a11y-enforcer", ... })`; read its verdict (hard block on any critical violation).
 4. **Performance gate** — `Agent({ subagent_type: "performance-enforcer", ... })`; read its verdict (hard block on budget violations).
 5. **Aesthetics gate** — `Agent({ subagent_type: "expo-aesthetics-specialist", ... })`; read its verdict (soft gate ≥ 75, block < 60 AI-slop).
 6. **Verification** — `Agent({ subagent_type: "expo-verification-agent", ... })`; run npm test / expo doctor, record status.
-7. If a gate ERRORs/BLOCKs, route the violations back to `expo-builder-agent` once, then re-gate.
-8. Ephemeral phase_state only (scores for this run; no spec ceremony). Persist scores to `.orca/orchestration/phase_state.json`.
+7. If a gate ERRORs/BLOCKs, route the violations back to `expo-builder-agent` once, then re-gate; increment `gates.standards.attempts` on the respawn (mirrors the design-lane `attempts` convention, `docs/reference/design-lane.md`).
+8. Ephemeral phase_state only (scores for this run; no spec ceremony). Persist the `gates.standards` contract above to `.orca/orchestration/phase_state.json`; a final PASS is written only once `score ≥ 90`.
 
 (The old `expo-light-orchestrator` delegation is dissolved — the command owns this sequence.)
 
@@ -721,7 +721,7 @@ Update phase_state.verification.
 
 ---
 
-## 5. Standards Inputs (OS 7.0 Learning Loop)
+## 5. Standards Inputs (OS 7.1 Learning Loop)
 
 ### Gate Enforcement
 

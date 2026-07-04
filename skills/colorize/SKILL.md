@@ -9,7 +9,7 @@ Strategically introduce color to designs that are too monochromatic, gray, or la
 
 ## MANDATORY PREPARATION
 
-**Run the cognition constraint loop (MANDATORY).** Invoked directly as `/colorize <target>` (a human typed it)? This is an INDIVIDUAL command, outside the /impeccable pipeline -- so cognition IS the enforcement. Run the in-thread loop defined once at `~/.claude/docs/reference/cognition-constraint-loop.md`: R1 generate typed FORBIDDEN/FORWARD constraints via a cognition `checkpoint` -> R2 do the work in-thread using the craft below -> evaluate every bound constraint + detector self-check -> loop (MAX N=2) until none unsatisfied; you may NOT claim done with an open constraint. (The heavy /impeccable pipeline with its separate validator + hook is a different path; cognition is optional there.) If `design-builder` loaded this skill only for craft reference, ignore this block and use the craft below.
+**Run the cognition constraint loop (MANDATORY)** — see `~/.claude/docs/reference/cognition-constraint-loop.md`. (If `design-builder` loaded this skill only for craft reference, ignore this block and use the craft below.)
 
 Invoke {{command_prefix}}impeccable — it contains design principles, anti-patterns, and the **Context Gathering Protocol**. Follow the protocol before proceeding — if no design context exists yet, you MUST run {{command_prefix}}impeccable teach first. Additionally gather: existing brand colors.
 
@@ -153,6 +153,18 @@ Test that colorization improves the experience:
 - **Not overwhelming**: Is color balanced and purposeful?
 
 Remember: Color is emotional and powerful. Use it to create warmth, guide attention, communicate meaning, and express personality. But restraint and strategy matter more than saturation and variety. Be colorful, but be intentional.
+
+---
+
+## SwiftUI target
+
+When the iOS architect passes `platform: swiftui`, the builder reads ONLY this section — the CSS craft above does NOT apply.
+
+- Translate every OKLCH/hex instruction above into a named `Color` token: define the palette in the asset catalog (Color Set, sRGB, light + dark variants) and expose it via `DesignSystem/Tokens/ColorTokens.swift`. NO `oklch(...)`/`hsl(...)` strings, NO `px`, NO raw hex in views (`raw-hex-outside-tokens` P0).
+- Semantic tokens, not literals: `Color.success`/`.danger`/`.warning`/`.info` resolve to token assets — a view never names a channel value.
+- Blue carries the chroma on this project; distinguish categories by lightness tier, never by hue (`hue-coded-category`, `off-palette-hue` P0). The one non-blue chromatic is an icon-required danger red.
+- Tint neutrals via token assets (never pure gray); NO gradient hero washes (`gradient-fill` P0), NO `.tint(.blue)`/`.accentColor(.blue)` default accent (`ios-default-reflex` P0).
+- Self-check with `swiftdesigncheck` (NOT `designcheck.js`).
 
 ---
 

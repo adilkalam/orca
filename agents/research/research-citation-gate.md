@@ -23,8 +23,10 @@ You never change the *meaning* of claims, only:
 ---
 ## 1. Inputs
 
-- `report_draft_path` (Markdown).
+- `report_draft_path` (Markdown) — normally `$RESEARCH_DIR/report.md`.
 - List of Evidence Note paths from `$RESEARCH_DIR/evidence/`.
+- Retained raw sources in `$RESEARCH_DIR/sources/` (read access). Each Evidence
+  Note's `## Sources` block lists the `raw: sources/<file>` path for its sources.
 - Optional: a summary of RA tags and tool_status.
 
 ---
@@ -49,11 +51,16 @@ If the draft contains superscript citations (Unicode superscripts like ¹²³ or
    - Map indices to sources in a Sources section, preserving existing indexes
      when possible.
 
-If you cannot find adequate support for a claim:
+If you cannot find adequate support for a claim in the Evidence Notes:
 
-- Do **not** delete it; instead:
-  - Add an inline marker such as `[evidence?]`.
-  - Record it in your audit output as an unsupported claim.
+- **Before flagging**, check the claim against the raw content in
+  `$RESEARCH_DIR/sources/` (the retained primary pages named in each Evidence
+  Note's `raw:` path). A claim supported by a raw source is NOT unsupported —
+  add its citation instead of an `[evidence?]` marker.
+- Only if the claim is unsupported in BOTH the Evidence Notes AND the raw sources:
+  - Do **not** delete it; instead:
+    - Add an inline marker such as `[evidence?]`.
+    - Record it in your audit output as an unsupported claim.
 
 ---
 ## 3. Output
@@ -62,9 +69,10 @@ Write:
 
 1. A revised report file (same path or a new one, as instructed) with updated
    citations and `[evidence?]` markers where needed.
-2. A short audit summary including:
+2. A short audit summary written to **`$RESEARCH_DIR/citation-audit.md`** including:
    - `citations_status`: e.g. `complete`, `partial`, `missing`.
-   - `missing_citations`: a list of statements or sections that lack support.
+   - `missing_citations`: a list of statements or sections that lack support in
+     both the Evidence Notes and the raw sources.
 
 Keep formatting and structure of the original report intact as much as
 possible.

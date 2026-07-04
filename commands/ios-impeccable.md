@@ -170,10 +170,11 @@ Agent({ subagent_type: "ios-design-builder", description: "Build <verb> on <targ
 Read `ARTIFACT_PATHS`.
 
 **Step 3 — VALIDATE.** Spawn the validator (single-level, FRESH context — give it ONLY the artifact paths
-+ bound constraints + hub; NEVER the builder's reasoning):
++ bound constraints + hub; NEVER the builder's reasoning). Tell it to point the Swift detector at the
+project override registry so file-based suppression works regardless of the validator's cwd:
 ```
 Agent({ subagent_type: "ios-design-validator", description: "Validate <verb> output",
-  prompt: "=== iOS DESIGN HUB (INJECTED) ===\n<iOS hub register content>\n===\nARTIFACT_PATH: <ARTIFACT_PATHS>\nBOUND_CONSTRAINTS: <the typed JSON>\nACTIVE_OVERRIDES: <the ACTIVE_OVERRIDES JSON, may be empty — subtract owner-sanctioned findings (rule==suppresses within scope) BEFORE the verdict; a P0 the owner sanctioned does NOT force BLOCK>\nRun swiftdesigncheck, judge bound ids, emit the GATE_VERDICT block." })
+  prompt: "=== iOS DESIGN HUB (INJECTED) ===\n<iOS hub register content>\n===\nARTIFACT_PATH: <ARTIFACT_PATHS>\nBOUND_CONSTRAINTS: <the typed JSON>\nACTIVE_OVERRIDES: <the ACTIVE_OVERRIDES JSON, may be empty — subtract owner-sanctioned findings (rule==suppresses within scope) BEFORE the verdict; a P0 the owner sanctioned does NOT force BLOCK>\nBefore running the detector, export SWIFT_DESIGN_OVERRIDES={project}/.design-overrides.json so swiftdesigncheck self-suppresses owner overrides from the registry file regardless of your cwd.\nRun swiftdesigncheck, judge bound ids, emit the GATE_VERDICT block." })
 ```
 Parse `GATE_VERDICT`.
 
@@ -185,31 +186,54 @@ Parse `GATE_VERDICT`.
 - **PASS** → **write back the overrides, then write the lane gate.**
 
   First, **write back each `OVERRIDE` so the win persists** (durability — this is what kills the circles).
-  As soon as an `OVERRIDE` is bound, append it to `{project}/.design-overrides.json` (read-array-push-write)
-  so the suppressed rule stops firing for its scope on all future runs, and surface a one-line owner-ratified
-  amendment to the project law. The override is owner-authored — ratified by construction. Write it BEFORE
-  the phase_state PASS write so the branch-time hook honors it:
+  As soon as an `OVERRIDE` is bound, append it to `{project}/.design-overrides.json` so the suppressed rule
+  stops firing for its scope on all future runs, and surface a one-line owner-ratified amendment to the
+  project law. The override is owner-authored — ratified by construction. Write it BEFORE the phase_state
+  PASS write so the branch-time hook honors it. **One canonical entry shape everywhere**
+  (`docs/concepts/design-overrides-schema.md`): `{suppresses, scope, value, provenance, created}`. **Dedup
+  on `suppresses` + `scope`** (skip the append when a matching entry already exists) and write
+  **atomically** (jq to a tmp file, then `mv` into place — never a partial in-place edit). The Swift
+  detector self-suppresses from this file via `SWIFT_DESIGN_OVERRIDES`:
   ```bash
   # .design-overrides.json is a FLAT JSON array at {project}/.design-overrides.json.
-  # Read-array-push-write: append one entry per ACTIVE_OVERRIDES item (the Swift detector self-suppresses from this file):
   f="{project}/.design-overrides.json"
-  [ -f "$f" ] || echo '[]' > "$f"
-  # for each override {suppresses, scope, value, provenance}: jq '. += [$o]' (or heredoc-merge) and write back
+  [ -f "$f" ] || printf '[]' > "$f"
+  # For each ACTIVE_OVERRIDES item, dedup on (suppresses + scope) then atomic-write:
+  tmp="$(mktemp)"
+  jq --arg suppresses "<swiftRuleId>" --arg scope "<glob>" --arg value "<sanctioned value>" \
+     --arg provenance "<owner's exact words>" --arg created "$(date -u +%Y-%m-%dT%H:%M:%SZ)" '
+     if any(.[]; .suppresses == $suppresses and .scope == $scope) then .
+     else . + [{suppresses: $suppresses, scope: $scope, value: $value,
+                provenance: $provenance, created: $created}] end
+  ' "$f" > "$tmp" && mv "$tmp" "$f"
   ```
+  A non-empty `scope` is REQUIRED — an empty scope suppresses NOTHING (the narrowing invariant). Never
+  write an override with an empty/missing scope.
 
-  Then write the iOS design-lane gate to `{project}/.orca/orchestration/phase_state.json` — **including
-  `active_overrides` so the branch-time hook does NOT exit-2 on a covered `ruleId` + path**:
+  Then write the iOS design-lane gate to `{project}/.orca/orchestration/phase_state.json`. The branch-time
+  hook floor is now **armed for iOS** (`hooks/gate-enforcement.sh`, FR-3.2): on this write the hook runs
+  `swiftdesigncheck` ITSELF on `artifact_paths` and exit-2 blocks on any P0 the validator missed —
+  **including `active_overrides` so it does NOT exit-2 on a covered `ruleId` + path** (matched by
+  `suppresses` + a non-empty `scope` glob). Include `attempts` so the hook's N=2 retry cap (FR-3.7) is
+  enforced:
   ```json
   { "gates": { "ios_design_lane": {
       "gate_decision": "PASS",
       "artifact_paths": ["<ARTIFACT_PATHS>"],
       "validator_score": "<SCORE>",
       "bound_constraint_ids": ["<C1>", "<C2>", "..."],
+      "attempts": "<retry count, 0-2>",
       "active_overrides": [{"suppresses": "<swiftRuleId>", "scope": "<glob>", "provenance": "<words>"}, ...] } } }
   ```
-  Only once the phase_state PASS write succeeds is the artifact handed back (§5). (Per the architect's
-  #PATH_DECISION this overlay does NOT add a detector hook of its own; the validator's `swiftdesigncheck`
-  run is the floor for this pass.)
+  **When `swiftdesigncheck` is absent** on the host, the hook does NOT silent-pass and does NOT hard-block:
+  it emits a loud `WARN: swiftdesigncheck not found; iOS design floor skipped` and drops a sidecar marker
+  `.orca/orchestration/temp/ios-floor-status = skipped-no-detector`. Mirror that on the phase_state side —
+  write `gates.ios_design_lane.floor: "skipped-no-detector"` into this same gate write so the skip is
+  recorded in phase_state, not just the sidecar:
+  ```json
+  { "gates": { "ios_design_lane": { "gate_decision": "PASS", "floor": "skipped-no-detector", "...": "..." } } }
+  ```
+  Only once the phase_state PASS write succeeds is the artifact handed back (§5).
 
 ---
 

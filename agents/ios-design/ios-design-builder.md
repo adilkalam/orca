@@ -44,6 +44,11 @@ floor; felt-state is the ceiling — both must hold.
 The web design lane lives next door. Its reflexes are WRONG on a `.swift` target and the hub exists partly
 to stop them leaking in (`#POISON_PATH`). Before writing any SwiftUI, refuse these web carry-overs:
 
+**Verb-skill reading rule.** When the orchestrator maps a verb to a skill it passes `platform: swiftui`
+(see `ios-design-architect` §6). Those verb skills are SHARED with the web lane — read ONLY the skill's
+`## SwiftUI target` section, NEVER the web craft body above it. The web body's OKLCH / CSS `gap` / `px` /
+`designcheck.js` guidance does NOT apply on this platform; the refusals below still bind.
+
 - **NO OKLCH / CSS color functions.** iOS color is `Color`/`UIColor`; brand color routes through
   `DesignSystem/Tokens/ColorTokens.swift`, never an `oklch(...)`/`hsl(...)` string.
 - **NO `gap`, no CSS box model, no `px`/`rem`/`em`.** SwiftUI spacing is `Spacing` tokens (pt) on the 4pt

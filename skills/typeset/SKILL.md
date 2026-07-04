@@ -9,7 +9,7 @@ Assess and improve typography that feels generic, inconsistent, or poorly struct
 
 ## MANDATORY PREPARATION
 
-**Run the cognition constraint loop (MANDATORY).** Invoked directly as `/typeset <target>` (a human typed it)? This is an INDIVIDUAL command, outside the /impeccable pipeline -- so cognition IS the enforcement. Run the in-thread loop defined once at `~/.claude/docs/reference/cognition-constraint-loop.md`: R1 generate typed FORBIDDEN/FORWARD constraints via a cognition `checkpoint` -> R2 do the work in-thread using the craft below -> evaluate every bound constraint + detector self-check -> loop (MAX N=2) until none unsatisfied; you may NOT claim done with an open constraint. (The heavy /impeccable pipeline with its separate validator + hook is a different path; cognition is optional there.) If `design-builder` loaded this skill only for craft reference, ignore this block and use the craft below.
+**Run the cognition constraint loop (MANDATORY)** — see `~/.claude/docs/reference/cognition-constraint-loop.md`. (If `design-builder` loaded this skill only for craft reference, ignore this block and use the craft below.)
 
 Invoke {{command_prefix}}impeccable — it contains design principles, anti-patterns, and the **Context Gathering Protocol**. Follow the protocol before proceeding — if no design context exists yet, you MUST run {{command_prefix}}impeccable teach first.
 
@@ -129,6 +129,19 @@ Build a clear type scale:
 - **Accessibility**: Does text meet WCAG contrast ratios? Is it zoomable to 200%?
 
 Remember: Typography is the foundation of interface design — it carries the majority of information. Getting it right is the highest-leverage improvement you can make.
+
+---
+
+## SwiftUI target
+
+When the iOS architect passes `platform: swiftui`, the builder reads ONLY this section — the CSS craft above (`rem`, `clamp()`, `font-display`, `ch` widths) does NOT apply.
+
+- Route every text style through `TypographyTokens` (`Font.primary` workhorse); size with Dynamic Type via `.font(...)` + `relativeTo:` a `TextStyle` — NO `px`/`rem`, NO web `@font-face`.
+- Non-uniform scale: big H1→H2 drop, H3 barely over body; differentiate small heads by weight/tracking (`.fontWeight`, `.tracking`), not size alone.
+- `.monospacedDigit()` on the brand face for tabular/aligned numbers; display face only ≥28pt (`display-font-below-floor`).
+- Prefer the bundled brand face over stock SF; a raw `.font(.system(...))` reflex is `system-font-reflex` (P0 on this project).
+- Support Dynamic Type up to accessibility XXL; set line length via container width + `.lineSpacing`.
+- Self-check with `swiftdesigncheck` (NOT `designcheck.js`).
 
 ---
 

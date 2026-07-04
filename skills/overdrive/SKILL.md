@@ -16,7 +16,7 @@ Push an interface past conventional limits. This isn't just about visual effects
 
 ## MANDATORY PREPARATION
 
-**Run the cognition constraint loop (MANDATORY).** Invoked directly as `/overdrive <target>` (a human typed it)? This is an INDIVIDUAL command, outside the /impeccable pipeline -- so cognition IS the enforcement. Run the in-thread loop defined once at `~/.claude/docs/reference/cognition-constraint-loop.md`: R1 generate typed FORBIDDEN/FORWARD constraints via a cognition `checkpoint` -> R2 do the work in-thread using the craft below -> evaluate every bound constraint + detector self-check -> loop (MAX N=2) until none unsatisfied; you may NOT claim done with an open constraint. (The heavy /impeccable pipeline with its separate validator + hook is a different path; cognition is optional there.) If `design-builder` loaded this skill only for craft reference, ignore this block and use the craft below.
+**Run the cognition constraint loop (MANDATORY)** — see `~/.claude/docs/reference/cognition-constraint-loop.md`. (If `design-builder` loaded this skill only for craft reference, ignore this block and use the craft below.)
 
 **EXTRA IMPORTANT FOR THIS SKILL**: Context determines what "extraordinary" means. A particle system on a creative portfolio is impressive. The same particle system on a settings page is embarrassing. But a settings page with instant optimistic saves and animated state transitions? That's extraordinary too. Understand the project's personality and goals before deciding what's appropriate.
 
@@ -151,6 +151,16 @@ The gap between "cool" and "extraordinary" is in the last 20% of refinement: the
 - **The context test**: Does this make sense for THIS brand and audience?
 
 Remember: "Technically extraordinary" isn't about using the newest API. It's about making an interface do something users didn't think a website could do.
+
+---
+
+## SwiftUI target
+
+`overdrive` is EXCLUDED from the iOS design lane v1 — the `ios-design-architect` does not plan it (Metal/SceneKit ambition is out of scope). If a `.swift` target reaches this skill anyway, the builder reads ONLY this section, not the web craft above (WebGL / View Transitions / `animation-timeline` do NOT apply).
+
+- Stay native and restrained: expressive but standard SwiftUI — `matchedGeometryEffect`, `PhaseAnimator`/`KeyframeAnimator`, `.symbolEffect`, `Canvas`/`TimelineView` at most. No Metal shaders, no SceneKit, no third-party 3D.
+- Gate every effect on `accessibilityReduceMotion` with a beautiful static fallback; token-driven curves (`MotionTokens`); hold 60/120fps.
+- NO WebGL/OKLCH/`px`/`gap`. Self-check with `swiftdesigncheck` (NOT `designcheck.js`).
 
 ---
 

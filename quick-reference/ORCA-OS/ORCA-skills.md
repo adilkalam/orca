@@ -61,6 +61,8 @@ All design **commands** (`/impeccable`, `/recraft`, `/motion-design`, `/refine`,
 > **Note:** the `interfaces-that-feel` peer is the felt-state spine the hub points to (the hub does not duplicate it). `/nextjs` pipeline is non-functional pending follow-up reshape.
 >
 > **Count observation (updated 2026-06-18):** the table totals Hub (2: `impeccable-hub` + `ios-impeccable-hub`) + MODIFY verbs (10) + KEEP verbs (6) + Peers (6) = 24, matching the heading. (Was 23 before the iOS hub was added.) A `clarify` skill directory exists in `skills/` (wired as `/simplify --clarify → Skill("clarify")`) even though earlier notes said the `clarify` verb was "intentionally absent" — flagged here as pre-existing drift between the prose and the on-disk skill set, not silently reconciled.
+>
+> **SwiftUI-target blocks + single-sourced cognition loop (updated 2026-07-03, req `orca-audit-remediation` Phase 3b):** the 14 verb skills (`adapt`, `animate`, `bolder`, `clarify`, `colorize`, `delight`, `distill`, `harden`, `layout`, `optimize`, `overdrive`, `polish`, `quieter`, `typeset`) now each carry a `## SwiftUI target` section. The web/iOS lanes share these skills; the `ios-design-architect` passes `platform: swiftui`, and the `ios-design-builder` reads ONLY that section (never the web craft body, which teaches OKLCH/CSS `gap`/`px`/`designcheck.js` that the SwiftUI builder forbids — the iOS self-check is `swiftdesigncheck`). `overdrive`'s SwiftUI block is a stay-native redirect (excluded from the iOS v1 lane). Each skill's per-file "Run the cognition constraint loop (MANDATORY)" paragraph was collapsed to a single line pointing at the canonical `docs/reference/cognition-constraint-loop.md` (removing 14× duplication).
 
 ---
 

@@ -1,5 +1,5 @@
 ---
-description: "Unified search across all memory systems (Workshop + code-index.db)"
+description: "Federated search across all memory stores (Workshop, code-index.db, cognition harvests, auto-memory, Learned Rules, recording)"
 argument-hint: "<query>"
 ---
 
@@ -9,11 +9,18 @@ Search across all memory systems in one command.
 
 **Command:** `/memory-search $ARGUMENTS`
 
-## What It Searches
+## What It Searches (federated)
 
-1. **Workshop** (decisions, notes, gotchas, learnings)
+The unified script federates across every durable memory store, so a "why did we
+choose X" answer surfaces regardless of which store it lives in:
+
+1. **Workshop** (decisions, notes, gotchas, learnings) -- via the `workshop` CLI
 2. **code-index.db** (code chunks, symbols, functions, classes)
-3. **Research Index** (if project has a research-sync script - markdown research docs with semantic search)
+3. **Cognition harvests** (`.orca/cognition/**` -- cognition session summaries)
+4. **Claude auto-memory** (`~/.claude/projects/<slug>/memory/MEMORY.md` + linked files)
+5. **CLAUDE.md Learned Rules** ledger
+6. **orca-record checkpoints** (prompt summaries from `.orca/recording.db`)
+7. **Research Index** (optional, if the project has a research-sync script)
 
 ## Execution
 
@@ -21,16 +28,14 @@ Search across all memory systems in one command.
 
 Extract the search query from arguments. If empty, show help.
 
-### Step 2: Search Workshop
+### Step 2: Federated search (primary)
+
+The unified script covers Workshop + code-index.db + cognition + auto-memory + Learned
+Rules + recording in one call:
 
 ```bash
-workshop --workspace .claude/memory search "$QUERY" 2>/dev/null || echo "Workshop: No results or not initialized"
-```
-
-### Step 3: Search code-index.db (Code)
-
-```bash
-python3 ~/.claude/scripts/code-index.py hsearch "$QUERY" --limit 10 2>/dev/null || echo "code-index.db: No results or not initialized"
+python3 ~/.claude/scripts/memory-search-unified.py "$QUERY" --mode all --top-k 10 2>/dev/null \
+  || echo "unified search unavailable"
 ```
 
 ### Step 4: Search Research Index (if exists)

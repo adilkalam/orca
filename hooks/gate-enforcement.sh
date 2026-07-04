@@ -24,11 +24,16 @@ PHASE_TEMP_DIR="$PHASE_DIR/temp"
 DESIGN_EVIDENCE_VALIDATOR="$HOME/.claude/scripts/validate-design-review-evidence.sh"
 BASH_LOG="$PHASE_DIR/temp/bash-commands.log"
 
-# Design-lane deterministic floor: the named-slop detector (designcheck).
-# Absolute path resolves cross-project (it points at the ORCA-OS repo so the
-# floor works in any orchestration project, not just inside this repo).
-# `npx designcheck` is NOT a published package -- we invoke the local node bin.
-DESIGNCHECK_BIN="/Users/adilkalam/ORCA-OS/mcp/design-detector/bin/designcheck.js"
+# Design-lane deterministic floor: the named-slop detectors.
+# Absolute defaults resolve cross-project (they point at the ORCA-OS repo so the
+# floor works in any orchestration project, not just inside this repo). Both are
+# env-overridable with the SAME env var names the validators use, so the hook and
+# the validator resolve identically.
+#   - Web CSS detector (designcheck.js): invoked via `node` (NOT a published npx pkg).
+#   - iOS Swift detector (swiftdesigncheck): invoked directly. FR-3.2 arms the iOS
+#     floor here; SWIFT_DESIGN_DETECTOR_BIN matches ios-design-validator.md.
+DESIGNCHECK_BIN="${DESIGN_DETECTOR_PATH:-/Users/adilkalam/ORCA-OS/mcp/design-detector/bin/designcheck.js}"
+SWIFTDESIGNCHECK_BIN="${SWIFT_DESIGN_DETECTOR_BIN:-/Users/adilkalam/ORCA-OS/mcp/swift-design-detector/bin/swiftdesigncheck}"
 
 # Read JSON from stdin (Claude Code passes hook data via stdin)
 HOOK_INPUT=$(cat)
@@ -311,26 +316,75 @@ if [[ "$TOOL_NAME" =~ ^(Write|Edit)$ ]]; then
             # floor: a clean-PASS claim is mechanically falsified by named slop.
             DESIGN_QA_DECISION=$(jq -r '.gates.design_qa.gate_decision // empty' "$CANDIDATE_JSON" 2>/dev/null || echo "")
             DESIGN_LANE_DECISION=$(jq -r '.gates.design_lane.gate_decision // empty' "$CANDIDATE_JSON" 2>/dev/null || echo "")
+            IOS_DESIGN_LANE_DECISION=$(jq -r '.gates.ios_design_lane.gate_decision // empty' "$CANDIDATE_JSON" 2>/dev/null || echo "")
 
-            if [ "$DESIGN_QA_DECISION" = "PASS" ] || [ "$DESIGN_LANE_DECISION" = "PASS" ]; then
-                # FAIL-OPEN if the detector binary is missing: a missing detector
-                # must not hard-block every write in every project. Loud stderr
-                # note, allow (exit 0 fall-through), do not block.
-                if [ ! -f "$DESIGNCHECK_BIN" ]; then
-                    echo -e "${YELLOW}⚠️  design-lane floor: detector not found at${NC}" >&2
-                    echo "  $DESIGNCHECK_BIN" >&2
-                    echo "Skipping deterministic slop check (fail-open, not blocking)." >&2
+            if [ "$DESIGN_QA_DECISION" = "PASS" ] || [ "$DESIGN_LANE_DECISION" = "PASS" ] || [ "$IOS_DESIGN_LANE_DECISION" = "PASS" ]; then
+                # Per-lane detector selection (FR-3.2): a PURE iOS-design PASS
+                # (ios_design_lane PASS with NO web design PASS) scans .swift files,
+                # so use the Swift detector; otherwise the web CSS detector. This
+                # prevents running designcheck.js on Swift sources (and vice versa).
+                DETECTOR_BIN="$DESIGNCHECK_BIN"
+                DETECTOR_IS_SWIFT=false
+                if [ "$IOS_DESIGN_LANE_DECISION" = "PASS" ] && [ "$DESIGN_LANE_DECISION" != "PASS" ] && [ "$DESIGN_QA_DECISION" != "PASS" ]; then
+                    DETECTOR_BIN="$SWIFTDESIGNCHECK_BIN"
+                    DETECTOR_IS_SWIFT=true
+                fi
+
+                # FR-3.7 attempts cap: the lane allows MAX N=2 builder retries, then
+                # ESCALATE. A PASS written with attempts > 2 and no escalation flag is
+                # a runaway loop silently shipping -> BLOCK. gates.<lane>.escalated=true
+                # is the sanctioned exit (the orchestrator surfaced the unresolved
+                # findings to the user). These are the canonical lane fields.
+                DL_ATTEMPTS=$(jq -r '.gates.design_lane.attempts // 0' "$CANDIDATE_JSON" 2>/dev/null || echo "0")
+                DL_ESCALATED=$(jq -r '.gates.design_lane.escalated // false' "$CANDIDATE_JSON" 2>/dev/null || echo "false")
+                IDL_ATTEMPTS=$(jq -r '.gates.ios_design_lane.attempts // 0' "$CANDIDATE_JSON" 2>/dev/null || echo "0")
+                IDL_ESCALATED=$(jq -r '.gates.ios_design_lane.escalated // false' "$CANDIDATE_JSON" 2>/dev/null || echo "false")
+
+                if { [ "$DESIGN_LANE_DECISION" = "PASS" ] && [ "$DL_ATTEMPTS" -gt 2 ] 2>/dev/null && [ "$DL_ESCALATED" != "true" ]; } || \
+                   { [ "$IOS_DESIGN_LANE_DECISION" = "PASS" ] && [ "$IDL_ATTEMPTS" -gt 2 ] 2>/dev/null && [ "$IDL_ESCALATED" != "true" ]; }; then
+                    echo -e "${RED}🚫 DESIGN LANE FLOOR BLOCKED${NC}"
+                    echo ""
+                    echo "A design gate is PASS after more than 2 builder retries (attempts > 2)"
+                    echo "with no escalation. The lane caps retries at N=2, then ESCALATES to the"
+                    echo "user -- it never silently ships a runaway loop."
+                    echo "Set gates.<lane>.escalated = true only after surfacing the unresolved"
+                    echo "findings to the user; otherwise fix the findings and reset attempts."
+                    echo ""
+                    echo -e "${RED}#POISON_PATH: Design PASS past the N=2 retry cap without escalation${NC}"
+                    exit 2
+                fi
+
+                # FAIL-OPEN if the WEB detector binary is missing: a missing detector
+                # must not hard-block every write in every project. Loud stderr note,
+                # allow (exit 0 fall-through), do not block.
+                # For the iOS (Swift) detector the handling differs (FR-3.2): the
+                # ios-design-validator already failed CLOSED upstream if the binary was
+                # absent, so here we do NOT silent-pass and do NOT hard-block -- we emit
+                # a loud WARN and drop an auditable sidecar marker instead.
+                if [ ! -f "$DETECTOR_BIN" ]; then
+                    if [ "$DETECTOR_IS_SWIFT" = "true" ]; then
+                        echo "WARN: swiftdesigncheck not found; iOS design floor skipped" >&2
+                        echo "  $DETECTOR_BIN" >&2
+                        mkdir -p "$PHASE_TEMP_DIR" 2>/dev/null || true
+                        printf '%s' "skipped-no-detector" > "$PHASE_TEMP_DIR/ios-floor-status"
+                    else
+                        echo -e "${YELLOW}⚠️  design-lane floor: detector not found at${NC}" >&2
+                        echo "  $DETECTOR_BIN" >&2
+                        echo "Skipping deterministic slop check (fail-open, not blocking)." >&2
+                    fi
                 else
-                    # Collect claimed artifact paths from the new design-lane
-                    # artifact_paths plus the existing evidence_paths arrays
-                    # (both gates), de-duplicated. These are the produced files
-                    # the PASS claims to have validated.
+                    # Collect claimed artifact paths from the web design-lane, the
+                    # iOS design-lane (FR-3.2 -- now armed), and the legacy design_qa
+                    # gate: artifact_paths plus evidence_paths arrays, de-duplicated.
+                    # These are the produced files the PASS claims to have validated.
                     ARTIFACT_PATHS=$(jq -r '
                         [
-                          (.gates.design_lane.artifact_paths[]? // empty),
-                          (.gates.design_lane.evidence_paths[]?  // empty),
-                          (.gates.design_qa.artifact_paths[]?    // empty),
-                          (.gates.design_qa.evidence_paths[]?    // empty)
+                          (.gates.design_lane.artifact_paths[]?     // empty),
+                          (.gates.design_lane.evidence_paths[]?      // empty),
+                          (.gates.ios_design_lane.artifact_paths[]?  // empty),
+                          (.gates.ios_design_lane.evidence_paths[]?  // empty),
+                          (.gates.design_qa.artifact_paths[]?        // empty),
+                          (.gates.design_qa.evidence_paths[]?        // empty)
                         ] | unique | .[]
                     ' "$CANDIDATE_JSON" 2>/dev/null || echo "")
 
@@ -338,27 +392,34 @@ if [[ "$TOOL_NAME" =~ ^(Write|Edit)$ ]]; then
                     # The hook re-runs the detector ITSELF; it MUST honor the same
                     # write-back the validator did, or it re-blocks a validator-
                     # passed artifact (re-creating the circles this lane kills).
-                    # 1. Export DESIGN_OVERRIDES_PATH so the detector's OWN run
-                    #    self-suppresses against {project}/.design-overrides.json.
-                    #    (SWIFT_DESIGN_OVERRIDES is exported too for forward-safety;
-                    #    the iOS overlay does NOT arm this hook today — its validator
-                    #    swiftdesigncheck run is the floor — so no swift binary is
-                    #    invoked here. See commands/ios-impeccable.md §BRANCH.)
+                    # 1. Export BOTH override-path vars so whichever detector this
+                    #    block selected ($DETECTOR_BIN -- web designcheck.js OR the
+                    #    Swift swiftdesigncheck) self-suppresses against
+                    #    {project}/.design-overrides.json. The iOS floor is now armed
+                    #    (FR-3.2): an ios_design_lane PASS runs swiftdesigncheck here.
                     PROJECT_OVERRIDES="$PWD/.design-overrides.json"
                     export DESIGN_OVERRIDES_PATH="$PROJECT_OVERRIDES"
                     export SWIFT_DESIGN_OVERRIDES="$PROJECT_OVERRIDES"
 
-                    # 2. Defensive fallback: also collect the active_overrides the
-                    #    validator recorded onto the candidate phase_state (both the
-                    #    web and iOS lane gates). A reported slop id covered by an
-                    #    active_override's `suppresses` is skipped below even if the
-                    #    registry file lagged behind the phase_state write.
-                    ACTIVE_OVERRIDE_IDS=$(jq -r '
+                    # 2. Scope-aware defensive fallback (FR-3.3): collect the
+                    #    active_overrides the validator recorded onto the candidate
+                    #    phase_state (both lane gates) as {suppresses, scope} objects.
+                    #    Below, a reported slop id is treated as covered ONLY IF an
+                    #    active override has suppresses == the finding id AND a
+                    #    NON-EMPTY scope glob that MATCHES the finding's file path.
+                    #    Empty/missing scope suppresses NOTHING (the narrowing
+                    #    invariant, docs/concepts/design-overrides-schema.md). This
+                    #    fallback covers the case where the registry file lagged the
+                    #    phase_state write.
+                    ACTIVE_OVERRIDES_JSON=$(jq -c '
                         [
-                          (.gates.design_lane.active_overrides[]?.suppresses // empty),
-                          (.gates.ios_design_lane.active_overrides[]?.suppresses // empty)
-                        ] | unique | .[]
-                    ' "$CANDIDATE_JSON" 2>/dev/null || echo "")
+                          (.gates.design_lane.active_overrides[]? // empty),
+                          (.gates.ios_design_lane.active_overrides[]? // empty)
+                        ]
+                        | map({suppresses: (.suppresses // ""), scope: (.scope // "")})
+                        | map(select(.suppresses != "" and .scope != ""))
+                    ' "$CANDIDATE_JSON" 2>/dev/null || echo "[]")
+                    [ -z "$ACTIVE_OVERRIDES_JSON" ] && ACTIVE_OVERRIDES_JSON="[]"
 
                     # No artifact paths on a claimed design PASS -> cannot verify
                     # -> BLOCK (the PASS is unfalsifiable without produced files).
@@ -399,20 +460,53 @@ if [[ "$TOOL_NAME" =~ ^(Write|Edit)$ ]]; then
                             exit 2
                         fi
 
-                        DETECT_OUT=$(node "$DESIGNCHECK_BIN" detect --json "$artifact_path" 2>&1)
+                        # Web detector runs via node; the Swift wrapper runs directly.
+                        if [ "$DETECTOR_IS_SWIFT" = "true" ]; then
+                            DETECT_OUT=$("$DETECTOR_BIN" detect --json "$artifact_path" 2>&1)
+                        else
+                            DETECT_OUT=$(node "$DETECTOR_BIN" detect --json "$artifact_path" 2>&1)
+                        fi
                         DETECT_EXIT=$?
 
                         if [ "$DETECT_EXIT" -eq 2 ]; then
-                            # Defensive: subtract any slop id covered by an
-                            # active_override (phase_state fallback) — the registry
+                            # Scope-aware defensive subtraction (FR-3.3): the registry
                             # export above already self-suppresses, but if that file
-                            # lagged the write we must not re-block a covered id.
+                            # lagged the write we must not re-block a covered id. A
+                            # finding is covered ONLY IF an active override has
+                            # suppresses == finding.antipattern AND a NON-EMPTY scope
+                            # glob that MATCHES the finding's file path (glob **/*/?
+                            # compiled to an anchored regex over the full path; empty
+                            # scope suppresses nothing -- the narrowing invariant).
                             UNCOVERED_IDS=$(printf '%s' "$DETECT_OUT" \
-                                | jq -r --argjson ov "$(printf '%s' "$ACTIVE_OVERRIDE_IDS" | jq -R . | jq -s .)" \
-                                    '[.[].antipattern] | unique | map(select(. as $id | ($ov | index($id)) | not)) | join(", ")' \
+                                | jq -r --argjson ov "$ACTIVE_OVERRIDES_JSON" --arg apath "$artifact_path" '
+                                    def glob2re:
+                                      gsub("\\*\\*/"; "ZQXGLOB1")
+                                      | gsub("\\*\\*"; "ZQXGLOB2")
+                                      | gsub("\\*"; "ZQXGLOB3")
+                                      | gsub("\\?"; "ZQXGLOB4")
+                                      | gsub("(?<c>[.+(){}\\[\\]^$|\\\\])"; "\\" + .c)
+                                      | gsub("ZQXGLOB1"; "(.*/)?")
+                                      | gsub("ZQXGLOB2"; ".*")
+                                      | gsub("ZQXGLOB3"; "[^/]*")
+                                      | gsub("ZQXGLOB4"; "[^/]")
+                                      | "^" + . + "$";
+                                    ( . // [] ) as $findings
+                                    | [ $findings[]
+                                        | . as $f
+                                        | ($f.file // $apath) as $path
+                                        | select(
+                                            [ $ov[]
+                                              | select(.suppresses == $f.antipattern and .scope != "")
+                                              | (.scope | glob2re) as $re
+                                              | ($path | test($re))
+                                            ] | any | not
+                                          )
+                                        | $f.antipattern
+                                      ] | unique | join(", ")' \
                                     2>/dev/null || echo "")
-                            # If EVERY reported id is covered by an active override,
-                            # treat the artifact as clean and continue (no BLOCK).
+                            # If EVERY reported id is covered by an active override
+                            # (within its scope), treat the artifact as clean and
+                            # continue (no BLOCK).
                             if [ -z "$UNCOVERED_IDS" ]; then
                                 continue
                             fi
@@ -480,6 +574,63 @@ if [[ "$TOOL_NAME" =~ ^(Write|Edit)$ ]]; then
                     if [ "$VERIFY_LOOP_EXIT" -ne 0 ]; then
                         exit "$VERIFY_LOOP_EXIT"
                     fi
+                fi
+            fi
+
+            # ==================================================
+            # Dev-Lane Standards Score Gate (Anti-Fabrication)
+            # ==================================================
+
+            # Dev lanes (ios / expo / django-react; nextjs adopts in a later
+            # phase) write a canonical standards-score contract to phase_state:
+            #   gates.standards = { score:<int>, threshold:90,
+            #                       gate_decision:"PASS|BLOCK", lane:"<domain>" }
+            # (docs/reference/gate-contract.md). When that gate is PASS the score
+            # must be present, numeric, and >= threshold: a PASS with no numeric
+            # score is a fabricated PASS, and a sub-threshold PASS contradicts the
+            # lane's "hard block < 90" rule. Either case BLOCKS (exit 2). Lanes
+            # that have NOT adopted the contract (no gates.standards object) are
+            # untouched -- the gate is inert unless gate_decision == PASS.
+            STANDARDS_DECISION=$(jq -r '.gates.standards.gate_decision // empty' "$CANDIDATE_JSON" 2>/dev/null || echo "")
+
+            if [ "$STANDARDS_DECISION" = "PASS" ]; then
+                STANDARDS_SCORE=$(jq -r '.gates.standards.score // empty' "$CANDIDATE_JSON" 2>/dev/null || echo "")
+                STANDARDS_THRESHOLD=$(jq -r '.gates.standards.threshold // 90' "$CANDIDATE_JSON" 2>/dev/null || echo "90")
+                STANDARDS_LANE=$(jq -r '.gates.standards.lane // "unknown"' "$CANDIDATE_JSON" 2>/dev/null || echo "unknown")
+
+                # threshold defaults to 90 when absent / non-numeric.
+                if ! [[ "$STANDARDS_THRESHOLD" =~ ^-?[0-9]+$ ]]; then
+                    STANDARDS_THRESHOLD=90
+                fi
+
+                # score MUST be a non-empty integer; anything else is a fabricated PASS.
+                if ! [[ "$STANDARDS_SCORE" =~ ^-?[0-9]+$ ]]; then
+                    echo -e "${RED}STANDARDS SCORE GATE BLOCKED${NC}"
+                    echo ""
+                    echo "gates.standards.gate_decision = PASS on the ${STANDARDS_LANE} lane but"
+                    echo "gates.standards.score is absent or non-numeric (got: '${STANDARDS_SCORE}')."
+                    echo "A PASS with no numeric score is a fabricated PASS."
+                    echo ""
+                    echo "Write the score the standards-enforcer returned, e.g.:"
+                    echo '  gates.standards = { "score": 93, "threshold": 90, "gate_decision": "PASS", "lane": "'"${STANDARDS_LANE}"'" }'
+                    echo "See docs/reference/gate-contract.md"
+                    echo ""
+                    echo -e "${RED}#POISON_PATH: Standards PASS with no numeric score${NC}"
+                    exit 2
+                fi
+
+                # sub-threshold PASS is not allowed (makes "hard block < 90" real).
+                if [ "$STANDARDS_SCORE" -lt "$STANDARDS_THRESHOLD" ]; then
+                    echo -e "${RED}STANDARDS SCORE GATE BLOCKED${NC}"
+                    echo ""
+                    echo "gates.standards.gate_decision = PASS on the ${STANDARDS_LANE} lane but the"
+                    echo "score ${STANDARDS_SCORE} is below the threshold ${STANDARDS_THRESHOLD}."
+                    echo "The lane hard-blocks a standards score under threshold; fix the"
+                    echo "violations and re-gate, or record gate_decision = BLOCK."
+                    echo "See docs/reference/gate-contract.md"
+                    echo ""
+                    echo -e "${RED}#POISON_PATH: Standards PASS below the numeric threshold${NC}"
+                    exit 2
                 fi
             fi
         fi

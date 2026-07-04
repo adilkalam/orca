@@ -1,32 +1,34 @@
 # iOS Domain Pipeline
 
-**Status:** OS 7.0 Core Pipeline (Native iOS)
-**Last Updated:** 2026-02-13
+**Status:** OS 7.1 Core Pipeline (Native iOS) -- flat pattern
+**Last Updated:** 2026-07-04
 
 ## Overview
 
 The iOS pipeline handles **native iOS app development** using Swift 6.x and modern Apple frameworks (SwiftUI, UIKit, Swift Concurrency). It combines:
 
-- OS 7.0 primitives (ProjectContextServer, phase_state.json, code-index.db, Workshop, constraint framework)
+- OS 7.1 primitives (ProjectContextServer, phase_state.json, code-index.db, Workshop, constraint framework)
 - Memory-first context (Workshop + code-index.db before ProjectContext)
-- Four-tier routing (Light/Default/Tweak/Complex)
+- Four-tier routing (Light/Default/Tweak/Complex) -- all tiers run FLAT: the `/ios`
+  command is the orchestrator in the main thread and spawns specialists single-level
+  (`docs/reference/flatten-orchestration-pattern.md`; the `ios-light-orchestrator` /
+  `ios-grand-architect` tier was archived 2026-05-27)
 - Spec gating (complex tasks require requirements spec)
 - Response Awareness tagging (RA tags surface assumptions and decisions)
-- Swift/iOS specialist agents including `ios-light-orchestrator` for quick tasks
-- Full pipeline agents (`ios-grand-architect`, `ios-architect`, `ios-builder`, `ios-standards-enforcer`, `ios-ui-reviewer`, `ios-verification`)
-- Design DNA/tokens for UI work; persistence strategy (SwiftData vs Core Data/GRDB) when relevant.
+- Pipeline agents: `ios-architect` (planner), `ios-builder`, `ios-standards-enforcer`, `ios-ui-reviewer`, `ios-verification`, plus Swift specialists
+- Design tokens for UI work (aesthetic/felt-state work routes to the `/ios-impeccable` overlay); persistence strategy (SwiftData vs Core Data/GRDB) when relevant.
 
 Goal: implement and evolve native iOS features with **architecture-aware plans**, **safety and concurrency guarantees**, **structured gates** for quality, and **learning loops** that harden the system over time.
 
 ---
 
-## Four-Tier Routing (OS 7.0)
+## Four-Tier Routing (OS 7.1)
 
 The iOS pipeline uses four-tier routing:
 
 | Mode | Flag | Path | Gates | Use Case |
 |------|------|------|-------|----------|
-| **Light** | `--light` | Light orchestrator | YES | Confident users, skip confirmation |
+| **Light** | `--light` | Command light path | YES | Confident users, skip confirmation |
 | **Default** | (none) | Light + Confirmation | YES | Most work -- fast with quality |
 | **Tweak** | `--tweak` | Builder direct | NO | Speed iteration, user verifies |
 | **Complex** | `--complex` | Full pipeline | YES | Architecture, multi-file, specs |
@@ -36,8 +38,8 @@ The iOS pipeline uses four-tier routing:
 Most tasks take this path. Fast execution with automated quality checks.
 
 ```bash
-/ios "fix button padding"        # → light orchestrator → builder → gates
-/ios "add haptic feedback"       # → light orchestrator → builder → gates
+/ios "fix button padding"        # → /ios light path → builder → gates
+/ios "add haptic feedback"       # → /ios light path → builder → gates
 ```
 
 **Gates run:** `ios-standards-enforcer` + `ios-ui-reviewer`
@@ -47,12 +49,12 @@ Most tasks take this path. Fast execution with automated quality checks.
 Pure speed path. User explicitly accepts responsibility for verification.
 
 ```bash
-/ios --tweak "fix padding"        # → light orchestrator → builder → done
+/ios --tweak "fix padding"        # → builder direct → done
 ```
 
 ### Complex Mode (`--complex`)
 
-Full pipeline with grand-architect planning. Spec required.
+Full pipeline with `ios-architect` planning, sequenced by the `/ios` command. Spec required.
 
 ```bash
 /ios --complex "implement auth flow"   # → full pipeline
@@ -67,7 +69,7 @@ Full pipeline with grand-architect planning. Spec required.
 
 ---
 
-## Standards Inputs (OS 7.0 Learning Loop)
+## Standards Inputs (OS 7.1 Learning Loop)
 
 Standards flow into and out of the iOS pipeline:
 
@@ -120,7 +122,7 @@ If the request is for:
 
 ---
 
-### Recording Context (OS 7.0)
+### Recording Context (OS 7.1)
 
 Domain commands inject recording context (recent session history from `.orca/recording.db`) before delegating to agents. This is optional and silently skipped if no recording database exists.
 
@@ -157,31 +159,26 @@ Decision Point:
 
 ### Phase 0: Design-First (Pre-Implementation)
 
-**Agent:** `design-system-architect` (invoked as subagent via Task delegation)
-
-**Purpose:** Enforce design approach quality before any implementation begins. Research from Nov 2025 identified design-first architecture as the top quality driver -- gates exist post-implementation but catch output violations, not approach failures.
-
-**Two Components:**
+**Owner:** the `/ios` command (main thread). The former `design-system-architect` /
+`design-dna.json` gate was archived in the 2026-04-22 design fork; design quality now
+comes from two layers:
 
 1. **Manifesto Priming (ALL tiers including tweak)**
-   A DESIGN_AWARENESS context block containing five verified LLM failure modes with CSS is injected into ALL delegation prompts. This ensures every agent working on UI has metacognitive awareness of how LLMs actually fail with styling.
+   A DESIGN_AWARENESS context block naming the verified LLM UI failure modes is injected
+   into delegation prompts, so every agent working on UI has metacognitive awareness of
+   how LLMs actually fail with styling.
 
-2. **Design-DNA Gate (tiered by complexity)**
+2. **Design floor + overlay (tiered by design weight)**
 
-   | Tier | Gate Behavior |
-   |------|---------------|
-   | **Tweak** | Manifesto priming only. No file check, no blocking. |
-   | **Default** | Check `design-dna.json` existence. If missing, invoke design-system-architect to create it. If exists, inject path. |
-   | **Complex** | Always invoke design-system-architect (even if file exists). Block implementation until confirmed. |
+   | Design weight | Behavior |
+   |---------------|----------|
+   | Low (logic-only) | Manifesto priming only. No design gate. |
+   | Medium (UI touched) | `ios-ui-reviewer` gate (code-level design/token review) as part of the normal gate sequence. |
+   | High (aesthetic/felt-state work) | Route the design work through the `/ios-impeccable` overlay: bind -> `ios-design-builder` -> `ios-design-validator` (Swift detector floor, `gates.ios_design_lane`). |
 
-**Output:** `design-dna.json` with `methodology` field:
-- `"semantic-css"`: includes `roles` + `role_mappings`
-- `"tailwind"`: includes `components` + `allowed_utilities`
-
-**Methodology Detection:**
-- `tailwind.config.*` or `@import 'tailwindcss'` -> Tailwind mode
-- `@layer`, `.module.css`, semantic class naming -> Semantic CSS mode
-- No methodology detected -> Default to semantic CSS guidance
+**Token discipline:** styling uses the project's token layer (e.g. `DesignTokens.swift` /
+`ColorTokens` / `TypographyTokens`); the Swift detector (`swiftdesigncheck`) is the
+deterministic floor for named anti-patterns. See `docs/reference/design-lane.md`.
 
 ---
 
@@ -274,7 +271,7 @@ Decision Point:
 **Agents:** `ios-builder` (primary), with specialists as needed:
 - SwiftUI work: `ios-swiftui-specialist`.
 - UIKit-heavy work: `ios-uikit-specialist`.
-- Tokens: `design-dna-guardian` to enforce design DNA.
+- Tokens/aesthetics: the `/ios-impeccable` overlay (`ios-design-validator` fills the former design-dna-guardian role).
 - Data: `ios-persistence-specialist` when persistence is touched.
 - Networking: `ios-networking-specialist` for API work.
 - Testing: `ios-testing-specialist` / `ios-ui-testing-specialist`.
@@ -471,21 +468,21 @@ Same implementation agents as Phase 4, but:
 
 ---
 
-### Scenario 3: Design DNA Missing (Hard Block)
+### Scenario 3: Design Token Layer Missing (Hard Block)
 
-**What happened:** `design-dna-guardian` blocks UI implementation due to missing design tokens.
+**What happened:** UI implementation is blocked because the project has no design token layer.
 
-**Cause:** No `design-dna.json` or `DesignTokens.swift` found in project or `.claude/design-dna/`.
+**Cause:** No `DesignTokens.swift` (or equivalent `ColorTokens`/`TypographyTokens`/`Spacing` layer) found in the project.
 
-**Detection:** ios-grand-architect identifies early in Phase 2 (Requirements & Impact).
+**Detection:** `ios-architect` identifies early in Phase 2 (Requirements & Impact); `ios-ui-reviewer` / `ios-design-validator` block token-less styling at the gates.
 
 **Recovery:**
-1. BLOCK pipeline immediately.
+1. BLOCK UI implementation immediately.
 2. Ask user via AskUserQuestion:
-   - "Create minimal design DNA now?" → Quick-start wizard.
-   - "Use universal-taste.json?" → Copy from `~/.claude/design-dna/universal-taste.json`.
+   - "Create a minimal token layer now?" → `ios-builder` scaffolds `DesignTokens.swift` from the existing styles.
+   - "Route through /ios-impeccable?" → The design lane binds constraints and builds token-first.
    - "Skip UI work, logic only?" → Proceed with backend/logic changes only.
-3. If design DNA created, save decision and restart from Phase 2.
+3. If tokens created, save decision and restart from Phase 2.
 4. If skipped, adjust plan scope to exclude UI changes.
 
 ---
@@ -546,7 +543,7 @@ Agents communicate via a shared `phase_state.json` file located at `.orca/orches
     "relevantFiles": ["LoginView.swift", "AuthService.swift"],
     "architectureChoice": "SwiftUI + @Observable",
     "dataStrategy": "SwiftData",
-    "designDNA": ".claude/design-dna/app-tokens.json"
+    "designTokens": "Sources/DesignSystem/Tokens/DesignTokens.swift"
   },
 
   "plan": {
@@ -604,14 +601,14 @@ Agents communicate via a shared `phase_state.json` file located at `.orca/orches
 
 ### Handoff Protocol
 
-**Phase 1: ProjectContextServer → ios-grand-architect**
+**Phase 1: ProjectContextServer → /ios command (main thread)**
 - **Input:** `domain`, `task`, `projectPath`, `maxFiles`, `includeHistory`.
 - **Output:** ContextBundle with `relevantFiles`, `projectState`, `pastDecisions`, `relatedStandards`, `designTokens`.
 - **Signal:** ContextBundle stored in `phase_state.json` → `context` field.
 
-**Phase 2: ios-grand-architect → ios-architect**
-- **Input:** ContextBundle + user request.
-- **Output:** `architectureChoice` (SwiftUI/MVVM/TCA), `dataStrategy` (SwiftData/CoreData), `designDNA` path.
+**Phase 2: /ios command → ios-architect (spawned single-level)**
+- **Input:** ContextBundle + user request (inherited via the context-inheritance headers; the architect does not re-query).
+- **Output:** `architectureChoice` (SwiftUI/MVVM/TCA), `dataStrategy` (SwiftData/CoreData), token-layer path.
 - **Signal:** Decision saved via `mcp__project-context__save_decision`; `phase_state.json` updated.
 
 **Phase 3: ios-architect → ios-builder**

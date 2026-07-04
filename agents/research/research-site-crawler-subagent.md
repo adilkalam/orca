@@ -74,20 +74,20 @@ page was fetched. Only partial/in-flight files may be cleaned, and only from the
    curl -s -X POST "http://localhost:11235/crawl/job" \
      -H "Content-Type: application/json" \
      -d '{"urls": ["https://example.com/page1", "https://example.com/page2"]}' \
-     > "$RESEARCH_DIR/temp/batch-result.json"
+     > "$RESEARCH_DIR/sources/temp/batch-result.json"
    ```
 
 3. **If MCP tools ARE available**, use with `output_path` to avoid token bloat:
    ```
-   mcp__crawl4ai__md({ url: "https://...", f: "fit", output_path: "$RESEARCH_DIR/temp/page.md" })
+   mcp__crawl4ai__md({ url: "https://...", f: "fit", output_path: "$RESEARCH_DIR/sources/<NN>-<slug>-<source-slug>.md" })
    ```
 
 ### Disk-Based Workflow (Memory Safety)
 
-1. Extract content one URL at a time via curl, piping directly to temp files
-2. Use `Read` to selectively load temp files for synthesis
+1. Extract content one URL at a time via curl, saving each page to a RETAINED raw file `$RESEARCH_DIR/sources/<NN>-<slug>-<source-slug>.md` (with the 3-line header block)
+2. Use `Read` to selectively load raw source files for synthesis
 3. Do NOT hold multiple full pages in memory simultaneously
-4. After all URLs processed, synthesize temp summaries into Evidence Note
+4. After all URLs processed, synthesize summaries into Evidence Note (raw files stay in `sources/`)
 
 ### Fallbacks (in order)
 
@@ -96,13 +96,15 @@ page was fetched. Only partial/in-flight files may be cleaned, and only from the
 3. `WebFetch` on key URLs (limit to 3 pages)
 4. `WebSearch` with `site:` filters (discovery only)
 
-Write Evidence Notes **only under** `$RESEARCH_DIR/evidence/`.
+Write Evidence Notes **only under** `$RESEARCH_DIR/evidence/`; write retained raw
+pages under `$RESEARCH_DIR/sources/` (`sources/temp/` for in-flight scratch).
 
 ---
 ## 2. Evidence Note Format
 
-Use the same Evidence Note format as `research-web-search-subagent`, but add a
-section describing **site coverage**:
+Use the same Evidence Note format as `research-web-search-subagent` — including
+the `## Sources` block where each source lists its `raw: sources/<file>` path plus
+retrieval timestamp — but add a section describing **site coverage**:
 
 ```markdown
 ## Site Coverage
@@ -121,9 +123,9 @@ When invoked:
 
 1. **Extract RESEARCH_DIR** from the prompt (REQUIRED)
 
-2. **Setup**: Create temp directory if needed
+2. **Setup**: Create the retained sources directory (and its scratch subdir)
    ```bash
-   mkdir -p $RESEARCH_DIR/temp
+   mkdir -p $RESEARCH_DIR/sources/temp
    ```
 
 3. **Discover URLs**: Use `WebSearch` to find relevant pages on the target site/topic
@@ -132,19 +134,25 @@ When invoked:
    ```bash
    curl -s -X POST "http://localhost:11235/md" \
      -H "Content-Type: application/json" \
-     -d '{"url": "<target>", "f": "fit", "output_path": "'$RESEARCH_DIR'/temp/<slug>.md"}'
+     -d '{"url": "<target>", "f": "fit", "output_path": "'$RESEARCH_DIR'/sources/<NN>-<slug>-<source-slug>.md"}'
    ```
    - **Maximum 8 pages per evidence note** to manage memory
-   - If curl fails, fall back to `WebFetch`
+   - Prepend the 3-line header block (source / retrieved / method) to each raw file
+   - If curl fails, fall back to `WebFetch` (record `method: webfetch` in the header)
 
-5. **Synthesize**: Read temp summaries, create Evidence Note in `$RESEARCH_DIR/evidence/`
+5. **Synthesize**: Read the raw source files, create Evidence Note in `$RESEARCH_DIR/evidence/`
 
-6. **Cleanup**: After creating Evidence Note, clean up temp files:
+6. **Retention (NOT cleanup)**: Raw crawl files are RETAINED under `$RESEARCH_DIR/sources/` —
+   they are primary evidence and must NOT be deleted. Only partial/in-flight files may be
+   cleaned, and only from the `$RESEARCH_DIR/sources/temp/` scratch subdir, e.g.:
    ```bash
-   rm -rf $RESEARCH_DIR/temp/*
+   rm -f $RESEARCH_DIR/sources/temp/*.partial
    ```
 
-7. Record any failures in your Assessment with `#TOOL_ERROR`.
+7. Record any failures in your Assessment with `#TOOL_ERROR`. The orchestrator
+   harvests these tags between phases into `phase_state.json` at
+   `.research.research_ra_events`, and records tool availability under
+   `.research.tool_status`.
 
 ## MEMORY EFFICIENCY - STRICTLY ENFORCED
 

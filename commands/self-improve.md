@@ -8,7 +8,7 @@ allowed-tools:
   - Glob
 ---
 
-# /self-improve - Workshop Memory Stats (OS 7.0)
+# /self-improve - Workshop Memory Stats (OS 7.1)
 
 Display statistics about the Workshop persistent memory system.
 
@@ -29,14 +29,13 @@ Display statistics about the Workshop persistent memory system.
 Display counts of Workshop memory entries:
 
 ```bash
-# Count decisions
-workshop --workspace .claude/memory search "decision" --limit 1000 2>/dev/null | wc -l
-
-# Count standards (formerly "gotchas")  
-workshop --workspace .claude/memory search "standard" --limit 1000 2>/dev/null | wc -l
-
-# Count task history
-workshop --workspace .claude/memory search "task" --limit 1000 2>/dev/null | wc -l
+# Typed counts read directly from workshop.db (accurate).
+# NOTE: save_standard persists as type 'gotcha'; there is no separate 'standard' type.
+DB=.claude/memory/workshop.db
+echo "Decisions:   $(sqlite3 "$DB" "SELECT COUNT(*) FROM entries WHERE type='decision';" 2>/dev/null)"
+echo "Standards:   $(sqlite3 "$DB" "SELECT COUNT(*) FROM entries WHERE type='gotcha';" 2>/dev/null)"
+echo "Notes:       $(sqlite3 "$DB" "SELECT COUNT(*) FROM entries WHERE type='note';" 2>/dev/null)"
+echo "Preferences: $(sqlite3 "$DB" "SELECT COUNT(*) FROM entries WHERE type='preference';" 2>/dev/null)"
 ```
 
 Output format:
@@ -74,5 +73,5 @@ workshop --workspace .claude/memory search "$DOMAIN" --limit 20
 
 ## See Also
 
-- [Workshop CLI](~/.claude/docs/workshop.md) - Full Workshop documentation
+- [/project-memory](project-memory.md) - the command that wraps the Workshop CLI (status/why/decide/gotcha/search)
 - [/audit](audit.md) - Creates standards from audit findings

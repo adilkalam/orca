@@ -5,6 +5,10 @@ here; **never copy-pasted into command files** (`#POISON_PATH` — that duplicat
 impeccable/recraft/motion-design). A design command points to this file and supplies the task +
 flag-specific inputs.
 
+**Sibling contract:** `docs/reference/gate-contract.md` — the shared dev-lane standards-*score* gate
+(`gates.standards`) enforced by the same `hooks/gate-enforcement.sh`; it reuses the `attempts` /
+`escalated` convention this doc defines.
+
 **Spec:** `.orca/requirements/2026-06-03-2251-design-system-totality-rethink/06-requirements-spec.md`
 (FR-3/4/5/6/8). **Orchestration legality:** the command runs in the **main thread**, so it is the
 orchestrator and may legally spawn single-level `Agent()` subagents. The builder and validator are
@@ -208,8 +212,13 @@ Parse `GATE_VERDICT`:
   `{project}/.design-overrides.json` — the detector reads this file, and the suppressed rule then **stops
   firing** for `scope` on ALL future runs — and surface a one-line amendment to the project law
   (`CLAUDE.md` / the register) for the owner to fold in. The override is **owner-authored, so unlike a
-  rant-derived rule it is ratified by construction.** The branch-time `designcheck` hook reads
-  `active_overrides` from `phase_state` and does **not** exit-2 on a covered `ruleId` + path.
+  rant-derived rule it is ratified by construction.** Use **one canonical entry shape everywhere**
+  (`docs/concepts/design-overrides-schema.md`): `{suppresses, scope, value, provenance, created}`. **Dedup
+  on `suppresses` + `scope`** (never append a duplicate) and write **atomically** (jq to a tmp file, then
+  `mv` — never a partial in-place edit). A non-empty `scope` is REQUIRED; an empty scope suppresses
+  NOTHING (the narrowing invariant). The branch-time detector hook reads `active_overrides` from
+  `phase_state` and does **not** exit-2 on a covered `ruleId` + path (matched by `suppresses` + a
+  non-empty `scope` glob).
 
   If that write is itself BLOCKED by the hook (named P0 present, not covered by an override), treat it as a BLOCK and loop the builder
   within the N=2 bound. Only once the phase_state PASS write succeeds is the artifact handed back.
@@ -218,8 +227,11 @@ Parse `GATE_VERDICT`:
   to the user** with the unresolved findings named explicitly. Never silently ship; never infinite-loop
   (acceptance test 7 — loud, not silent).
 
-Track the retry counter in `phase_state.planning` (or a lane-local field) so the bound is enforced
-across the loop.
+Track the retry counter in the canonical field `gates.design_lane.attempts` (web) /
+`gates.ios_design_lane.attempts` (iOS) so the bound is enforced across the loop. The branch-time hook
+reads it: a PASS written with `attempts > 2` and no sibling `escalated: true` is BLOCKED (FR-3.7 — the
+lane never silently ships a runaway loop; `escalated: true` is set only after surfacing the unresolved
+findings to the user).
 
 ---
 
