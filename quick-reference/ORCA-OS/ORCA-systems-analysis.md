@@ -34,7 +34,7 @@ User entry points invoked via `/command`.
 |----------|-------|----------|
 | Lane Orchestrators | 11 | `/ios`, `/nextjs`, `/django-react`, `/expo`, `/research`, `/seo`, `/typography`, `/rvry`, `/orca-os-dev`, `/orca`, `/orca-pipeline` |
 | Planning & Audit | 2 | `/requirements`, `/audit` |
-| Reasoning | 1 | `/meta` |
+| Reasoning | 2 | `/meta`, `/shimmer` |
 | Utility | 15 | `/enhance`, `/design-dna`, `/design-review`, `/design`, `/illustrate`, `/clone-website`, `/session-save`, `/session-resume`, `/continue`, `/orca-status`, `/project-memory`, `/project-code`, `/self-improve`, `/memory-search`, `/project-setup` |
 
 ### Four-Tier Routing

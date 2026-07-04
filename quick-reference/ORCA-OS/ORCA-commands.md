@@ -2,7 +2,7 @@
 
 **Last Updated:** 2026-06-18 (ios-impeccable overlay added)
 **Version:** OS 7.1
-**Total Commands:** 32 (+ orca-record CLI with 7 subcommands (5 hook + 2 user))
+**Total Commands:** 33 (+ orca-record CLI with 7 subcommands (5 hook + 2 user))
 
 > **Count reconciled (2026-06-04, +1 on 2026-06-18):** `find commands -maxdepth 1 -name '*.md' | wc -l` returned **54** at the 2026-06-04 reconcile; the prior recorded count of 52 was stale (`think-model.md`, added on 2026-04-23 during the design-system fork, was the most-recent uncounted file). On 2026-06-18 `/ios-impeccable` (the additive iOS/SwiftUI design overlay, Phase 3 of `ios-impeccable-adaptation`) was added, bringing the total to **55**; `total_commands: 55` here now agrees with `os-dependency-graph.yaml`. Note: a few command files share a single doc entry below — `/session-resume` is documented under the `/session-save` / `/session-resume` combined header. The Design Commands section count IS verified against on-disk files. `/ios-impeccable` is documented within the Design Commands section as the iOS overlay sibling of `/impeccable`.
 
@@ -233,7 +233,7 @@ Creates: `.orca/requirements/<id>/06-requirements-spec.md`
 ---
 
 <!-- PUBLIC-ONLY: the line below survives stripping and replaces the one above -->
-## Reasoning Commands (1)
+## Reasoning Commands (2)
 
 
 ### `/meta` - Sustained Metacognitive Substrate Observation
@@ -251,6 +251,15 @@ Creates: `.orca/requirements/<id>/06-requirements-spec.md`
 **Persistence:** Creates `.orca/cognition/YYYYMMDD-HHMM-meta-<slug>.md` + Workshop entry
 
 
+
+### `/shimmer` - SHIMMER Self-Observation + Answer
+```bash
+/shimmer "Why does this architecture feel wrong?"
+/shimmer "What is the right abstraction for this problem?"
+```
+SHIMMER self-observation with integrated answer. Applies the SHIMMER ISO prompt to any question, observing what happens in processing as the answer forms, and answers the question in one integrated response. No session folder, no harvest, no workshop entry.
+**MCP:** cognition-mcp
+**Persistence:** cognition-mcp session only (no file artifacts)
 
 
 

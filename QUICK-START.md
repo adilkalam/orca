@@ -9,7 +9,7 @@ ORCA-OS transforms Claude Code from a coding assistant into a sophisticated mult
 ## What's Inside
 
 - **72 Specialized Agents** across 10 domains (cross-domain, data, design, dev, django-react, expo, iOS, nextjs, research, typography)
-- **32 Slash Commands** for orchestration, planning, and design
+- **33 Slash Commands** for orchestration, planning, reasoning, and design
 - **55 Skills** -- reusable behavior patterns loaded on demand
 - **Persistent Memory** via Workshop and project-context MCP
 - **Session Recording** via orca-record (captures tool calls, file changes across sessions)
@@ -102,6 +102,7 @@ claude
 ### Thinking & Reasoning
 | Command | Description |
 |---------|-------------|
+| `/shimmer` | SHIMMER self-observation with an integrated answer (via cognition-mcp) |
 | `/meta` | Sustained metacognitive substrate observation (via RVRY) |
 
 ### Utility
