@@ -62,7 +62,16 @@ if [[ "$DEST" == "$HOME/.claude/" ]] || [[ -z "$DEPLOY_DIR" ]]; then
     exit 0
 fi
 
-rsync -av --exclude='.archive' --exclude='.archived' --exclude='_archive' --exclude='archive/' --exclude='*deprecated*' --exclude='shopify*' --exclude='liquid-quick' "$SOURCE" "$DEST" 2>/dev/null
+# SC-1 deploy-safety guard: exclude the protected cognition-direct command
+# family whose deployed copies are newer than the repo (see
+# scripts/deploy-protected.txt). Scoped to the commands dir ONLY so no other
+# directory is affected.
+PROTECT=""
+if [[ "$DEPLOY_DIR" == "commands" ]]; then
+    PROTECT="--exclude-from=$ORCA_OS_PATH/scripts/deploy-protected.txt"
+fi
+
+rsync -av $PROTECT --exclude='.archive' --exclude='.archived' --exclude='_archive' --exclude='archive/' --exclude='*deprecated*' --exclude='shopify*' --exclude='liquid-quick' "$SOURCE" "$DEST" 2>/dev/null
 
 if [[ $? -eq 0 ]]; then
     echo "AUTO-DEPLOYED: $DEPLOY_DIR/ -> ~/.claude/$DEPLOY_DIR/"

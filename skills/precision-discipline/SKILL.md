@@ -4,7 +4,7 @@ description: >
   Reusable behavioral constraint layer for precision execution work.
   Prevents performative reasoning depth, lazy approximation, and skipped
   verification. Uses cognition-mcp checkpoint chain (same mechanism as
-  /deepthink escape hatch detection). Apply when a command or workflow
+  the design lanes' escape-hatch detection). Apply when a command or workflow
   requires measurable precision -- STL replication, layout measurement,
   print settings verification, dimension-critical work.
 ---
@@ -36,7 +36,7 @@ Do not narrate the self-check. Do not write "I checked and all 4 passed." Either
 
 ## Constraint Chain Integration
 
-Use cognition-mcp `checkpoint` calls to track precision constraints. Same mechanism as /deepthink, with execution-specific constraint types.
+Use cognition-mcp `checkpoint` calls to track precision constraints. Same cognition-mcp mechanism, with execution-specific constraint types.
 
 ### Constraint Types
 

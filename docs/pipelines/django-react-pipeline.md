@@ -41,7 +41,7 @@ The Django + React pipeline uses four-tier routing:
 |------|------|------|-------|----------|
 | **Light** | `--light` | Light orchestrator | YES | Confident users, skip confirmation |
 | **Default** | (none) | Light + Confirmation | YES | Most work -- fast with quality |
-| **Tweak** | `-tweak` | Builder direct | NO | Speed iteration, user verifies |
+| **Tweak** | `--tweak` | Builder direct | NO | Speed iteration, user verifies |
 | **Complex** | `--complex` | Full pipeline | YES | Architecture, multi-endpoint, specs |
 
 ### Default Mode (Light + Gates)
@@ -55,12 +55,12 @@ Most tasks take this path. Fast execution with automated quality checks.
 
 **Gates run:** `django-react-standards-enforcer`
 
-### Tweak Mode (`-tweak`)
+### Tweak Mode (`--tweak`)
 
 Pure speed path. User explicitly accepts responsibility for verification.
 
 ```bash
-/django-react -tweak "fix form error message"   # -> light orchestrator -> builder -> done
+/django-react --tweak "fix form error message"   # -> light orchestrator -> builder -> done
 ```
 
 ### Complex Mode (`--complex`)
@@ -87,7 +87,7 @@ Full pipeline with grand-architect planning. Spec required.
 | Agent | Role | Tools |
 |-------|------|-------|
 | `django-react-grand-architect` | Tier-S orchestrator, assembles team, drives phases | Task, AskUserQuestion, Read, Grep, Glob, MCP tools |
-| `django-react-light-orchestrator` | Light path coordinator (default/-tweak modes) | Task, Read, Grep, Glob, Bash, MCP tools |
+| `django-react-light-orchestrator` | Light path coordinator (default/--tweak modes) | Task, Read, Grep, Glob, Bash, MCP tools |
 
 ### Planning Layer
 

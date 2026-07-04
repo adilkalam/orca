@@ -1,7 +1,7 @@
 ---
 name: refine
-description: "Thin design-refinement router. Flags map to skills: --animate, --bolder, --colorize, --delight, --layout, --overdrive, --quieter, --typeset."
-argument-hint: "--<flag> <target>"
+description: "Design-refinement router (individual/tweak commands). Flags: --animate, --bolder, --colorize, --delight, --layout, --overdrive, --quieter, --typeset. Each flag runs the in-thread cognition constraint loop (R1 constraints -> R2 work -> evaluate -> loop N=2). Cognition is mandatory here — this is NOT the /impeccable pipeline."
+argument-hint: "[--animate|--bolder|--colorize|--delight|--layout|--overdrive|--quieter|--typeset] <target>"
 allowed-tools:
   - Read
   - Write
@@ -11,75 +11,64 @@ allowed-tools:
   - Bash
   - Skill
   - AskUserQuestion
+  - mcp__cognition-mcp__cognition
 ---
 
-# /refine — Design Refinement Router
+# /refine — Design Refinement Router (individual commands)
 
-Thin category router. Parses one flag, loads the matching skill, applies guidance to the user's target, rant-captures at handback.
+Tweak entry for the refinement verbs. Each flag is an **individual command** run OUTSIDE the `/impeccable`
+pipeline — so there is no separate validator agent, and the **cognition constraint loop IS the
+enforcement** (mandatory). Zero loop logic of its own (`#POISON_PATH` duplication): the loop is defined
+once at `~/.claude/docs/reference/cognition-constraint-loop.md`.
 
-For heavy motion work use `/motion-design` directly — this command's `--animate` is a light pass-through.
+## Parse flag (exactly one required)
 
-## Parse flag
+| Flag | Verb / craft skill |
+|------|--------------------|
+| `--animate` | `animate` (light motion; heavy motion → `/motion-design`) |
+| `--bolder` | `bolder` |
+| `--colorize` | `colorize` |
+| `--delight` | `delight` |
+| `--layout` | `layout` |
+| `--overdrive` | `overdrive` |
+| `--quieter` | `quieter` |
+| `--typeset` | `typeset` |
 
-Accepted flags (exactly one required):
+If no flag or an unrecognized flag: print this table, ask the user to pick. Do not guess. Do not run.
 
-| Flag | Skill invoked |
-|------|---------------|
-| `--animate` | `Skill("animate")` |
-| `--bolder` | `Skill("bolder")` |
-| `--colorize` | `Skill("colorize")` |
-| `--delight` | `Skill("delight")` |
-| `--layout` | `Skill("layout")` |
-| `--overdrive` | `Skill("overdrive")` |
-| `--quieter` | `Skill("quieter")` |
-| `--typeset` | `Skill("typeset")` |
+## Run — the in-thread cognition constraint loop
 
-If no flag is provided, or an unrecognized flag is provided: print the flag list above, ask the user to pick. Do not guess. Do not run.
+**Target routing (`#PATH_DECISION` — one rule, not 5 copies):** apply
+`~/.claude/docs/concepts/ios-design-contract/target-routing.md`. If the TARGET ends in `.swift`, load
+`Skill("ios-impeccable-hub")` (instead of `impeccable-hub`) and use the Swift detector below; otherwise
+keep the CSS path unchanged.
 
-**`--animate` invokes the `animate` skill (light pass-through). It does NOT invoke `/motion-design`. If the user wants the heavy pipeline, they call `/motion-design` directly.**
+Run the loop at `~/.claude/docs/reference/cognition-constraint-loop.md` with `VERB = <flag>`, loading
+`Skill("impeccable-hub")` (register; `Skill("ios-impeccable-hub")` for a `.swift` target — see routing
+above) + `Skill("<flag>")` (craft spine):
 
-**`--overdrive` invokes the `overdrive` skill. It is not promoted to a standalone command.**
+1. **R1 BIND** — cognition `checkpoint` emits the typed FORBIDDEN/FORWARD constraints this verb-on-this-
+   target can trip (detector/rant ids); capture the returned ids.
+2. **R2 WORK** — edit the target in-thread under the bound ids, applying the craft + the user's critique
+   verbatim (FR-6). Before writing styling code, read the relevant doctrine: the CSS manifesto
+   (`~/.claude/docs/concepts/llm-css-manifesto.md`) for web; the loaded `ios-impeccable-hub` for a
+   `.swift` target (per the routing rule above).
+3. **EVALUATE** — check every bound constraint + run the detector self-check. For a `.swift` target:
+   `/Users/adilkalam/ORCA-OS/mcp/swift-design-detector/bin/swiftdesigncheck detect --json <file>`;
+   otherwise `node /Users/adilkalam/ORCA-OS/mcp/design-detector/bin/designcheck.js detect --json <file>`.
+   Both: `EXIT=2` = findings present. Record a cognition `thought` (per id: satisfied|unsatisfied).
+4. **R(n) LOOP** — fix + re-evaluate until none unsatisfied. **MAX N=2**, then escalate to the user. You
+   may NOT claim done with an open constraint.
 
-## Entry: mandatory skill loading
-
-Before any work, invoke via the Skill tool in this order:
-
-1. Invoke `Skill("impeccable-hub")` — the baseline register. The hub carries the `interfaces-that-feel` felt-state spine PLUS the full register (17 voice anchors, the rants as refusals, the preferences as positive moves, the detector contract). Loading it is what ends the repetition tax — the rules are present by construction. Required for every `/refine` invocation; cannot be skipped.
-2. Invoke `Skill("<flag>")` — where `<flag>` is the parsed flag value (e.g. `Skill("bolder")` for `--bolder`).
-
-These are directives, not suggestions.
-
-## Context gathering
-
-1. Read the project contract if present — `{current-project}/.claude/PRODUCT.md` (strategic context) + `{current-project}/.claude/DESIGN.md` (visual contract).
-2. **If absent, do NOT block.** Run on the hub's global register (the rants + preferences + voice-anchors still prevent slop) and note once: *"No project contract found — running on the global register; run `/impeccable --teach` to make this project-specific."* Frictionless on any project is the point.
-3. If the user's target is ambiguous (vague selector, multiple possible pages/components): ask **one** clarifying question. Do not guess.
-
-## Work
-
-Apply the loaded skill's guidance to the user's target. The skill's own procedures drive the work — do not duplicate or paraphrase skill logic here. If the hub baseline and the flag skill conflict, the hub baseline wins on felt-state questions; the flag skill wins on its domain mechanics.
-
-
-## Handback — externalized adjudication (the shared lane)
-
-`/refine` edits existing UI, so the edited artifact is judged by the separate validator, not self-graded. Run the shared design lane at `~/.claude/docs/reference/design-lane.md` — the `bind → build → validate → branch` sequence is defined ONCE there; do NOT copy its steps here (`#POISON_PATH` duplication). In brief: the deterministic detector floor runs on the edited artifact, then `Agent(design-validator)` (fresh context) judges it against the bound constraints and returns `GATE_VERDICT: PASS|BLOCK`. On BLOCK, loop (MAX N=2) then escalate to the user. Read the lane file for the full step-by-step.
-
-The validator's judgment + the user's eye is the taste ceiling — the lane raises the floor (no named slop), it does not manufacture taste.
+Cognition is the enforcement on this path — there is no separate validator agent (that is the heavier
+`/impeccable` pipeline). Read the loop file for the full step-by-step; do not paraphrase it here.
 
 ## Handback — rant-capture
 
-After implementation, ask verbatim:
+After the loop clears, ask verbatim:
 
 > Returned to bench. Anything here you'd rant about?
 
-If the user responds with rant content, append to `{current-project}/.orca/design-rants-pending.md` with a timestamp header:
-
-```markdown
-## {ISO-8601 timestamp} — /refine --<flag>
-
-{user's rant, verbatim}
-```
-
-Create the file if it does not exist. Never write directly to `~/.claude/` or the ORCA-OS source tree.
-
-If nothing to rant, say so and stop.
+Append any response to `{current-project}/.orca/design-rants-pending.md` (`## {ISO-8601} — /refine
+--<flag>`). Create the file if absent. Never write to `~/.claude/` or the ORCA-OS source tree. If nothing
+to rant, say so and stop.

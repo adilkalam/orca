@@ -71,7 +71,7 @@ File: `commands/ios.md`
 
   ```bash
   /ios "fix button padding"                       # Default: light + gates
-  /ios -tweak "experiment with animation"        # Tweak: light, no gates
+  /ios --tweak "experiment with animation"        # Tweak: light, no gates
   /ios --complex "implement auth flow"           # Complex: full pipeline
   /ios "implement requirement <id>"              # With spec
   ```
@@ -81,14 +81,14 @@ File: `commands/ios.md`
   | Mode | Flag | Path | Gates |
   |------|------|------|-------|
   | **Default** | (none) | Light + Gates | YES |
-  | **Tweak** | `-tweak` | Light (pure) | NO |
+  | **Tweak** | `--tweak` | Light (pure) | NO |
   | **Complex** | `--complex` | Full pipeline | YES |
 
 - Behavior:
   1. **Memory‑first** – searches Workshop and unified memory for `domain: "ios"` decisions and code.
   2. **Flag detection**:
      - No flag → **Default mode** (light path WITH gates)
-     - `-tweak` → **Tweak mode** (light path WITHOUT gates, user verifies)
+     - `--tweak` → **Tweak mode** (light path WITHOUT gates, user verifies)
      - `--complex` → **Complex mode** (full pipeline, spec required)
   3. **Spec gating** (for `complex`):
      - Requires `.orca/requirements/<id>/06-requirements-spec.md`.
@@ -178,7 +178,7 @@ Specialists:
   - Minimal context (grep/quick reads or small ProjectContext query).
   - Routes directly to `ios-builder` (+ one specialist if needed).
   - **Default mode**: Runs gates (`ios-standards-enforcer` + `ios-ui-reviewer`)
-  - **Tweak mode** (`-tweak`): Skips gates (user verifies)
+  - **Tweak mode** (`--tweak`): Skips gates (user verifies)
 
 ---
 
@@ -254,7 +254,7 @@ For iOS work in OS 7.0 (routing modes):
 | Mode | Command | Path |
 |------|---------|------|
 | **Default** | `/ios "fix padding"` | Light + gates |
-| **Tweak** | `/ios -tweak "try animation"` | Light, no gates |
+| **Tweak** | `/ios --tweak "try animation"` | Light, no gates |
 | **Complex** | `/ios --complex "auth flow"` | Full pipeline |
 
 - **Most work**: Default mode (light path WITH gates)

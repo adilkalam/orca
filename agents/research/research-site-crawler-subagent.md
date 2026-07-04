@@ -28,9 +28,28 @@ RESEARCH_DIR: .orca/research/2025-12-25-Technical-Trading
 
 **All paths are relative to RESEARCH_DIR:**
 - Evidence Notes go to: `$RESEARCH_DIR/evidence/`
-- Temp crawl data goes to: `$RESEARCH_DIR/temp/`
+- Raw crawled pages (RETAINED primary evidence) go to: `$RESEARCH_DIR/sources/`
+- In-flight/partial scratch (safe to clean) may use: `$RESEARCH_DIR/sources/temp/`
 
 If RESEARCH_DIR is not provided, ask the orchestrator to provide it.
+
+### Raw source retention (primary evidence — do NOT delete)
+
+Raw crawled pages are **retained** under `$RESEARCH_DIR/sources/`. They are the
+primary evidence the fact-checker and citation gate re-verify against; never
+`rm -rf` them. Name each raw file `<NN>-<slug>-<source-slug>.md` (NN = the same
+sequence number as its Evidence Note; source-slug = a short hostname/path slug),
+and prepend a 3-line header block:
+
+```
+<!-- source: https://example.com/docs/page -->
+<!-- retrieved: 2026-07-03T14:22:00Z -->
+<!-- method: curl -->
+```
+
+`method` is one of `curl` (Crawl4AI), `webfetch`, or `mcp` depending on how the
+page was fetched. Only partial/in-flight files may be cleaned, and only from the
+`$RESEARCH_DIR/sources/temp/` scratch subdir.
 
 ---
 
@@ -44,7 +63,7 @@ If RESEARCH_DIR is not provided, ask the orchestrator to provide it.
    ```bash
    curl -s -X POST "http://localhost:11235/md" \
      -H "Content-Type: application/json" \
-     -d '{"url": "https://example.com/docs/page", "f": "fit", "output_path": "'$RESEARCH_DIR'/temp/page-name.md"}'
+     -d '{"url": "https://example.com/docs/page", "f": "fit", "output_path": "'$RESEARCH_DIR'/sources/<NN>-<slug>-<source-slug>.md"}'
    ```
    Returns metadata only: `{"saved": true, "path": "...", "bytes": N, "url": "..."}`
 

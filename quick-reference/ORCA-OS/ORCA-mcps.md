@@ -34,11 +34,13 @@ These MCPs are used internally but excluded from public distribution:
 - `cognition-mcp` - Sequential thinking storage (49 operations). Moving to RVRY.
 
 ### Exception to Convention — CLI tools housed in `mcp/`
-The following two tools live under `mcp/` but are **NOT MCP servers** — they are CLI tools, housed there pragmatically alongside other support tooling. Both are **local-only** (never deployed to `~/.claude`, excluded from rsync).
+The following three tools live under `mcp/` but are **NOT MCP servers** — they are CLI tools, housed there pragmatically alongside other support tooling. All are **local-only** (never deployed to `~/.claude`, excluded from rsync).
 
 - `design-detector` (at `mcp/design-detector/`) is **NOT an MCP server** — it is a CLI tool (`npx designcheck`). It lives in `mcp/` pragmatically alongside other support tooling. Fork of Bakaus's Impeccable detector. Hybrid JSON-rules + named-handler architecture. Rules read from `docs/concepts/design-contract/detector-rules.json` (override via `DESIGN_COLLECTION_PATH`) and applied live via `runExternalRules` in `src/detect-antipatterns.mjs`. 10 pattern-based rules are live (tailwind-palette-utilities, tailwind-hex-values, reflex-fonts, geist-imports, purple-pink-gradients, gradient-text, side-stripe-borders, inset-highlight-shadow, default-ease-transition, bouncy-easing). 6 handler-based rules (chamfer-stack, ios-calculator-default, pretend-variation, asymmetric-heading-margins-missing, pixel-misalignment, missing-typography-junctions) are deferred pending handler implementation in `src/detectors/index.ts`. See `mcp/design-detector/README.md`.
 
 - `seo-geo-detector` (at `mcp/seo-geo-detector/`) is **NOT an MCP server** — it is a CLI tool (`seo-geo-detect`), the Phase 2 detector of the SEO/GEO optimization capability. Python (3.10+), not TypeScript. JSON check definitions (`checks/technical-seo.json`, `checks/geo.json`) + Python handlers (`src/seo_geo_detector/handlers/`), ~42 curated checks (~21 technical-SEO + ~21 GEO; hard cap ~45). Deterministic: no JS rendering, no live timestamps in check logic, no randomness. Reads the doctrine rule corpus from `docs/concepts/optimization-doctrine/` (override via `SEO_DOCTRINE_PATH`, the design-detector pattern); each GEO check carries a `rule_id` resolving into `corpus.v*.json`. Emits findings conforming to the Phase 0 findings schema. Exposes a pluggable `Scorer` interface (FR-1.7) — the slot Phase 6's learned scorer plugs into. See `mcp/seo-geo-detector/README.md`.
+
+- `swift-design-detector` (at `mcp/swift-design-detector/`) is **NOT an MCP server** — it is a Bash-invoked local CLI (`swiftdesigncheck detect --json <path>`), the iOS analogue of `design-detector`. **Swift** (SwiftPM executable; built against Swift 6.3.2, `swift-syntax` pinned to the 603.x tag family), not TypeScript/Python. It statically scans a Swift/SwiftUI file via an in-process **SwiftSyntax AST walk** (NOT regex). Same capture contract as the web detector: `EXIT 0 + "[]"` (clean, STDOUT) / `EXIT 2 + findings JSON` (STDERR, `2>&1`-capturable) / `EXIT 1` (usage). Reads the Swift rule file from `docs/concepts/ios-design-contract/detector-rules.swift.json` (override via `SWIFT_DESIGN_RULES`); per-project token-dir scoping comes from `.design-detector.swift.json` (override via `SWIFT_DESIGN_CONFIG`, schema in `docs/concepts/ios-design-contract/detector-config-schema.md`). 6 P0 rules (off-palette-hue, raw-hex-outside-tokens, hue-coded-category, tailwind-palette-hex, gradient-fill, display-font-below-floor) + 5 P1 advisory rules (system-font-reflex, magic-number-spacing, shadow-reflex, spring-overshoot, mono-fatigue). The keystone correctness point is **rule-class-aware token-dir scoping** (`scope_in_token_dirs`): off-palette/hue-coded/tailwind/gradient slop STILL FIRES inside token dirs (the slop is defined there) while raw-hex/system-font/magic-spacing suppress. The `bin/swiftdesigncheck` wrapper resolves the prebuilt release binary → `swift run` fallback → graceful non-crashing skip when no Swift toolchain is present. Consumed-by: the forthcoming **ios-design** overlay. See `mcp/swift-design-detector/README.md`.
 
 ---
 
@@ -112,7 +114,6 @@ The recording extension connects cognition-mcp to the orca-record recording laye
 
 These operations read from `.orca/recording.db` (per-project SQLite) and cross-reference with cognition-mcp session data.
 
-**Full documentation:** See `quick-reference/cognition.md`
 
 ### project-context
 

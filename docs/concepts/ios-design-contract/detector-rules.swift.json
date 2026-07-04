@@ -1,0 +1,193 @@
+{
+  "version": 1,
+  "_note": "Swift/SwiftUI design-slop rule file. Mirrors the web detector-rules.json shape (id/severity/source_rant + machine-readable finding schema {antipattern,name,description,file,line,snippet}) but the rules are evaluated by an in-process SwiftSyntax AST walk in mcp/swift-design-detector (NOT by regex on CSS). source_rant paths point under docs/concepts/ios-design-contract/rants/ which Pass 2 of requirement ios-impeccable-adaptation will author; until then they are forward references and are documented here as the rule's provenance. scope_in_token_dirs is the keystone correctness flag (see detector-config-schema.md): when false, the rule is SUPPRESSED for files matching a configured token-dir glob (defining the literal there IS the token layer's job); when true, the rule STILL FIRES inside token dirs because that is precisely where hue-coded / off-palette / Tailwind-palette / gradient slop lives.",
+  "collection_reference": "docs/concepts/ios-design-contract/",
+  "finding_schema": {
+    "antipattern": "stable rule id (matches a rule.id below)",
+    "name": "human-readable rule name",
+    "description": "what is wrong + the corrective move",
+    "file": "absolute path of the scanned file",
+    "line": "1-based source line of the offending node",
+    "snippet": "the offending source text (trimmed)"
+  },
+  "rules": [
+    {
+      "id": "off-palette-hue",
+      "name": "Off-palette hue",
+      "severity": "P0",
+      "source_rant": "rants/colors.md",
+      "scope_in_token_dirs": true,
+      "description": "A chromatic color hex was introduced whose hue is not blue/neutral. The PeptideFox v7 law (peptidefox-ios .claude/CLAUDE.md §6.1) is a blue-only accent palette over neutrals; orange (Metabolic), teal (Healing), pink (GLOW), purple/violet (NAD/KLOW), and lavender are off-palette. Remove the hue or re-derive it from the blue accent. STILL fires inside token dirs because the off-palette slop is defined in the token file itself.",
+      "detector": {
+        "kind": "color-hex-hue",
+        "allowed_hue_ranges_deg": [[205, 245]],
+        "neutral_chroma_max": 16,
+        "_note": "A hex is clean if it is near-neutral (channel spread < neutral_chroma_max) OR its HSL hue falls inside an allowed (blue) range. Anything chromatic outside the blue band is off-palette. Blue band 205-245deg covers #336CFF (~223) and #2563eb (~221) while excluding teal (~173), green (~145), orange (~25), pink (~330), purple (~271), and the lavender tint #EDE8FF (~253). neutral_chroma_max=16 keeps the v7 neutral/ink/cool-grey text ramp clean (max legit non-blue-band chroma is v7SoftDark/v7TextSoftDark at 14) while exposing the lavender haze tint (#EDE8FF, chroma 23) and the deprecated purple tints (#f3e8ff, chroma 23) as off-palette. The cool-grey text tokens with chroma >16 (#7F86A0 c33, #586070 c24) stay clean because their hue (~220-227) is inside the blue band. Verified zero false positives across every hex-defined v7 token in PeptideFox ColorTokens.swift."
+      }
+    },
+    {
+      "id": "raw-hex-outside-tokens",
+      "name": "Raw hex literal outside the token layer",
+      "severity": "P0",
+      "source_rant": "rants/colors.md",
+      "scope_in_token_dirs": false,
+      "description": "A raw color hex literal (Color(hex:\"#...\") or UIColor literal) appears in a view/feature file instead of referencing a named design token. Color authority belongs to the token layer; views must consume tokens. SUPPRESSED inside token dirs — defining hex literals IS the token layer's job.",
+      "detector": {
+        "kind": "raw-hex-literal",
+        "_note": "Flags any 6- or 3-digit hex string passed to a Color(hex:)/UIColor initializer. Suppressed in token dirs so the token file can legally define literals; off-palette-hue still polices WHICH literals are allowed there."
+      }
+    },
+    {
+      "id": "hue-coded-category",
+      "name": "Hue-coded category",
+      "severity": "P0",
+      "source_rant": "rants/hue-coded-categorical.md",
+      "scope_in_token_dirs": true,
+      "description": "A categorical concept (compound type, metabolic vs healing, per-peptide accent) is encoded by assigning each category its own hue. Categories must be distinguished by typography/layout/iconography, not a rainbow. Collapse per-category colors to the single blue accent + neutrals. STILL fires inside token dirs because the per-category color map (e.g. CompoundColorScheme.forCompound switching primary color by case, *Accent token families) lives in the token file.",
+      "detector": {
+        "kind": "hue-coded-category",
+        "category_type_suffixes": ["ColorScheme"],
+        "category_switch_selectors": ["forCompound", "for", "scheme"],
+        "per_category_token_suffix": "Accent",
+        "min_distinct_category_tokens": 3,
+        "_note": "Fires when (a) a switch/case maps category cases to differing color values, or (b) a family of >= min_distinct_category_tokens tokens named <category>Accent assigns chromatic, differing hues per category."
+      }
+    },
+    {
+      "id": "tailwind-palette-hex",
+      "name": "Tailwind palette hex",
+      "severity": "P0",
+      "source_rant": "rants/colors.md",
+      "scope_in_token_dirs": true,
+      "description": "A hex value copied verbatim from the Tailwind default palette (the canonical AI-slop fingerprint). These are not brand colors; they are the default every generator emits. Replace with brand tokens. STILL fires inside token dirs — the Tailwind hexes were pasted directly into the token definitions.",
+      "detector": {
+        "kind": "tailwind-hex",
+        "hexes": [
+          "ef4444", "f97316", "eab308", "22c55e", "3b82f6", "a855f7",
+          "ec4899", "6b7280", "8b5cf6", "d946ef", "f59e0b", "10b981",
+          "9333ea", "c084fc", "f472b6", "fb923c", "fbbf24", "34d399",
+          "60a5fa", "818cf8", "6366f1", "fdba74", "fed7aa", "99f6e4",
+          "5eead4", "14b8a6", "fbcfe8", "e9d5ff"
+        ],
+        "_note": "Case-insensitive match on the hex digits (with or without leading #). Deliberately EXCLUDES the legitimate blue tokens #336CFF and #2563eb. Note 3b82f6/60a5fa/6366f1 are blue-family Tailwind values; they are flagged as tailwind-palette-hex (copied-from-Tailwind smell) even though off-palette-hue would pass them — the two P0 rules are independent and either firing blocks."
+      }
+    },
+    {
+      "id": "gradient-fill",
+      "name": "Gradient fill",
+      "severity": "P0",
+      "source_rant": "rants/gradients.md",
+      "scope_in_token_dirs": true,
+      "description": "A LinearGradient/RadialGradient/AngularGradient (or .fill(.linearGradient...)) is used as a surface/text fill. Gradients read as decorative AI slop; use a solid token. STILL fires inside token dirs because gradient stop tokens (gradientStart/gradientEnd) and gradient definitions are declared there.",
+      "detector": {
+        "kind": "gradient-construct",
+        "type_names": ["LinearGradient", "RadialGradient", "AngularGradient", "EllipticalGradient"],
+        "member_calls": ["linearGradient", "radialGradient", "angularGradient"],
+        "gradient_token_name_substrings": ["gradient"],
+        "_note": "Fires on a Gradient initializer/member-call expression, OR on a token declaration whose name contains 'gradient' (case-insensitive) so gradientStart/gradientEnd are caught at the source."
+      }
+    },
+    {
+      "id": "display-font-below-floor",
+      "name": "Display font below size floor",
+      "severity": "P0",
+      "source_rant": "rants/fonts.md",
+      "scope_in_token_dirs": true,
+      "description": "A display/hero typeface (Brown LL Inline / heroInline) is instantiated below its size floor. TypographyTokens.swift documents display roles at 28-80pt and asserts Inline MUST be >= 28pt ('Inline collapses below this size'). The detector floor sits at 24pt — below the 28pt display floor but above the 16pt body ceiling — so it catches genuinely-too-small display type without flagging body/label sizes. STILL fires inside token dirs because the display tokens are declared there.",
+      "detector": {
+        "kind": "display-font-floor",
+        "display_factories": ["heroInline"],
+        "display_type_enums": ["BrownLLInline"],
+        "floor_pt": 24,
+        "_note": "Derived from TypographyTokens.swift: display roles run 28-80pt (Display.small=28 is the smallest display role; heroInline asserts >=28). Floor set to 24 (below the 28 display floor, above the 16 Body.large ceiling). Fires when a heroInline(...) / BrownLLInline-based Font.custom is created with size < floor_pt."
+      }
+    },
+    {
+      "id": "system-font-reflex",
+      "name": "System-font reflex",
+      "severity": "P1",
+      "source_rant": "rants/fonts.md",
+      "scope_in_token_dirs": false,
+      "description": "Reflexively reaching for .system(...)/Font.system or a bare .font(.title)/.headline system text style instead of the bundled brand family (Brown LL via Font.primary). Advisory: the brand has a real typeface; use it. SUPPRESSED inside token dirs because the token factories may legitimately compose relativeTo: system text styles.",
+      "detector": {
+        "kind": "system-font",
+        "member_calls": ["system"],
+        "_note": "Fires on Font.system(...) / .system(size:...) usages in non-token files. Does not flag the relativeTo: TextStyle argument used by the brand factories."
+      }
+    },
+    {
+      "id": "magic-number-spacing",
+      "name": "Magic-number spacing",
+      "severity": "P1",
+      "source_rant": "rants/magic-number-spacing.md",
+      "scope_in_token_dirs": false,
+      "description": "A raw numeric literal is passed to .padding(...), spacing:, VStack/HStack(spacing:), .frame insets, etc. instead of a Spacing token. Advisory: route spacing through the scale for rhythm. SUPPRESSED inside token dirs because the Spacing scale itself is defined with numeric literals there.",
+      "detector": {
+        "kind": "magic-spacing",
+        "spacing_apis": ["padding", "spacing"],
+        "ignore_values": [0],
+        "_note": "Fires on integer/float literals supplied to padding()/spacing: arguments in non-token files. 0 is ignored (zero-out is intentional)."
+      }
+    },
+    {
+      "id": "shadow-reflex",
+      "name": "Shadow reflex",
+      "severity": "P1",
+      "source_rant": "rants/shadow-reflex.md",
+      "scope_in_token_dirs": true,
+      "description": "Reflexive .shadow(...) (especially colored or large-radius) to fake depth/glow — the dark-glow tell ported to SwiftUI. Advisory: prefer a hairline/material or a token-defined elevation. Fires in token dirs too because elevation/shadow tokens can encode the reflex.",
+      "detector": {
+        "kind": "shadow-call",
+        "member_calls": ["shadow"],
+        "_note": "Fires on .shadow(...) modifier calls. Colored/large-radius shadows are the worst case; v1 flags any explicit .shadow as advisory."
+      }
+    },
+    {
+      "id": "spring-overshoot",
+      "name": "Spring overshoot",
+      "severity": "P1",
+      "source_rant": "rants/spring-overshoot.md",
+      "scope_in_token_dirs": false,
+      "description": "An over-bouncy spring animation (interpolatingSpring / .spring with high bounce / low damping) — the bounce-easing tell. Advisory: real objects decelerate smoothly; reduce bounce / raise damping. SUPPRESSED inside token dirs (animation tokens may legitimately tune curves centrally).",
+      "detector": {
+        "kind": "spring-animation",
+        "member_calls": ["spring", "interpolatingSpring", "interactiveSpring"],
+        "bounce_arg": "bounce",
+        "bounce_max": 0.3,
+        "damping_arg": "dampingFraction",
+        "damping_min": 0.7,
+        "_note": "Fires on .spring/interpolatingSpring calls whose bounce > bounce_max or dampingFraction < damping_min. A bare .spring() with no tuning is advisory-flagged only when other overshoot signals are absent (v1: flag explicit over-bounce)."
+      }
+    },
+    {
+      "id": "mono-fatigue",
+      "name": "Monospace fatigue",
+      "severity": "P1",
+      "source_rant": "rants/mono-fatigue.md",
+      "scope_in_token_dirs": false,
+      "description": "Over-reaching for the mono/accent family (Brown Mono LL / accentMono / .monospaced) beyond its sanctioned use (micro nav labels, technical identifiers) — e.g. mono on body or numeric data. Advisory: reserve mono for micro labels. SUPPRESSED inside token dirs because the mono factory + sanctioned mono tokens are declared there.",
+      "detector": {
+        "kind": "mono-font",
+        "member_calls": ["accentMono", "monospaced", "monospacedDigit"],
+        "mono_type_enums": ["BrownMonoLL"],
+        "_note": "Fires on accentMono(...)/.monospaced()/.monospacedDigit() usages in non-token files. Advisory only."
+      }
+    },
+    {
+      "id": "ios-default-reflex",
+      "name": "iOS default reflex",
+      "severity": "P0",
+      "source_rant": "rants/ios-default-reflex.md",
+      "scope_in_token_dirs": false,
+      "description": "Shipping the platform default where the brand demands a considered, custom treatment — the iOS analogue of the web generic-default attractor. Three shapes: (a) a native control init (Menu/Picker) standing in for a custom control, (b) a default-chrome modifier (.contextMenu), or (c) the accent reflex .tint(.blue) reaching for the stock system accent instead of the brand accent token. Replace with the bundled custom control / brand accent. SUPPRESSED inside token dirs (the token layer may legitimately reference system controls/colors when defining adaptions). Owner can sanction a specific use via .design-overrides.json (design-overrides-schema.md).",
+      "detector": {
+        "kind": "ios-default-reflex",
+        "native_control_types": ["Menu", "Picker"],
+        "default_chrome_modifiers": ["contextMenu"],
+        "accent_reflex_calls": ["tint"],
+        "accent_reflex_values": [".blue"],
+        "_note": "Data-driven match lists so the owner tunes without recompiling. Fires on a FunctionCallExprSyntax whose callee name is a native_control_types init, OR a default_chrome_modifiers modifier, OR an accent_reflex_calls call (tint) whose first argument is a base-less member access (.blue) in accent_reflex_values. The accent case deliberately requires the member-access form so .tint(BrandColor.accent) / .tint(Color.brandAccent) pass clean."
+      }
+    }
+  ]
+}

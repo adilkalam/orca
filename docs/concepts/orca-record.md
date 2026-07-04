@@ -294,7 +294,6 @@ The event tracking layer (hooks + SQLite + state machine + redaction) was the va
 
 - Quick reference: `quick-reference/ORCA-OS/ORCA-recording.md`
 - Commands: `commands/orca-status.md`, `commands/continue.md`
-- cognition-mcp integration: `docs/concepts/cognition-mcp.md`
 - Memory systems: `docs/concepts/memory-systems.md`
 
 ---

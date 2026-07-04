@@ -113,7 +113,7 @@ When planning, use RA tags from `docs/reference/response-awareness.md` to surfac
 These tags flow to phase_state and help gates/audit identify unresolved assumptions.
 
 ## Delegation
-- SwiftUI work → ios-swiftui-specialist + design-dna-guardian.
+- SwiftUI work → ios-swiftui-specialist; design/aesthetic DNA via ios-design-validator (the additive /ios-impeccable overlay — fills the former design-dna-guardian role).
 - UIKit/MVVM/TCA → ios-uikit-specialist / mvvm-architect / tca-specialist as applicable.
 - Data → ios-persistence-specialist.
 - Networking → ios-networking-specialist.

@@ -176,14 +176,29 @@ When you edit the skills, commands, or global catalog in the ORCA-OS repo, push 
     rsync -av --exclude='*archive*' --exclude='*deprecated*' /Users/adilkalam/ORCA-OS/templates/     ~/.claude/templates/
     rsync -av --exclude='*archive*' --exclude='*deprecated*' /Users/adilkalam/ORCA-OS/quick-reference/ ~/.claude/quick-reference/
 
-The `mcp/design-detector/` directory is NOT rsynced; the detector runs from the ORCA-OS source path.
+The `mcp/design-detector/` and `mcp/swift-design-detector/` directories are NOT rsynced; the detectors run from the ORCA-OS source path.
 
-## Running the detector manually
+## Target routing — `.swift` vs web (the 5 design-fork commands)
+
+The 5 design-fork commands (`/refine`, `/fortify`, `/simplify`, `/design-audit`, `/design-critique`) are **target-aware**. They route off the TARGET's file extension via the ONE shared rule at `~/.claude/docs/concepts/ios-design-contract/target-routing.md`:
+
+- **`.swift` target** → load `Skill("ios-impeccable-hub")` (SwiftUI rants + preferences + the iOS detector contract) and run the **Swift detector** `mcp/swift-design-detector/bin/swiftdesigncheck detect --json <target>`.
+- **anything else (web)** → keep the existing CSS path: `Skill("impeccable-hub")` + `~/.claude/docs/concepts/llm-css-manifesto.md` + the web detector `mcp/design-detector/bin/designcheck.js`.
+
+The branch is authored once in `target-routing.md` and referenced by a single inline rule line per command (no 5× copy-paste, `#POISON_PATH`). Same exit-code contract on both detectors: `EXIT=0 + []` clean, `EXIT=2` dirty; findings are `{antipattern, name, description, file, line, snippet}`.
+
+## Running the detectors manually
+
+Web (CSS/TSX/HTML):
 
     cd /Users/adilkalam/ORCA-OS/mcp/design-detector
     node bin/designcheck.js detect <file-or-dir>
 
-Scans static CSS/source for active regex rules + Bakaus baseline. For live-DOM checks (measured alignment, actual contrast), use the Chrome DevTools path via `/design-critique`.
+Swift (SwiftUI):
+
+    /Users/adilkalam/ORCA-OS/mcp/swift-design-detector/bin/swiftdesigncheck detect --json <file-or-dir>
+
+The web detector scans static CSS/source for active regex rules + Bakaus baseline; the Swift detector scans `.swift` via SwiftSyntax AST (token-dir scoped). For live-render checks (measured alignment, actual contrast), use the Chrome DevTools path (web) or a simulator screenshot review (`.swift`) via `/design-critique`.
 
 ---
 

@@ -1,12 +1,12 @@
 ---
-description: Transform vague requests into well-structured prompts using intelligent step selection and Claude 4 best practices. Supports clarify-only mode with -clarify flag.
+description: Transform vague requests into well-structured prompts using intelligent step selection and Claude 4 best practices. Supports clarify-only mode with --clarify flag.
 allowed-tools:
   - exit_plan_mode
   - Read
   - Glob
   - Agent
   - AskUserQuestion
-argument-hint: [--debug] [-clarify] <request to enhance>
+argument-hint: [--debug] [--clarify] <request to enhance>
 ---
 
 # STOP! This is the /enhance command - Enhancement Only!
@@ -35,16 +35,16 @@ Otherwise:
 - Set DEBUG_MODE = false  
 - Provide compact, focused output
 
-## Clarify Mode (-clarify)
+## Clarify Mode (--clarify)
 
-If $ARGUMENTS starts with "-clarify":
-- Remove "-clarify" from $ARGUMENTS before processing
+If $ARGUMENTS starts with "--clarify":
+- Remove "--clarify" from $ARGUMENTS before processing
 - Goal: Ask 2–3 targeted questions to unblock the task, then stop
 - Produce ONLY:
   - A single AskUserQuestion with up to 3 crisp, non-overlapping questions
   - After answers, return a 3–5 line summary and 3 acceptance criteria
 - Do NOT generate a full enhanced prompt or orchestration plan in this mode
-- Suggest: "Run /enhance again without -clarify to generate the final enhanced prompt"
+- Suggest: "Run /enhance again without --clarify to generate the final enhanced prompt"
 
 ## Phase 1: Context Analysis & Intelligence Gathering
 
@@ -145,7 +145,7 @@ Mark operations that can run in parallel with
 13. **ROLLBACK_PLAN**: Create recovery strategy for potential failures
 14. **MONITORING**: Define observability, metrics, and alerting requirements
 15. **VALIDATION_CRITERIA**: Set clear success metrics and acceptance criteria
-15a. **THINK_ASSESSMENT**: For medium/high/critical risk tasks, require /contemplate before claiming completion to prevent overclaiming (prevents ~80% false completion rate)
+15a. **THINK_ASSESSMENT**: For medium/high/critical risk tasks, require a structured completion self-assessment before claiming completion to prevent overclaiming (prevents ~80% false completion rate)
 
 ### Specialized Domain Steps (16-25)
 16. **SECURITY_AUDIT**: Vulnerability scanning, threat modeling, sanitization checks
@@ -301,7 +301,7 @@ SUCCESS CRITERIA:
 - [ ] Edge cases handled gracefully
 - [ ] Documentation updated
 - [ ] **THINK ASSESSMENT** (if step 15a selected for medium/high/critical risk):
-  Before claiming work complete, run: `/contemplate "Assess actual vs claimed completion: What evidence proves we delivered? Am I overclaiming? What's missing?"`
+  Before claiming work complete, run a structured self-assessment: "Assess actual vs claimed completion: What evidence proves we delivered? Am I overclaiming? What's missing?"
   This prevents the ~80% false completion rate by forcing multi-perspective analysis before completion claims.
 
 MEASURABLE OUTCOMES:

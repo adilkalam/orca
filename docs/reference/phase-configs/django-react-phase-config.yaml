@@ -48,7 +48,7 @@ phase_state:
     verification: object
 
 # Four-Tier Routing (OS 7.0)
-# Default now runs gates. -tweak skips gates. --complex forces full pipeline.
+# Default now runs gates. --tweak skips gates. --complex forces full pipeline.
 complexity_tiers:
   default:
     description: Light path WITH quality gates (most work)
@@ -68,7 +68,7 @@ complexity_tiers:
 
   tweak:
     description: Light path WITHOUT gates (pure speed)
-    flag: "-tweak"
+    flag: "--tweak"
     routing: django-react-light-orchestrator
     mode: tweak  # Skips gates
     spec_required: false

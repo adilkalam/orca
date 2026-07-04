@@ -9,6 +9,8 @@ Analyze a feature and strategically add animations and micro-interactions that e
 
 ## MANDATORY PREPARATION
 
+**Run the cognition constraint loop (MANDATORY).** Invoked directly as `/animate <target>` (a human typed it)? This is an INDIVIDUAL command, outside the /impeccable pipeline -- so cognition IS the enforcement. Run the in-thread loop defined once at `~/.claude/docs/reference/cognition-constraint-loop.md`: R1 generate typed FORBIDDEN/FORWARD constraints via a cognition `checkpoint` -> R2 do the work in-thread using the craft below -> evaluate every bound constraint + detector self-check -> loop (MAX N=2) until none unsatisfied; you may NOT claim done with an open constraint. (The heavy /impeccable pipeline with its separate validator + hook is a different path; cognition is optional there.) If `design-builder` loaded this skill only for craft reference, ignore this block and use the craft below.
+
 Invoke {{command_prefix}}impeccable — it contains design principles, anti-patterns, and the **Context Gathering Protocol**. Follow the protocol before proceeding — if no design context exists yet, you MUST run {{command_prefix}}impeccable teach first. Additionally gather: performance constraints.
 
 ---

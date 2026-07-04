@@ -23,10 +23,10 @@ You never implement code from `/requirements`; you only plan.
 
 ## Step 0: Route Check
 
-This is /requirements, not /shimmer or /contemplate.
+This is /requirements (planning), not a cognition/reasoning session.
 
 - OUTPUT goes to: `.orca/requirements/` (ALWAYS)
-- NOT to: `.orca/cognition/` (that's for /shimmer and /contemplate)
+- NOT to: `.orca/cognition/` (that's for cognition sessions)
 - Cognition flags (--solve, --visual, --systems, etc.) are ANALYSIS INPUTS,
   not output destinations.
 
@@ -44,7 +44,7 @@ REGARDLESS of any cognition flags (--visual, --systems, --solve, etc.):
 4. THEN: Generate spec
 
 Cognition analysis is an INPUT to the requirements process, not a replacement for it.
-Never save /requirements output to `.orca/cognition/` -- that directory is for /shimmer and /contemplate only.
+Never save /requirements output to `.orca/cognition/` -- that directory is for cognition sessions only.
 
 ---
 
@@ -515,7 +515,7 @@ The key difference: `--explore` produces a TENTATIVE brief (not committed), whil
 ### Prerequisites
 
 1. Requirements folder from Section 1 MUST exist
-2. Check mutual exclusivity: error if `-tweak`, `-complex`, or `--solve` also provided
+2. Check mutual exclusivity: error if `--tweak`, `--complex`, or `--solve` also provided
 
 ### Step 1: Run Full Deepthink-Style Exploration
 
@@ -593,7 +593,7 @@ Save exploration to TWO locations:
 
 1. **Cognition archive**: `.orca/cognition/YYYYMMDD-HHMM-<slug>.md`
    - Full exploration output with all mode results
-   - Preserves thinking for future `/contemplate --import` reference
+   - Preserves thinking for future reference
 
 2. **Requirements folder**: `00-exploration-analysis.md`
    - Summary of exploration for this requirement
@@ -670,7 +670,7 @@ How would we decide whether to proceed to full planning?
 | Decision | Recommended Action |
 |----------|-------------------|
 | Proceed to full planning | `/requirements --from-brief` |
-| Need more exploration | `/shimmer "[specific question]"` |
+| Need more exploration | Run a deeper analysis pass first |
 | Abandon | Archive this requirement |
 
 ---
@@ -711,7 +711,7 @@ Full exploration saved to: .orca/cognition/YYYYMMDD-HHMM-<slug>.md
 Next steps:
   - Review the brief and Go/No-Go criteria
   - If proceeding: /requirements --from-brief
-  - If more exploration needed: /shimmer "[specific question]"
+  - If more exploration needed: run a deeper analysis pass first
   - If abandoning: Archive this requirement folder
 ```
 
@@ -903,9 +903,9 @@ After `/requirements` completes, suggest the matching domain command with the **
 
 | Plan Tier | Suggested Next Command |
 |-----------|------------------------|
-| `-tweak` | `/{domain} -tweak Implement requirement <id>` |
+| `--tweak` | `/{domain} --tweak Implement requirement <id>` |
 | (default) | `/{domain} Implement requirement <id>` |
-| `-complex` | `/{domain} -complex Implement requirement <id>` |
+| `--complex` | `/{domain} --complex Implement requirement <id>` |
 | `--explore` | `/requirements --from-brief <path>` (then domain command) |
 
 ### Standard Tiers (Committed Specs)
@@ -938,7 +938,7 @@ Full exploration: .orca/cognition/20251127-1430-new-feature.md
 Next steps:
   - Review brief and Go/No-Go criteria
   - If proceeding: /requirements --from-brief
-  - If more exploration: /shimmer "[specific question]"
+  - If more exploration: run a deeper analysis pass first
   - If abandoning: Archive this requirement
 ```
 

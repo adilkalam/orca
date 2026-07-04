@@ -1,0 +1,42 @@
+#!/usr/bin/env bash
+#
+# swiftdesigncheck — wrapper around the SwiftDesignDetector CLI.
+#
+# Resolution order:
+#   1. A prebuilt release binary (.build/release/SwiftDesignDetector) — fast path.
+#   2. `swift run -c release SwiftDesignDetector` — builds on first use if needed.
+#   3. Degrade gracefully: if neither a binary nor a Swift toolchain is present,
+#      print "Swift detector unavailable" to STDERR and exit 0 (NON-blocking) so
+#      a gate that shells out to this never crashes a pipeline on a host without
+#      Swift.
+#
+# Usage (mirrors the web designcheck contract):
+#   swiftdesigncheck detect --json <path>
+#     EXIT 0 + "[]"  -> clean
+#     EXIT 2 + JSON  -> findings (on STDERR; capture with 2>&1)
+#     EXIT 1         -> usage / internal error
+#
+set -uo pipefail
+
+# Directory of this script (bin/), then the package root (one level up).
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)"
+PACKAGE_DIR="$(cd "${SCRIPT_DIR}/.." >/dev/null 2>&1 && pwd)"
+
+RELEASE_BIN="${PACKAGE_DIR}/.build/release/SwiftDesignDetector"
+
+# Fast path: prebuilt release binary.
+if [[ -x "${RELEASE_BIN}" ]]; then
+  exec "${RELEASE_BIN}" "$@"
+fi
+
+# Fallback: build/run via Swift if a toolchain is available.
+if command -v swift >/dev/null 2>&1; then
+  # `swift run` prints build noise to STDERR; route it to /dev/null so only the
+  # detector's own findings/JSON reach the caller's STDERR. Run from the package
+  # dir so SwiftPM finds Package.swift regardless of the caller's CWD.
+  exec swift run --package-path "${PACKAGE_DIR}" -c release SwiftDesignDetector "$@" 2> >(grep -v -E '^(Building|Compiling|Linking|Build complete|Fetching|Computing|Creating|\[|Planning|Write|Downloading|Downloaded|Computed|Working copy|warning: )' >&2)
+fi
+
+# Graceful degradation: no binary, no toolchain.
+echo "swiftdesigncheck: Swift detector unavailable (no prebuilt binary at ${RELEASE_BIN} and no 'swift' toolchain on PATH). Skipping Swift design scan." >&2
+exit 0

@@ -1,10 +1,10 @@
 # OS 7.0 Commands Quick Reference
 
-**Last Updated:** 2026-06-04 (design-command family doc-sync)
+**Last Updated:** 2026-06-18 (ios-impeccable overlay added)
 **Version:** OS 7.1
-**Total Commands:** 40 (+ orca-record CLI with 7 subcommands (5 hook + 2 user))
+**Total Commands:** 32 (+ orca-record CLI with 7 subcommands (5 hook + 2 user))
 
-> **Count reconciled (2026-06-04):** `find commands -maxdepth 1 -name '*.md' | wc -l` returns **54**, and all 54 are git-tracked, deployable command files (none are archive/deprecated/local-only). The prior recorded count of 52 was stale: `think-model.md` (split out of `/think` on 2026-04-23 during the design-system fork) was the most-recent uncounted file, and the count was never bumped past 52 after the SEO/GEO additions. `total_commands: 54` here now agrees with `os-dependency-graph.yaml`. Note: a few command files share a single doc entry below — `/session-resume` is documented under the `/session-save` / `/session-resume` combined header, and `/think-model`, `/challenge`, `/solve`, `/shimmer-direct` are cognition siblings of `/think`/`/shimmer` reachable directly. The Design Commands (9) section count IS verified against on-disk files.
+> **Count reconciled (2026-06-04, +1 on 2026-06-18):** `find commands -maxdepth 1 -name '*.md' | wc -l` returned **54** at the 2026-06-04 reconcile; the prior recorded count of 52 was stale (`think-model.md`, added on 2026-04-23 during the design-system fork, was the most-recent uncounted file). On 2026-06-18 `/ios-impeccable` (the additive iOS/SwiftUI design overlay, Phase 3 of `ios-impeccable-adaptation`) was added, bringing the total to **55**; `total_commands: 55` here now agrees with `os-dependency-graph.yaml`. Note: a few command files share a single doc entry below — `/session-resume` is documented under the `/session-save` / `/session-resume` combined header. The Design Commands section count IS verified against on-disk files. `/ios-impeccable` is documented within the Design Commands section as the iOS overlay sibling of `/impeccable`.
 
 ---
 
@@ -16,7 +16,7 @@ All `/orca-*` lane commands support four execution modes:
 |------|------|------|-------|----------|
 | **Light** | `--light` | Light orchestrator | YES | Confident users, skip confirmation |
 | **Default** | (none) | Light + Confirmation | YES | Most work |
-| **Tweak** | `-tweak` | Builder direct | NO | Speed iteration |
+| **Tweak** | `--tweak` | Builder direct | NO | Speed iteration |
 | **Complex** | `--complex` | Full pipeline | YES | Architecture work |
 
 ---
@@ -33,7 +33,7 @@ wraps one of the three aio agents); they are not counted as separate lanes. -->
 ### `/ios` - iOS Lane
 ```bash
 /ios "fix button padding"           # Default: light + gates
-/ios -tweak "try animation"         # Tweak: no gates
+/ios --tweak "try animation"         # Tweak: no gates
 /ios --complex "auth flow"          # Complex: full pipeline
 ```
 **Agents:** ios-grand-architect, ios-builder, ios-standards-enforcer, ios-ui-reviewer, ios-verification
@@ -42,7 +42,7 @@ wraps one of the three aio agents); they are not counted as separate lanes. -->
 ### `/nextjs` - Next.js Lane
 ```bash
 /nextjs "fix spacing"               # Default: light + gates
-/nextjs -tweak "try padding"        # Tweak: no gates
+/nextjs --tweak "try padding"        # Tweak: no gates
 /nextjs --complex "dark mode"       # Complex: full pipeline
 ```
 **Agents:** nextjs-grand-architect, nextjs-builder, nextjs-standards-enforcer
@@ -52,7 +52,7 @@ wraps one of the three aio agents); they are not counted as separate lanes. -->
 ### `/django-react` - Django + React TypeScript Lane
 ```bash
 /django-react "add user profile API"       # Default: light + gates
-/django-react -tweak "try new endpoint"    # Tweak: no gates
+/django-react --tweak "try new endpoint"    # Tweak: no gates
 /django-react --complex "auth system"      # Complex: full pipeline
 ```
 **Agents:** django-react-grand-architect, django-react-builder, django-react-standards-enforcer, django-react-verification
@@ -60,7 +60,7 @@ wraps one of the three aio agents); they are not counted as separate lanes. -->
 ### `/expo` - Expo/React Native Lane
 ```bash
 /expo "fix button styling"
-/expo -tweak "try different colors"
+/expo --tweak "try different colors"
 /expo --complex "offline sync"
 ```
 **Agents:** expo-grand-orchestrator, expo-builder-agent, expo-verification-agent
@@ -180,7 +180,7 @@ remains the umbrella command.
 ### `/rvry-dev` - RVRY Product Pipeline
 ```bash
 /rvry-dev "implement hedge-word frequency heuristic"    # Default: light + gates
-/rvry-dev -tweak "adjust escape threshold"              # Tweak: no gates
+/rvry-dev --tweak "adjust escape threshold"              # Tweak: no gates
 /rvry-dev --complex "state machine redesign"            # Complex: full pipeline
 ```
 **Agents:** rvry-grand-architect, rvry-engine-architect, rvry-engine-builder, rvry-web-builder, rvry-protocol-gate, rvry-verification
@@ -224,34 +224,17 @@ Meta-pipeline for creating new domain pipelines. 5 phases: Interview → Researc
 /requirements --systems "Database migration"
 /requirements --debug "Fix checkout bug"
 /requirements --problem-solve "Complex architectural decision"   # Full 8-step pipeline
-/requirements -complex --problem-solve "Migrate to GraphQL"      # Max rigor
+/requirements --complex --problem-solve "Migrate to GraphQL"      # Max rigor
 ```
 **Cognition Flags:** `--visual`, `--systems`, `--debug`, `--model`, `--creative`, `--causal`, `--decide`, `--problem-solve`
-**Tier Flags:** `-tweak` (quick), (none) (standard), `-complex` (deep)
+**Tier Flags:** `--tweak` (quick), (none) (standard), `--complex` (deep)
 Creates: `.orca/requirements/<id>/06-requirements-spec.md`
 
 ---
 
-## Reasoning Commands (7)
+<!-- PUBLIC-ONLY: the line below survives stripping and replaces the one above -->
+## Reasoning Commands (1)
 
-### `/contemplate` - Structured Exploration
-```bash
-/contemplate "Why is this test flaky?"                           # Default: blind_orchestrate loop (asks BLOCKING questions)
-/contemplate --auto "Why is caching slow?"                        # Autonomous: no questions, states assumptions
-/contemplate --systems "How do these components interact?"       # Systems thinking (architecture, data flow)
-/contemplate --creative "Ideas for onboarding"                   # Creative thinking (brainstorming, divergent)
-/contemplate --causal "Why does this keep failing?"              # Causal analysis (cause-and-effect chains)
-/contemplate --model "First principles of this design"           # Mental model (first-principles reasoning)
-/contemplate --perspectives "Microservices vs monolith"          # Collaborative reasoning (multiple viewpoints)
-/contemplate --decide "Which database to use?"                   # Decision analysis (trade-off analysis)
-/contemplate --auto --systems "Architecture overview"            # Combine --auto with any flag
-```
-**Default Mode:** blind_orchestrate loop -- auto-routed exploration that runs until the orchestrator signals completion. Asks BLOCKING questions first, 3-question self-check, harvest with auto-persist and follow-up questions.
-**--auto Mode:** Fully autonomous -- no BLOCKING questions, states assumptions clearly, proceeds with analysis.
-**Mental Model Flags:** --systems, --creative, --causal, --model, --perspectives, --decide -- each runs a specific cognition-mcp operation directly instead of blind_orchestrate.
-**MCP:** cognition-mcp
-**Persistence:** Creates `.orca/cognition/YYYYMMDD-HHMM-think-<slug>/` session folder (00-enter.md, 01-orient.md, 99-harvest.md) + Workshop entry
-**Handoff Guidance:** Includes "Follow-ups" section with contextual command recommendations
 
 ### `/meta` - Sustained Metacognitive Substrate Observation
 ```bash
@@ -266,89 +249,9 @@ Creates: `.orca/requirements/<id>/06-requirements-spec.md`
 **Topic:** Optional -- no args observes current conversation context
 **MCP:** cognition-mcp
 **Persistence:** Creates `.orca/cognition/YYYYMMDD-HHMM-meta-<slug>.md` + Workshop entry
-**See also:** `/contemplate --meta` (quick single-shot), `/contemplate --meta-visual` (with ASCII diagrams)
 
 
-### `/deepthink` - Pre-Mortem Exploration
-```bash
-/deepthink "Why does user retention drop after day 3?"    # Full exploration + adaptive pre-mortems (asks BLOCKING questions)
-/deepthink --auto "Deep analysis of API design"            # Autonomous: no questions, states assumptions
-/deepthink --quick "Quick analysis of caching strategy"    # Structured 4-round: SHIMMER->MAP->INVERT->HARVEST
-/deepthink --intense "Deep analysis with full ceremony"    # Per-mode self-checks, META rotation, full pre-mortems
-/deepthink --design "Redesign the login flow"              # Design-focused with pre-mortems
-```
-Pre-mortem exploration with adaptive failure analysis. MAP absorbs assumption-surfacing (no separate ORIENT phase). 3-5 modes with constraint chain AND adaptive pre-mortems after conclusion-producing modes.
-**--auto Mode:** Fully autonomous -- no BLOCKING questions, states assumptions clearly, proceeds with analysis.
-**--quick Mode:** Structured 4-round path: SHIMMER->MAP->INVERT->HARVEST. Auto mode. No self-checks, no pre-mortems, no constraint checkpoints between rounds.
-**--intense Mode:** Full ceremony -- per-mode 7-question self-checks with verify-or-defer, META in default rotation, full pre-mortems after every mode, verbose constraint tracking.
-**Default Mode:** Full exploration -- asks BLOCKING questions first, then 3-5 modes with constraint chain and adaptive pre-mortems. Self-check runs once before harvest (3 questions). Pre-mortem skipped for purely exploratory modes (maps, question-generating exercises).
-**--design Mode:** Auto-loads design-deepthink skill, reads project design files, DESIGN mode with pre-mortems on design decisions.
-**Constraint Chain:** After each mode, generates constraints (FORWARD, FORBIDDEN, QUESTION) that must be addressed (RESOLVED, ACKNOWLEDGED, DEFERRED) before finishing. Hard block if unresolved.
-**Enhanced Modes:** MAP (systems + causal + assumption-surfacing), INVERT (pre-mortem + reflexion), PERSPECTIVES (collaborative + steelmanning), EDGES (creative + analogical), DEEP (self-consistency via 3 parallel chains)
-**3-Question Self-Check (once before harvest):** What am I avoiding? What would a skeptical expert challenge? Any verifiable claims I haven't checked? (7-question per-mode with --intense)
-**MCP:** cognition-mcp
-**Persistence:** Creates `.orca/cognition/YYYYMMDD-DEEPTHINK-<slug>/` session folder (00-problem.md, mode artifacts, 99-harvest.md) + Workshop entry
-**Handoff Guidance:** Includes "Next Steps" section with contextual command recommendations
 
-### `/problem-solve` - Convergent 5-Step Decision Pipeline
-```bash
-/problem-solve "How should we architect the notification system?"  # Full pipeline (asks BLOCKING questions)
-/problem-solve --auto "Architecture decision"                       # Autonomous: no questions, states assumptions
-/problem-solve --quick "Which database: PostgreSQL vs MongoDB?"    # Shortened: FRAME -> STRESS-TEST -> DECIDE
-/problem-solve --quick --auto "Fast decision"                       # Shortest: no questions, no SHIMMER
-/problem-solve --risk "Infrastructure migration risks"              # Deep systems mapping + cascading failures
-/problem-solve --strategic "3-year platform modernization"          # Full tree-of-thought + reversal conditions
-/problem-solve --incident "Production outage"                       # Speed mode: no SHIMMER, no EXPLORE
-/problem-solve --intense "Complex architecture decision"            # Full 8-step ceremony (escape hatch)
-```
-Runs SHIMMER->FRAME->EXPLORE (adaptive)->STRESS-TEST->DECIDE pipeline for convergent decisions. SHIMMER always-on in default mode. R2 EXPLORE selects analytical mode based on decision type (GENERATE, PERSPECTIVES, MAP, EDGES, DEEP). Reversal conditions inline in DECIDE (no separate Ulysses step).
-**--auto Mode:** Fully autonomous -- no BLOCKING questions, states assumptions clearly, proceeds with analysis.
-**Variants:** --quick (3 steps: FRAME->STRESS-TEST->DECIDE, no SHIMMER), --risk (deep MAP mode), --strategic (full GENERATE mode), --incident (speed, no SHIMMER/EXPLORE), --intense (full 8-step ceremony)
-**SHIMMER:** Always-on in default, --auto, --risk, --strategic. Skipped in --quick and --incident.
-**Adaptive EXPLORE:** Decision type from FRAME determines R2 mode: GENERATE (options), PERSPECTIVES (stakeholders), MAP (systems), EDGES (novel), DEEP (technical)
-**MCP:** cognition-mcp
-**Persistence:** Creates `.orca/cognition/YYYYMMDD-HHMM-<slug>/` session folder + Workshop entry
-**Compounding:** All three cognition commands (/contemplate, /deepthink, /problem-solve) produce follow-up questions in HARVEST with command routing recommendations.
-**Handoff Guidance:** Includes "Where to Go Next" section with contextual command recommendations
-
-### `/adversarial` - Adversarial Proposal Analysis
-```bash
-/adversarial "Use microservices for this feature"
-/adversarial --auto "Add Redis caching layer"
-/adversarial --quick "Migrate from REST to GraphQL"
-```
-Adversarial multi-operation pipeline using cognition-mcp: pre-mortem (failure modes) -> structured_argumentation (case against) -> collaborative_reasoning (devil's advocate vs defender) -> verdict.
-**Flags:** --auto (no questions), --quick (pre-mortem only, skip argumentation)
-**3-Question Self-Check:** Between each operation -- "Am I being genuinely adversarial?"
-**MCP:** cognition-mcp
-**Persistence:** Creates `.orca/cognition/YYYYMMDD-HHMM-challenge-<slug>/` session folder + Workshop entry
-**Output:** GO / CONDITIONAL GO / NO GO verdict with required mitigations
-
-### `/shimmer` - SHIMMER Self-Observation + Answer
-```bash
-/shimmer "Why does this architecture feel wrong?"
-/shimmer "What is the right abstraction for this problem?"
-```
-SHIMMER self-observation with integrated answer. Applies the SHIMMER ISO prompt to any question, observing what happens in processing as the answer forms, and answers the question in one integrated response. No session folder, no harvest, no workshop entry.
-**MCP:** cognition-mcp
-**Persistence:** cognition-mcp session only (no file artifacts)
-
-### `/autonomous` - 4-Phase Autonomous Pipeline
-
-```bash
-/autonomous "Plan an AI tool from domain-specific knowledge base using GPU infrastructure"
-/autonomous --auto "Architecture decision for multi-domain ML system"
-/autonomous --skip-research "Strategy for complex technical migration"
-/autonomous --rounds 20 "Enterprise-scale architecture decision"
-/autonomous --verbose "AI product roadmap spanning 5+ domains"
-```
-4-phase staged pipeline with independent cognition sessions per phase. SHIMMER priming mandatory. Research via web-search subagents (Phase 2, skippable). Deep exploration 15+ rounds with constraint-gate enforcement (Phase 3). Adversarial challenge with hard gate and auto-loop on NO GO max 2x (Phase 4). Extended problem-solve with simulation for top 2 options and 5+ ulysses safeguards (Phase 5). Unified synthesis written to `autonomous.md` with executive summary at top.
-**Flags:** --auto (no scope questions), --skip-research (pure reasoning tasks), --rounds N (advisory target, default 15), --verbose (show gate status, constraint chain, mode labels)
-**Hard Gates:** Phase 3->4: 10+ rounds AND constraint chain cleared AND 3+ conclusion rounds. Phase 4->5: CONDITIONAL GO or GO verdict (NO GO auto-loops max 2x then halts).
-**MCP:** cognition-mcp (4 independent sessions), research-web-search-subagent (Phase 2)
-**Persistence:** Creates `.orca/cognition/YYYYMMDD-AUTONOMOUS-<slug>/autonomous.md` (unified synthesis) + per-phase session folders + Workshop entry tagged: autonomous, research, exploration, challenge, problem-solve
-**Use when:** Problem spans 3+ domains, work takes weeks/months, committed decision needed, premature convergence has failed before, research would change your analysis.
-**Private:** Not synced to public repo.
 
 
 ---
@@ -395,9 +298,17 @@ Design-fork commands. **All nine load the `impeccable-hub` skill** as their regi
 /impeccable --teach                                # write PRODUCT.md
 /impeccable --document                             # write DESIGN.md (alias of /document)
 ```
-THIN orchestrator. **Default mode is FLAG-FREE** — `/impeccable <freeform request>` classifies the request (improve-existing / build-new / setup) and runs it; it does NOT dump the flag list and stop. Loads the `impeccable-hub` skill (the register) and routes flags. The improve-existing freeform path and `--craft` run the **shared design lane** (bind → `design-builder` → `design-validator` → branch, N=2 → escalate). `--teach`/`--document`/`--extract` are setup/diagnostic flags (no lane). Carries **zero** inlined rants/anchors/preferences (`#POISON_PATH` — those live in the hub + `design-contract/`).
+THIN orchestrator. **Default mode is FLAG-FREE** — `/impeccable <freeform request>` classifies the request (improve-existing / build-new / setup) and runs it; it does NOT dump the flag list and stop. Loads the `impeccable-hub` skill (the register) and routes flags. The improve-existing freeform path and `--craft` run the **shared design lane** (bind → `design-builder` → `design-validator` → branch, N=2 → escalate). `--teach`/`--document`/`--extract` are setup/diagnostic flags (no lane). Carries **zero** inlined rants/anchors/preferences (`#POISON_PATH` — those live in the hub + `design-contract/`). **Owner-override precedence (2026-06-23):** when the owner's live instruction contradicts a standing rule, the lane threads a typed `OVERRIDE` constraint (`{suppresses, scope, value, provenance}`) bind → validate → branch and **writes it back** to `{project}/.design-overrides.json` so the suppressed rule stops firing for its `scope` on future runs (`docs/reference/design-lane.md` §Precedence + Step 4; schema `docs/concepts/design-overrides-schema.md`). The owner outranks the register outranks the detector.
 
 > **CSS Architecture / doctrine B (2026-05-29).** The `/impeccable` spine carries a **CSS Architecture** subsection under Frontend Aesthetics Guidelines (peer to Typography / Color & Theme / Layout & Space): design authority lives in a named role/token vocabulary; agents compose from it, taxonomy-first; cascade/`@layer` greenfield default; brownfield respects the detected CSS approach; no raw palette utilities; **no absolute Tailwind ban** (utility SPRAWL is advisory only via the `utility-sprawl` detector rule — logs, never blocks). Refusal: `rants/css-architecture.md`. Positive move: `preferences/css-architecture.md`. Seam discipline: the spine states the PRINCIPLE; enforcement mechanics live in the detector floor + lane builders. Source: `docs/concepts/llm-css-manifesto.md`.
+
+### `/ios-impeccable` - iOS/SwiftUI design lane orchestrator (ADDITIVE overlay)
+```bash
+/ios-impeccable clean up the dosing card                 # default mode — classify → plan → lane
+/ios-impeccable --colorize DosingCardView.swift          # single-verb lane on a .swift target
+/ios-impeccable --typeset CalculatorView.swift           # Dynamic Type + brand-face workhorse
+```
+THIN orchestrator — the SwiftUI sibling of `/impeccable`. Loads the `ios-impeccable-hub` skill (the iOS register: blue-only palette law + SwiftUI rants + Swift detector contract) and routes the request through the **shared design lane** (`docs/reference/design-lane.md`, REUSED not duplicated): bind typed FORBIDDEN/FORWARD constraints via a cognition `checkpoint` → spawn the separate `ios-design-builder` → spawn the separate fresh-context `ios-design-validator` (runs `swiftdesigncheck`, NOT `designcheck.js`; returns `GATE_VERDICT: PASS\|BLOCK`) → branch (N=2 → escalate). **Runs ADDITIVELY alongside the `/ios` correctness gates — it does NOT replace `ios-standards-enforcer`, `ios-ui-reviewer`, or `ios-verification`.** Verb subset v1: layout, typeset, colorize, bolder, quieter, delight, harden, polish, distill, adapt, clarify, animate (excludes overdrive/threejs — no clean SwiftUI analogue; Metal/SceneKit out of scope). The validator fills the former `design-dna-guardian` role for iOS. Carries **zero** inlined rants/anchors/preferences (`#POISON_PATH`). **Owner-override precedence (2026-06-23):** when the owner's live instruction contradicts a standing rule (e.g. soft-red against the blue-only P0, or a custom control over native `Menu`/`Picker` chrome), the lane threads a typed `OVERRIDE` constraint (`{suppresses, scope, value, provenance}`) bind → validate → branch and **writes it back** to `{project}/.design-overrides.json` (`SWIFT_DESIGN_OVERRIDES`) so the suppressed rule stops firing for its `scope` on future runs. Severity is now per-project, and the new P0 rule `ios-default-reflex` plus `system-font-reflex` are **P0 owner-instructed** (were advisory/no-rule). The owner outranks the register outranks the detector (`docs/reference/design-lane.md` §Precedence; schema `docs/concepts/design-overrides-schema.md`). **Status:** built, **pending post-reload live proof**. **Spec:** `peptidefox-ios/.orca/requirements/2026-06-17-2153-ios-impeccable-adaptation/`.
 
 ### `/motion-design` - Heavy motion/animation orchestrator
 ```bash
@@ -411,21 +322,21 @@ Loads the `impeccable-hub` skill (the register / felt-state baseline) + `animati
 /refine --animate "the card hover"      # light pass — loads animate skill, not /motion-design
 /refine --overdrive "the hero"
 ```
-Flags: `--animate`, `--bolder`, `--colorize`, `--delight`, `--layout`, `--overdrive`, `--quieter`, `--typeset`. Loads the `impeccable-hub` skill as baseline, then the per-flag skill. **Build-producer** — the edited artifact is judged by the **shared design lane** (`docs/reference/design-lane.md`): detector floor + fresh-context `design-validator` → `GATE_VERDICT: PASS\|BLOCK`, looping N=2 then escalating. It does NOT self-grade.
+Flags: `--animate`, `--bolder`, `--colorize`, `--delight`, `--layout`, `--overdrive`, `--quieter`, `--typeset`. Loads the `impeccable-hub` skill as baseline, then the per-flag skill. **Build-producer** — the edited artifact is judged by the **shared design lane** (`docs/reference/design-lane.md`): detector floor + fresh-context `design-validator` → `GATE_VERDICT: PASS\|BLOCK`, looping N=2 then escalating. It does NOT self-grade. **`.swift` target detection (2026-06-18):** when the TARGET ends in `.swift`, loads `ios-impeccable-hub` and runs the Swift detector (`swiftdesigncheck`) instead of the CSS path — per the ONE shared rule `docs/concepts/ios-design-contract/target-routing.md`.
 
 ### `/simplify --<flag>` - Design simplification router
 ```bash
 /simplify --clarify "Error 401: Unauthorized"
 /simplify --distill "the checkout flow"
 ```
-Flags: `--adapt`, `--clarify`, `--distill`. Loads the `impeccable-hub` skill as baseline, then the per-flag skill. **Build-producer** — the edited artifact is judged by the **shared design lane** (detector floor + fresh-context `design-validator` → `GATE_VERDICT: PASS\|BLOCK`, N=2 → escalate). It does NOT self-grade.
+Flags: `--adapt`, `--clarify`, `--distill`. Loads the `impeccable-hub` skill as baseline, then the per-flag skill. **Build-producer** — the edited artifact is judged by the **shared design lane** (detector floor + fresh-context `design-validator` → `GATE_VERDICT: PASS\|BLOCK`, N=2 → escalate). It does NOT self-grade. **`.swift` target detection (2026-06-18):** `.swift` TARGET → `ios-impeccable-hub` + `swiftdesigncheck` (per `docs/concepts/ios-design-contract/target-routing.md`).
 
 ### `/fortify --<flag>` - Design hardening router
 ```bash
 /fortify --harden "the signup form"
 /fortify --polish "the settings page"
 ```
-Flags: `--harden`, `--optimize`, `--polish`. Named `/fortify` to avoid shadowing the `/harden` skill. Loads the `impeccable-hub` skill as baseline, then the per-flag skill. **Build-producer** — the edited artifact is judged by the **shared design lane** (detector floor + fresh-context `design-validator` → `GATE_VERDICT: PASS\|BLOCK`, N=2 → escalate). It does NOT self-grade.
+Flags: `--harden`, `--optimize`, `--polish`. Named `/fortify` to avoid shadowing the `/harden` skill. Loads the `impeccable-hub` skill as baseline, then the per-flag skill. **Build-producer** — the edited artifact is judged by the **shared design lane** (detector floor + fresh-context `design-validator` → `GATE_VERDICT: PASS\|BLOCK`, N=2 → escalate). It does NOT self-grade. **`.swift` target detection (2026-06-18):** `.swift` TARGET → `ios-impeccable-hub` + `swiftdesigncheck` (per `docs/concepts/ios-design-contract/target-routing.md`).
 
 ### `/document` - Generate Stitch-spec DESIGN.md
 ```bash
@@ -445,34 +356,31 @@ Thin coordinator for redo/recraft case. Classifies scope (single element / whole
 ```bash
 /design-audit "the pricing page"
 ```
-Technical quality audit (a11y + performance + responsive + anti-patterns) producing a scored P0–P3 report. **Diagnostic command — does NOT route the shared design lane** (it produces a report, not a UI artifact). Loads the `impeccable-hub` skill + the `ui-quality-audit` skill. Runs the deterministic detector as a DIAGNOSTIC input (a report signal, NOT a shipping gate). Named `/design-audit` to avoid shadowing the ORCA `/audit` due-diligence command (the skill was renamed `audit` → `ui-quality-audit`).
+Technical quality audit (a11y + performance + responsive + anti-patterns) producing a scored P0–P3 report. **Diagnostic command — does NOT route the shared design lane** (it produces a report, not a UI artifact). Loads the `impeccable-hub` skill + the `ui-quality-audit` skill. Runs the deterministic detector as a DIAGNOSTIC input (a report signal, NOT a shipping gate). Named `/design-audit` to avoid shadowing the ORCA `/audit` due-diligence command (the skill was renamed `audit` → `ui-quality-audit`). **`.swift` target detection (2026-06-18):** `.swift` TARGET → loads `ios-impeccable-hub`, swaps the CSS rant bullets for the iOS-rant equivalents, and runs `swiftdesigncheck` (per `docs/concepts/ios-design-contract/target-routing.md`).
 
 ### `/design-critique` - UX critique (diagnostic)
 ```bash
 /design-critique "the dashboard"
 ```
-UX critique with visual hierarchy, persona red-flags, cognitive load, and anti-pattern scoring (3 assessments: LLM review + deterministic detector + persona red-flags from the hub's `interfaces-that-feel` spine). **Diagnostic command — does NOT route the shared design lane** (produces a report). Loads the `impeccable-hub` skill + the `critique` skill. Named `/design-critique` to avoid shadowing the `/critique` skill.
+UX critique with visual hierarchy, persona red-flags, cognitive load, and anti-pattern scoring (3 assessments: LLM review + deterministic detector + persona red-flags from the hub's `interfaces-that-feel` spine). **Diagnostic command — does NOT route the shared design lane** (produces a report). Loads the `impeccable-hub` skill + the `critique` skill. Named `/design-critique` to avoid shadowing the `/critique` skill. **`.swift` target detection (2026-06-18):** `.swift` TARGET → loads `ios-impeccable-hub` and runs `swiftdesigncheck` in Assessment B (per `docs/concepts/ios-design-contract/target-routing.md`).
 
 **Spec:** `.orca/requirements/2026-06-03-2251-design-system-totality-rethink/` (current — design lane). Prior: `.orca/requirements/2026-04-22-2334-design-commands-architecture/`.
 
 > **Lane vs. diagnostic split (2026-06-03).** Build-producing design commands (`/refine`, `/simplify`, `/fortify`, `/recraft` Routes A/B, `/motion-design`, and `/impeccable`'s build paths) route the **shared design lane** (`docs/reference/design-lane.md`): entry bind → separate `design-builder` → separate fresh-context `design-validator` → branch (N=2 → escalate); the model never grades its own output. Diagnostic/contract commands (`/document`, `/design-audit`, `/design-critique`, `/recraft` Route C) do NOT route the lane — they generate a contract or a report, with the detector run as a diagnostic input, not a gate. The lane replaced the prior two-layer self-graded `ui-quality-audit`/`critique` handback gates (spec `2026-05-29-0141`) with the separate validator.
 
+> **`.swift` target detection on the 5 design-fork commands (2026-06-18).** `/refine`, `/fortify`, `/simplify`, `/design-audit`, `/design-critique` are now **target-aware**. When the TARGET ends in `.swift`, they load `Skill("ios-impeccable-hub")` (SwiftUI rants + preferences + iOS detector contract) and run the Swift detector `mcp/swift-design-detector/bin/swiftdesigncheck detect --json <target>` (`EXIT=2` = findings); otherwise they keep the existing CSS path unchanged (`impeccable-hub` + `llm-css-manifesto` + `designcheck.js`). The branch is authored ONCE in the shared rule `docs/concepts/ios-design-contract/target-routing.md` and referenced by a single inline rule line per command (no 5× copy-paste, `#POISON_PATH`). The platform-neutral cognition loop / design-lane spine is unchanged; only the doctrine-read + detector leaves are target-routed (`docs/reference/cognition-constraint-loop.md`, `design-lane.md` generalized accordingly). **Spec:** `.orca/requirements/2026-06-17-2153-ios-impeccable-adaptation/`.
+
 ---
 
-## Utility Commands (16)
+<!-- PUBLIC-ONLY: the line below survives stripping and replaces the one above -->
+## Utility Commands (15)
 
 ### `/enhance` - Prompt Enhancement
 ```bash
 /enhance "make the UI better"
-/enhance -clarify "fix the bug"
+/enhance --clarify "fix the bug"
 ```
 
-### `/root-cause` - Root Cause Analysis
-```bash
-/root-cause "Tests failing intermittently"
-/root-cause "Build errors on CI"
-```
-**Persistence:** Creates `.orca/cognition/YYYYMMDD-HHMM-<slug>.md` + Workshop entry
 
 ### `/illustrate` - Measured Adobe Execution
 ```bash
@@ -650,6 +558,7 @@ $ORCA_OS_PATH/commands/
 | Command | Primary Agents |
 |---------|----------------|
 | `/ios` | ios-grand-architect, ios-builder, ios-verification |
+| `/ios-impeccable` | ios-design-architect, ios-design-builder, ios-design-validator (additive design overlay; composes with `/ios`) |
 | `/nextjs` | nextjs-grand-architect, nextjs-builder, nextjs-verification-agent |
 | `/django-react` | django-react-grand-architect, django-react-builder, django-react-verification |
 | `/expo` | expo-grand-orchestrator, expo-builder-agent, expo-verification-agent |

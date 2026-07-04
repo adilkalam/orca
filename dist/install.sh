@@ -197,7 +197,7 @@ LANE_TYPOGRAPHY="n"
 
 select_lanes() {
     section "Selecting domain lanes"
-    info "Core orchestration, cognition (/think, /deepthink, ...), and design install automatically."
+    info "Core orchestration, the cognition-mcp reasoning substrate, and design install automatically."
     info "Pick the build lanes you want. Re-run the installer anytime to add more."
 
     if [ -t 0 ]; then
@@ -306,10 +306,12 @@ install_orca_files() {
     for cmd in "$ORCA_ROOT/commands/"*.md; do
         local filename=$(basename "$cmd")
         # Always-skip private/excluded commands.
-        # NOTE: cognition-mcp commands (think/deepthink/challenge/contemplate/
-        # shimmer/adversarial/problem-solve) and meta ARE installed -- cognition-mcp
-        # is bundled; meta's RVRY dep is set up below. orca-os-dev is excluded
-        # (LOCAL-to-repo lane).
+        # NOTE: the dedicated cognition commands (think/deepthink/challenge/
+        # contemplate/shimmer/adversarial/problem-solve/think-model/root-cause) are
+        # NOT shipped publicly, so they are absent from this repo and never copied.
+        # cognition-mcp itself IS bundled -- the design lanes use it as their
+        # reasoning substrate. /meta is installed (RVRY dep set up below).
+        # orca-os-dev is excluded (LOCAL-to-repo lane).
         case "$filename" in
             trading-*.md|kg.md|seo.md|rvry-dev.md|shopify.md|problem-solve-local.md|orca-os-dev.md)
                 continue ;;
@@ -900,9 +902,8 @@ print_completion() {
     echo -e "  ${BOLD}Core MCPs installed:${NC}"
     echo "     - context7 (library documentation)"
     echo "     - project-context (memory & semantic search)"
-    echo "     - cognition-mcp (structured reasoning -- powers /think, /deepthink,"
-    echo "                      /challenge, /contemplate, /shimmer, /adversarial,"
-    echo "                      /problem-solve)"
+    echo "     - cognition-mcp (structured reasoning substrate -- powers the design"
+    echo "                      lanes: /impeccable, /refine, /fortify, /simplify)"
     echo "     - sequential-thinking (multi-step reasoning)"
     echo "     - RVRY (metacognitive substrate -- powers /meta)"
     echo ""
@@ -937,7 +938,7 @@ print_completion() {
     echo "     /requirements  - Plan a complex task"
     echo "     /orca          - Invoke the orchestrator"
     echo "     /impeccable    - Distinctive, production-grade front-end work"
-    echo "     /deepthink     - Structured reasoning (cognition-mcp)"
+    echo "     /refine        - Targeted design refinement (cognition-mcp loop)"
     [ "$LANE_IOS" = "y" ]          && echo "     /ios           - iOS development pipeline"
     [ "$LANE_EXPO" = "y" ]         && echo "     /expo          - Expo/React Native pipeline"
     [ "$LANE_NEXTJS" = "y" ]       && echo "     /nextjs        - Next.js development pipeline"

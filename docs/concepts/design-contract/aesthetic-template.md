@@ -71,7 +71,7 @@ Cross-references:
 
 | # | Slot | Example |
 |---|---|---|
-| 1 | Eyebrow | "REFERENCE WORKBENCH", "PRESS RELEASE" |
+| 1 | Non-Title/Display Heading Eyebrow | "REFERENCE WORKBENCH", "PRESS RELEASE" |
 | 2 | Tag / chip (≤8 chars) | "A" "B" "X" / "n=33" / "wk 24" |
 | 3 | Unit (split from numeric value) | the "mg" beside a 7.21 numeral |
 | 4 | Chart axis chrome | SVG tick labels, axis labels |

@@ -1,8 +1,8 @@
 # OS 7.0 Agents Quick Reference
 
-**Last Updated:** 2026-06-03
+**Last Updated:** 2026-06-18
 **Version:** OS 7.1
-**Total Agents:** 72
+**Total Agents:** 76
 
 > **Scope Note:** This quick-reference covers all agents across 18 domains. See `docs/reference/os-dependency-graph.yaml` for complete registry.
 
@@ -43,10 +43,11 @@
 | AIO | 3 | `agents/aio/` |
 | Data | 4 | `agents/data/` |
 | Cross-Domain | 1 | `agents/cross-domain/` |
-| Design | 2 | `agents/design/` |
+| Design | 3 | `agents/design/` |
+| iOS Design (overlay) | 3 | `agents/ios-design/` |
 | 3D Printing | 0 (MCP+skill) | bambu-3mf, openscad-mcp |
 | Creative Design | 0 (MCP+skill) | adb-mcp (Photoshop, Illustrator) |
-| **TOTAL** | **137** | |
+| **TOTAL** | **140** | |
 
 ---
 
@@ -458,10 +459,25 @@ Full-separation design lane (2026-06-03 design-system totality rethink, Phase 2)
 
 | Agent | Purpose |
 |-------|---------|
+| `design-architect` | Design lane planner. Decomposes a request into ordered verb-tasks (layout/typeset/colorize/harden/…), each with forbidden/forward constraint seeds + target files. Class-scopes the sweep. **Emits a typed `OVERRIDE` constraint** (`{suppresses, scope, value, provenance}`) ONLY from an explicit owner instruction that contradicts a standing rule — the channel that makes the owner outrank the register/detector (`docs/reference/design-lane.md` §Precedence; schema `docs/concepts/design-overrides-schema.md`). Plans only — never implements, never spawns. Consumed by the `/impeccable` orchestrator. |
 | `design-builder` | Separate producer. Builds the front-end artifact under the bound constraint ids; hub injected via prompt (reload-safe) / `skills: [impeccable]` (post-reload). Does NOT self-grade. |
-| `design-validator` | Separate **fresh-context** judge. Runs the LOCAL detector (`node mcp/design-detector/bin/designcheck.js`), judges bound ids, returns `GATE_VERDICT: PASS\|BLOCK`. Hard-on-named-slop, advisory-on-taste. Never sees the builder's reasoning. |
+| `design-validator` | Separate **fresh-context** judge. Runs the LOCAL detector (`node mcp/design-detector/bin/designcheck.js`), judges bound ids, returns `GATE_VERDICT: PASS\|BLOCK`. **Subtracts owner-sanctioned findings before the verdict:** for each active `OVERRIDE`, a detector finding whose `ruleId` + path falls under the override's `suppresses` + `scope` is removed from `UNSATISFIED_CONSTRAINTS` and downgraded to an `owner-sanctioned` advisory — an owner-sanctioned P0 no longer forces BLOCK (the owner outranks the floor). Hard-on-named-slop, advisory-on-taste. Never sees the builder's reasoning. |
 
 > **Status (2026-06-03):** agents authored in-repo; a new agent is NOT spawnable until a Claude Code session reload, so the lane is **built, pending post-reload live proof** — not yet live-verified. Worked example: `/impeccable` (thin). The other 12 design commands are NOT yet converted (post-reload one-pass apply).
+
+---
+
+## iOS Design Lane Overlay (3 Agents)
+
+Additive iOS/SwiftUI design overlay (2026-06-18 ios-impeccable-adaptation, Phase 3). The SwiftUI sibling of the Design Lane: a thin orchestrator (`/ios-impeccable`, main thread) binds typed FORBIDDEN/FORWARD constraints via a cognition `checkpoint`, spawns a **separate** SwiftUI builder, then a **separate fresh-context** validator that runs the **Swift** detector (`swiftdesigncheck`, NOT `designcheck.js`), and branches on the verdict (N=2 → escalate). Reuses the shared lane definition `docs/reference/design-lane.md` (referenced, never copy-pasted). Hub skill: `skills/ios-impeccable-hub/SKILL.md` (the iOS register: blue-only palette law + SwiftUI rants + Swift detector contract). **This overlay composes ADDITIVELY with the `/ios` correctness lane — it does NOT replace `ios-standards-enforcer`, `ios-ui-reviewer`, or `ios-verification`.** Verb subset v1: layout, typeset, colorize, bolder, quieter, delight, harden, polish, distill, adapt, clarify, animate (excludes overdrive/threejs — no clean SwiftUI analogue).
+
+| Agent | Purpose |
+|-------|---------|
+| `ios-design-architect` | iOS design lane planner. Decomposes a SwiftUI request into ordered verb-tasks, each with forbidden (Swift detector rule ids) / forward (felt-state) seeds + target `.swift` files. Class-scopes the sweep. **Emits a typed `OVERRIDE` constraint** (`{suppresses, scope, value, provenance}`) ONLY from an explicit owner instruction that contradicts a standing rule (e.g. the owner sanctioning soft-red against the blue-only P0) — the channel that makes the owner outrank the register/detector (`docs/reference/design-lane.md` §Precedence; schema `docs/concepts/design-overrides-schema.md`). Plans only — never implements, never spawns. Consumed by the `/ios-impeccable` orchestrator. |
+| `ios-design-builder` | Separate SwiftUI producer. Builds the artifact under the bound constraint ids; loads `ios-impeccable-hub` + reuses `ios-swiftui-specialist` knowledge; rejects web reflexes (OKLCH/`gap`/CSS/`px`) via a `#POISON_PATH` guard; self-checks with `swiftdesigncheck`. Does NOT self-grade. |
+| `ios-design-validator` | Separate **fresh-context** judge. Runs the LOCAL Swift detector (`mcp/swift-design-detector/bin/swiftdesigncheck`, overridable via `SWIFT_DESIGN_DETECTOR_BIN`), judges bound ids, returns `GATE_VERDICT: PASS\|BLOCK` + `SCORE` + `UNSATISFIED_CONSTRAINTS` + `FINDINGS`. **Subtracts owner-sanctioned findings before the verdict:** for each active `OVERRIDE`, a finding whose `ruleId` + path falls under the override's `suppresses` + `scope` is removed from `UNSATISFIED_CONSTRAINTS` and downgraded to an `owner-sanctioned` advisory — an owner-sanctioned P0 no longer forces BLOCK. Hard-on-named-slop, advisory-on-taste. **HARD-BLOCKS if the detector errors or is unavailable** (`DETECTOR-ERROR` / `DETECTOR-UNAVAILABLE`) — never degrades to a read-the-file pass. **Fills the former `design-dna-guardian` role for iOS.** Never sees the builder's reasoning. |
+
+> **Status (2026-06-18):** agents + `/ios-impeccable` authored in-repo (Phase 3 of `ios-impeccable-adaptation`); a new agent is NOT spawnable until a Claude Code session reload, so the overlay is **built, pending post-reload live proof**. Phase 4 (wiring the 5 design-fork commands `/refine` `/fortify` `/simplify` `/design-audit` `/design-critique` to detect `.swift` targets) is the remaining follow-up.
 
 ---
 
@@ -485,6 +501,7 @@ Full-separation design lane (2026-06-03 design-system totality rethink, Phase 2)
 ```
 ~/.claude/agents/
   iOS/              # 18 agents
+  ios-design/       # 3 agents (additive SwiftUI design overlay)
   nextjs/           # 17 agents
   django-react/     # 13 agents
   expo/             # 12 agents
@@ -514,14 +531,14 @@ $ORCA_OS_PATH/agents/
 ### iOS Feature
 ```bash
 /ios "add haptic feedback"        # Default: light + gates
-/ios -tweak "try animation"       # Tweak: no gates
+/ios --tweak "try animation"       # Tweak: no gates
 /ios --complex "auth flow"        # Complex: full pipeline
 ```
 
 ### Next.js UI
 ```bash
 /nextjs "fix button spacing"
-/nextjs -tweak "try padding"
+/nextjs --tweak "try padding"
 /nextjs --complex "dark mode"
 ```
 

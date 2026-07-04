@@ -130,7 +130,6 @@ Status: exploratory (NOT committed)
 Next steps:
   - Review brief and Go/No-Go criteria
   - If proceeding: /plan --from-brief
-  - If more exploration: /deepthink "[specific question]"
   - If abandoning: Archive this requirement
 ```
 
@@ -172,8 +171,8 @@ The brief's exploration becomes INPUT to the standard flow. Questions build on w
 /plan --explore --systems "arch idea"   # Systems-focused exploration
 
 # INVALID (will error)
-/plan --explore -tweak "idea"           # Conflicting workflows
-/plan --explore -complex "idea"         # Conflicting workflows
+/plan --explore --tweak "idea"           # Conflicting workflows
+/plan --explore --complex "idea"         # Conflicting workflows
 /plan --explore --problem-solve "idea"  # Divergent vs convergent conflict
 ```
 
@@ -244,7 +243,7 @@ Suggested next step:
   /nextjs Implement requirement dark-mode
 ```
 
-The tier carries through: `-tweak` plan = `-tweak` execution.
+The tier carries through: `--tweak` plan = `--tweak` execution.
 
 ---
 
@@ -265,7 +264,7 @@ Grand architects respect these tags and don't re-decide settled `#PATH_DECISION`
 
 ## Tips
 
-1. **Use tiers appropriately**: `-tweak` for small stuff, `-complex` for risky changes
+1. **Use tiers appropriately**: `--tweak` for small stuff, `--complex` for risky changes
 2. **Add cognition flags** for non-obvious tasks
 3. **Answer with defaults** when uncertain - defaults are smart
 4. **Review the spec** before running `/orca-*`
@@ -277,13 +276,13 @@ Grand architects respect these tags and don't re-decide settled `#PATH_DECISION`
 
 ```bash
 # Quick config change
-/plan -tweak Update API endpoint URL
+/plan --tweak Update API endpoint URL
 
 # Standard feature
 /plan Add user avatar upload
 
 # Complex with systems analysis
-/plan -complex --systems Add real-time notifications
+/plan --complex --systems Add real-time notifications
 
 # Bug with debugging analysis
 /plan --debug Fix cart total calculation error
@@ -295,7 +294,7 @@ Grand architects respect these tags and don't re-decide settled `#PATH_DECISION`
 /plan --problem-solve Implement multi-tenant architecture
 
 # Problem-solve with complex tier for maximum rigor
-/plan -complex --problem-solve Migrate from REST to GraphQL
+/plan --complex --problem-solve Migrate from REST to GraphQL
 
 # Exploratory planning for half-baked ideas
 /plan --explore What if we added AI-powered search?

@@ -164,11 +164,11 @@ When `fix <finding-id>` is detected:
    }
    ```
 
-4. **Route to Lane** - Write the finding context to `.orca/orchestration/handoff.json`, then route to the domain command in the main thread via SlashCommand (`-tweak` = light path with gates for the finding's dimension):
+4. **Route to Lane** - Write the finding context to `.orca/orchestration/handoff.json`, then route to the domain command in the main thread via SlashCommand (`--tweak` = light path with gates for the finding's dimension):
    ```typescript
    // handoff.json: { findingId, type, severity, dimension, title, location,
    //                 description, evidence, recommendation, effort }
-   SlashCommand({ command: `/${lane} -tweak Fix audit finding ${findingId} (see .orca/orchestration/handoff.json)` })
+   SlashCommand({ command: `/${lane} --tweak Fix audit finding ${findingId} (see .orca/orchestration/handoff.json)` })
    ```
    The domain command runs inline and spawns its builder + dimension gate single-level. (OS 7.1 — no `*-light-orchestrator` subagent; that tier is dissolved.)
 
@@ -243,7 +243,7 @@ Your first tool call MUST NOT be:
 - Four-tier structure (Reverse Three-Tier):
   - Default (no flag): Light path WITH confirmation, then gates
   - `--light`: Light path WITHOUT confirmation (replaces old default behavior)
-  - `-tweak`: Builder direct, pure speed, NO gates
+  - `--tweak`: Builder direct, pure speed, NO gates
   - `--complex`: Full pipeline (grand-architect + all gates + confirmation)
 
 ---
@@ -663,7 +663,7 @@ AskUserQuestion({
 
 This allows domain orchestrators to handle:
 - Complexity classification (simple/medium/complex)
-- `-tweak` flag for forcing light path
+- `--tweak` flag for forcing light path
 - Spec gating for complex tasks
 - Memory-first context within the domain
 

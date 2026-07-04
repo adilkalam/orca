@@ -28,7 +28,7 @@ The iOS pipeline uses four-tier routing:
 |------|------|------|-------|----------|
 | **Light** | `--light` | Light orchestrator | YES | Confident users, skip confirmation |
 | **Default** | (none) | Light + Confirmation | YES | Most work -- fast with quality |
-| **Tweak** | `-tweak` | Builder direct | NO | Speed iteration, user verifies |
+| **Tweak** | `--tweak` | Builder direct | NO | Speed iteration, user verifies |
 | **Complex** | `--complex` | Full pipeline | YES | Architecture, multi-file, specs |
 
 ### Default Mode (Light + Gates)
@@ -42,12 +42,12 @@ Most tasks take this path. Fast execution with automated quality checks.
 
 **Gates run:** `ios-standards-enforcer` + `ios-ui-reviewer`
 
-### Tweak Mode (`-tweak`)
+### Tweak Mode (`--tweak`)
 
 Pure speed path. User explicitly accepts responsibility for verification.
 
 ```bash
-/ios -tweak "fix padding"        # → light orchestrator → builder → done
+/ios --tweak "fix padding"        # → light orchestrator → builder → done
 ```
 
 ### Complex Mode (`--complex`)

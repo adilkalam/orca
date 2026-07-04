@@ -9,9 +9,11 @@ license: Apache 2.0.
 
 ## Entry: mandatory skill loading
 
+**Target routing (`#PATH_DECISION` — one rule, not 5 copies):** apply `~/.claude/docs/concepts/ios-design-contract/target-routing.md`. If the TARGET ends in `.swift`, load `Skill("ios-impeccable-hub")` in place of `impeccable-hub` and run the Swift detector in Assessment B; otherwise keep the CSS/web path unchanged.
+
 Before any work, invoke:
 
-1. `Skill("impeccable-hub")` — the register (felt-state spine + rants + preferences + voice-anchors + detector floor). Baseline for every invocation; drives Assessment C (persona red-flags) via its `interfaces-that-feel` spine.
+1. `Skill("impeccable-hub")` — the register (felt-state spine + rants + preferences + voice-anchors + detector floor). Baseline for every invocation; drives Assessment C (persona red-flags) via its `interfaces-that-feel` spine. **For a `.swift` target, load `Skill("ios-impeccable-hub")` instead** (SwiftUI rants + preferences + the iOS detector contract) — see the routing rule above.
 2. `Skill("critique")` — the critique skill's review procedure, persona testing, scoring.
 
 ## Context gathering
@@ -29,7 +31,7 @@ Three assessments in order:
 
 **Assessment A — LLM review (from the critique skill).** Visual hierarchy, information architecture, emotional resonance, cognitive load. Apply Bakaus's extended DON'T list AND Adil's refusals catalog (all 9 rants). Cite specific rant files when flagging issues.
 
-**Assessment B — Deterministic detector (DIAGNOSTIC input, NOT a shipping gate).** Run `node /Users/adilkalam/ORCA-OS/mcp/design-detector/bin/designcheck.js detect --json <target> 2>&1`. Findings arrive on STDERR; **exit 2 = dirty** (findings present), **exit 0 + `[]` = clean** — key the read off the exit code. Each finding is `{antipattern, name, description, file, line, snippet}`. Incorporate as a report signal. (`npx designcheck` is NOT a published package — use the local node entry above.) For rendered-DOM checks (actual alignment pixels, measured contrast), note what's outside static-scan scope and recommend pairing with the Chrome DevTools path if depth is needed.
+**Assessment B — Deterministic detector (DIAGNOSTIC input, NOT a shipping gate).** **For a `.swift` target:** `/Users/adilkalam/ORCA-OS/mcp/swift-design-detector/bin/swiftdesigncheck detect --json <target> 2>&1` (per the routing rule). **Otherwise (web):** `node /Users/adilkalam/ORCA-OS/mcp/design-detector/bin/designcheck.js detect --json <target> 2>&1`. Both: **exit 2 = dirty** (findings present), **exit 0 + `[]` = clean** — key the read off the exit code. Each finding is `{antipattern, name, description, file, line, snippet}`. Incorporate as a report signal. (`npx designcheck` is NOT a published package — use the local entry above.) For rendered-DOM / rendered-view checks (actual alignment pixels, measured contrast), note what's outside static-scan scope and recommend pairing with the Chrome DevTools path (web) or a simulator screenshot review (`.swift`) if depth is needed.
 
 **Assessment C — Persona red-flags from the hub's `interfaces-that-feel` spine.** Use the persona table. Auto-select 2-3 personas relevant to the project's register (from `.claude/PRODUCT.md` if present, else the hub's global register). For each, walk through the primary user action and list specific red flags the design presents to them.
 

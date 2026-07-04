@@ -100,7 +100,7 @@ Not all tasks need the same ceremony. ORCA routes based on complexity:
 | Mode | Flag | Gates | Use Case |
 |------|------|-------|----------|
 | **Default** | (none) | YES | Most work -- fast with quality checks |
-| **Tweak** | `-tweak` | NO | Speed iteration, you verify |
+| **Tweak** | `--tweak` | NO | Speed iteration, you verify |
 | **Complex** | `--complex` | YES | Architecture, multi-file, risky. Requires spec from `/requirements` |
 | **Audit** | `--audit` | NO | Review only -- produces report, no changes |
 
@@ -121,7 +121,7 @@ Gates run automatically (standards + design review). If they fail, builder gets 
 For rapid iteration when you'll verify yourself.
 
 ```bash
-/ios -tweak "fix button padding"
+/ios --tweak "fix button padding"
 ```
 
 **Route**: Light orchestrator -> builder -> done
@@ -292,7 +292,7 @@ When `/audit` finds the same RA assumption recurring (e.g., "mobile breakpoint 7
 
 | Situation | Command |
 |-----------|---------|
-| "Fix typo in README" | `/nextjs -tweak "fix typo"` |
+| "Fix typo in README" | `/nextjs --tweak "fix typo"` |
 | "Update button colors" | `/nextjs "update button colors"` |
 | "Add user profile screen" | `/requirements` first, then `/ios` |
 | "Implement payment flow" | `/requirements --complex`, then `/nextjs --complex` |
@@ -352,12 +352,12 @@ The main `/orca` command auto-detects domain based on project files and routes a
 /requirements "description"                # Standard planning
 /requirements --explore "description"      # Divergent exploration
 /requirements --problem-solve "description"  # Convergent analysis
-/requirements -tweak "description"         # Quick scope only
+/requirements --tweak "description"         # Quick scope only
 /requirements --complex "description"      # Deep analysis
 
 # Execution
 /nextjs "task"                     # Default (with gates)
-/ios -tweak "task"                 # Speed mode (no gates)
+/ios --tweak "task"                 # Speed mode (no gates)
 /expo --complex "task"             # Full pipeline
 
 # Audit (no implementation)
@@ -371,7 +371,7 @@ The main `/orca` command auto-detects domain based on project files and routes a
 | (none) | Default mode - light orchestrator + gates |
 | `--explore` | Divergent exploration, tentative brief |
 | `--problem-solve` | Root-cause analysis with structured reasoning |
-| `-tweak` | Speed mode - skip gates, user verifies |
+| `--tweak` | Speed mode - skip gates, user verifies |
 | `--complex` | Full mode - grand architect, requires spec |
 | `--audit` | Review only - produces report, no changes |
 

@@ -1,5 +1,6 @@
 ---
 description: "Unified search across all memory systems (Workshop + code-index.db)"
+argument-hint: "<query>"
 ---
 
 # /memory-search - Unified Memory Search

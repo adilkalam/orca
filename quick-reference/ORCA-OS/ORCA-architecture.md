@@ -47,12 +47,17 @@ ORCA-OS is a Claude Code orchestration system that counteracts trained defaults 
 > committed. Additive: no new agents, `/aio` unchanged.
 | Data | (none) | 4 | (none) |
 | Design | `/impeccable` (+ design verbs) | 2 (design-builder, design-validator) | design-detector (local CLI), cognition-mcp |
+| iOS Design (overlay) | `/ios-impeccable` (+ verbs) | 3 (ios-design-architect, ios-design-builder, ios-design-validator) | swift-design-detector (local CLI), cognition-mcp |
 | 3D Printing | (MCP+skill driven) | 0 | bambu-3mf, openscad-mcp |
 | Creative Design | `/illustrate` + `/impeccable` skills | 0 | adb-mcp (Photoshop, Illustrator) |
 
 > **2026-04-22 design-system fork:** `/design`, `/design-dna`, `/design-review` commands were archived. `/nextjs` pipeline is non-functional pending follow-up reshape spec (design/css/animation/3D/layout specialists archived). Design work now routes through the `/impeccable` skill family. See `ORCA-skills.md`.
 
 > **2026-06-03 design-system totality rethink (Phase 2 — the design lane):** the design command family now routes through a **full-separation lane** — a thin orchestrator (the design command, main thread) binds typed FORBIDDEN/FORWARD constraints via a cognition `checkpoint`, spawns a **separate** `design-builder`, then a **separate fresh-context** `design-validator` (returns `GATE_VERDICT: PASS\|BLOCK` via the LOCAL detector), and branches (N=2 → escalate). The model never grades its own output. Shared definition: `docs/reference/design-lane.md` (referenced, never copy-pasted). Hub skill: `skills/impeccable-hub/SKILL.md` (the register; points to `design-contract/` refs, no inlining — distinct from the `/impeccable` command). All 9 design commands load the hub. **Build-producers route the lane:** `/refine`, `/simplify`, `/fortify`, `/recraft` (Routes A/B), `/motion-design`, and `/impeccable`'s build paths. **Diagnostic/contract commands do NOT route the lane:** `/document`, `/design-audit`, `/design-critique`, `/recraft` Route C. **Status:** built, **pending post-reload live proof** (a new agent is not spawnable until a session reload). Honest ceiling: hard-on-named-slop, advisory-on-taste — **the user's eye is the taste ceiling**.
+
+> **2026-06-18 ios-impeccable-adaptation (Phase 3 — additive iOS design overlay):** the `/ios` correctness lane (build/architecture/visual) now has a **SwiftUI design overlay** that composes additively with it — `/ios-impeccable` + the 3 `agents/ios-design/` agents (`ios-design-architect` → bind → `ios-design-builder` → `ios-design-validator` → branch, N=2 → escalate). It **REUSES** the same shared lane spine (`docs/reference/design-lane.md`) as the web design lane, swapping the web leaves for Swift: the iOS hub skill `skills/ios-impeccable-hub/SKILL.md` (blue-only palette law + SwiftUI rants) and the **Swift** detector `mcp/swift-design-detector` (`swiftdesigncheck`, NOT `designcheck.js`). **Additive composition:** `/ios` keeps owning correctness (`ios-standards-enforcer`, `ios-ui-reviewer`, `ios-verification` UNCHANGED); the overlay owns aesthetic/felt-state/design-DNA — `ios-design-validator` fills the former `design-dna-guardian` role for iOS. This is an OVERLAY, not a `lane_add` (no new pipeline doc / phase-config). Verb subset v1 excludes overdrive/threejs. **Status:** built, **pending post-reload live proof**. **Spec:** `peptidefox-ios/.orca/requirements/2026-06-17-2153-ios-impeccable-adaptation/`.
+
+> **2026-06-23 owner-override precedence (both design lanes — web + iOS):** both the web `design` lane and the iOS `ios-design` overlay now enforce a fixed precedence — **the owner's live instruction outranks the standing register (rants/preferences) outranks the deterministic detector** (`docs/reference/design-lane.md` §Precedence). When the owner's in-context instruction contradicts a standing rule, the architect (`design-architect` / `ios-design-architect`) emits a typed **`OVERRIDE`** constraint (`{suppresses, scope, value, provenance}`) ONLY from that explicit instruction; it is threaded bind → validate → branch and **written back** to a new per-project registry `{project}/.design-overrides.json`. Both detectors self-suppress from that registry (`DESIGN_OVERRIDES_PATH` web / `SWIFT_DESIGN_OVERRIDES` iOS), so a written-back override stops the named rule firing for its `scope` on all future runs (kills the "circles"). Both validators **subtract owner-sanctioned findings before the verdict** (an owner-sanctioned P0 no longer forces BLOCK; it downgrades to an `owner-sanctioned` advisory). The inverse failure is also corrected: enforcement severity is now **per-project** (the detector config), and the iOS lane adds a new P0 rule `ios-default-reflex` (native `Menu`/`Picker`, default-SF `contextMenu` popover, `.tint(.blue)` reflex) — `system-font-reflex` + `ios-default-reflex` are now **P0 owner-instructed** (were advisory/no-rule). The gate hook (`hooks/gate-enforcement.sh`) honors `.design-overrides.json` + reads `gates.*.active_overrides`. Shared schema: `docs/concepts/design-overrides-schema.md`.
 
 ---
 
@@ -63,12 +68,12 @@ All lane commands support:
 | Mode | Flag | Behavior |
 |------|------|----------|
 | **Default** | (none) | Light orchestrator + gates |
-| **Tweak** | `-tweak` | Light orchestrator, no gates |
+| **Tweak** | `--tweak` | Light orchestrator, no gates |
 | **Complex** | `--complex` | Full pipeline with spec |
 
 ```
 /ios "task"           # Default: light-orchestrator -> builder -> gates
-/ios -tweak "task"    # Tweak: builder only, you verify
+/ios --tweak "task"    # Tweak: builder only, you verify
 /ios --complex "task" # Complex: grand-architect -> full pipeline
 ```
 
@@ -228,6 +233,8 @@ $ORCA_OS_PATH/
   scripts/            # Helper scripts
   hooks/              # Session hooks
 ```
+
+**Deploy-safety guard:** `scripts/deploy-diff.sh` does a content-based (cksum) drift check between the repo and `~/.claude`, and `scripts/deploy-protected.txt` lists the SC-1 cognition-direct commands that are never synced in either direction (their deployed copies are knowingly newer). See `quick-reference/ORCA-OS/ORCA-verification.md`.
 
 ### Project Working Directory
 ```

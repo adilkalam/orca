@@ -1,7 +1,7 @@
 # ORCA-OS Agent Index
 
-**Total Agents:** 72
-**Categories:** 10
+**Total Agents:** 76
+**Categories:** 11
 **Generated:** 2026-02-26 (seo-optimizer removed 2026-05-17)
 
 ---

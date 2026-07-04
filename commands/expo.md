@@ -1,6 +1,6 @@
 ---
 description: "OS 7.0 Expo/React Native Orchestrator – coordinates the Expo lane pipeline, never writes code"
-argument-hint: "[--light | -tweak | --complex] <task description or requirement ID>"
+argument-hint: "[--light | --tweak | --complex | --audit] <task description or requirement ID>"
 allowed-tools:
   - Agent
   - AskUserQuestion
@@ -27,10 +27,10 @@ This slash command EXISTS to delegate work to agents. Not to do work directly.
 
 **ALWAYS required:**
 1. Parse the arguments
-2. Determine routing (-tweak, default, --complex)
+2. Determine routing (--tweak, default, --complex)
 3. **Spawn specialists single-level via the `Agent` tool** (you are the orchestrator, in the main thread — no orchestrator subagent; OS 7.1)
 
-Even `-tweak` delegates to a builder. It skips gates, not agents.
+Even `--tweak` delegates to a builder. It skips gates, not agents.
 
 **If you are about to Edit/Write, STOP. Delegate instead.**
 
@@ -44,7 +44,7 @@ Use this command for Expo/React Native mobile work.
 
 ```bash
 /expo "add pull-to-refresh to product list"        # Default: light path + design gates
-/expo -tweak "fix button spacing"                  # Fast: light path, no gates
+/expo --tweak "fix button spacing"                  # Fast: light path, no gates
 /expo --complex "multi-screen auth flow"           # Full: architect + builder + all gates
 /expo "implement requirement 2025-11-25-auth"      # Full path with spec
 ```
@@ -66,7 +66,7 @@ Use this command for Expo/React Native mobile work.
 **Check for flags:**
 ```
 $ARGUMENTS contains "--light" → Section 2.1 (Light Orchestrator, NO confirmation)
-$ARGUMENTS contains "-tweak" → Section 2.2 (Builder Direct, NO confirmation)
+$ARGUMENTS contains "--tweak" → Section 2.2 (Builder Direct, NO confirmation)
 $ARGUMENTS contains "--complex" → Section 3 (Full Pipeline with confirmation)
 No flag → Section 3 (Light Orchestrator WITH confirmation)
 ```
@@ -197,7 +197,6 @@ When `--audit` is detected:
      - Architecture/navigation:
        - `expo-architect-agent`
      - Design & tokens:
-       - `design-dna-guardian`
        - `expo-aesthetics-specialist`
      - Accessibility:
        - `a11y-enforcer`
@@ -331,9 +330,9 @@ This helps agents avoid repeating past mistakes.
 
 ---
 
-## 2. Light Path Flow (--light and -tweak modes ONLY)
+## 2. Light Path Flow (--light and --tweak modes ONLY)
 
-This section applies ONLY when user passes `--light` or `-tweak` flags.
+This section applies ONLY when user passes `--light` or `--tweak` flags.
 Default (no flag) now goes to Section 3 for confirmation first.
 
 ### 2.1 --light Flag - Light Path WITHOUT Confirmation
@@ -355,7 +354,7 @@ Run the light path **yourself, in the main thread** (no orchestrator subagent �
 
 ---
 
-### 2.2 -tweak Flag - Builder Direct (Pure Speed)
+### 2.2 --tweak Flag - Builder Direct (Pure Speed)
 
 1. Memory-first context only (skip ProjectContext)
 2. Delegate directly to `expo-builder-agent`
@@ -364,7 +363,7 @@ Run the light path **yourself, in the main thread** (no orchestrator subagent �
 
 **Fallback:** If memory can't locate files, MAY use narrow ProjectContext (maxFiles: 3)
 
-**Context Inheritance Protocol (-tweak mode):**
+**Context Inheritance Protocol (--tweak mode):**
 
 ```
 Agent({

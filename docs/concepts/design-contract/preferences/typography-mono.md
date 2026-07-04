@@ -16,25 +16,9 @@ The default is: **the body sans is the workhorse of the page.** Mono appears onl
 
 ## The six earned slots
 
-### 1. Eyebrows
 
-Short uppercase tracked labels above section titles or hero copy.
 
-```css
-.dp-eyebrow {
-  font-family: 'Brown Mono LL', ui-monospace, monospace;
-  font-size: 0.6875rem;        /* 11px */
-  letter-spacing: 0.02em;       /* all-caps label max — Brown Mono LL needs no more */
-  text-transform: uppercase;
-  color: var(--color-accent);
-  font-feature-settings: 'liga' 0, 'dlig' 0, 'hist' 0, 'calt' 0;
-  font-variant-ligatures: none;
-}
-```
-
-Maximum 4 words. If it's a sentence, it's not an eyebrow — make it body sans italic.
-
-### 2. Tags / chips
+### 1. Tags / chips
 
 Single tokens in a chip role. Anchor identifiers ("A", "B", "X"), arm names ("n=33"), week markers ("wk 24").
 
@@ -50,7 +34,7 @@ Single tokens in a chip role. Anchor identifiers ("A", "B", "X"), arm names ("n=
 
 Maximum ~8 characters. If the tag is longer than that, it's a label — and labels with sentence shape go in body sans.
 
-### 3. Units
+### 2. Units
 
 Pure unit strings rendered as their own visual element, separated from a numeric value.
 
@@ -63,7 +47,7 @@ The number is in the display family (Ivar Display or similar). The unit is mono.
 
 If the unit is part of inline prose ("the dose is 7.21 mg of retatrutide"), do NOT split — the whole sentence is body sans.
 
-### 4. Chart axis chrome
+### 3. Chart axis chrome
 
 SVG axis ticks, axis labels, gridline value labels inside data visualizations.
 
@@ -80,7 +64,7 @@ This is a tabular-data context. Mono is correct because the axis labels are alig
 
 (Alternative: body sans + `font-variant-numeric: tabular-nums` works equally well in some font families. If the body sans has a tabular-figures variant, prefer it. Don't reach for mono just because there are numbers.)
 
-### 5. Terminal / code blocks
+### 4. Terminal / code blocks
 
 Actual quoted artifacts in a terminal-panel register, syntax-highlighted code samples, command-line snippets.
 
@@ -94,6 +78,23 @@ $ bun run dev
 This is the original use case for monospaced fonts. It's also the one place the entire body of a block can be mono — because the content is, materially, code-shaped artifact and the reader expects mono.
 
 The terminal-panel is also typically a different surface (dark, framed, distinct from the page register) so the mono register reads as "this is a quoted artifact" not "this is the page's voice."
+### 5. Earned Eyebrows
+
+THIS IS NOT A OPEN OFFER TO PLANT EYEBROWS EVERYWHERE. EYEBROWS ARE SPARSE USE, NEVER USED ABOVE DISPLAY HEADINGS. NEVER DEPLOYED EN MASS UNLESS DIRECT. SEEK APPROVAL FOR EYEBROW USE.
+
+```css
+.dp-eyebrow {
+  font-family: 'Brown Mono LL', ui-monospace, monospace;
+  font-size: 0.6875rem;        /* 11px */
+  letter-spacing: 0.02em;       /* all-caps label max — Brown Mono LL needs no more */
+  text-transform: uppercase;
+  color: var(--color-accent);
+  font-feature-settings: 'liga' 0, 'dlig' 0, 'hist' 0, 'calt' 0;
+  font-variant-ligatures: none;
+}
+```
+
+Maximum 2 words. If it's a sentence, it's not an eyebrow.
 
 ### 6. Footnote / source-citation eyebrow tags
 

@@ -52,6 +52,87 @@ if (!IS_BROWSER) {
 // Handlers registered by rules with `requires_handler: true` are imported from
 // `./detectors/index.ts` during follow-up implementation.
 
+// ─── Owner-override registry (.design-overrides.json) ───────────────────────
+// The per-project owner-override registry shared with the iOS detector. See
+// docs/concepts/design-overrides-schema.md (the single authoritative contract)
+// and docs/reference/design-lane.md §Precedence. A FLAT JSON array; a finding is
+// suppressed iff an entry's `suppresses` equals the finding ruleId AND the entry
+// has a NON-EMPTY `scope` glob matching the finding's file path. Loaded ONCE,
+// Node-only. Path: DESIGN_OVERRIDES_PATH env else {cwd}/.design-overrides.json.
+// A missing/unparseable file is NEVER fatal — silent [] fallback.
+let DESIGN_OVERRIDES = [];
+if (!IS_BROWSER) {
+  try {
+    const overridesPath = process.env.DESIGN_OVERRIDES_PATH
+      ? process.env.DESIGN_OVERRIDES_PATH
+      : path.join(process.cwd(), '.design-overrides.json');
+    if (fs.existsSync(overridesPath)) {
+      const parsed = JSON.parse(fs.readFileSync(overridesPath, 'utf-8'));
+      if (Array.isArray(parsed)) DESIGN_OVERRIDES = parsed;
+    }
+  } catch (_err) {
+    // Silent fallback — no overrides, every rule fires normally.
+  }
+}
+
+/// Minimal glob matcher — the SAME semantics as the iOS GlobMatcher (Config.swift,
+/// the authoritative spec in design-overrides-schema.md): `**` matches any run of
+/// characters incl. `/` (a trailing `/` after `**` is swallowed), `*` matches any
+/// run except `/`, `?` matches one char except `/`. Matched anchored against the
+/// full path string.
+function globMatches(glob, targetPath) {
+  let pattern = '';
+  const chars = Array.from(glob);
+  let index = 0;
+  while (index < chars.length) {
+    const ch = chars[index];
+    if (ch === '*') {
+      if (index + 1 < chars.length && chars[index + 1] === '*') {
+        pattern += '.*';
+        index += 2;
+        if (index < chars.length && chars[index] === '/') index += 1;
+        continue;
+      }
+      pattern += '[^/]*';
+    } else if (ch === '?') {
+      pattern += '[^/]';
+    } else {
+      pattern += ch.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    }
+    index += 1;
+  }
+  let regex;
+  try {
+    regex = new RegExp('^' + pattern + '$');
+  } catch (_err) {
+    return false;
+  }
+  return regex.test(targetPath);
+}
+
+/// True when an override sanctions this finding. SAFETY (accessibility floor):
+/// requires BOTH a rule-id match AND a NON-EMPTY scope that matches. An entry with
+/// a missing/empty scope suppresses nothing.
+function isOverridden(finding, overrides) {
+  const ruleId = finding.antipattern;
+  const filePath = finding.file;
+  if (!filePath) return false;
+  for (const entry of overrides) {
+    if (!entry || entry.suppresses !== ruleId) continue;
+    const scope = entry.scope;
+    if (typeof scope !== 'string' || scope.length === 0) continue;
+    if (globMatches(scope, filePath)) return true;
+  }
+  return false;
+}
+
+/// Remove every overridden finding from the set (the binary/exit-code floor). The
+/// validator separately downgrades-to-advisory for the human (design-lane.md §3).
+function applyOverrides(findings, overrides) {
+  if (!overrides || overrides.length === 0) return findings;
+  return findings.filter(f => !isOverridden(f, overrides));
+}
+
 // ─── Section 1: Constants ───────────────────────────────────────────────────
 
 const SAFE_TAGS = new Set([
@@ -3142,7 +3223,10 @@ function detectText(content, filePath) {
     }
   }
 
-  return deduped;
+  // Owner-override suppression (design-lane.md §Precedence): remove any finding
+  // the owner has sanctioned for this path. Covers the programmatic/stdin path
+  // too (the CLI applies it again on the assembled set, which is idempotent).
+  return applyOverrides(deduped, DESIGN_OVERRIDES);
 }
 
 // ---------------------------------------------------------------------------
@@ -3519,6 +3603,11 @@ async function main() {
       }
     }
   }
+
+  // Owner-override suppression on the exit-code-bearing set (design-lane.md
+  // §Precedence). detectText already filters its own path; this also covers the
+  // HTML/URL paths whose findings never pass through detectText. Idempotent.
+  allFindings = applyOverrides(allFindings, DESIGN_OVERRIDES);
 
   if (allFindings.length > 0) {
     process.stderr.write(formatFindings(allFindings, jsonMode) + '\n');

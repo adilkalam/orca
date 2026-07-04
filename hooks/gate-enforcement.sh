@@ -334,6 +334,32 @@ if [[ "$TOOL_NAME" =~ ^(Write|Edit)$ ]]; then
                         ] | unique | .[]
                     ' "$CANDIDATE_JSON" 2>/dev/null || echo "")
 
+                    # Owner-override registry (design-lane.md §Precedence + Step 4).
+                    # The hook re-runs the detector ITSELF; it MUST honor the same
+                    # write-back the validator did, or it re-blocks a validator-
+                    # passed artifact (re-creating the circles this lane kills).
+                    # 1. Export DESIGN_OVERRIDES_PATH so the detector's OWN run
+                    #    self-suppresses against {project}/.design-overrides.json.
+                    #    (SWIFT_DESIGN_OVERRIDES is exported too for forward-safety;
+                    #    the iOS overlay does NOT arm this hook today — its validator
+                    #    swiftdesigncheck run is the floor — so no swift binary is
+                    #    invoked here. See commands/ios-impeccable.md §BRANCH.)
+                    PROJECT_OVERRIDES="$PWD/.design-overrides.json"
+                    export DESIGN_OVERRIDES_PATH="$PROJECT_OVERRIDES"
+                    export SWIFT_DESIGN_OVERRIDES="$PROJECT_OVERRIDES"
+
+                    # 2. Defensive fallback: also collect the active_overrides the
+                    #    validator recorded onto the candidate phase_state (both the
+                    #    web and iOS lane gates). A reported slop id covered by an
+                    #    active_override's `suppresses` is skipped below even if the
+                    #    registry file lagged behind the phase_state write.
+                    ACTIVE_OVERRIDE_IDS=$(jq -r '
+                        [
+                          (.gates.design_lane.active_overrides[]?.suppresses // empty),
+                          (.gates.ios_design_lane.active_overrides[]?.suppresses // empty)
+                        ] | unique | .[]
+                    ' "$CANDIDATE_JSON" 2>/dev/null || echo "")
+
                     # No artifact paths on a claimed design PASS -> cannot verify
                     # -> BLOCK (the PASS is unfalsifiable without produced files).
                     if [ -z "$ARTIFACT_PATHS" ]; then
@@ -377,9 +403,20 @@ if [[ "$TOOL_NAME" =~ ^(Write|Edit)$ ]]; then
                         DETECT_EXIT=$?
 
                         if [ "$DETECT_EXIT" -eq 2 ]; then
-                            SLOP_IDS=$(printf '%s' "$DETECT_OUT" \
-                                | jq -r '[.[].antipattern] | unique | join(", ")' 2>/dev/null || echo "")
-                            [ -z "$SLOP_IDS" ] && SLOP_IDS="unknown-p0"
+                            # Defensive: subtract any slop id covered by an
+                            # active_override (phase_state fallback) — the registry
+                            # export above already self-suppresses, but if that file
+                            # lagged the write we must not re-block a covered id.
+                            UNCOVERED_IDS=$(printf '%s' "$DETECT_OUT" \
+                                | jq -r --argjson ov "$(printf '%s' "$ACTIVE_OVERRIDE_IDS" | jq -R . | jq -s .)" \
+                                    '[.[].antipattern] | unique | map(select(. as $id | ($ov | index($id)) | not)) | join(", ")' \
+                                    2>/dev/null || echo "")
+                            # If EVERY reported id is covered by an active override,
+                            # treat the artifact as clean and continue (no BLOCK).
+                            if [ -z "$UNCOVERED_IDS" ]; then
+                                continue
+                            fi
+                            SLOP_IDS="$UNCOVERED_IDS"
 
                             echo -e "${RED}🚫 DESIGN LANE FLOOR BLOCKED${NC}"
                             echo ""

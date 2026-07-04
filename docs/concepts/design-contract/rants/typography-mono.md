@@ -2,11 +2,9 @@
 
 ## Verbatim
 
-> STOP OVERUSING THE MONO FONT. IT SHOULD RARELY BE USED — EYEBROWS/LABELS, NEVER WITH EXCESS TRACKING, AND IF WE SHOW HARDCORE TERMINAL OR CODE. THATS IT. IT IS NOT TO BE USED FOR PROSE, EVER.
+> STOP OVERUSING THE MONO FONT. IT SHOULD RARELY BE USED — LABELS, NEVER WITH EXCESS TRACKING, AND FOR EYEBROWS — WHICH ARE ALSO RARE USE, AND NEVER USED FOR TITLE / DISPLAY FONTS — AND IF WE SHOW HARDCORE TERMINAL OR CODE. THATS IT. IT IS NOT TO BE USED FOR PROSE, EVER.
 
 > TINY abusive use of mono. Things that don't even render correctly. ITS LITERALLY THOUGHTLESS. NOT A SINGLE TOKEN WAS SPENT ON "WHAT SHOULD THIS ACTUALLY BE LAID OUT LIKE FOR A USER TO INTERACT WITH IT" its a dump of choices, nonsensically, in a way that is completely fucking unclear — rooted in part by [where you] do idiotic and insufferable shit like putting mono sublabels into buttons that only add confusion.
-
-> ITS THE FUCKING WORKHORSE NO MATTER HOW MANY FUCKING TIMES I TELL YOU TO STOP USING IT EXCESSIVELY AND LIMIT IT TO FUCKING FOOTNOTES AND EYEBROWS
 
 ## What the rant is actually about
 
@@ -18,7 +16,7 @@ The pattern Adil is naming: **mono should be RARE. It should EARN its slot. The 
 
 ## Hard whitelist — mono is permitted ONLY for
 
-1. **Eyebrows** — uppercase, tracked, short labels above section/hero titles ("REFERENCE WORKBENCH", "PRESS RELEASE")
+1. **Eyebrows** — uppercase, tracked when labeling required ("REFERENCE WORKBENCH", "PRESS RELEASE") NOT USED ABOVE TITLES/DISPLAY FONTS EVER.
 2. **Tags / chips** — short single-token identifiers in a chip role ("A", "B", "X", "n=33", "wk 24")
 3. **Units** — pure unit strings on their own ("mg", "%", "bpm")
 4. **Chart axis chrome** — SVG axis ticks and labels inside data visualizations

@@ -85,34 +85,34 @@ The output difference is observable and significant.
 ### In Practice
 
 ```diff
-  /deepthink "evaluate our go-to-market strategy"
+  /requirements "add user authentication to my app"
 
-- Default:    "A go-to-market strategy should consider target audience,
--              pricing, distribution channels, and competitive positioning."
-+ Produces:   Maps your assumptions. Runs a pre-mortem imagining the launch
-+             failed. Analyzes from customer, competitor, and operations
-+             perspectives separately. Surfaces that your pricing assumes
-+             enterprise sales cycles but your runway covers a PLG timeline.
+- Default:    "Authentication typically involves choosing a method,
+-              hashing passwords, and managing sessions securely."
++ Produces:   Asks the questions that change the build: OAuth, email, or
++             both? MFA? Session duration? Rate limiting? Reset flow? Each
++             answer narrows the spec -- something Claude would otherwise
++             have guessed, probably wrong for your situation.
 ```
 
 ```diff
-  /problem-solve "PostgreSQL vs DynamoDB for our new service"
+  /impeccable "clean up the pricing page"
 
-- Default:    "PostgreSQL is great for relational data. DynamoDB for
--              key-value access. It depends on your use case."
-+ Produces:   Evaluates against YOUR query patterns, team expertise, and
-+             compliance requirements. Commits to a specific recommendation.
-+             Attaches tripwires: "revisit if write throughput exceeds X."
+- Default:    A centered three-card Tailwind grid with a drop shadow, a
+-              rounded border, and a blue primary button. Forgettable.
++ Produces:   Plans the work, binds explicit anti-slop constraints, builds
++             against them, then runs a separate validator + a deterministic
++             detector before handing back. Distinctive, on-brand, checked.
 ```
 
 ```diff
-  /challenge "our plan to rewrite the backend in Rust"
+  /research "metabolic implications of a specific phenotype"
 
-- Default:    "Rust offers memory safety and performance but has a steep
--              learning curve. Consider your team's experience."
-+ Produces:   Adversarial stress-test. Finds the three weakest assumptions
-+             in your plan. Returns GO / CONDITIONAL GO / NO GO with the
-+             reasoning visible and sharable.
+- Default:    A confident summary assembled from training data, with
+-              plausible-sounding claims and no verifiable sources.
++ Produces:   Runs web search for real studies, crawls the papers, fact-
++             checks the claims, and ensures every citation resolves to a
++             real source. A grounded document, not a recollection.
 ```
 
 The entire decision trail exists as files. You can share them with your team. You can revisit them in six months when the constraints change. They do not vanish when the chat window closes.
@@ -132,9 +132,9 @@ ORCA is a loop, not a pipeline. Cognition—ie. extensive thinking—and plannin
 +---------------------+    +------------------------+
 |   MEMORY+RECORDING  |    |       COGNITION        |
 |                     |--->|                        |
-|  past decisions     |    |  /deepthink            |
-|  gotchas            |    |  /problem-solve        |
-|  project context    |    |  /challenge            |
+|  past decisions     |    |  structured reasoning  |
+|  gotchas            |    |  before execution      |
+|  project context    |    |  (constraint loops)    |
 |  recent sessions    |    |                        |
 +---------------------+    +----------+-------------+
             ^                          |
@@ -264,33 +264,18 @@ The mechanism: force Claude to articulate what it *would* have said (the default
 
 This changes both sides of the interaction. Claude produces output shaped by evidence rather than defaults. And you develop the habit of asking "what's the default here?" before accepting any response.
 
-### The 49 operations
+### The reasoning substrate
 
-Beyond default observation, ORCA provides 49 structured reasoning operations via cognition-mcp that Claude can execute but doesn't reach for unprompted. Read the [full guide on cognition](quick-reference/cognition.md).
+Beyond default observation, cognition-mcp gives Claude 49 structured reasoning operations -- constraint-chain exploration, pre-mortem failure analysis, convergent decision pipelines, adversarial stress-testing -- that it can execute but does not reach for unprompted.
 
-| Category | Example |
-|----------|---------|
-| **Analysis** | "Map every component that touches the checkout flow and how they depend on each other" |
-| **Search strategies** | "Generate three approaches to this migration, score each on risk and effort, prune the worst" |
-| **Adversarial** | "Assume this database redesign shipped and failed. What went wrong?" |
-| **Decision** | "Compare these four caching strategies against our latency and cost constraints" |
-| **Creative** | "What if we treated onboarding like a game tutorial instead of a form?" |
-| **Meta** | "Am I anchored on the first solution I thought of? What am I not considering?" |
+In this distribution those operations run *inside* the design family. When you invoke `/impeccable`, `/refine`, `/fortify`, or `/simplify`, each design task binds explicit anti-slop constraints, generates against them, and self-checks in a loop before handing back. The reasoning is structured and external -- stored as steps the model works against, never improvised in a single pass.
 
-You don't need to know what those 49 reasoning operations are—`/deepthink` selects approaches based on the problem, runs them, saves the output as files and `/problem-solve` runs an 8-step convergent pipeline when you need a decision, while `/challenge` stress-tests the result before you act on it.
-
-```
-/deepthink (explore)
-     |
-     v
-/problem-solve (decide)
-     |
-     v
-/challenge (stress-test)
-     |
-     v
-/requirements (commit to spec)
-```
+| Reasoning mode | What it does inside a design task |
+|----------------|-----------------------------------|
+| **Analysis** | Maps the constraints a task must satisfy before generating |
+| **Adversarial** | Stress-tests the output against a named-slop detector |
+| **Decision** | Commits to specific choices instead of hedging between options |
+| **Meta** | Catches the generic default before it shapes the result |
 
 ---
 
@@ -451,7 +436,7 @@ Violation persisted: "NavigationStack used without checking iOS 16+"
     +---> Mandatory verification question (future gates must check)
 ```
 
-Session 50 is different from session 1. And so is the person using it -- you learn to `/requirements` before `/orca-*`, to `/deepthink` before deciding, to not drop in quick requests expecting quality output. The system rewards depth from both sides. Read the [full guide on learning](quick-reference/ORCA-OS/ORCA-learning.md).
+Session 50 is different from session 1. And so is the person using it -- you learn to `/requirements` before `/orca-*`, to plan before you build, to not drop in quick requests expecting quality output. The system rewards depth from both sides. Read the [full guide on learning](quick-reference/ORCA-OS/ORCA-learning.md).
 
 ---
 
@@ -471,7 +456,7 @@ The first three store structured artifacts: decisions, code knowledge, context b
 Session continuity is automatic:
 
 - `/session-save` captures context; the next session loads it on startup
-- Cognitive commands persist output as files, not tokens -- survives context compaction
+- Structured reasoning persists output as files, not tokens -- survives context compaction
 - Large tool outputs truncated intelligently, middle archived for recall
 - Session recordings persist tool calls and file changes across sessions
 
@@ -503,7 +488,7 @@ Claude Desktop gives you a capable one-pass analysis from training data. ORCA gi
 
 | Component | What it enables |
 |-----------|----------------|
-| **cognition-mcp** | 49 structured reasoning operations via `/think`, `/deepthink`, `/problem-solve`, `/challenge`, `/contemplate`, `/shimmer`, `/adversarial`, `/think-model`. A structured reasoning notepad -- stores thinking externally, never generates it. |
+| **cognition-mcp** | 49 structured reasoning operations. The reasoning substrate behind the design family (`/impeccable`, `/refine`, `/fortify`, `/simplify`) -- binds constraints and stores thinking externally, never generates it. |
 | **RVRY** | Sustained metacognitive substrate observation via `/meta`. Installed on demand (`npx @rvry/mcp setup`). |
 | **project-context** | Memory across sessions. Decisions, gotchas, preferences. Semantic code search. Context bundles per task. |
 | **sequential-thinking** | Multi-step reasoning with revision and backtracking. |
@@ -519,12 +504,9 @@ Claude Desktop gives you a capable one-pass analysis from training data. ORCA gi
 
 [Full Documentation](DOCUMENTATION.md) -- Architecture, concepts, pipeline specs.
 
-Install prompts you to pick build lanes (opt-in; Research defaults on). Selectable lanes: iOS, Expo, Next.js, Django+React, Data, Typography, Research. The core -- orchestration, cognition, the design family, and the shared dev + cross-domain agents -- always installs. Core MCPs (context7, sequential-thinking, project-context, cognition-mcp) auto-install; optional MCPs (Chrome DevTools, XcodeBuildMCP, Crawl4AI, Adobe Photoshop + Illustrator) are prompted.
+Install prompts you to pick build lanes (opt-in; Research defaults on). Selectable lanes: iOS, Expo, Next.js, Django+React, Data, Typography, Research. The core -- orchestration, the cognition-mcp reasoning substrate, the design family, and the shared dev + cross-domain agents -- always installs. Core MCPs (context7, sequential-thinking, project-context, cognition-mcp) auto-install; optional MCPs (Chrome DevTools, XcodeBuildMCP, Crawl4AI, Adobe Photoshop + Illustrator) are prompted.
 
 ```bash
-# Think through a problem
-/deepthink "Should I use WebSockets or SSE for real-time updates?"
-
 # Plan a feature
 /requirements "Add user authentication to my app"
 
@@ -532,11 +514,14 @@ Install prompts you to pick build lanes (opt-in; Research defaults on). Selectab
 /ios "Build a subscription tracker"
 /nextjs "Add a dashboard with real-time charts"
 
+# Distinctive, production-grade front-end work
+/impeccable "clean up the pricing page"
+
 # Research with verified sources
 /research "South Asian phenotype health implications for metabolic markers"
 
-# Challenge your own thinking
-/challenge "Is microservices the right architecture for this?"
+# Observe the substrate before deciding
+/meta "Am I anchored on the first solution I considered?"
 ```
 
 ---

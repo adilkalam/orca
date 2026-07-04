@@ -75,7 +75,7 @@ File: `commands/django-react.md`
 
   ```bash
   /django-react "add user profile endpoint"              # Default: light + gates
-  /django-react -tweak "fix form validation"             # Tweak: light, no gates
+  /django-react --tweak "fix form validation"             # Tweak: light, no gates
   /django-react --complex "implement auth flow"          # Complex: full pipeline
   /django-react "implement requirement <id>"             # With spec
   ```
@@ -85,14 +85,14 @@ File: `commands/django-react.md`
   | Mode | Flag | Path | Gates |
   |------|------|------|-------|
   | **Default** | (none) | Light + Gates | YES |
-  | **Tweak** | `-tweak` | Light (pure) | NO |
+  | **Tweak** | `--tweak` | Light (pure) | NO |
   | **Complex** | `--complex` | Full pipeline | YES |
 
 - Behavior:
   1. **Memory-first context**: searches Workshop and unified memory for Django/React decisions and code.
   2. **Flag detection**:
      - No flag -> **Default mode** (light path WITH gates)
-     - `-tweak` -> **Tweak mode** (light path WITHOUT gates, user verifies)
+     - `--tweak` -> **Tweak mode** (light path WITHOUT gates, user verifies)
      - `--complex` -> **Complex mode** (full pipeline, spec required)
   3. **Spec gating** (complex only):
      - Requires `.orca/requirements/<id>/06-requirements-spec.md`.
@@ -191,7 +191,7 @@ Core agents (all Opus 4.6):
     - Minimal context (small ProjectContext or grep).
     - Route directly to `django-react-builder` (+ specialists).
     - **Default mode**: Runs gates (`django-react-standards-enforcer`)
-    - **Tweak mode** (`-tweak`): Skips gates (user verifies)
+    - **Tweak mode** (`--tweak`): Skips gates (user verifies)
   - Escalates back to full `/django-react --complex` when it detects hidden complexity.
 
 ---
@@ -293,7 +293,7 @@ For Django + React work in OS 7.0 (routing modes):
 | Mode | Command | Path |
 |------|---------|------|
 | **Default** | `/django-react "add endpoint"` | Light + gates |
-| **Tweak** | `/django-react -tweak "fix validation"` | Light, no gates |
+| **Tweak** | `/django-react --tweak "fix validation"` | Light, no gates |
 | **Complex** | `/django-react --complex "auth system"` | Full pipeline |
 
 - **Most work**: Default mode (light path WITH gates)
@@ -310,7 +310,7 @@ For Django + React work in OS 7.0 (routing modes):
 ### Quick Fix (No Gates)
 
 ```bash
-/django-react -tweak "fix email validation in UserSerializer"
+/django-react --tweak "fix email validation in UserSerializer"
 ```
 
 Result: Light orchestrator -> builder -> done (fast iteration)

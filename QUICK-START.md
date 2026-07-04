@@ -9,13 +9,13 @@ ORCA-OS transforms Claude Code from a coding assistant into a sophisticated mult
 ## What's Inside
 
 - **72 Specialized Agents** across 10 domains (cross-domain, data, design, dev, django-react, expo, iOS, nextjs, research, typography)
-- **40 Slash Commands** for orchestration, planning, thinking, and design review
-- **54 Skills** -- reusable behavior patterns loaded on demand
+- **32 Slash Commands** for orchestration, planning, and design
+- **55 Skills** -- reusable behavior patterns loaded on demand
 - **Persistent Memory** via Workshop and project-context MCP
 - **Session Recording** via orca-record (captures tool calls, file changes across sessions)
 - **Self-Improvement System** that learns rules from your interactions
-- **49 Reasoning Operations** via cognition-mcp
-- **Deep Thinking** via RVRY MCP (`/meta`)
+- **Structured reasoning substrate** (cognition-mcp) powering the `/impeccable` design family
+- **Metacognitive observation** via RVRY MCP (`/meta`)
 
 
 ---
@@ -102,19 +102,13 @@ claude
 ### Thinking & Reasoning
 | Command | Description |
 |---------|-------------|
-| `/deepthink` | Pre-mortem exploration with adaptive failure analysis (via cognition-mcp) |
-| `/think` | Constraint-chain exploration with cognitive scaffolding |
-| `/problem-solve` | Convergent 5-step decision pipeline |
-| `/challenge` | Adversarial analysis of proposals |
-| `/contemplate` | Recommends which thinking tools to use, in what sequence |
-| `/meta` | Sustained metacognitive observation (via RVRY) |
+| `/meta` | Sustained metacognitive substrate observation (via RVRY) |
 
 ### Utility
 | Command | Description |
 |---------|-------------|
 | `/audit` | Evidence-based due diligence code auditing |
 | `/self-improve` | Show Workshop memory stats and recent activity |
-| `/root-cause` | Structured root cause analysis |
 | `/enhance` | Transform vague prompts into structured requests |
 | `/clone-website` | Analyze and spec website cloning |
 | `/continue` | Resume info for previous recording sessions |
@@ -180,7 +174,7 @@ Creative Design work is skills + MCP driven (the optional Adobe Photoshop/Illust
 - **context7** - Up-to-date library documentation (npx on-demand)
 - **sequential-thinking** - Multi-step reasoning (npx on-demand)
 - **project-context** - Project memory and semantic code search (built from bundled source)
-- **cognition-mcp** - 49 reasoning operations; powers `/think`, `/deepthink`, `/challenge`, `/contemplate`, `/shimmer`, `/adversarial`, `/problem-solve`, `/think-model` (built from bundled source)
+- **cognition-mcp** - structured reasoning substrate (49 operations); powers the design lanes' constraint-loop reasoning (`/impeccable`, `/refine`, `/fortify`, `/simplify`) (built from bundled source)
 - **RVRY** - Sustained metacognitive observation; powers `/meta` (installed via `npx @rvry/mcp setup`)
 
 ORCA-OS also ships **orca-record**, a session-recording CLI (a bundled binary, not an MCP server) that captures tool calls and file changes per session.
@@ -273,7 +267,6 @@ Learned rules are stored in your project's CLAUDE.md. Standards from gate failur
 ## Workflow Guide
 
 See `quick-reference/` for detailed usage patterns:
-- `cognition.md` -- Thinking and reasoning commands
 - `requirements.md` -- Planning and requirements
 - `orchestration.md` -- Multi-agent execution
 - `research.md` -- Research with verified sources

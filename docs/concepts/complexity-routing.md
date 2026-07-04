@@ -10,7 +10,7 @@ OS 7.0 uses **four-tier routing** to optimize for speed while maintaining qualit
 |------|------|------|-------|----------|
 | **Light** | `--light` | Light orchestrator | YES | Confident users, skip confirmation |
 | **Default** | (none) | Light + Confirmation | YES | Most work -- fast with quality |
-| **Tweak** | `-tweak` | Builder direct | NO | Speed iteration, user verifies |
+| **Tweak** | `--tweak` | Builder direct | NO | Speed iteration, user verifies |
 | **Complex** | `--complex` | Full pipeline | YES | Architecture, multi-file, specs |
 
 **Key Inversion:** Default now runs gates. Previous versions skipped them.
@@ -44,7 +44,7 @@ Same as default but skips the team confirmation step. For confident users who kn
 
 **Route:** Light orchestrator → builder → gates → done (no confirmation)
 
-## Tweak Mode (`-tweak`)
+## Tweak Mode (`--tweak`)
 
 Pure speed path. User explicitly accepts responsibility for verification.
 
@@ -116,14 +116,14 @@ Light path WITH gates, WITHOUT confirmation:
 
 Same execution as default but skips the team confirmation dialog.
 
-### `-tweak` Flag
+### `--tweak` Flag
 
 Light path WITHOUT gates (pure speed):
 
 ```bash
-/ios -tweak "fix button padding"
-/nextjs -tweak "update header text"
-/expo -tweak "adjust card spacing"
+/ios --tweak "fix button padding"
+/nextjs --tweak "update header text"
+/expo --tweak "adjust card spacing"
 ```
 
 Use when iterating quickly and you'll verify yourself.
@@ -183,7 +183,7 @@ Parse Arguments
     
      Contains "--light"? → Light Orchestrator (LIGHT MODE - gates, no confirmation)
     
-     Contains "-tweak"? → Builder Direct (TWEAK MODE - no gates)
+     Contains "--tweak"? → Builder Direct (TWEAK MODE - no gates)
     
      Contains "--complex"? → Grand-Architect (full pipeline, with confirmation)
     

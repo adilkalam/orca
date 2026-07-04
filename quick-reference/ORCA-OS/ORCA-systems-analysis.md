@@ -32,10 +32,49 @@ User entry points invoked via `/command`.
 
 | Category | Count | Commands |
 |----------|-------|----------|
+| Lane Orchestrators | 11 | `/ios`, `/nextjs`, `/django-react`, `/expo`, `/research`, `/seo`, `/typography`, `/rvry`, `/orca-os-dev`, `/orca`, `/orca-pipeline` |
+| Planning & Audit | 2 | `/requirements`, `/audit` |
+| Reasoning | 1 | `/meta` |
+| Utility | 15 | `/enhance`, `/design-dna`, `/design-review`, `/design`, `/illustrate`, `/clone-website`, `/session-save`, `/session-resume`, `/continue`, `/orca-status`, `/project-memory`, `/project-code`, `/self-improve`, `/memory-search`, `/project-setup` |
+
+### Four-Tier Routing
+
+All lane commands support four execution modes. This is the central routing mechanism of OS 7.0.
+
+| Mode | Flag | Path | Gates | Use Case |
+|------|------|------|-------|----------|
+| **Light** | `--light` | Light orchestrator | YES | Confident users, skip confirmation |
+| **Default** | (none) | Light + Confirmation | YES | Most work -- fast with quality |
+| **Tweak** | `--tweak` | Builder direct | NO | Speed iteration, user verifies |
+| **Complex** | `--complex` | Full pipeline | YES | Architecture, multi-file, specs |
+
+Key inversion from earlier versions: Default mode now runs gates. Tweak is the explicit opt-out.
+
+Complex mode requires a requirements spec (created by `/requirements`). If one does not exist, the pipeline blocks and directs the user to run `/requirements` first.
+
+---
+
+## Layer 2: Agents (131)
+
+Workers organized by domain with strict role boundaries.
+
+### Domain Breakdown
+
+| Domain | Count | Directory | Key Agents |
+|--------|-------|-----------|------------|
+| iOS | 18 | `agents/iOS/` | ios-grand-architect, ios-builder, ios-swiftui-specialist, ios-verification |
+| Next.js | 15 | `agents/nextjs/` | nextjs-grand-architect, nextjs-builder, nextjs-css-specialist, nextjs-design-reviewer |
+| Django-React | 13 | `agents/django-react/` | django-react-grand-architect, django-master, react-typescript-wizard, api-contract-specialist |
+| Expo | 12 | `agents/expo/` | expo-grand-orchestrator, expo-builder-agent, bundle-assassin, impact-analyzer |
+| Dev (cross-cutting) | 13 | `agents/dev/` | a11y-enforcer, design-system-architect, design-dna-guardian, security-specialist, performance-enforcer |
+| OS-Dev | 6 | `agents/os-dev/` | os-dev-grand-architect, os-dev-builder, os-dev-standards-enforcer |
+| Orca-Pipeline | 5 | `agents/os-dev/` | orca-pipeline-orchestrator, orca-pipeline-researcher, orca-pipeline-generator |
+| Audit | 8 | `agents/audit/` | audit-structure-specialist, audit-security-specialist, audit-architecture-specialist |
 | Research | 7 | `agents/research/` | research-web-search-subagent, research-answer-writer, research-fact-checker |
 | RVRY | 7 | `agents/rvry/` | rvry-grand-architect, rvry-engine-builder, rvry-web-builder, rvry-protocol-gate |
 | Typography | 6 | `agents/typography/` | typography-orchestrator, glyph-editor, ttf-exporter, path-guardian |
 | SEO | 4 | `agents/seo/` | seo-research-specialist, seo-brief-strategist, seo-draft-writer, seo-quality-guardian |
+| Data | 4 | `agents/data/` | data-researcher, python-analytics-expert, competitive-analyst |
 | **TOTAL** | **118** | **12 dirs** | |
 
 Note: OS-Dev (6) and Orca-Pipeline (5) share the `agents/os-dev/` directory, totaling 11 agents there.
@@ -354,16 +393,15 @@ The core operation tracks the gap between trained default and reasoned conclusio
 
 ### Mental Models (15)
 
-Available via `/think --model <name>`: five-whys, fermi-estimation, abstraction-laddering, steelmanning, rubber-duck, opportunity-cost, constraint-relaxation, time-horizon-shifting, impact-effort-grid, assumption-surfacing, trade-off-matrix, decomposition, inversion, pre-mortem, first-principles.
+Available mental models: five-whys, fermi-estimation, abstraction-laddering, steelmanning, rubber-duck, opportunity-cost, constraint-relaxation, time-horizon-shifting, impact-effort-grid, assumption-surfacing, trade-off-matrix, decomposition, inversion, pre-mortem, first-principles.
 
-Templates live at `quick-reference/thinking-models/*.md`.
 
 ### Cognition Persistence
 
 ```
 .orca/cognition/
-  YYYYMMDD-daily.md              # Daily log (/think)
-  YYYYMMDD-HHMM-<slug>.md       # Per-session (/deepthink, /problem-solve, /challenge, /root-cause)
+  YYYYMMDD-daily.md              # Daily log
+  YYYYMMDD-HHMM-<slug>.md       # Per-session cognition logs
 
 ~/.orca-cognition/
   sessions/{id}/*.jsonl          # Full session logs
@@ -604,7 +642,7 @@ Verification questions that repeatedly fail become permanent mandatory checks, t
 ### 5. Cognition Persistence Loop
 
 ```
-/think or /deepthink -> cognition-mcp stores session -> .orca/cognition/ file -> Workshop entry -> future session recall
+cognition command -> cognition-mcp stores session -> .orca/cognition/ file -> Workshop entry -> future session recall
 ```
 
 Cognitive analysis persists as files on disk. When the context window compacts, the analysis remains readable. Future sessions can query Workshop for past cognitive work.
@@ -620,7 +658,7 @@ Cognitive analysis persists as files on disk. When the context window compacts, 
 5. **Context mandatory**: All agents call ProjectContext MCP first
 6. **State preserved**: phase_state.json enables resumption across sessions
 7. **All Opus 4.6**: Default model across all 124 agents, never specified
-8. **Four-tier routing**: --light (fast, no confirmation) / default (fast+gates) / -tweak (builder direct) / --complex (full pipeline)
+8. **Four-tier routing**: --light (fast, no confirmation) / default (fast+gates) / --tweak (builder direct) / --complex (full pipeline)
 9. **User approval required**: Agents never auto-modify; improvements need explicit approval
 
 ---

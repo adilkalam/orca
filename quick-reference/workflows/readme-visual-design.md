@@ -14,7 +14,6 @@ Use this template to define clear, testable acceptance criteria for visual work.
 - Design QA gate enforces ≥90 score
 
 **Related commands (OS 7.0):**
-- `/deepthink --design "problem"` → Explore design problems with auto-loaded context
 - `/requirements "feature"` → Include visual acceptance criteria in blueprint
 - `/{domain} "implement"` → Design QA runs automatically
 - `/design-dna init/audit` → Initialize or audit design system

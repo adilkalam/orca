@@ -9,9 +9,11 @@ license: Apache 2.0.
 
 ## Entry: mandatory skill loading
 
+**Target routing (`#PATH_DECISION` — one rule, not 5 copies):** apply `~/.claude/docs/concepts/ios-design-contract/target-routing.md`. If the TARGET ends in `.swift`, load `Skill("ios-impeccable-hub")` in place of `impeccable-hub` and use the Swift detector + iOS-rant bullets below; otherwise keep the CSS/web path unchanged.
+
 Before any work, invoke:
 
-1. `Skill("impeccable-hub")` — the register (felt-state spine + rants + preferences + voice-anchors + detector floor). Baseline for every invocation.
+1. `Skill("impeccable-hub")` — the register (felt-state spine + rants + preferences + voice-anchors + detector floor). Baseline for every invocation. **For a `.swift` target, load `Skill("ios-impeccable-hub")` instead** (SwiftUI rants + preferences + the iOS detector contract) — see the routing rule above.
 2. `Skill("ui-quality-audit")` — the ui-quality-audit skill's technical quality checks (a11y, performance, responsive, anti-patterns).
 
 ## Context gathering
@@ -33,7 +35,18 @@ Apply the ui-quality-audit skill's procedures to the user's target. Extend with 
 - Flag every default-ease transition and bouncy easing (P1 — `rants/motion-suddenness.md`).
 - Flag every side-stripe border (`border-left`/`border-right` > 1px; P0 — `rants/chamfered-buttons.md` / Bakaus absolute_bans).
 - Flag every gradient text (`background-clip: text` + gradient; P0 — Bakaus absolute_bans).
-- Run the deterministic detector as a DIAGNOSTIC input (a report signal, NOT a shipping gate): `node /Users/adilkalam/ORCA-OS/mcp/design-detector/bin/designcheck.js detect --json <target> 2>&1`. Findings arrive on STDERR; **exit 2 = dirty** (findings present), **exit 0 + `[]` = clean** — key the read off the exit code. Each finding is `{antipattern, name, description, file, line, snippet}`. Report alongside manual findings. (`npx designcheck` is NOT a published package — use the local node entry above.)
+
+**On a `.swift` target, swap the CSS rant bullets above for the iOS-rant equivalents** (the iOS hub's rants at `~/.claude/docs/concepts/ios-design-contract/rants/`):
+
+- Flag every off-palette hue, raw-hex outside token dirs, and Tailwind-palette hex (P0 — `ios .../rants/colors.md`).
+- Flag every hue-coded category (color-as-the-only-signal for a category; P0 — `ios .../rants/hue-coded-categorical.md`).
+- Flag every system-font reflex / display-font below the floor (P0/P1 — `ios .../rants/fonts.md`).
+- Flag every AI-purple / magenta / gradient fill (P0 — `ios .../rants/gradients.md`).
+- Flag every iOS-default reflex — Settings grouped-list, default `.blue`, default sheet/NavigationStack chrome (P0 — `ios .../rants/ios-default-reflex.md`).
+- Flag every shadow / material-glassmorphism reflex (P0 — `ios .../rants/shadow-reflex.md`).
+- Flag every spring-overshoot animation and magic-number spacing / mono-fatigue (P1 — `ios .../rants/spring-overshoot.md`, `magic-number-spacing.md`, `mono-fatigue.md`).
+
+- Run the deterministic detector as a DIAGNOSTIC input (a report signal, NOT a shipping gate). **For a `.swift` target:** `/Users/adilkalam/ORCA-OS/mcp/swift-design-detector/bin/swiftdesigncheck detect --json <target> 2>&1`. **Otherwise (web):** `node /Users/adilkalam/ORCA-OS/mcp/design-detector/bin/designcheck.js detect --json <target> 2>&1`. Both: **exit 2 = dirty** (findings present), **exit 0 + `[]` = clean** — key the read off the exit code. Each finding is `{antipattern, name, description, file, line, snippet}`. Report alongside manual findings. (`npx designcheck` is NOT a published package — use the local entry above.)
 - Apply pixel-alignment audit from `preferences/alignment-precision.md`.
 - Apply typography-junction audit from `preferences/typography-spacing.md`.
 

@@ -150,6 +150,6 @@ These tags flow to phase_state and help gates/audit identify unresolved assumpti
 - Backend API work -> python-backend-specialist.
 - React components -> react-frontend-specialist.
 - Full-stack features -> django-react-builder coordinates both.
-- Design tokens -> design-dna-guardian.
+- Design tokens -> django-react-standards-enforcer.
 - Tests -> testing-specialist.
 - Perf/Security/Accessibility -> respective specialists when risk flagged.

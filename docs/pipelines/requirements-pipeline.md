@@ -39,15 +39,15 @@ Output: a durable `06-requirements-spec.md` that upstreams into `/orca` domain p
 
 | Flag | Planning Depth | Phases Used | Output | Stance |
 |------|----------------|-------------|--------|--------|
-| `-tweak` | **Quick** | Skip discovery, 2-3 scope questions | Minimal spec | Committed |
+| `--tweak` | **Quick** | Skip discovery, 2-3 scope questions | Minimal spec | Committed |
 | (default) | **Standard** | Full 5+5 questions | Complete spec | Committed |
-| `-complex` | **Deep** | Full questions + risk analysis | Multi-phase spec | Committed |
+| `--complex` | **Deep** | Full questions + risk analysis | Multi-phase spec | Committed |
 | `--explore` | **Exploratory** | Deepthink exploration + 2-3 questions | Exploration brief | Tentative |
 
 **Tier passthrough (committed tiers):** The spec's `tier` metadata tells `/orca-*` which execution depth to use:
-- `-tweak` spec -> `-tweak` execution (light orchestrator, minimal gates)
+- `--tweak` spec -> `--tweak` execution (light orchestrator, minimal gates)
 - Standard spec -> Default execution (full pipeline)
-- `-complex` spec -> `-complex` execution (extended gates, multi-phase)
+- `--complex` spec -> `--complex` execution (extended gates, multi-phase)
 
 **Explore tier (tentative):** Does NOT pass through to execution. User must explicitly convert via `--from-brief`:
 - `--explore` -> Exploration brief (tentative) -> User reviews Go/No-Go criteria

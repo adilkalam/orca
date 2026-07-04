@@ -225,6 +225,33 @@ Tags recorded automatically in `/requirements` output and scanned by standards e
 
 ---
 
+## Deploy-Safety Guard (repo <-> ~/.claude drift)
+
+Deployment can drift in BOTH directions: the repo is the source of truth, but some deployed files in `~/.claude` are knowingly newer than the repo (a live redesign shipped straight to `~/.claude`). A naive repo -> `~/.claude` rsync would destroy that live work. Two artifacts protect against this:
+
+- **`scripts/deploy-protected.txt`** -- the canonical protected list consumed by every deploy path. It names the SC-1 cognition-direct command family (`think`, `deepthink`, `problem-solve`, `challenge`, `meta`, `root-cause`, `adversarial`, `think-model`, `contemplate`, `solve`, `autonomous`). These files are NEVER synced in either direction. The list is wired into the manual sync block (`CLAUDE.md`) and `hooks/auto-deploy.sh` as an `--exclude-from` scoped to the `commands/` dir.
+- **`scripts/deploy-diff.sh`** -- a content-based (`cksum`, not mtime) drift check. For each of `commands agents skills hooks scripts docs/reference docs/pipelines bin` it walks both the repo and `~/.claude` and classifies every file:
+
+| Class | Meaning |
+|-------|---------|
+| SAME | content identical on both sides |
+| REPO-NEWER | content differs; repo side looks newer |
+| DEPLOYED-NEWER | content differs; deployed side looks newer -- do NOT clobber |
+| REPO-ONLY | in repo, not deployed |
+| DEPLOYED-ONLY | deployed, not in repo |
+| PROTECTED | basename matches `deploy-protected.txt`; reported only, never actioned |
+
+Usage:
+```bash
+bash scripts/deploy-diff.sh                 # full per-class listing
+bash scripts/deploy-diff.sh --quiet         # summary counts only
+bash scripts/deploy-diff.sh --protected-list <path>   # override the protected list
+```
+
+Exit is non-zero when any NON-protected drift class is non-empty, so `verify-health.sh` can consume the exit code. **DEPLOYED-NEWER on a non-protected file means reconcile before deploying; direction is the owner's call.** PROTECTED files (SC-1) are excluded from the drift exit code and never synced.
+
+---
+
 ## Related Docs
 
 - **Gate Scoring Standard:** `docs/reference/graduated-gate-scoring.md`

@@ -170,9 +170,31 @@ Rule severities read from `docs/concepts/design-contract/detector-rules.json`:
   `justified-text`, `layout-transition`, `line-length`, `low-contrast`, `pure-black-white`,
   `skipped-heading`, `tight-leading`, `tiny-text`, `utility-sprawl`, `wide-tracking`.
 
+> **Owner-cares-about (per-project severity, override-config-driven).** `reflex-fonts` and `geist-imports`
+> are the web analogs of what the owner instructs on repeatedly — the Geist/Inter reflex he calls out by
+> name ("no thought in typography, looks like every other SaaS"). Their enforcement severity is **set per
+> project, not by a frozen global map**: a project may pin them to BLOCK (owner-instructed) and the lane
+> reads that from the project detector config / `BOUND_CONSTRAINTS[].severity`, exactly as the iOS lane
+> treats `system-font-reflex`/`ios-default-reflex`. Severity tracks **what the owner cares about**, and a
+> live owner instruction can suppress even these via an `OVERRIDE` (§6) for a named scope — owner outranks
+> the floor.
+
 ---
 
 ## 6. How the rules actually bind (floor vs ceiling — honest)
+
+**Precedence (read this first): the owner outranks this hub.** Everything below is a *default for when the
+owner has not spoken to the point* — never a ceiling over his live word. The order is fixed: (1) the
+owner's explicit, in-context instruction; (2) this standing register (rants / preferences); (3) the
+deterministic detector. A rant is *derived from* the owner; it cannot outrank him. When his live
+instruction contradicts a standing rant or detector rule (e.g. "this brief is over-restrictive — use the
+purple gradient here", or "the Geist face is right for this surface"), that instruction **wins** — bound as
+an `OVERRIDE` constraint (`docs/reference/design-lane.md` Step 1) that the validator subtracts before the
+verdict and that is **written back** to `{project}/.design-overrides.json` so the suppressed rule stops
+firing for that scope on future runs. The override is owner-authored, so it is ratified by construction
+(unlike a rant the system distilled and froze without his sign-off). An override honored once but not
+written back re-loses on the next task — that recurrence is the precise failure this precedence kills. See
+`design-lane.md` §Precedence for the full mechanism.
 
 The hub being present is necessary but not sufficient. Two mechanisms do the binding:
 

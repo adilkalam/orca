@@ -18,18 +18,18 @@ This creates a requirements folder at `.orca/requirements/YYYY-MM-DD-HHMM-dark-m
 
 | Flag | Depth | Questions | Best For |
 |------|-------|-----------|----------|
-| `-tweak` | Quick | 2-3 scope only | Small changes, config updates |
+| `--tweak` | Quick | 2-3 scope only | Small changes, config updates |
 | (none) | Standard | 10 total | Most features |
 | `--explore` | Exploratory | 2-3 after exploration | Half-baked ideas, early-stage thinking |
 | `--problem-solve` | Convergent | 10 + structured analysis | Complex decisions, architectural choices |
-| `-complex` | Deep | 10 + risk assessment | Architecture, refactors |
+| `--complex` | Deep | 10 + risk assessment | Architecture, refactors |
 
 ```bash
-/requirements -tweak Fix button padding          # Quick: ~2 min
+/requirements --tweak Fix button padding          # Quick: ~2 min
 /requirements Add user preferences page          # Standard: ~5 min
 /requirements --explore What if we rebuilt auth?  # Exploratory: produces tentative brief
 /requirements --problem-solve Migrate to OAuth2  # Convergent: 8-step analysis + spec
-/requirements -complex Migrate to OAuth2         # Deep: ~10 min
+/requirements --complex Migrate to OAuth2         # Deep: ~10 min
 ```
 
 `--explore` produces a tentative brief (not committed). Convert to a committed spec with `/requirements --from-brief`.
@@ -54,7 +54,7 @@ Add reasoning analysis **before** discovery questions:
 ```bash
 /requirements --visual Add onboarding wizard
 /requirements --systems Migrate database to PostgreSQL
-/requirements -complex --debug Fix intermittent checkout failures
+/requirements --complex --debug Fix intermittent checkout failures
 /requirements --problem-solve Implement real-time collaboration   # Full pipeline
 ```
 
@@ -145,7 +145,7 @@ Suggested next step:
   /nextjs Implement requirement dark-mode
 ```
 
-The tier carries through: `-tweak` plan = `-tweak` execution.
+The tier carries through: `--tweak` plan = `--tweak` execution.
 
 ---
 
@@ -166,7 +166,7 @@ Grand architects respect these tags and don't re-decide settled `#PATH_DECISION`
 
 ## Tips
 
-1. **Use tiers appropriately**: `-tweak` for small stuff, `-complex` for risky changes
+1. **Use tiers appropriately**: `--tweak` for small stuff, `--complex` for risky changes
 2. **Add cognition flags** for non-obvious tasks
 3. **Answer with defaults** when uncertain - defaults are smart
 4. **Review the spec** before running `/orca-*`
@@ -178,13 +178,13 @@ Grand architects respect these tags and don't re-decide settled `#PATH_DECISION`
 
 ```bash
 # Quick config change
-/requirements -tweak Update API endpoint URL
+/requirements --tweak Update API endpoint URL
 
 # Standard feature
 /requirements Add user avatar upload
 
 # Complex with systems analysis
-/requirements -complex --systems Add real-time notifications
+/requirements --complex --systems Add real-time notifications
 
 # Bug with debugging analysis
 /requirements --debug Fix cart total calculation error
@@ -196,7 +196,7 @@ Grand architects respect these tags and don't re-decide settled `#PATH_DECISION`
 /requirements --problem-solve Implement multi-tenant architecture
 
 # Problem-solve with complex tier for maximum rigor
-/requirements -complex --problem-solve Migrate from REST to GraphQL
+/requirements --complex --problem-solve Migrate from REST to GraphQL
 ```
 
 ---

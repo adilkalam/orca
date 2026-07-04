@@ -261,7 +261,7 @@ Recording: N session(s) tracked. Use /continue to resume, /orca-status for detai
 
 ### Cognition Persistence
 
-Cognitive commands (`/deepthink`, `/problem-solve`, `/challenge`) persist their output as **files**, not as tokens in a context window. When Claude's context compacts mid-session, the analysis is still on disk:
+Cognitive commands persist their output as **files**, not as tokens in a context window. When Claude's context compacts mid-session, the analysis is still on disk:
 
 - `.orca/cognition/YYYYMMDD-HHMM-slug.md` - Summary files
 - `~/.orca-cognition/sessions/` - Full session logs

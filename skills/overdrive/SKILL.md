@@ -16,7 +16,7 @@ Push an interface past conventional limits. This isn't just about visual effects
 
 ## MANDATORY PREPARATION
 
-Invoke {{command_prefix}}impeccable — it contains design principles, anti-patterns, and the **Context Gathering Protocol**. Follow the protocol before proceeding — if no design context exists yet, you MUST run {{command_prefix}}impeccable teach first.
+**Run the cognition constraint loop (MANDATORY).** Invoked directly as `/overdrive <target>` (a human typed it)? This is an INDIVIDUAL command, outside the /impeccable pipeline -- so cognition IS the enforcement. Run the in-thread loop defined once at `~/.claude/docs/reference/cognition-constraint-loop.md`: R1 generate typed FORBIDDEN/FORWARD constraints via a cognition `checkpoint` -> R2 do the work in-thread using the craft below -> evaluate every bound constraint + detector self-check -> loop (MAX N=2) until none unsatisfied; you may NOT claim done with an open constraint. (The heavy /impeccable pipeline with its separate validator + hook is a different path; cognition is optional there.) If `design-builder` loaded this skill only for craft reference, ignore this block and use the craft below.
 
 **EXTRA IMPORTANT FOR THIS SKILL**: Context determines what "extraordinary" means. A particle system on a creative portfolio is impressive. The same particle system on a settings page is embarrassing. But a settings page with instant optimistic saves and animated state transitions? That's extraordinary too. Understand the project's personality and goals before deciding what's appropriate.
 

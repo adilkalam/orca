@@ -149,7 +149,7 @@ Examples that count:
 
 > **Forbidden:** Linear-style task UI density. The product is editorial, not engineering tooling.
 >
-> **Always:** Mono is reserved for the six whitelisted slots in `rants/typography-mono.md` — eyebrow, tag chip, unit, axis chrome, terminal/code, footnote tag. Never elsewhere.
+> **Always:** Mono is reserved for the six whitelisted slots in `rants/typography-mono.md` — tag chip, unit, axis chrome, terminal/code, labels, footnote tag. Never elsewhere.
 >
 > **Never:** AI-purple-to-pink gradients (per `rants/gradients.md`). Substitute brass-on-obsidian or single-hue tonal range.
 

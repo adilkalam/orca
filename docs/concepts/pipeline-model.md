@@ -38,7 +38,7 @@ Parse flags
     ↓
  No flag (default) → [Light Orchestrator] → Builder → Gates → Done
     ↓
- -tweak → [Light Orchestrator] → Builder → Done (no gates)
+ --tweak → [Light Orchestrator] → Builder → Done (no gates)
     ↓
  --complex → [Grand Architect] → Full pipeline:
     ↓

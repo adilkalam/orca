@@ -1,0 +1,27 @@
+## ORCA-OS deploy-protected list  (consumed by every deploy path)
+##
+## SC-1: the cognition-direct command family.
+## The DEPLOYED copies of these commands in ~/.claude/commands are NEWER than
+## the repo copies (a live redesign shipped straight to ~/.claude). A naive
+## repo -> ~/.claude rsync of commands/ would OVERWRITE and DESTROY that live
+## redesign; a reverse ~/.claude -> repo sync would clobber the repo history.
+##
+## These files must NEVER be synced in EITHER direction until an owner-decided
+## reconciliation happens. The drift is KNOWN and OUT OF SCOPE for routine
+## deploys. Do not "fix" it by syncing.
+##
+## Format: one rsync --exclude-from pattern per line. rsync --exclude-from
+## matches by basename by default, so bare filenames are sufficient. This same
+## file is also parsed by scripts/deploy-diff.sh to classify these as PROTECTED.
+##
+think.md
+deepthink.md
+problem-solve.md
+challenge.md
+meta.md
+root-cause.md
+adversarial.md
+think-model.md
+contemplate.md
+solve.md
+autonomous.md

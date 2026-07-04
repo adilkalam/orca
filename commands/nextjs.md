@@ -1,6 +1,6 @@
 ---
 description: "OS 7.0 orchestrator entrypoint for Next.js frontend tasks"
-argument-hint: "[--light | -tweak | --complex] <task description or requirement ID>"
+argument-hint: "[--light | --tweak | --complex | --audit] <task description or requirement ID>"
 allowed-tools:
   - Agent
   - AskUserQuestion
@@ -27,10 +27,10 @@ This slash command EXISTS to delegate work to agents. Not to do work directly.
 
 **ALWAYS required:**
 1. Parse the arguments
-2. Determine routing (-tweak, default, --complex)
+2. Determine routing (--tweak, default, --complex)
 3. **Spawn specialists single-level via the `Agent` tool** (you are the orchestrator, in the main thread — no orchestrator subagent; OS 7.1)
 
-Even `-tweak` delegates to a builder. It skips gates, not agents.
+Even `--tweak` delegates to a builder. It skips gates, not agents.
 
 **If you are about to Edit/Write, STOP. Delegate instead.**
 
@@ -44,7 +44,7 @@ Use this command for Next.js / frontend UI work.
 
 ```bash
 /nextjs "update the pricing page layout"           # Default: light path + design gates
-/nextjs -tweak "fix button spacing"                # Fast: light path, no gates
+/nextjs --tweak "fix button spacing"                # Fast: light path, no gates
 /nextjs --complex "multi-page feature"             # Full: architect + builder + all gates
 /nextjs "implement requirement 2025-11-25-0930-dashboard"  # Full path with spec
 ```
@@ -66,7 +66,7 @@ Use this command for Next.js / frontend UI work.
 **Check for flags:**
 ```
 $ARGUMENTS contains "--light" → Section 2.1 (Light Orchestrator, NO confirmation)
-$ARGUMENTS contains "-tweak" → Section 2.2 (Builder Direct, NO confirmation)
+$ARGUMENTS contains "--tweak" → Section 2.2 (Builder Direct, NO confirmation)
 $ARGUMENTS contains "--complex" → Section 3 (Full Pipeline with confirmation)
 No flag → Section 3 (Light Orchestrator WITH confirmation)
 ```
@@ -357,9 +357,9 @@ Failure to apply these constraints will result in gate failure.
 
 ---
 
-## 2. Light Path Flow (--light and -tweak modes ONLY)
+## 2. Light Path Flow (--light and --tweak modes ONLY)
 
-This section applies ONLY when user passes `--light` or `-tweak` flags.
+This section applies ONLY when user passes `--light` or `--tweak` flags.
 Default (no flag) now goes to Section 3 for confirmation first.
 
 ### 2.1 --light Flag - Light Path WITHOUT Confirmation
@@ -380,7 +380,7 @@ Inject this `=== DESIGN AWARENESS ===` block (the Manifesto Priming text from Se
 
 ---
 
-### 2.2 -tweak Flag - Builder Direct (Pure Speed)
+### 2.2 --tweak Flag - Builder Direct (Pure Speed)
 
 1. Memory-first context only (skip ProjectContext)
 2. Delegate directly to `nextjs-builder`
@@ -389,7 +389,7 @@ Inject this `=== DESIGN AWARENESS ===` block (the Manifesto Priming text from Se
 
 **Fallback:** If memory can't locate files, MAY use narrow ProjectContext (maxFiles: 3)
 
-**Context Inheritance Protocol (-tweak mode):**
+**Context Inheritance Protocol (--tweak mode):**
 
 ```
 Agent({

@@ -42,17 +42,6 @@ ORCA doesn't replace your judgment. It replaces the infrastructure you'd have to
 
 ## The Guides
 
-### 1. [Cognition](../cognition.md)
-
-**Prosthetic thinking for LLMs.**
-
-When to read: You want to think through problems systematically before building.
-
-Key concepts:
-- Substrate observation -- catching trained reflexes before they shape output
-- `/think` with flags (`--systems`, `--debug`, `--decide`, `--model`, and more)
-- Composed commands: `/deepthink`, `/problem-solve`, `/challenge`
-- Accept-Store-Echo pattern via cognition-mcp
 
 ### 2. [Memory](ORCA-memory.md)
 
@@ -103,8 +92,6 @@ Key concepts:
 ### Standard Workflow
 
 ```bash
-# 1. Think through the problem (optional but recommended)
-/think --systems How does our auth work?
 
 # 2. Plan the implementation
 /requirements Add social login to the auth flow
@@ -117,7 +104,7 @@ Key concepts:
 
 ```bash
 # Quick change, you verify
-/nextjs -tweak "fix button padding"
+/nextjs --tweak "fix button padding"
 ```
 
 ### Complex Mode
@@ -134,11 +121,9 @@ Key concepts:
 
 | Situation | Start Here |
 |-----------|------------|
-| "I'm confused about this problem" | [Cognition](../cognition.md) - `/deepthink` |
 | "Why did we choose X?" | [Memory](ORCA-memory.md) - `/project-memory why` or `workshop why "X"` |
 | "Build this feature" | [Orchestration](../orchestration.md) - `/requirements` -> `/{domain}` |
-| "Quick fix" | [Orchestration](../orchestration.md) - `/{domain} -tweak` |
-| "Is this a good idea?" | [Cognition](../cognition.md) - `/challenge` |
+| "Quick fix" | [Orchestration](../orchestration.md) - `/{domain} --tweak` |
 | "Same bug keeps happening" | [Learning](ORCA-learning.md) - standards loop |
 
 ---
@@ -147,23 +132,15 @@ Key concepts:
 
 For significant features, use everything:
 
+<!-- PUBLIC-ONLY: dedicated cognition commands are local-only; public pipeline starts at orchestration -->
 ```bash
-# 1. COGNITION: Understand the problem
-/deepthink Why do users abandon checkout?
-
-# 2. COGNITION: Decide on approach
-/problem-solve Optimize current flow vs rebuild from scratch?
-
-# 3. COGNITION: Stress-test the decision
-/challenge Rebuild checkout with progressive disclosure
-
-# 4. ORCHESTRATION: Plan implementation
+# 1. ORCHESTRATION: Plan implementation
 /requirements Implement progressive checkout redesign
 
-# 5. ORCHESTRATION: Execute with verification
+# 2. ORCHESTRATION: Execute with verification
 /nextjs   # Reads spec, assembles team, runs gates
 
-# 6. MEMORY + LEARNING: Saved automatically
+# 3. MEMORY + LEARNING: Saved automatically
 # Decisions recorded, learnings captured, patterns updated
 ```
 

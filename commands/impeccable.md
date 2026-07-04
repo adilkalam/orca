@@ -1,253 +1,257 @@
 ---
-name: impeccable
-description: "Create distinctive, production-grade frontend interfaces and keep ANY front-end work out of AI-slop territory. DEFAULT MODE IS FLAG-FREE — `/impeccable clean up the UI on the pricing page` classifies the request and runs it through the design lane, no flag needed. Flags for specific flows: --craft (shape-then-build a NEW feature), --teach (set up project strategic context), --document (generate visual contract), --extract (pull tokens/components; add 'rants' subarg to sweep captured rants). Loads the impeccable hub skill (the register) and runs the shared design lane."
-argument-hint: "<freeform request, e.g. 'clean up the UI on the pricing page'> | --craft <feature> | --teach | --document | --extract [rants|<target>]"
+description: "Full design orchestration lane. Runnable with ANY design-verb flag (--layout --typeset --colorize --bolder --quieter --delight --harden --polish --optimize --adapt --clarify --distill --overdrive --animation --threejs) and the setup flags (--craft --teach --document --extract). DEFAULT MODE IS FLAG-FREE — /impeccable clean up the pricing page classifies the request, plans it with the design-architect, and runs each verb-task through the shared design lane (bind → build → validate → branch). Mirrors the /nextjs orchestrator: this command DELEGATES; it never writes design artifacts itself."
+argument-hint: "<freeform request> | --<verb> <target> | --craft <feature> | --teach | --document | --extract [rants|<target>]"
 license: Apache 2.0. Based on Anthropic's frontend-design skill + Paul Bakaus's Impeccable. See NOTICE.md for attribution.
+allowed-tools:
+  - Agent
+  - AskUserQuestion
+  - mcp__cognition-mcp__cognition
+  - mcp__project-context__query_context
+  - mcp__project-context__save_decision
+  - mcp__project-context__save_task_history
+  - Read
+  - Bash
+  - Grep
+  - Glob
 ---
 
-# /impeccable
+## STOP — ORCHESTRATOR ONLY
 
-This command is THIN. The durable design knowledge lives in ONE place — the `impeccable-hub` skill — and
-the bind→build→validate→branch sequence lives in ONE place — the shared design lane. This file does two
-things only: **load the hub** and **route flags** (invoking the lane for build work). It carries **zero
-copies** of rants / voice-anchors / preferences / aesthetics rules (`#POISON_PATH` re-inlining — those
-were deleted from here on 2026-06-03 and now live in the hub + `docs/concepts/design-contract/`).
+**Before anything else, read this.** `/impeccable` is the design lane orchestrator. It exists to run the
+**shared design lane** (`~/.claude/docs/reference/design-lane.md`) by DELEGATING to agents. It does the
+**bind** (a cognition checkpoint), **spawns** the architect / builder / validator via `Agent()`,
+**branches** on the verdict, and **writes phase_state**. It does **not** write design artifacts itself.
 
-## Load the hub (every invocation)
+**NEVER acceptable:**
+- "This is small, I'll just edit the file myself."
+- Using `Edit`/`Write` to change a component, page, or stylesheet.
+- Spawning a builder/validator and then also hand-grading its work yourself.
 
-`Skill("impeccable-hub")` — the single home for the register: the `interfaces-that-feel` felt-state spine,
-the 17 voice anchors, the rants (refusals), the preferences (positive moves), and the detector contract.
-The hub **points to** the canonical refs under `~/.claude/docs/concepts/design-contract/` and
-`~/.claude/docs/concepts/impeccable-reference/`; read those when you reach for the corresponding move.
-Loading the hub is what ends the repetition tax — the rules are present by construction, not re-stated.
+**ALWAYS required:**
+1. Load the hub register.
+2. BIND typed FORBIDDEN/FORWARD constraints via a cognition `checkpoint`.
+3. BUILD via `Agent(design-builder)`; VALIDATE via `Agent(design-validator)` (fresh context).
+4. BRANCH: PASS → arm the hook + hand back; BLOCK → loop the builder (MAX N=2) → escalate.
 
-## Parse flag
+**If you are about to `Edit`/`Write` a design artifact, STOP. Delegate to `design-builder`.**
 
-Accepted flags:
-- `--craft "<feature>"` — shape-then-build a feature, with /shape interview + reference-comp pick, then
-  the shared design lane. See §--craft Flow.
-- `--teach` — populate per-project `.claude/PRODUCT.md` (strategic context). Hands off to `--document`
-  for DESIGN.md. See §--teach Flow.
-- `--document` — handled by the dedicated `/document` command. Generates `.claude/DESIGN.md` (Stitch-spec
-  visual contract). Reachable as `/impeccable --document` (alias) or `/document` directly.
-- `--extract` — pull reusable tokens/components into the design system. See §--extract Flow.
-- `--extract rants` — sweep `{project}/.orca/design-rants-pending.md` into the global rants collection.
-
-If no flag: enter **Default mode (freeform)** — classify the request and route it through the lane (see §Default mode below). Do NOT just dump the flag list and stop; the everyday entry is flag-free. Only print the flag list if the request is empty or you genuinely cannot classify it.
+The build work itself can run in-thread under the bound constraints ONLY as a documented fallback when a
+new `Agent()` is not yet spawnable in this session (pre-reload). Even then, the detector floor runs at
+handback so the path is never zero-constraint. Announce the fallback when you take it.
 
 ---
 
-## Default mode (no flag) — freeform, run-on-anything
+# /impeccable — Design Lane Orchestrator
 
-The everyday entry. `/impeccable <whatever you want done>` — e.g. `/impeccable clean up the UI on the pricing page`, `/impeccable the dashboard header feels sloppy — fix it`, `/impeccable build a settings panel`. No flag required; the hub is already loaded, so the register binds regardless.
+The durable design knowledge lives in ONE place — the `impeccable-hub` skill + the
+`docs/concepts/design-contract/` collection it points to. The bind → build → validate → branch sequence
+lives in ONE place — `~/.claude/docs/reference/design-lane.md`. This command loads the hub, parses the
+verb, and **runs that lane**. It carries **zero** copies of rants / voice-anchors / preferences
+(`#POISON_PATH` re-inlining).
 
-**1 — Classify the request** into one route. State the classification in one line so the user can redirect, then proceed — do NOT stop to ask unless it is genuinely ambiguous:
+## 0. Load the hub (every invocation)
+
+`Skill("impeccable-hub")` — the register: the `interfaces-that-feel` felt-state spine, the voice anchors,
+the rants (refusals), the preferences (positive moves), the detector contract. Read the task-relevant
+refs under `~/.claude/docs/concepts/design-contract/` when you reach for a move. Loading the hub is what
+ends the repetition tax — the rules are present by construction.
+
+## 1. Parse the flag
+
+| Argument | Route |
+|---|---|
+| `--layout`, `--typeset`, `--colorize`, `--bolder`, `--quieter`, `--delight`, `--harden`, `--polish`, `--optimize`, `--adapt`, `--clarify`, `--distill`, `--overdrive`, `--animation`, `--threejs` | **Single-verb lane** (§3) — skip the architect; run the lane once for that verb. |
+| no flag (freeform) | **Default mode** (§2) — classify, then architect-plan + per-task lane. |
+| `--craft "<feature>"` | **Feature build** (§4) — `/shape` + comp pick, then the lane. |
+| `--teach` / `--document` / `--extract` | **Setup/maintenance** (§5). |
+
+The standalone verb commands (`/layout`, `/typeset`, …) are the same single-verb lane reachable directly;
+`/impeccable --<verb>` and `/<verb>` are equivalent (same lane, same enforcement).
+
+---
+
+## 2. Default mode (freeform) — classify → plan → run
+
+`/impeccable <whatever you want done>`. State the classification in one line, then proceed (don't stop to
+ask unless genuinely ambiguous).
 
 | Request is… | Route |
 |---|---|
-| improve / fix / clean up / polish / restyle / tighten an **existing** page or component | **improve-existing** → run the lane on that target (step 2) |
-| build / create / add a **new** feature, page, or component | **build-new** → the `--craft` flow (shape → comp → lane) |
-| set up / "teach the brand" / there is no `PRODUCT.md` or `DESIGN.md` | **setup** → `--teach` then `--document` |
+| improve / fix / clean up / polish an **existing** surface | **improve-existing** → architect plan (multi-verb) → run the lane per task (§3) |
+| build / create / add a **new** feature | **build-new** → `--craft` (§4) |
+| no `PRODUCT.md` / `DESIGN.md` yet | **setup** → `--teach` then `--document` (§5) |
 
-If you genuinely cannot tell whether the target already exists, ask ONE question, then proceed.
+**improve-existing:**
 
-**2 — improve-existing (the common case): run the shared lane on the existing target.**
-
-1. **Resolve the target** file(s) from the request (the page/component path). If unclear, ask once.
-2. **Read the project contract if present** — `{project}/.claude/PRODUCT.md` + `DESIGN.md`. **If absent, do NOT block** — run on the hub's global register (the rants + preferences + voice-anchors still prevent slop) and note once: *"No project contract found — running on the global register; run `/impeccable --teach` to make this project-specific."* Frictionless on any project is the point.
-3. **Run the lane** (`~/.claude/docs/reference/design-lane.md`): **BIND** the FORBIDDEN/FORWARD constraints this target can trip (hub §3 rant→detector map + the page's actual content) → **BUILD** via `Agent(design-builder)`, tasked to *improve the existing file in place* under the bound ids (carry the user's critique verbatim) → **VALIDATE** via `Agent(design-validator)` (fresh context) → **BRANCH** (PASS hands back; BLOCK loops the builder with the findings, MAX N=2, then escalates).
-4. **Close** with the rant-capture handback.
-
-No `/shape` interview for improve-existing — the page already exists; the task is improvement, not net-new discovery. That is why this path is lighter than `--craft`. (If the user then iterates element-by-element on the result, that is in-thread refinement — FR-6 — carry their critique verbatim into the builder.)
-
-**3 — build-new** → run the `--craft` flow (§--craft Flow). **setup** → `--teach` / `--document`.
-
----
-
-## The shared design lane (how build work runs)
-
-All artifact-producing work (`--craft`, and any future build verb) runs through the **one shared lane**,
-defined once at **`~/.claude/docs/reference/design-lane.md`** — never re-described here (`#POISON_PATH`
-duplication). The lane is: the orchestrator (this main thread) **binds** typed FORBIDDEN/FORWARD
-constraints via a cognition `checkpoint` and records the returned ids to
-`{project}/.orca/orchestration/phase_state.json → planning.bound_constraint_ids`; spawns
-`Agent(design-builder)` to produce the artifact under those ids; spawns `Agent(design-validator)` (fresh
-context) which returns `GATE_VERDICT: PASS|BLOCK`; **branches** — PASS hands back, BLOCK loops the
-builder with the findings, **MAX N=2**, then escalates to the user.
-
-The orchestrator NEVER grades its own output (the validator is a separate fresh agent). Skipping the bind
-⇒ no bound ids ⇒ the validator returns `BLOCK: no bound constraints`. `/live` element-by-element
-iteration and mid-build critique stay **in-thread** (FR-6) — carry the user's critique verbatim into the
-builder prompt. Read the lane file for the full step-by-step.
-
-> **Status (2026-06-03):** the lane's agents (`design-builder`, `design-validator`) are authored but a
-> new agent is not spawnable until a Claude Code session reload — the lane is **built, pending
-> post-reload live proof.** Until then, build work may run in-thread under the bound constraints, with
-> the detector run as the named-slop floor at handback.
-
-**The honest ceiling:** the lane raises the floor (rules present, adjudication external, no named slop)
-but does **not** manufacture taste — the validator's judgment + **the user's eye** is the taste ceiling.
+1. **Context.** Read `{project}/.claude/PRODUCT.md` + `DESIGN.md` if present. If absent, do NOT block —
+   run on the global register and note once: *"No project contract — running on the global register; run
+   `/impeccable --teach` to make it project-specific."*
+2. **Plan.** Spawn the architect to decompose the request into ordered verb-tasks:
+   ```
+   Agent({ subagent_type: "design-architect", description: "Plan design verb-tasks",
+     prompt: "=== CONTEXT BUNDLE (INHERITED) ===\nDO_NOT_QUERY: true\n<hub register content>\nPRODUCT/DESIGN paths: <…>\n===\nREQUEST: $ARGUMENTS\nDecompose into ordered verb-tasks with forbidden_seeds + forward_seeds + override_seeds per task. Class-scope the sweep (resolve every call site of the pattern, not just the file pointed at; enumerate touched vs left in NOTES). Emit override_seeds ONLY from an explicit owner instruction (provenance = his literal words). Return the TASKS/ORDER block." })
+   ```
+   Read its `TASKS` + `ORDER` (and any `override_seeds` per task — these are the owner-sanctioned
+   suppressions you thread through the lane in §3).
+3. **Run the lane per task, in order** (§3 for each verb-task, using the architect's `forbidden_seeds` /
+   `forward_seeds` as the bind inputs and its `target` as the build target).
+4. **Close** with the rant-capture handback (§6).
 
 ---
 
-## Flag Handlers
+## 3. The single-verb lane (the executable sequence)
 
-### --craft Flow
+This is the shared lane from `~/.claude/docs/reference/design-lane.md`, performed. Run it for one verb on
+one target. **Do every step; do not skip the bind, the validator, or the phase_state write.**
 
-Invoked as `/impeccable --craft "<feature description>"`.
+**Inputs:** `VERB` (the flag/architect task), `TARGET` (file paths), `FORBIDDEN_SEEDS` + `FORWARD_SEEDS`
+(from the architect, or derived here for a direct single-verb call from the verb's rant focus +
+`voice-anchors.md`), `OVERRIDE_SEEDS` (the architect's `override_seeds`, or — for a direct single-verb
+call — any standing rule the user's live instruction explicitly contradicts; default empty), `USER_SHAPE`
+(the user's verbatim critique, if any — FR-6).
 
-Follow the craft flow at `~/.claude/docs/concepts/impeccable-reference/craft.md`. Pass the feature
-description as input.
+> **Precedence — owner > register > detector** (`~/.claude/docs/reference/design-lane.md` §Precedence).
+> The owner's explicit, in-context instruction outranks the standing register AND the detector floor —
+> *including a P0*. When his live word contradicts a standing rule, you bind an `OVERRIDE` (below), the
+> validator subtracts it before the verdict, and you write it back at BRANCH so the win persists. An
+> override honored once but not written back re-loses next task ("circles") — write-back is what kills it.
 
-**Required preconditions (the hub §7 lists these too):**
-1. `PRODUCT.md` is loaded (strategic context — register, users, anti-references, principles). If missing,
-   route to `/impeccable --teach` first.
-2. `DESIGN.md` is loaded (visual contract — colors, typography, components, Do's-and-Don'ts). If missing,
-   route to `/impeccable --document` first.
+**Step 1 — BIND (you, the orchestrator).** Emit a real cognition checkpoint that binds the typed
+constraints; record the returned ids.
+```
+mcp__cognition-mcp__cognition({
+  operation: "checkpoint", projectPath: <repo root>, verbose: false,
+  sessionTitle: "design lane: <verb> on <target>", sessionTags: ["design-lane","<verb>"],
+  content: {
+    command: "/impeccable --<verb>", phase: "bind",
+    addConstraints: [
+      { type: "FORBIDDEN", text: "<slop> (detector:<ruleId> | rant:<id>)" },   // one per FORBIDDEN_SEED
+      { type: "FORWARD",   text: "<felt-state obligation>" },                   // one per FORWARD_SEED
+      { type: "OVERRIDE",  text: "<what the owner sanctioned>", suppresses: "<ruleId>",
+        scope: "<path/element glob>", value: "<sanctioned value, e.g. soft-red Clear>",
+        provenance: "<the owner's exact words>" }                              // one per OVERRIDE_SEED — ONLY from an explicit owner instruction; never invent one
+    ]
+  }
+})
+```
+Emit an `OVERRIDE` **only** from an explicit owner instruction (provenance = his literal words) — never
+invent one, never use it to launder a model preference. If the owner calls the *standing brief itself*
+over-restrictive (not just one element), bind the `OVERRIDE` at the widest scope he named.
 
-**Mandatory step before code: /shape.** Every `--craft` runs the `/shape` discovery interview first — 3
-rounds, 2-3 questions per round, even when PRODUCT.md and DESIGN.md are present. It captures per-feature
-commitments (job-to-be-done at this moment, felt-state at this point, decisive ingredient list) that
-PRODUCT.md alone cannot provide. Skipping /shape is the most common failure mode of /craft. Do not skip.
-
-**Mandatory step before code: visual direction comp pick.** After /shape, generate **1-3 high-fidelity
-reference comps** from the shape brief (composition, hero, motifs, density, color treatment). The user
-picks one. The chosen comp's visible ingredients become the visual contract for the build. **Code is
-step 4 of 6, never step 1.** Skipping the comp pick regresses /craft into "generate code from rules" —
-the exact failure this system fails-fast on.
-
-**Then run the shared design lane** (above / `design-lane.md`): bind the task-specific FORBIDDEN/FORWARD
-constraints, build under them, validate with the fresh-context validator, branch (N=2 → escalate). The
-chosen comp's ingredients + the /shape commitments feed the builder prompt; the user's mid-build critique
-stays in-thread.
-
-**Optional parallel hygiene check.** If the project has `scripts/audit-design.sh`, optionally run it
-after the build:
+Capture `protocolState.activeConstraints` (ids `C1`, `C2`, …). Write them to phase_state and serialize the
+typed constraints as `BOUND_CONSTRAINTS` for the validator (id + type + statement + detector_rule), and
+collect the `OVERRIDE` constraints as `ACTIVE_OVERRIDES` (each `{suppresses, scope, value, provenance}`)
+for the builder + validator + the BRANCH write-back:
 ```bash
-bash {current-project}/scripts/audit-design.sh
+mkdir -p .orca/orchestration
+# write/merge planning.bound_constraint_ids + a bound-constraints JSON (use jq or a heredoc)
 ```
-It informs but does not gate — parallel mechanical hygiene (mono count cap, OT ligature disable, padding
-math). The lane's validator is the hard FLOOR; the user's eye is the taste CEILING. If the user critiques
-the output, escalate to `/recraft "<critique>"`.
+**Skipped bind → no ids → the validator returns BLOCK (NO-BOUND-CONSTRAINTS). Never skip it.**
 
-### --teach Flow
-
-Invoked as `/impeccable --teach`. **Writes PRODUCT.md only** (strategic context). Hands off to
-`/impeccable --document` for DESIGN.md (visual contract).
-
-The user already has an established design register — this flow is NOT discovery-from-zero. It is
-project-narrowing from the established register, framed as Impeccable's structured discovery interview (3
-rounds, 2-3 questions per round). Reference: https://impeccable.style/docs/teach
-
-**Step 0 — Announce what's already loaded.** Before asking anything, print a short summary so the frame is
-visible. The register is already present via the hub (the user does not re-state it): the 17 voice
-anchors, the rants as automatic refusals (colors / fonts / gradients / motion-suddenness /
-chamfered-buttons / generic-ui-defaults / alignment-spacing / rounded-corners / skeuomorphism), the
-preferences as positive catalogs (22-font catalog, non-uniform type scale, typography spacing junctions,
-optical alignment rules, motion references), and the 7 core principles. Then state: "I'll write
-PRODUCT.md (strategic — register, users, anti-references, principles, accessibility — NO colors/fonts/
-pixels). For DESIGN.md (the visual contract), run `/impeccable --document` next."
-
-**Step 1 — Scan the codebase.** Read README/docs (purpose, audience, goals), package.json/config (stack,
-existing design libs), existing components (patterns, spacing, type in use), brand assets, design tokens/
-CSS variables, any style guides. Note what you learned, what's unclear, and any existing choice that
-conflicts with the register (flag those for the user).
-
-**Step 2 — Run the structured discovery interview (3 rounds).** Only ask what the register + codebase
-scan cannot answer. Reference: https://impeccable.style/docs/teach
-
-- **Round 1 — Identity & users:** (1) project identity in one sentence; (2) register — "brand" or
-  "product" (Stitch-spec convention); (3) sub-register descriptor (editorial / technical-research /
-  clinical-commerce / brutalist / luxury-refined / playful-toy / industrial-utilitarian / other).
-- **Round 2 — Brand personality & principles:** (1) three adjectives + one sentence on emotional goals;
-  (2) 3-5 strategic design principles (NOT visual — "expert confidence" yes, "use OKLCH" no); (3) voice
-  & tone in one paragraph.
-- **Round 3 — Anti-references & accessibility:** (1) anti-references AS NAMED BRANDS/PRODUCTS (e.g.
-  "Linear's task UI", "Klim Type Foundry specimen pages") — NOT adjectives like "boring"/"AI slop"
-  (those are global rants); (2) project-scoped refusals AND reversals (e.g. peptidefox refuses
-  medical-orange; a technical-research project may reverse the Geist refusal); (3) accessibility &
-  inclusion stance (one paragraph of intent, not implementation rules).
-
-Do NOT ask in /teach (these belong in /document): specific font picks, palette OKLCH values, spacing
-scales, radius tokens, component prop specifics.
-
-**Step 3 — Populate PRODUCT.md.** Read the template `~/.claude/docs/concepts/design-contract/product-template.md`,
-copy to `{project}/.claude/PRODUCT.md` (create `.claude/` if missing), fill from the Step 2 answers +
-scan: Register (bare "brand"/"product"), Users, Product Purpose, Brand Personality, Anti-references
-(SPECIFIC named brands), Design Principles (strategic), Accessibility & Inclusion (intent).
-
-**Step 4 — Hand off DESIGN.md to /impeccable --document.** PRODUCT.md carries no visual tokens. Prompt:
-"PRODUCT.md is written. Run `/impeccable --document` next to generate DESIGN.md (colors, typography,
-components, Do's-and-Don'ts in Stitch spec)." The two-file split is load-bearing: PRODUCT.md changes when
-register/audience changes (rare); DESIGN.md changes when visual tokens change (more often).
-
-**Optional project utility — audit-design.sh.** Offer (do NOT mandate) to deploy `scripts/audit-design.sh`
-from `/Users/adilkalam/ORCA-OS/templates/audit-design.sh` — a mechanical hygiene checker that informs but
-does not gate. Also create `{project}/.orca/design-rants-pending.md` as an empty capture ledger (used by
-every design command's rant-capture at handback; swept via `/impeccable --extract rants`):
-
-```markdown
-# Design Rants — Pending
-
-Project-local capture ledger. Design commands append verbatim user critiques here at handback. Sweep
-periodically via `/impeccable --extract rants` to fold into the global rant catalog.
-
-Format per entry:
-
-## YYYY-MM-DD HH:MM — /<command>
-<user's rant, verbatim>
-
----
+**Step 2 — BUILD.** Spawn the builder (single-level). In the pipeline, enforcement is the STRUCTURE
+(separate validator + hook), so cognition in the builder is **optional** — the pipeline can be run
+cognition-off to test the structure alone (the mandatory cognition loop lives on the individual verb
+commands, not here). Inject the hub AND the CSS manifesto awareness:
 ```
+Agent({ subagent_type: "design-builder", description: "Build <verb> on <target>",
+  prompt: "=== DESIGN HUB (INJECTED) ===\n<hub register content>\n===\n=== DESIGN AWARENESS (CSS manifesto) ===\nBefore writing CSS, read ~/.claude/docs/concepts/llm-css-manifesto.md + design-contract/preferences/css-architecture.md. The stylesheet IS the design document: semantic/centralized CSS in named role+token classes; no scattered raw-palette utilities.\n===\nTASK: <verb intent> on <TARGET>\nBOUND_CONSTRAINTS: <the typed JSON>\nACTIVE_OVERRIDES: <the ACTIVE_OVERRIDES JSON, may be empty — owner-sanctioned suppressions; within an override's scope the suppressed rule does NOT apply, honor the owner's sanctioned value>\nUSER_SHAPE: <verbatim critique, if any>\nVERB_SKILL: <Skill name from architect verb→skill map>\nImprove the file(s) in place under the bound ids (internal cognition self-check optional — the pipeline's validator + hook are the enforcement). Report ARTIFACT_PATHS + CONSTRAINTS_ADDRESSED + SELF_CHECK." })
+```
+Read `ARTIFACT_PATHS`.
 
-**Step 5 — Summarize and hand back.** Confirm completion, print a 5-line summary of what was written to
-`.claude/PRODUCT.md`, remind the user to run `/impeccable --document` next, then ask the rant-capture
-question at handback (see §Closing handback).
+**Step 3 — VALIDATE.** Spawn the validator (single-level, FRESH context — give it ONLY the artifact paths
++ bound constraints + hub; NEVER the builder's reasoning):
+```
+Agent({ subagent_type: "design-validator", description: "Validate <verb> output",
+  prompt: "=== DESIGN HUB (INJECTED) ===\n<hub register content>\n===\nARTIFACT_PATH: <ARTIFACT_PATHS>\nBOUND_CONSTRAINTS: <the typed JSON>\nACTIVE_OVERRIDES: <the ACTIVE_OVERRIDES JSON, may be empty — subtract owner-sanctioned findings (rule==suppresses within scope) BEFORE the verdict; a P0 the owner sanctioned does NOT force BLOCK>\nRun the detector, judge bound ids, emit the GATE_VERDICT block." })
+```
+Parse `GATE_VERDICT`.
 
-### --extract Flow
+**Step 4 — BRANCH.**
+- **BLOCK** → re-spawn `design-builder` with `PRIOR_FINDINGS` = the validator's
+  `UNSATISFIED_CONSTRAINTS` + `FINDINGS`, then re-validate. **MAX N=2 retries.** After the 2nd failed
+  retry, **ESCALATE to the user** with the unresolved findings named. Track the counter in phase_state.
+  Never silently ship; never loop unbounded.
+- **PASS** → **write back the overrides, then arm the deterministic floor.**
 
-Invoked as `/impeccable --extract [<target>]`. If target is `rants` → see §--extract rants.
+  First, **write back each `OVERRIDE` so the win persists** (durability — this is what kills the circles).
+  As soon as an `OVERRIDE` is bound, append it to `{project}/.design-overrides.json` (read-array-push-write)
+  so the suppressed rule stops firing for its scope on all future runs, and surface a one-line owner-ratified
+  amendment to the project law. The override is owner-authored — ratified by construction. Write it BEFORE
+  the phase_state PASS write so the branch-time hook honors it:
+  ```bash
+  # .design-overrides.json is a FLAT JSON array at {project}/.design-overrides.json.
+  # Read-array-push-write: append one entry per ACTIVE_OVERRIDES item (the detector self-suppresses from this file):
+  f="{project}/.design-overrides.json"
+  [ -f "$f" ] || echo '[]' > "$f"
+  # for each override {suppresses, scope, value, provenance}: jq '. += [$o]' (or heredoc-merge) and write back
+  ```
 
-Otherwise follow the extract flow at `~/.claude/docs/concepts/impeccable-reference/extract.md` to pull
-reusable components/tokens into the project design system.
-
-**Optional parallel hygiene check.** If the project has `scripts/audit-design.sh`, optionally run it on
-the extracted artifacts (informs, does not gate). If the user critiques the output, escalate to
-`/recraft "<critique>"`.
-
-### --extract rants Flow
-
-Invoked as `/impeccable --extract rants`. Sweeps project-local pending rants into the global catalog.
-Follow the full flow at `~/.claude/docs/concepts/impeccable-reference/extract-rants.md`. High-level:
-
-1. Read `{current-project}/.orca/design-rants-pending.md`.
-2. For each entry, prompt the user to pick a category: `fonts`, `colors`, `gradients`,
-   `motion-suddenness`, `chamfered-buttons`, `generic-ui-defaults`, `alignment-spacing`,
-   `rounded-corners`, `skeuomorphism`, or new.
-3. Append the entry to `/Users/adilkalam/ORCA-OS/docs/concepts/design-contract/rants/{category}.md` with
-   a timestamp.
-4. After all entries are processed, archive or delete the pending file.
-5. Remind the user to rsync: `rsync -av /Users/adilkalam/ORCA-OS/docs/ ~/.claude/docs/`.
+  Then **arm the deterministic floor**: write the design-lane gate to phase_state so
+  `hooks/gate-enforcement.sh` runs `designcheck` itself on the artifacts and exit-2 blocks on any P0
+  (this is the hard floor under the validator) — **including `active_overrides` so the branch-time hook
+  does NOT exit-2 on a covered `ruleId` + path**:
+  ```bash
+  # merge into .orca/orchestration/phase_state.json:
+  # { "gates": { "design_lane": {
+  #     "gate_decision": "PASS",
+  #     "artifact_paths": [<ARTIFACT_PATHS>],
+  #     "validator_score": <SCORE>,
+  #     "bound_constraint_ids": [<C1,C2,...>],
+  #     "active_overrides": [{"suppresses": "<ruleId>", "scope": "<glob>", "provenance": "<words>"}, ...] } } }
+  ```
+  If that phase_state write is BLOCKED by the hook (the detector found a named P0 the validator missed,
+  NOT covered by an override), treat it as a BLOCK and loop the builder (within the N=2 bound). Only once
+  the phase_state PASS write succeeds is the artifact handed back (§6).
 
 ---
 
-## Closing handback (rant-capture)
+## 4. --craft (feature build)
 
-After completing any /impeccable flow AND clearing the lane's validator (for build flows), ask the user
-verbatim:
+`/impeccable --craft "<feature>"`. Net-new needs discovery + a visual target before code:
+1. **Preconditions:** `PRODUCT.md` (else `--teach`) + `DESIGN.md` (else `--document`).
+2. **/shape** discovery interview (3 rounds) — per-feature commitments. Do not skip.
+3. **Visual direction comp:** generate 1–3 reference comps; the user picks one; its ingredients become the
+   visual contract for the build.
+4. **Run the lane** (§3) with the feature as the build target and the comp ingredients + shape commitments
+   fed into the builder prompt. Validate → branch (N=2 → escalate).
+Full flow: `~/.claude/docs/concepts/impeccable-reference/craft.md`.
+
+---
+
+## 5. Setup / maintenance flags
+
+- **`--teach`** → write `{project}/.claude/PRODUCT.md` (strategic context) via the structured discovery
+  interview, then hand off to `--document`. Full flow: `impeccable-reference` + `product-template.md`.
+- **`--document`** → handled by `/document` (generates `.claude/DESIGN.md`, the Stitch-spec visual
+  contract). Reachable as `/impeccable --document` or `/document`.
+- **`--extract`** → pull reusable tokens/components into the design system
+  (`impeccable-reference/extract.md`). **`--extract rants`** → sweep
+  `{project}/.orca/design-rants-pending.md` into the global rant catalog
+  (`impeccable-reference/extract-rants.md`); rsync `docs/` after.
+
+---
+
+## 6. Closing handback (rant-capture)
+
+After the lane clears (PASS handed back) OR a flag flow completes, ask verbatim:
 
 > "Returned to bench. Anything here you'd rant about?"
 
-If the user responds, append to `{current-project}/.orca/design-rants-pending.md`:
-
+If the user responds, append to `{project}/.orca/design-rants-pending.md` (create `.orca/` if absent;
+never write to `~/.claude/` or ORCA-OS source):
 ```
 ## YYYY-MM-DD HH:MM — impeccable
 [user's response verbatim]
 ```
+Swept later via `/impeccable --extract rants`.
 
-Create `.orca/` in the project if absent. Do NOT write to `~/.claude/` or ORCA-OS source directly.
-Pending entries are swept later via `/impeccable --extract rants`.
+**Escalation:** if the user critiques the output, route to `/recraft "<critique>"` (classifies scope and
+re-runs the right slice of the lane); it does NOT regenerate code from rules.
 
-**Escalation path.** If the user critiques the output, escalate to `/recraft "<critique>"` — a thin
-coordinator that classifies scope (single element / whole feature / contract failure) and routes to
-`/live` / re-shape+re-craft / re-teach+re-document. It does NOT regenerate code from rules.
+---
+
+## The honest ceiling
+
+The lane raises the floor — rules present (hub), adjudication external (fresh validator + detector hook),
+no named slop, no forged gate, no silent no-op. It does **not** manufacture taste: the validator's
+judgment + **the user's eye** is the taste ceiling.

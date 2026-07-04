@@ -29,11 +29,8 @@ Foundational concepts that power ORCA-OS:
 | [Memory Systems](concepts/memory-systems.md) | Workshop + code-index.db + ProjectContext integration |
 | [Response Awareness](concepts/response-awareness.md) | RA tagging system for tracking assumptions |
 | [Skills](concepts/skills.md) | Reusable knowledge packages for agents |
-| [Cognition MCP](concepts/cognition-mcp.md) | Structured reasoning via cognition-mcp |
 | [Why ORCA Architecture](concepts/why-orca-architecture.md) | Design philosophy and justification |
 | [Dependency Graph](concepts/dependency-graph.md) | Agent and command dependencies |
-| [LLM Introspection Analysis](concepts/llm-introspection-analysis.md) | Research on LLM self-observation |
-| [The Constraint Chain Session](concepts/the-constraint-chain-session.md) | Constraint chain analysis and session patterns |
 | [ORCA Record](concepts/orca-record.md) | Session recording architecture and usage |
 
 ---
@@ -132,11 +129,6 @@ See [agent-index.md](agent-index.md) for the complete agent inventory. 123 agent
 
 ---
 
-## Changelog
-
-See [changelog.md](changelog.md) for version history and recent changes.
-
----
 
 ## Documentation Structure
 
@@ -144,7 +136,6 @@ See [changelog.md](changelog.md) for version history and recent changes.
 docs/
 +-- DOCUMENTATION.md       <- You are here
 +-- agent-index.md         <- Agent roster
-+-- changelog.md           <- Version history
 +-- concepts/              <- Core concepts (11 docs)
 +-- pipelines/             <- Lane-specific pipelines (15 docs)
 +-- reference/             <- Technical specifications

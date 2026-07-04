@@ -16,7 +16,6 @@ Say what you want; map to the right command.
 
 ### Review & Quality
 - "Check quality of recent work" → `/audit "last 10 tasks"`
-- "Is this safe? What's risky?" → `/challenge "risk analysis for X"`
 - "Check how it looks" → Domain design-reviewer agent (in pipeline)
 - "Prove it's done" → Verification agent runs automatically in pipeline
 
@@ -27,11 +26,10 @@ Say what you want; map to the right command.
 
 ### Design & UI
 - "I want a better layout" → Use `/design-dna` then implement via `/{domain}`
-- "Small UI tweak" → `/{domain} -tweak "tweak description"`
+- "Small UI tweak" → `/{domain} --tweak "tweak description"`
 - "Explore a new design" → `/requirements "design exploration"` with design focus
 
 ### Analysis
-- "Help me think this through" → `/think "problem description"`
 - "Analyze this data" → Use data-researcher or python-analytics-expert agents directly
 
 ## Workflow Patterns
@@ -52,15 +50,12 @@ Say what you want; map to the right command.
 
 ### Quick Fix (No Planning)
 ```
-/{domain} -tweak "fix typo in homepage title"
+/{domain} --tweak "fix typo in homepage title"
 → Direct implementation (trivial tasks)
 ```
 
 ### Complex Architecture Decision
 ```
-1. /think "architecture decision context"
-   → Multi-perspective analysis
-
 2. /requirements "implement chosen architecture"
    → Blueprint with #PATH_DECISION tags
 
@@ -102,11 +97,6 @@ Say what you want; map to the right command.
 - Before starting large initiative (learn from recent work)
 - Noticing recurring issues
 
-**Use `/think` when:**
-- Complex decision needs multi-perspective analysis
-- Multiple competing approaches
-- High-risk architectural choice
-- Need to explore problem space
 
 **Use `workshop` commands when:**
 - Need to find past decision: `workshop why "X"`

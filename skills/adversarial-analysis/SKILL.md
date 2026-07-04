@@ -197,11 +197,11 @@ Integrate findings into actionable recommendations.
 1. [mitigation]
 
 ## Where to Go Next
--> /challenge --deep "[proposal]"
-   _[if verdict needs simulation/ethical analysis]_
--> /problem-solve "[how to mitigate top risk]"
-   _[if proceeding and need to decide on approach]_
--> /deepthink "[specific uncertainty]"
+-> Run a deeper adversarial pass on "[proposal]"
+   _[if the verdict needs simulation/ethical analysis]_
+-> Decide how to mitigate the top risk
+   _[if proceeding and need to choose an approach]_
+-> Explore the key uncertainty
    _[if a key assumption needs exploration]_
 ```
 
@@ -246,9 +246,9 @@ Root causes: [2-3 most critical]
 [1-2 sentences: why]
 
 ## Where to Go Next
--> /challenge "[proposal]" (full analysis)
+-> Run the full 6-phase adversarial analysis on "[proposal]"
    _[why deeper analysis would help]_
--> /problem-solve "[decision point]"
+-> Decide on the approach at "[decision point]"
    _[if ready to decide]_
 ```
 
@@ -259,7 +259,7 @@ Root causes: [2-3 most critical]
 For critical decisions, after completing all 6 phases, invoke:
 
 ```
-/think --model inversion [proposal]
+Apply the inversion mental model (reason backwards from failure) to [proposal]
 ```
 
 This adds mental model analysis (thinking backwards from failure) to complement the adversarial framework.

@@ -64,7 +64,7 @@ File: `commands/expo.md`
 
   ```bash
   /expo "fix button spacing"                      # Default: light + gates
-  /expo -tweak "try different padding"           # Tweak: light, no gates
+  /expo --tweak "try different padding"           # Tweak: light, no gates
   /expo --complex "implement auth flow"          # Complex: full pipeline
   /expo "implement requirement <id>"             # With spec
   ```
@@ -74,14 +74,14 @@ File: `commands/expo.md`
   | Mode | Flag | Path | Gates |
   |------|------|------|-------|
   | **Default** | (none) | Light + Gates | YES |
-  | **Tweak** | `-tweak` | Light (pure) | NO |
+  | **Tweak** | `--tweak` | Light (pure) | NO |
   | **Complex** | `--complex` | Full pipeline | YES |
 
 - Behavior:
   1. **Memory‑first** – queries Workshop/code-index.db for relevant Expo incidents and patterns.
   2. **Flag detection**:
      - No flag → **Default mode** (light path WITH gates)
-     - `-tweak` → **Tweak mode** (light path WITHOUT gates, user verifies)
+     - `--tweak` → **Tweak mode** (light path WITHOUT gates, user verifies)
      - `--complex` → **Complex mode** (full pipeline, spec required)
   3. **Spec gating**:
      - For `complex`, require `.orca/requirements/<id>/06-requirements-spec.md`.
@@ -138,7 +138,7 @@ Light lane agent:
   - Handles **default** and **tweak** modes.
   - Direct delegation to `expo-builder-agent` plus at most one specialist.
   - **Default mode**: Runs gates (`design-token-guardian` + `a11y-enforcer` + `expo-aesthetics-specialist`)
-  - **Tweak mode** (`-tweak`): Skips gates (user verifies)
+  - **Tweak mode** (`--tweak`): Skips gates (user verifies)
 
 ---
 
@@ -196,7 +196,7 @@ For Expo work in OS 7.0 (routing modes):
 | Mode | Command | Path |
 |------|---------|------|
 | **Default** | `/expo "fix spacing"` | Light + gates |
-| **Tweak** | `/expo -tweak "try padding"` | Light, no gates |
+| **Tweak** | `/expo --tweak "try padding"` | Light, no gates |
 | **Complex** | `/expo --complex "auth flow"` | Full pipeline |
 
 - **Most work**: Default mode (light path WITH gates)

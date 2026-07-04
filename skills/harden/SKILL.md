@@ -7,6 +7,10 @@ user-invocable: true
 
 Strengthen interfaces against edge cases, errors, internationalization issues, and real-world usage scenarios that break idealized designs.
 
+## MANDATORY PREPARATION
+
+**Run the cognition constraint loop (MANDATORY).** Invoked directly as `/harden <target>` (a human typed it)? This is an INDIVIDUAL command, outside the /impeccable pipeline -- so cognition IS the enforcement. Run the in-thread loop defined once at `~/.claude/docs/reference/cognition-constraint-loop.md`: R1 generate typed FORBIDDEN/FORWARD constraints via a cognition `checkpoint` -> R2 do the work in-thread using the craft below -> evaluate every bound constraint + detector self-check -> loop (MAX N=2) until none unsatisfied; you may NOT claim done with an open constraint. (The heavy /impeccable pipeline with its separate validator + hook is a different path; cognition is optional there.) If `design-builder` loaded this skill only for craft reference, ignore this block and use the craft below.
+
 ---
 
 ## Felt-state framing for edge states (NEW)

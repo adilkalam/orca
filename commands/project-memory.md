@@ -1,5 +1,6 @@
 ---
 description: "Manage project memory (Workshop, code-index.db). Subcommands: status, init, why, decide, gotcha, recent, search, review, delete, clean"
+argument-hint: "[status|init|why|decide|gotcha|recent|search|sync|review|delete|clean] <args>"
 ---
 
 # Project Memory Management

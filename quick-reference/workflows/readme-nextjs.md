@@ -74,7 +74,7 @@ File: `commands/nextjs.md`
 
   ```bash
   /nextjs "fix button spacing"                    # Default: light + gates
-  /nextjs -tweak "try different padding"         # Tweak: light, no gates
+  /nextjs --tweak "try different padding"         # Tweak: light, no gates
   /nextjs --complex "implement auth flow"        # Complex: full pipeline
   /nextjs "implement requirement <id>"           # With spec
   ```
@@ -84,14 +84,14 @@ File: `commands/nextjs.md`
   | Mode | Flag | Path | Gates |
   |------|------|------|-------|
   | **Default** | (none) | Light + Gates | YES |
-  | **Tweak** | `-tweak` | Light (pure) | NO |
+  | **Tweak** | `--tweak` | Light (pure) | NO |
   | **Complex** | `--complex` | Full pipeline | YES |
 
 - Behavior:
   1. **Memory‑first context**: searches Workshop and unified memory for Next.js decisions and code.
   2. **Flag detection**:
      - No flag → **Default mode** (light path WITH gates)
-     - `-tweak` → **Tweak mode** (light path WITHOUT gates, user verifies)
+     - `--tweak` → **Tweak mode** (light path WITHOUT gates, user verifies)
      - `--complex` → **Complex mode** (full pipeline, spec required)
   3. **Spec gating** (complex only):
      - Requires `.orca/requirements/<id>/06-requirements-spec.md`.
@@ -188,7 +188,7 @@ Specialists:
     - Minimal context (small ProjectContext or grep).
     - Route directly to `nextjs-builder` (+ at most one specialist).
     - **Default mode**: Runs gates (`nextjs-standards-enforcer` + `nextjs-design-reviewer`)
-    - **Tweak mode** (`-tweak`): Skips gates (user verifies)
+    - **Tweak mode** (`--tweak`): Skips gates (user verifies)
   - Escalates back to full `/nextjs --complex` when it detects hidden complexity.
 
 ---
@@ -269,7 +269,7 @@ For Next.js work in OS 7.0 (routing modes):
 | Mode | Command | Path |
 |------|---------|------|
 | **Default** | `/nextjs "fix spacing"` | Light + gates |
-| **Tweak** | `/nextjs -tweak "try padding"` | Light, no gates |
+| **Tweak** | `/nextjs --tweak "try padding"` | Light, no gates |
 | **Complex** | `/nextjs --complex "auth flow"` | Full pipeline |
 
 - **Most work**: Default mode (light path WITH gates)

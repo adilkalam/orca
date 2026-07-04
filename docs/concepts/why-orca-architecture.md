@@ -39,7 +39,7 @@ Natural language ("debug this"):
   → Ends up wherever current takes it
   → Result: quick, plausible, shallow
 
-Structured scaffolding (/think --debug):
+Structured scaffolding:
   → Each waypoint must be reached
   → Cannot skip to destination
   → The journey produces the depth
@@ -56,7 +56,7 @@ Anthropic's multi-agent research system (https://www.anthropic.com/engineering/m
 | Lead Researcher (orchestrator) | Grand Architect / Light Orchestrator |
 | Specialized Subagents | Domain-specific builders, reviewers |
 | External Memory | Workshop + ProjectContext |
-| Explicit complexity routing | -tweak / default / --complex flags |
+| Explicit complexity routing | --tweak / default / --complex flags |
 | Quality gates (Citation Agent) | Verification agents, standards enforcement |
 
 They achieved 90.2% performance improvement over single-agent systems.

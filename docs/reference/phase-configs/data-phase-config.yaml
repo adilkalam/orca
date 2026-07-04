@@ -36,7 +36,7 @@ complexity_tiers:
 
   tweak:
     description: Quick data queries
-    flag: "-tweak"
+    flag: "--tweak"
     routing: direct-delegate
     mode: tweak
     spec_required: false

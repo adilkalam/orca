@@ -67,7 +67,7 @@ Enables multi-step reasoning with the ability to revise, branch, and backtrack.
 
 A core, bundled custom server -- built from source at `~/.claude/mcp/cognition-mcp` (runs `node dist/index.js`); `install.sh` runs `npm install` + build. A structured notepad for Claude's reasoning using the Accept-Store-Echo pattern. Provides 49 reasoning operations plus a recording extension.
 
-Powers `/think`, `/deepthink`, `/challenge`, `/contemplate`, `/shimmer`, `/adversarial`, `/problem-solve`, and `/think-model`. Its recording operations (`recording_status`/`recording_query`/`recording_checkpoint`/`recording_compare`/`recording_quality`/`recording_explain`/`recording_rewind`) read the database written by `orca-record`.
+The reasoning substrate behind the design family (`/impeccable`, `/refine`, `/fortify`, `/simplify`): each design task binds constraints and runs a self-check loop through these operations. Its recording operations (`recording_status`/`recording_query`/`recording_checkpoint`/`recording_compare`/`recording_quality`/`recording_explain`/`recording_rewind`) read the database written by `orca-record`.
 
 **Core Pattern:**
 - **ACCEPT**: Claude provides structured thoughts
@@ -145,7 +145,7 @@ Recording (7):
 - `recording_rewind` - Query rewind data from recording history
 
 **Usage:**
-Used by the cognition commands (`/think`, `/deepthink`, `/challenge`, `/contemplate`, `/shimmer`, `/adversarial`, `/problem-solve`, `/think-model`) for persistent thought tracking.
+The reasoning substrate behind the design family (`/impeccable`, `/refine`, `/fortify`, `/simplify`): each design task binds constraints and runs a self-check loop through these operations, with the reasoning steps persisted as files rather than tokens.
 
 ---
 

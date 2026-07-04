@@ -1,7 +1,7 @@
 ---
 name: simplify
-description: "Thin design-simplification router. Flags map to skills: --adapt, --clarify, --distill."
-argument-hint: "--<flag> <target>"
+description: "Design-simplification router (individual/tweak commands). Flags: --adapt, --clarify, --distill. Each flag runs the in-thread cognition constraint loop (R1 constraints -> R2 work -> evaluate -> loop N=2). Cognition is mandatory here — this is NOT the /impeccable pipeline."
+argument-hint: "[--adapt|--clarify|--distill] <target>"
 allowed-tools:
   - Read
   - Write
@@ -11,64 +11,57 @@ allowed-tools:
   - Bash
   - Skill
   - AskUserQuestion
+  - mcp__cognition-mcp__cognition
 ---
 
-# /simplify — Design Simplification Router
+# /simplify — Design Simplification Router (individual commands)
 
-Thin category router. Parses one flag, loads the matching skill, applies guidance, rant-captures at handback.
+Tweak entry for the simplification verbs. Each flag is an **individual command** run OUTSIDE the
+`/impeccable` pipeline — no separate validator agent, so the **cognition constraint loop IS the
+enforcement** (mandatory). Zero loop logic of its own (`#POISON_PATH` duplication): the loop is defined
+once at `~/.claude/docs/reference/cognition-constraint-loop.md`.
 
-## Parse flag
+## Parse flag (exactly one required)
 
-Accepted flags (exactly one required):
+| Flag | Verb / craft skill |
+|------|--------------------|
+| `--adapt` | `adapt` |
+| `--clarify` | `clarify` |
+| `--distill` | `distill` |
 
-| Flag | Skill invoked |
-|------|---------------|
-| `--adapt` | `Skill("adapt")` |
-| `--clarify` | `Skill("clarify")` |
-| `--distill` | `Skill("distill")` |
+If no flag or an unrecognized flag: print this table, ask the user to pick. Do not guess. Do not run.
 
-If no flag or an unrecognized flag: print the flag list, ask the user to pick. Do not guess. Do not run.
+## Run — the in-thread cognition constraint loop
 
-## Entry: mandatory skill loading
+**Target routing (`#PATH_DECISION` — one rule, not 5 copies):** apply
+`~/.claude/docs/concepts/ios-design-contract/target-routing.md`. If the TARGET ends in `.swift`, load
+`Skill("ios-impeccable-hub")` (instead of `impeccable-hub`) and use the Swift detector below; otherwise
+keep the CSS path unchanged.
 
-Before any work, invoke via the Skill tool in this order:
+Run the loop at `~/.claude/docs/reference/cognition-constraint-loop.md` with `VERB = <flag>`, loading
+`Skill("impeccable-hub")` (register; `Skill("ios-impeccable-hub")` for a `.swift` target — see routing
+above) + `Skill("<flag>")` (craft spine):
 
-1. Invoke `Skill("impeccable-hub")` — the baseline register. The hub carries the `interfaces-that-feel` felt-state spine PLUS the full register (17 voice anchors, the rants as refusals, the preferences as positive moves, the detector contract). Loading it is what ends the repetition tax. Required for every `/simplify` invocation; cannot be skipped.
-2. Invoke `Skill("<flag>")` — where `<flag>` is the parsed flag value.
+1. **R1 BIND** — cognition `checkpoint` emits the typed FORBIDDEN/FORWARD constraints; capture the ids.
+2. **R2 WORK** — edit the target in-thread under the bound ids, applying the craft + the user's critique
+   verbatim (FR-6). Before writing styling code, read the relevant doctrine: the CSS manifesto
+   (`~/.claude/docs/concepts/llm-css-manifesto.md`) for web; the loaded `ios-impeccable-hub` for a
+   `.swift` target (per the routing rule above).
+3. **EVALUATE** — check every bound constraint + run the detector self-check (`.swift` →
+   `swiftdesigncheck detect --json <file>`; else `designcheck.js detect --json <file>` — see the routing
+   rule); record a cognition `thought`.
+4. **R(n) LOOP** — fix + re-evaluate until none unsatisfied. **MAX N=2**, then escalate. You may NOT
+   claim done with an open constraint.
 
-These are directives, not suggestions.
-
-## Context gathering
-
-1. Read the project contract if present — `{current-project}/.claude/PRODUCT.md` (strategic context) + `{current-project}/.claude/DESIGN.md` (visual contract).
-2. **If absent, do NOT block.** Run on the hub's global register (the rants + preferences + voice-anchors still prevent slop) and note once: *"No project contract found — running on the global register; run `/impeccable --teach` to make this project-specific."* Frictionless on any project is the point.
-3. If the user's target is ambiguous: ask **one** clarifying question. Do not guess.
-
-## Work
-
-Apply the loaded skill's guidance. Do not duplicate skill logic here.
-
-
-## Handback — externalized adjudication (the shared lane)
-
-`/simplify` edits existing UI, so the edited artifact is judged by the separate validator, not self-graded. Run the shared design lane at `~/.claude/docs/reference/design-lane.md` — the `bind → build → validate → branch` sequence is defined ONCE there; do NOT copy its steps here (`#POISON_PATH` duplication). In brief: the deterministic detector floor runs on the edited artifact, then `Agent(design-validator)` (fresh context) judges it against the bound constraints and returns `GATE_VERDICT: PASS|BLOCK`. On BLOCK, loop (MAX N=2) then escalate to the user. Read the lane file for the full step-by-step.
-
-The validator's judgment + the user's eye is the taste ceiling — the lane raises the floor (no named slop), it does not manufacture taste.
+Cognition is the enforcement on this path — no separate validator agent (that is the `/impeccable`
+pipeline). Read the loop file for the full step-by-step; do not paraphrase it here.
 
 ## Handback — rant-capture
 
-After implementation, ask verbatim:
+After the loop clears, ask verbatim:
 
 > Returned to bench. Anything here you'd rant about?
 
-If the user responds with rant content, append to `{current-project}/.orca/design-rants-pending.md` with a timestamp header:
-
-```markdown
-## {ISO-8601 timestamp} — /simplify --<flag>
-
-{user's rant, verbatim}
-```
-
-Create the file if it does not exist. Never write directly to `~/.claude/` or the ORCA-OS source tree.
-
-If nothing to rant, say so and stop.
+Append any response to `{current-project}/.orca/design-rants-pending.md` (`## {ISO-8601} — /simplify
+--<flag>`). Create the file if absent. Never write to `~/.claude/` or the ORCA-OS source tree. If nothing
+to rant, say so and stop.
