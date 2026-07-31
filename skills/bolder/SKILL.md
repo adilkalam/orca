@@ -131,17 +131,4 @@ When the iOS architect passes `platform: swiftui`, the builder reads ONLY this s
 
 ---
 
-## Rant-capture at handback
-
-After completing the work, before returning to the user, ask:
-
-> "Returned to bench. Anything here you'd rant about?"
-
-If the user responds, append the entry to the current project's `.orca/design-rants-pending.md` in this format:
-
-```
-## YYYY-MM-DD HH:MM — [verb-name]
-[user's response verbatim]
-```
-
-Create `.orca/` in the current project if absent. Do NOT write to `~/.claude/` or to the ORCA-OS source tree directly. Pending entries are swept and categorized later via `/impeccable extract rants`.
+Aesthetic capture is owner-gated — see ~/.claude/docs/reference/design-lane.md (Aesthetic capture). No closing capture question.

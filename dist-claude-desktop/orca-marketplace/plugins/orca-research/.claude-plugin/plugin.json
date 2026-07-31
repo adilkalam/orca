@@ -1,0 +1,6 @@
+{
+  "name": "orca-research",
+  "version": "1.0.0",
+  "description": "ORCA research, extraction & scraping skills (research, clone-website, article-extractor, youtube-transcript, ascii-tables, using-loaded-knowledge, precision-discipline).",
+  "author": { "name": "Adil Kalam" }
+}

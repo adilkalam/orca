@@ -65,8 +65,14 @@ struct DetectorConfig: Decodable {
 
     private static func findUpwards(from scannedPath: String) -> String? {
         let fileManager = FileManager.default
-        var directory = (scannedPath as NSString).deletingLastPathComponent
-        if directory.isEmpty { directory = fileManager.currentDirectoryPath }
+        // Anchor relative scan paths at cwd BEFORE walking so the walk probes
+        // the starting directory too: a relative "Sub/File.swift" previously
+        // walked "Sub", hit "", and never checked cwd itself (same fix as
+        // DesignOverrides.findUpwards).
+        let absolutePath = scannedPath.hasPrefix("/")
+            ? scannedPath
+            : (fileManager.currentDirectoryPath as NSString).appendingPathComponent(scannedPath)
+        var directory = (absolutePath as NSString).deletingLastPathComponent
         var previous = ""
         while directory != previous && !directory.isEmpty {
             let candidate = (directory as NSString)

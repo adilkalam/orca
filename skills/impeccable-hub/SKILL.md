@@ -1,16 +1,16 @@
 ---
 name: impeccable-hub
-description: The single home for durable design knowledge. Load this when doing ANY front-end / visual / interface / motion work — crafting a feature, refining an interface, hardening a form, setting type, choosing color, building layout, designing motion. It is the felt-state baseline (interfaces-that-feel) PLUS the user's register: voice anchors, refusals (rants), positive moves (preferences), and the named-slop detector contract. It does NOT inline those files — it indexes and points to their single canonical home in docs/concepts/design-contract/ and docs/concepts/impeccable-reference/. Loading this skill is what ends the repetition tax: the rules are present by construction, not re-stated per task.
+description: The single home for durable design knowledge. Load this when doing ANY front-end / visual / interface / motion work — crafting a feature, refining an interface, hardening a form, setting type, choosing color, building layout, designing motion. It is the felt-state baseline (interfaces-that-feel) PLUS the user's aesthetic: voice anchors, refusals (banned rules), positive moves (preferences), and the named-slop detector contract. It does NOT inline those files — it indexes and points to their single canonical home in docs/concepts/design-contract/ and docs/concepts/impeccable-reference/. Loading this skill is what ends the repetition tax: the rules are present by construction, not re-stated per task.
 license: Apache 2.0. Based on Anthropic's frontend-design skill + Paul Bakaus's Impeccable. See NOTICE.md for attribution.
 ---
 
 # Impeccable — the design hub
 
 This is the ONE home for durable design knowledge. Every design verb (`/impeccable --craft`,
-`--typeset`, `--colorize`, `--layout`, `--bolder`, `--harden`, …) loads this hub, so the register is
+`--typeset`, `--colorize`, `--layout`, `--bolder`, `--harden`, …) loads this hub, so the aesthetic is
 present *structurally* — you never need it re-stated.
 
-**This hub POINTS; it does not inline.** The rants, voice anchors, preferences, and detector rules each
+**This hub POINTS; it does not inline.** The banned rules, voice anchors, preferences, and detector rules each
 have a single canonical home under `docs/concepts/design-contract/`. Re-inlining them here would
 recreate the lossy monolith this system was built to delete (`#POISON_PATH`). Read the source files when
 you reach for the corresponding move — they carry the full voice, regex signals, and substitutes.
@@ -32,12 +32,19 @@ Technical correctness is the floor. The ceiling is: does this product know the u
 
 ---
 
-## 2. The register — voice anchors (the user's own words)
+## 2. The aesthetic — voice anchors (the user's own words)
 
 The voice anchors are load-bearing direct quotes from Adil. They are the *why* behind every refusal and
 move below. Do not paraphrase or dilute them; edits that weaken them must be refused (`#POISON_PATH`).
 
-→ **`docs/concepts/design-contract/voice-anchors.md`** — the full register (17 anchors).
+→ **`docs/concepts/design-contract/voice-anchors.md`** — the full anchor set (17 anchors).
+
+→ **`docs/concepts/design-contract/persona.md`** — the POSITIVE side of the aesthetic (taste, references, gravity).
+The anchors and banned rules say what is refused; the persona says what is aimed at — the flatness mission,
+context-over-reflex, the named references, the composition discipline (entry point / pace /
+density-per-moment). **Read it before composing any new surface** — FORWARD seeds draw from it at bind
+time. Judgment + gravity, never a house style; anti-convergence outranks it. (Pointer — the content
+lives in the file, not here.)
 
 A few that orient the whole system (read the file for all of them):
 - "The use of Geist = vercel → no thought in typography. Boring, plain, looks like every other SaaS."
@@ -64,26 +71,26 @@ same across projects. NEVER converge on common choices across generations.**
 
 ---
 
-## 3. The refusals (rants) — what is NEVER acceptable
+## 3. The refusals (banned) — what is NEVER acceptable
 
-Each rant is a named refusal with full voice + regex signals + substitutes. Consult the rant when you
+Each banned rule is a named refusal with full voice + regex signals + substitutes. Consult the rule when you
 reach for the move it forbids. Most map to a detector rule id (§5) that BLOCKS at the gate.
 
-| Refusal | Source rant | Detector rule(s) |
+| Refusal | Source rule | Detector rule(s) |
 |---|---|---|
-| Tailwind palette (utility classes + hex values) | `design-contract/rants/colors.md` | `tailwind-palette-utilities`, `tailwind-hex-values`, `ai-color-palette` |
-| Geist + extended reflex font list | `design-contract/rants/fonts.md` | `reflex-fonts`, `geist-imports`, `overused-font`, `single-font` |
-| AI-purple/magenta/pink gradients | `design-contract/rants/gradients.md` | `purple-pink-gradients`, `gradient-text` |
-| iOS-as-default / pretend-variation | `design-contract/rants/generic-ui-defaults.md` | (taste — advisory) |
-| Motion suddenness / default ease | `design-contract/rants/motion-suddenness.md` | `default-ease-transition`, `bouncy-easing`, `bounce-easing` |
-| Chamfer stack (inset highlight + shadow + gradient) | `design-contract/rants/chamfered-buttons.md` | `inset-highlight-shadow` |
-| Alignment violations / floating elements | `design-contract/rants/alignment-spacing.md` | (taste — advisory) |
-| AI-signature rounded corners | `design-contract/rants/rounded-corners.md` | `border-accent-on-rounded` |
-| Photorealistic skeuomorphism as default | `design-contract/rants/skeuomorphism.md` | (taste — advisory) |
-| Side-stripe borders on cards/callouts | `design-contract/rants/alignment-spacing.md` | `side-stripe-borders`, `side-tab` |
-| Monospace-as-"technical" shorthand | `design-contract/rants/typography-mono.md` | (taste — advisory) |
-| Uniform tile / same-card-grid layout | `design-contract/rants/uniform-tile-layout.md` | `icon-tile-stack`, `nested-cards` |
-| Utility sprawl / scattered design authority | `design-contract/rants/css-architecture.md` | `utility-sprawl` (**advisory only**, never blocks) |
+| Tailwind palette (utility classes + hex values) | `design-contract/banned/colors.md` | `tailwind-palette-utilities`, `tailwind-hex-values`, `ai-color-palette` |
+| Geist + extended reflex font list | `design-contract/banned/fonts.md` | `reflex-fonts`, `geist-imports`, `overused-font`, `single-font` |
+| AI-purple/magenta/pink gradients | `design-contract/banned/gradients.md` | `purple-pink-gradients`, `gradient-text` |
+| iOS-as-default / pretend-variation | `design-contract/banned/generic-ui-defaults.md` | (taste — advisory) |
+| Motion suddenness / default ease | `design-contract/banned/motion-suddenness.md` | `default-ease-transition`, `bouncy-easing`, `bounce-easing` |
+| Chamfer stack (inset highlight + shadow + gradient) | `design-contract/banned/chamfered-buttons.md` | `inset-highlight-shadow` |
+| Alignment violations / floating elements | `design-contract/banned/alignment-spacing.md` | (taste — advisory) |
+| AI-signature rounded corners | `design-contract/banned/rounded-corners.md` | `border-accent-on-rounded` |
+| Photorealistic skeuomorphism as default | `design-contract/banned/skeuomorphism.md` | (taste — advisory) |
+| Side-stripe borders on cards/callouts | `design-contract/banned/alignment-spacing.md` | `side-stripe-borders`, `side-tab` |
+| Monospace-as-"technical" shorthand | `design-contract/banned/typography-mono.md` | (taste — advisory) |
+| Uniform tile / same-card-grid layout | `design-contract/banned/uniform-tile-layout.md` | `icon-tile-stack`, `nested-cards` |
+| Utility sprawl / scattered design authority | `design-contract/banned/css-architecture.md` | `utility-sprawl` (**advisory only**, never blocks) |
 
 **Absolute bans (rewrite the element entirely if you catch yourself reaching for these):**
 - **Side-stripe borders** (`border-left/right` > 1px, including via CSS vars) on cards/list-items/
@@ -127,7 +134,7 @@ Each preference is a positive catalog/procedure. Consult when making the corresp
 The failure mode is: "told not to use Inter, so I reach for my next favorite → new monoculture."
 1. Write 3 concrete brand-voice words (NOT "modern"/"elegant" — dead categories).
 2. List the 3 fonts you'd reflexively reach for. If any are in the reflex list
-   (`design-contract/rants/fonts.md` — Fraunces, Newsreader, Playfair, IBM Plex, Space Grotesk, Inter,
+   (`design-contract/banned/fonts.md` — Fraunces, Newsreader, Playfair, IBM Plex, Space Grotesk, Inter,
    DM Sans, Outfit, Plus Jakarta, Instrument, et al), **reject them.**
 3. Browse a catalog with the 3 words in mind (Google Fonts, Pangram Pangram, Future Fonts, Klim,
    Velvetyne …). Find a font that fits the brand as a *physical object*. Reject the first "designy" pick.
@@ -140,7 +147,7 @@ Design authority lives in a named role/token vocabulary; agents COMPOSE from it,
 design inline. Greenfield default: semantic CSS + cascade + `@layer`, taxonomy designed first.
 Brownfield: respect the detected approach, enforce centralization *within* it. No raw palette utilities
 (P0). Token-mapped semantic Tailwind is fine; utility SPRAWL is advisory only. Refusal:
-`rants/css-architecture.md`. Procedure: `preferences/css-architecture.md`. This hub states the
+`banned/css-architecture.md`. Procedure: `preferences/css-architecture.md`. This hub states the
 PRINCIPLE; enforcement lives in the detector floor + the validator agent.
 
 ---
@@ -185,14 +192,14 @@ Rule severities read from `docs/concepts/design-contract/detector-rules.json`:
 
 **Precedence (read this first): the owner outranks this hub.** Everything below is a *default for when the
 owner has not spoken to the point* — never a ceiling over his live word. The order is fixed: (1) the
-owner's explicit, in-context instruction; (2) this standing register (rants / preferences); (3) the
-deterministic detector. A rant is *derived from* the owner; it cannot outrank him. When his live
-instruction contradicts a standing rant or detector rule (e.g. "this brief is over-restrictive — use the
+owner's explicit, in-context instruction; (2) the aesthetic (banned rules / preferences); (3) the
+deterministic detector. A banned rule is *derived from* the owner; it cannot outrank him. When his live
+instruction contradicts a standing banned rule or detector rule (e.g. "this brief is over-restrictive — use the
 purple gradient here", or "the Geist face is right for this surface"), that instruction **wins** — bound as
-an `OVERRIDE` constraint (`docs/reference/design-lane.md` Step 1) that the validator subtracts before the
+an `OVERRIDE` constraint (`docs/reference/design-lane.md` §Precedence) that the validator subtracts before the
 verdict and that is **written back** to `{project}/.design-overrides.json` so the suppressed rule stops
 firing for that scope on future runs. The override is owner-authored, so it is ratified by construction
-(unlike a rant the system distilled and froze without his sign-off). An override honored once but not
+(unlike a banned rule the system distilled and froze without his sign-off). An override honored once but not
 written back re-loses on the next task — that recurrence is the precise failure this precedence kills. See
 `design-lane.md` §Precedence for the full mechanism.
 
@@ -242,7 +249,7 @@ The `impeccable-reference/` files carry the deep, consult-on-demand material:
 - `docs/concepts/impeccable-reference/ux-writing.md` — labels, errors, empty states
 - `docs/concepts/impeccable-reference/craft.md` — the `--craft` shape→comp→build flow
 - `docs/concepts/impeccable-reference/extract.md` — the `--extract` token/component flow
-- `docs/concepts/impeccable-reference/extract-rants.md` — the `--extract rants` sweep flow
+- `docs/concepts/impeccable-reference/extract-aesthetic.md` — the `--extract aesthetic` sweep flow
 
 ## The AI slop test
 

@@ -232,16 +232,45 @@ fi
 # structurally valid. This makes PASS mechanically dependent on real
 # measurements, not just language.
 
-if [[ "$TOOL_NAME" =~ ^(Write|Edit)$ ]]; then
+if [[ "$TOOL_NAME" =~ ^(Write|Edit|MultiEdit)$ ]]; then
     FILE_PATH=$(echo "$TOOL_PARAMS" | jq -r '.file_path // ""' 2>/dev/null || echo "")
 
-    if [ "$FILE_PATH" = "$PHASE_STATE" ]; then
-        CONTENT=$(echo "$TOOL_PARAMS" | jq -r '.content // .new_string // ""' 2>/dev/null || echo "")
+    # Suffix match, not exact equality: Claude Code passes ABSOLUTE file_paths,
+    # so comparing against the relative $PHASE_STATE literal never fired on real
+    # writes. Any path ending in .orca/orchestration/phase_state.json is the
+    # phase state.
+    if [[ "$FILE_PATH" == *.orca/orchestration/phase_state.json ]]; then
+        # Content extraction per tool: .content (Write) / .new_string (Edit) /
+        # joined .edits[].new_string (MultiEdit, best-effort -- an edit patch is
+        # NOT guaranteed to reconstruct the full JSON; the lane mandates
+        # Write-with-full-content as the guarantee, this is defense-in-depth).
+        CONTENT=$(echo "$TOOL_PARAMS" | jq -r '.content // .new_string // ((.edits // []) | map(.new_string // "") | join("\n"))' 2>/dev/null || echo "")
 
         if [ -n "$CONTENT" ]; then
             mkdir -p "$PHASE_TEMP_DIR" 2>/dev/null || true
             CANDIDATE_JSON="$PHASE_TEMP_DIR/phase_state.candidate.json"
             printf "%s" "$CONTENT" > "$CANDIDATE_JSON"
+
+            # ── Non-canonical design gate-key guard ──
+            # The ONLY canonical design-lane gate keys are gates.design_lane and
+            # gates.ios_design_lane (docs/reference/design-lane.md). Variant keys
+            # (e.g. gates.ios_design_lane_T5_polish) previously bypassed every
+            # design check below -- the proven 68-variant bypass. Deterministic
+            # reject; per-tier detail belongs INSIDE the canonical gate object.
+            VARIANT_GATE_KEYS=$(jq -r '(.gates // {}) | keys[] | select(test("^(ios_)?design_lane.+"))' "$CANDIDATE_JSON" 2>/dev/null | tr '\n' ' ')
+            if [ -n "${VARIANT_GATE_KEYS// /}" ]; then
+                echo -e "${RED}DESIGN GATE KEY BLOCKED${NC}"
+                echo ""
+                echo "Non-canonical design gate key(s) in phase_state write: ${VARIANT_GATE_KEYS}"
+                echo "The ONLY canonical design gate keys are:"
+                echo "  gates.design_lane      (web)"
+                echo "  gates.ios_design_lane  (iOS)"
+                echo "Write the canonical key; per-tier detail belongs inside the gate"
+                echo "object, not in the key name. See docs/reference/design-lane.md."
+                echo ""
+                echo -e "${RED}#POISON_PATH: Variant design gate key bypassing the canonical floor${NC}"
+                exit 2
+            fi
 
             # Only enforce when the design_qa gate is explicitly marked PASS.
             DESIGN_DECISION=$(jq -r '.gates.design_qa.gate_decision // empty' "$CANDIDATE_JSON" 2>/dev/null || echo "")
@@ -307,13 +336,20 @@ if [[ "$TOOL_NAME" =~ ^(Write|Edit)$ ]]; then
             # Design Lane Deterministic Floor (Anti-Fabrication)
             # ==================================================
 
+            # T0 (tweak) writes NO phase_state and is exempt by construction;
+            # this floor guards the T1/T2 canonical gate writes
+            # (gates.design_lane / gates.ios_design_lane -- design-lane.md).
+            #
             # When a phase_state write claims a design gate PASS -- via EITHER
-            # the legacy gates.design_qa.gate_decision OR the new design-lane
-            # gates.design_lane.gate_decision -- the model cannot also have the
-            # detector find named P0 slop in the produced artifacts. We run the
-            # detector OURSELVES on the claimed artifact paths and BLOCK (exit 2)
-            # if it reports dirty (detector exit 2). This is a deterministic
-            # floor: a clean-PASS claim is mechanically falsified by named slop.
+            # the legacy gates.design_qa.gate_decision OR the canonical
+            # design-lane gates -- the model cannot also have the detector find
+            # blocking slop in the produced artifacts. We run the detector
+            # OURSELVES on the claimed artifact paths and BLOCK (exit 2) if it
+            # reports blocking findings. With severity-aware detector exits,
+            # detector exit 2 means BLOCKING findings only (at least one with
+            # severity P0/P1); advisory-only runs exit 0 and never block. This
+            # is a deterministic floor: a clean-PASS claim is mechanically
+            # falsified by named slop.
             DESIGN_QA_DECISION=$(jq -r '.gates.design_qa.gate_decision // empty' "$CANDIDATE_JSON" 2>/dev/null || echo "")
             DESIGN_LANE_DECISION=$(jq -r '.gates.design_lane.gate_decision // empty' "$CANDIDATE_JSON" 2>/dev/null || echo "")
             IOS_DESIGN_LANE_DECISION=$(jq -r '.gates.ios_design_lane.gate_decision // empty' "$CANDIDATE_JSON" 2>/dev/null || echo "")
@@ -438,9 +474,15 @@ if [[ "$TOOL_NAME" =~ ^(Write|Edit)$ ]]; then
                     fi
 
                     # Run the detector on each claimed artifact. The EXIT CODE is
-                    # the authoritative signal: 2 = dirty (named P0 slop), 0 =
-                    # clean. Findings text may land on stdout or stderr, so we
-                    # capture both with 2>&1 only to surface the named ids.
+                    # the authoritative signal: 2 = blocking findings (severity
+                    # P0/P1; advisory-only runs exit 0 upstream), 0 = clean or
+                    # advisory-only.
+                    # Stream contract (BOTH detectors' real contract -- see
+                    # main.swift and detect-antipatterns.mjs): findings JSON goes
+                    # to STDERR; STDOUT carries "[]" on clean runs. So capture
+                    # the streams SEPARATELY (stderr to a temp file) -- the old
+                    # 2>&1 mixed warning noise into the JSON, broke jq, and the
+                    # parse failure was silently swallowed to clean.
                     # A pipe subshell would swallow our exit, so iterate over a
                     # here-string (no subshell) and exit directly from parent.
                     while IFS= read -r artifact_path; do
@@ -461,14 +503,23 @@ if [[ "$TOOL_NAME" =~ ^(Write|Edit)$ ]]; then
                         fi
 
                         # Web detector runs via node; the Swift wrapper runs directly.
+                        # DETECT_STDOUT is "[]" on clean runs (kept for the record);
+                        # the findings body on exit 2 lives in the stderr capture.
+                        DETECT_ERR_FILE="$PHASE_TEMP_DIR/design-floor-detector.stderr"
                         if [ "$DETECTOR_IS_SWIFT" = "true" ]; then
-                            DETECT_OUT=$("$DETECTOR_BIN" detect --json "$artifact_path" 2>&1)
+                            DETECT_STDOUT=$("$DETECTOR_BIN" detect --json "$artifact_path" 2>"$DETECT_ERR_FILE")
                         else
-                            DETECT_OUT=$(node "$DETECTOR_BIN" detect --json "$artifact_path" 2>&1)
+                            DETECT_STDOUT=$(node "$DETECTOR_BIN" detect --json "$artifact_path" 2>"$DETECT_ERR_FILE")
                         fi
                         DETECT_EXIT=$?
 
                         if [ "$DETECT_EXIT" -eq 2 ]; then
+                            # Findings JSON is on the STDERR capture for BOTH
+                            # detectors (their documented contract). Strip any
+                            # warning noise ahead of the JSON body: it starts at
+                            # the first line beginning with '['.
+                            DETECT_FINDINGS=$(awk '/^\[/{body=1} body{print}' "$DETECT_ERR_FILE" 2>/dev/null)
+
                             # Scope-aware defensive subtraction (FR-3.3): the registry
                             # export above already self-suppresses, but if that file
                             # lagged the write we must not re-block a covered id. A
@@ -477,7 +528,8 @@ if [[ "$TOOL_NAME" =~ ^(Write|Edit)$ ]]; then
                             # glob that MATCHES the finding's file path (glob **/*/?
                             # compiled to an anchored regex over the full path; empty
                             # scope suppresses nothing -- the narrowing invariant).
-                            UNCOVERED_IDS=$(printf '%s' "$DETECT_OUT" \
+                            JQ_PARSE_OK=true
+                            UNCOVERED_IDS=$(printf '%s' "$DETECT_FINDINGS" \
                                 | jq -r --argjson ov "$ACTIVE_OVERRIDES_JSON" --arg apath "$artifact_path" '
                                     def glob2re:
                                       gsub("\\*\\*/"; "ZQXGLOB1")
@@ -503,18 +555,29 @@ if [[ "$TOOL_NAME" =~ ^(Write|Edit)$ ]]; then
                                           )
                                         | $f.antipattern
                                       ] | unique | join(", ")' \
-                                    2>/dev/null || echo "")
+                                    2>/dev/null) || JQ_PARSE_OK=false
                             # If EVERY reported id is covered by an active override
                             # (within its scope), treat the artifact as clean and
                             # continue (no BLOCK).
-                            if [ -z "$UNCOVERED_IDS" ]; then
+                            if [ "$JQ_PARSE_OK" = "true" ] && [ -z "$UNCOVERED_IDS" ]; then
                                 continue
+                            fi
+                            # Unparseable findings NEVER downgrade to clean: the
+                            # exit code is authoritative, so an exit-2 with a
+                            # broken findings body still BLOCKS (the old 2>&1
+                            # capture swallowed exactly this case to clean).
+                            if [ "$JQ_PARSE_OK" != "true" ]; then
+                                UNCOVERED_IDS="(findings JSON unparseable -- raw detector stderr: $DETECT_ERR_FILE)"
                             fi
                             SLOP_IDS="$UNCOVERED_IDS"
 
+                            DETECTOR_NAME="designcheck"
+                            if [ "$DETECTOR_IS_SWIFT" = "true" ]; then
+                                DETECTOR_NAME="swiftdesigncheck"
+                            fi
                             echo -e "${RED}🚫 DESIGN LANE FLOOR BLOCKED${NC}"
                             echo ""
-                            echo "designcheck found P0 slop in a claimed-clean design PASS:"
+                            echo "${DETECTOR_NAME} found blocking findings (severity P0/P1) in a claimed-clean design PASS:"
                             echo "  $artifact_path"
                             echo "  named slop: $SLOP_IDS"
                             echo ""
@@ -528,10 +591,13 @@ if [[ "$TOOL_NAME" =~ ^(Write|Edit)$ ]]; then
                         # Any non-0, non-2 exit means the detector could not run
                         # cleanly (crash, bad path). FAIL-OPEN with a loud note so
                         # we do not block every write on a broken detector; the
-                        # missing-binary case is already handled above.
+                        # missing-binary case is already handled above. Surface
+                        # the separately-captured stderr so the failure is
+                        # diagnosable instead of vanishing with the temp file.
                         if [ "$DETECT_EXIT" -ne 0 ]; then
                             echo -e "${YELLOW}⚠️  design-lane floor: detector exited ${DETECT_EXIT} on${NC}" >&2
-                            echo "  $artifact_path (fail-open, not blocking)." >&2
+                            echo "  $artifact_path (fail-open, not blocking). Detector stderr:" >&2
+                            tail -n 20 "$DETECT_ERR_FILE" >&2 2>/dev/null || true
                         fi
                     done <<< "$ARTIFACT_PATHS"
                 fi

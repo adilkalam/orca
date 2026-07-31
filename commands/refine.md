@@ -44,11 +44,11 @@ If no flag or an unrecognized flag: print this table, ask the user to pick. Do n
 keep the CSS path unchanged.
 
 Run the loop at `~/.claude/docs/reference/cognition-constraint-loop.md` with `VERB = <flag>`, loading
-`Skill("impeccable-hub")` (register; `Skill("ios-impeccable-hub")` for a `.swift` target — see routing
+`Skill("impeccable-hub")` (the aesthetic; `Skill("ios-impeccable-hub")` for a `.swift` target — see routing
 above) + `Skill("<flag>")` (craft spine):
 
 1. **R1 BIND** — cognition `checkpoint` emits the typed FORBIDDEN/FORWARD constraints this verb-on-this-
-   target can trip (detector/rant ids); capture the returned ids.
+   target can trip (detector/banned-rule ids); capture the returned ids.
 2. **R2 WORK** — edit the target in-thread under the bound ids, applying the craft + the user's critique
    verbatim (FR-6). Before writing styling code, read the relevant doctrine: the CSS manifesto
    (`~/.claude/docs/concepts/llm-css-manifesto.md`) for web; the loaded `ios-impeccable-hub` for a
@@ -63,12 +63,6 @@ above) + `Skill("<flag>")` (craft spine):
 Cognition is the enforcement on this path — there is no separate validator agent (that is the heavier
 `/impeccable` pipeline). Read the loop file for the full step-by-step; do not paraphrase it here.
 
-## Handback — rant-capture
+## Handback
 
-After the loop clears, ask verbatim:
-
-> Returned to bench. Anything here you'd rant about?
-
-Append any response to `{current-project}/.orca/design-rants-pending.md` (`## {ISO-8601} — /refine
---<flag>`). Create the file if absent. Never write to `~/.claude/` or the ORCA-OS source tree. If nothing
-to rant, say so and stop.
+Aesthetic capture is owner-gated — see ~/.claude/docs/reference/design-lane.md (Aesthetic capture). No closing capture question.

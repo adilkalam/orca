@@ -179,6 +179,114 @@ final class SwiftDesignDetectorTests: XCTestCase {
                        "An override with missing/empty scope must suppress NOTHING (accessibility floor)")
     }
 
+    // MARK: - Advisory effective severity (report-only path)
+
+    /// A per-project config severity flip to "advisory" must be stamped onto the
+    /// findings as their EFFECTIVE severity. The CLI (main.swift) keys its exit
+    /// off exactly this field: advisory-only findings are report-only (EXIT 0);
+    /// only an effective P0/P1 forces EXIT 2. The corpus currently ships only
+    /// P0/P1 defaults, so the config-flip route is the advisory case.
+    func testAdvisoryConfigFlipStampsEffectiveSeverity() throws {
+        let advisoryConfig = DetectorConfig(
+            tokenDirGlobs: DetectorConfig.defaultGlobs,
+            ruleOverrides: [
+                "ios-default-reflex": DetectorConfig.RuleOverride(
+                    scopeInTokenDirs: nil, severity: "advisory")
+            ]
+        )
+        let engine = try loadEngine(config: advisoryConfig)
+        let path = try fixturePath("DefaultChromeView")
+
+        let findings = try engine.scan(path: path)
+        let reflex = findings.filter { $0.antipattern == "ios-default-reflex" }
+        XCTAssertFalse(reflex.isEmpty,
+                       "Advisory flip must NOT suppress the finding — it still reports")
+        for finding in reflex {
+            XCTAssertEqual(finding.severity, "advisory",
+                           "Effective severity must be the per-project override, not the corpus P0")
+        }
+    }
+
+    // MARK: - Override path canonicalization (relative scope vs absolute path)
+
+    /// Copy the default-chrome fixture into `<temp>/proj/Sub/` and return the
+    /// project root. Used by the path-canonicalization tests.
+    private func makeTempProject() throws -> String {
+        let fileManager = FileManager.default
+        let projectDir = (NSTemporaryDirectory() as NSString)
+            .appendingPathComponent("sdd-proj-\(UUID().uuidString)")
+        let subDir = (projectDir as NSString).appendingPathComponent("Sub")
+        try fileManager.createDirectory(atPath: subDir, withIntermediateDirectories: true)
+        let source = try fixturePath("DefaultChromeView")
+        let target = (subDir as NSString).appendingPathComponent("DefaultChromeView.swift")
+        try fileManager.copyItem(atPath: source, toPath: target)
+        return projectDir
+    }
+
+    /// A PROJECT-RELATIVE scope glob ("Sub/**") must suppress a finding whose
+    /// file path is ABSOLUTE, via relativization against the registry file's
+    /// directory (the proven PeptideFox dead-end: 33 P0s left un-suppressed
+    /// because "PeptideFox/**" could never match "/Users/.../PeptideFox/...").
+    func testRelativeScopeSuppressesAbsoluteArtifactPath() throws {
+        let projectDir = try makeTempProject()
+        let registryPath = (projectDir as NSString)
+            .appendingPathComponent(".design-overrides.json")
+        try """
+        [
+          { "suppresses": "ios-default-reflex",
+            "scope": "Sub/**",
+            "provenance": "test: project-relative scope vs absolute path" }
+        ]
+        """.write(toFile: registryPath, atomically: true, encoding: .utf8)
+
+        let absoluteArtifact = (projectDir as NSString)
+            .appendingPathComponent("Sub/DefaultChromeView.swift")
+        let ruleFile = try RuleEngine.loadRuleFile(explicitPath: nil, env: ProcessInfo.processInfo.environment)
+        let overrides = DesignOverrides.resolve(
+            explicitPath: registryPath, scannedPath: absoluteArtifact, env: [:])
+        let engine = RuleEngine(ruleFile: ruleFile, config: .defaults, overrides: overrides)
+
+        let findings = try engine.scan(path: absoluteArtifact)
+        let reflex = findings.filter { $0.antipattern == "ios-default-reflex" }
+        XCTAssertTrue(reflex.isEmpty,
+                      "Registry-dir relativization must let 'Sub/**' cover the absolute path; got: \(reflex.map { $0.snippet })")
+    }
+
+    /// findUpwards must probe the STARTING directory for a relative scan path
+    /// with a directory component: "Sub/File.swift" from cwd previously walked
+    /// "Sub", hit "", and never checked cwd itself — so a registry sitting in
+    /// cwd was invisible.
+    func testFindUpwardsProbesCwdForRelativePaths() throws {
+        let projectDir = try makeTempProject()
+        let registryPath = (projectDir as NSString)
+            .appendingPathComponent(".design-overrides.json")
+        try """
+        [
+          { "suppresses": "ios-default-reflex",
+            "scope": "Sub/**",
+            "provenance": "test: cwd walk-up for relative scan paths" }
+        ]
+        """.write(toFile: registryPath, atomically: true, encoding: .utf8)
+
+        let fileManager = FileManager.default
+        let originalCwd = fileManager.currentDirectoryPath
+        XCTAssertTrue(fileManager.changeCurrentDirectoryPath(projectDir))
+        defer { _ = fileManager.changeCurrentDirectoryPath(originalCwd) }
+
+        // No explicit path, no env: only the walk-up can find the registry.
+        let overrides = DesignOverrides.resolve(
+            explicitPath: nil, scannedPath: "Sub/DefaultChromeView.swift", env: [:])
+        XCTAssertEqual(overrides.entries.count, 1,
+                       "findUpwards must find the registry in cwd for a relative Sub/ path")
+
+        let ruleFile = try RuleEngine.loadRuleFile(explicitPath: nil, env: ProcessInfo.processInfo.environment)
+        let engine = RuleEngine(ruleFile: ruleFile, config: .defaults, overrides: overrides)
+        let findings = try engine.scan(path: "Sub/DefaultChromeView.swift")
+        let reflex = findings.filter { $0.antipattern == "ios-default-reflex" }
+        XCTAssertTrue(reflex.isEmpty,
+                      "The cwd-resolved registry must suppress the scoped finding")
+    }
+
     // MARK: - Color math parity
 
     func testColorMathClassifiesHues() {

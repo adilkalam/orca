@@ -5,7 +5,12 @@ import Foundation
 // Contract (mirrors mcp/design-detector/bin/designcheck.js + detect-antipatterns.mjs):
 //   SwiftDesignDetector detect --json <path>
 //     - clean  -> writes "[]" to STDOUT, EXIT 0
-//     - findings -> writes findings JSON to STDERR, EXIT 2
+//     - advisory-only findings -> writes findings JSON to STDERR, EXIT 0
+//       (report-only: no finding's EFFECTIVE severity is P0/P1)
+//     - blocking findings -> writes findings JSON to STDERR, EXIT 2
+//       (at least one finding's EFFECTIVE severity is P0 or P1; effective =
+//       per-project Config.severity override if present, else corpus default —
+//       RuleEngine.scan stamps it onto each finding before we get here)
 //     - usage/internal error -> message to STDERR, EXIT 1
 //
 // Findings go to STDERR (not STDOUT) so a caller capturing `2>&1` sees them and
@@ -36,7 +41,9 @@ func printUsage(to stream: FileHandle) {
       SWIFT_DESIGN_CONFIG     Override the per-project .design-detector.swift.json.
       SWIFT_DESIGN_OVERRIDES  Override the per-project .design-overrides.json (owner override registry).
 
-    Exit codes: 0 = clean ([] on stdout), 2 = findings (JSON on stderr), 1 = usage/internal.
+    Exit codes: 0 = clean ([] on stdout) or advisory-only findings (JSON on stderr),
+                2 = blocking findings (effective severity P0/P1; JSON on stderr),
+                1 = usage/internal.
     """
     stream.write(Data((usage + "\n").utf8))
 }
@@ -147,4 +154,11 @@ if findings.isEmpty {
 
 let json = encodeFindingsJSON(findings)
 FileHandle.standardError.write(Data((json + "\n").utf8))
-exit(ExitCode.findings.rawValue)
+
+// Severity-aware exit: only a blocking EFFECTIVE severity (P0/P1) forces
+// exit 2. Each finding's severity was already resolved by RuleEngine.scan
+// (per-project Config.severity override if present, else the corpus default),
+// so the JSON above carries the effective severity the decision keys off.
+// Advisory-only runs are report-only: findings printed, EXIT 0.
+let hasBlocking = findings.contains { $0.severity == "P0" || $0.severity == "P1" }
+exit(hasBlocking ? ExitCode.findings.rawValue : ExitCode.clean.rawValue)

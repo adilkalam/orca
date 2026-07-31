@@ -22,8 +22,8 @@ firing there — because those are *slop in the design document itself*, not leg
 
 ## The procedure (name → define → reference)
 
-- **Color:** add a `dynamicColor(light:dark:)` token to `ColorTokens` (on-palette, blue band —
-  see `blue-only-palette-law.md`); reference `DesignSystem.Color.<name>` in the view. Never
+- **Color:** add a `dynamicColor(light:dark:)` token to `ColorTokens` (a bespoke on-principle
+  value — see `color-principle.md`); reference `DesignSystem.Color.<name>` in the view. Never
   `Color(hex:)` in a view (`raw-hex-outside-tokens`, P0).
 - **Type:** add a factory/token to `TypographyTokens` using `Font.primary(...)` /
   `Font.heroInline(...)` / `Font.accentMono(...)` with a `relativeTo:` text style; reference the

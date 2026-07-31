@@ -45,7 +45,7 @@ Chosen from the 22-font catalog at `preferences/typography-fonts.md`. Reference 
 - **Body / sans:** [e.g., "Instrument Sans"]
 - **Monospace (if used):** [e.g., "IBM Plex Mono"]
 
-If picking a font NOT in the catalog, explain why here. Adding to the global catalog requires a rant-harvest entry.
+If picking a font NOT in the catalog, explain why here. Adding to the global catalog requires an owner-approved aesthetic-capture entry.
 
 ### Scale overrides (optional)
 
@@ -64,7 +64,7 @@ Max 3 per page per the global preferences. List the 2-3 weights committed:
 Mono is the most over-reached-for font on most projects. The trained reflex toward "looks technical → use mono" is so strong that documentation alone has not bound it. The rule below is therefore a HARD WHITELIST + an AUDIT SCRIPT + a BEFORE-SHIPPING CHECKLIST. Not philosophy. Not "use sparingly." A whitelist with explicit allowed/forbidden enumerated, mechanically auditable, automatic-fail-able.
 
 Cross-references:
-- Global rant: `~/.claude/docs/concepts/design-contract/rants/typography-mono.md`
+- Global banned rule: `~/.claude/docs/concepts/design-contract/banned/typography-mono.md`
 - Positive catalog: `~/.claude/docs/concepts/design-contract/preferences/typography-mono.md`
 
 **Mono is permitted ONLY for these six slots. No others.**
@@ -185,7 +185,7 @@ Concrete values. Each role resolved to OKLCH (or hex if OKLCH not workable in th
 
 - **Surface / background:** [e.g., "oklch(0.98 0.005 85)" — warm off-white]
 - **Ink / foreground:** [e.g., "oklch(0.18 0.01 250)"]
-- **Primary accent:** [named substitute from rants/colors.md — brass, sand, eggshell, etc.]
+- **Primary accent:** [named substitute from banned/colors.md — brass, sand, eggshell, etc.]
 - **Secondary accent (if any):**
 - **Functional roles:** danger / success / warn / info — values here
 - **Neutrals:** 3-5 steps of the surface family
@@ -196,7 +196,7 @@ Why these colors serve the register. Short — 2-3 sentences.
 
 ### Blue stance (if applicable)
 
-Per `rants/colors.md`, blue is deferred to user judgment because of colorblindness. If this project uses blue, record the specific blue chosen and what was confirmed.
+Per `banned/colors.md`, blue is deferred to user judgment because of colorblindness. If this project uses blue, record the specific blue chosen and what was confirmed.
 
 ### Project-scoped color refusals
 
@@ -226,11 +226,11 @@ Global motion preferences at `preferences/motion-references.md` (directional, no
 
 ---
 
-## 6. Project-Scoped Rant Extensions
+## 6. Project-Scoped Banned-Rule Extensions
 
-Things this project refuses that the global rants don't cover, OR things this project reverses from the global rants. Each entry: one-line refusal + short reason.
+Things this project refuses that the global banned rules don't cover, OR things this project reverses from the global banned rules. Each entry: one-line refusal + short reason.
 
-- [e.g., for RVRY: "Geist is allowed for engineering-admin surfaces — the global rant against Geist is register-conditional on editorial work"]
+- [e.g., for RVRY: "Geist is allowed for engineering-admin surfaces — the global ban on Geist is register-conditional on editorial work"]
 - [e.g., for peptidefox: "No serif italic ligatures — they read pharmaceutical-retro here"]
 
 ---

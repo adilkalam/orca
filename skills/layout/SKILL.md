@@ -19,7 +19,7 @@ Apply the 7 optical alignment rules + base grid system + pixel-perfect audit. Se
 
 ## Balance as organizing principle (NEW)
 
-Every layout has a deliberate visual entry point that carries the viewer to the destination without announcing. Negative/positive space balance. Floating-in-random-spot is refused — see `~/.claude/docs/concepts/design-contract/rants/alignment-spacing.md`.
+Every layout has a deliberate visual entry point that carries the viewer to the destination without announcing. Negative/positive space balance. Floating-in-random-spot is refused — see `~/.claude/docs/concepts/design-contract/banned/alignment-spacing.md`.
 
 ---
 
@@ -147,17 +147,4 @@ When the iOS architect passes `platform: swiftui`, the builder reads ONLY this s
 
 ---
 
-## Rant-capture at handback
-
-After completing the work, before returning to the user, ask:
-
-> "Returned to bench. Anything here you'd rant about?"
-
-If the user responds, append the entry to the current project's `.orca/design-rants-pending.md` in this format:
-
-```
-## YYYY-MM-DD HH:MM — [verb-name]
-[user's response verbatim]
-```
-
-Create `.orca/` in the current project if absent. Do NOT write to `~/.claude/` or to the ORCA-OS source tree directly. Pending entries are swept and categorized later via `/impeccable extract rants`.
+Aesthetic capture is owner-gated — see ~/.claude/docs/reference/design-lane.md (Aesthetic capture). No closing capture question.

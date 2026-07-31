@@ -17,7 +17,9 @@
  *   <script src="detect-antipatterns-browser.js"></script>
  *   Re-scan: window.impeccableScan()
  *
- * Exit codes: 0 = clean, 2 = findings
+ * Exit codes: 0 = clean OR advisory-only findings, 2 = blocking findings
+ * (at least one finding with severity P0 or P1). Findings JSON goes to STDERR;
+ * a clean --json run prints "[]" on STDOUT.
  */
 
 // ─── Environment ────────────────────────────────────────────────────────────
@@ -34,7 +36,7 @@ if (!IS_BROWSER) {
 // @browser-strip-end
 
 // ─── External rules (design-contract) ───────────────────────────────────────
-// Loads JSON rules from the design-contract collection so rant-harvest updates
+// Loads JSON rules from the design-contract collection so aesthetic-capture updates
 // don't require a rebuild. Override path via DESIGN_COLLECTION_PATH env var.
 let EXTERNAL_RULES = { version: 0, rules: [] };
 if (!IS_BROWSER) {
@@ -61,6 +63,10 @@ if (!IS_BROWSER) {
 // Node-only. Path: DESIGN_OVERRIDES_PATH env else {cwd}/.design-overrides.json.
 // A missing/unparseable file is NEVER fatal — silent [] fallback.
 let DESIGN_OVERRIDES = [];
+// Directory of the loaded registry file (absolute). Scope globs are commonly
+// project-relative ("PeptideFox/**"), so override matching relativizes absolute
+// artifact paths against this base before declaring no-match (see isOverridden).
+let DESIGN_OVERRIDES_DIR = '';
 if (!IS_BROWSER) {
   try {
     const overridesPath = process.env.DESIGN_OVERRIDES_PATH
@@ -68,7 +74,10 @@ if (!IS_BROWSER) {
       : path.join(process.cwd(), '.design-overrides.json');
     if (fs.existsSync(overridesPath)) {
       const parsed = JSON.parse(fs.readFileSync(overridesPath, 'utf-8'));
-      if (Array.isArray(parsed)) DESIGN_OVERRIDES = parsed;
+      if (Array.isArray(parsed)) {
+        DESIGN_OVERRIDES = parsed;
+        DESIGN_OVERRIDES_DIR = path.dirname(path.resolve(overridesPath));
+      }
     }
   } catch (_err) {
     // Silent fallback — no overrides, every rule fires normally.
@@ -110,6 +119,23 @@ function globMatches(glob, targetPath) {
   return regex.test(targetPath);
 }
 
+/// Candidate paths for override-scope matching: the finding's path as-is, plus
+/// project-relative retries. Scope globs are anchored against the FULL path, so
+/// a project-relative scope ("PeptideFox/**") can never match an ABSOLUTE
+/// artifact path — before declaring no-match we retry the path relativized to
+/// (a) the overrides-registry file's directory, (b) process.cwd().
+function overrideCandidatePaths(filePath) {
+  const candidates = [filePath];
+  const bases = [DESIGN_OVERRIDES_DIR];
+  if (!IS_BROWSER && typeof process !== 'undefined') bases.push(process.cwd());
+  for (const base of bases) {
+    if (!base) continue;
+    const prefix = base.endsWith('/') ? base : base + '/';
+    if (filePath.startsWith(prefix)) candidates.push(filePath.slice(prefix.length));
+  }
+  return candidates;
+}
+
 /// True when an override sanctions this finding. SAFETY (accessibility floor):
 /// requires BOTH a rule-id match AND a NON-EMPTY scope that matches. An entry with
 /// a missing/empty scope suppresses nothing.
@@ -117,11 +143,12 @@ function isOverridden(finding, overrides) {
   const ruleId = finding.antipattern;
   const filePath = finding.file;
   if (!filePath) return false;
+  const candidates = overrideCandidatePaths(filePath);
   for (const entry of overrides) {
     if (!entry || entry.suppresses !== ruleId) continue;
     const scope = entry.scope;
     if (typeof scope !== 'string' || scope.length === 0) continue;
-    if (globMatches(scope, filePath)) return true;
+    if (candidates.some(candidate => globMatches(scope, candidate))) return true;
   }
   return false;
 }
@@ -2499,7 +2526,11 @@ function getAP(id) {
 
 function finding(id, filePath, snippet, line = 0) {
   const ap = getAP(id);
-  return { antipattern: id, name: ap.name, description: ap.description, file: filePath, line, snippet };
+  // Per-finding severity for the inline Bakaus registry: category 'slop' is
+  // blocking (P0); category 'quality' is advisory (reported, never blocks the
+  // exit code — see the severity-aware exit in main()).
+  const severity = ap && ap.category === 'slop' ? 'P0' : 'advisory';
+  return { antipattern: id, name: ap.name, description: ap.description, severity, file: filePath, line, snippet };
 }
 
 /** Check if content looks like a full page (not a component/partial) */
@@ -3131,14 +3162,22 @@ function getLineNumber(text, index) {
 }
 
 function externalFinding(rule, filePath, snippet, line) {
-  const sourceRef = rule.source_rant || rule.source_preference || '';
+  // `source` is the canonical field; `source_rant` / `source_preference` are
+  // legacy spellings tolerated so an older corpus copy still resolves.
+  const sourceRef = rule.source || rule.source_rant || rule.source_preference || '';
   const description = sourceRef
     ? `External rule from ${sourceRef}.`
     : 'External rule from design-contract/detector-rules.json.';
+  // Per-finding severity: the rule's own severity, EXCEPT `advisory: true`
+  // maps to "advisory" regardless of P-level (an advisory-marked P1 like
+  // utility-sprawl reports but never blocks). A rule with no severity at all
+  // defaults to blocking P1 (fail-closed — preserves the old always-block).
+  const severity = rule.advisory === true ? 'advisory' : (rule.severity || 'P1');
   return {
     antipattern: rule.id,
     name: rule.id,
     description,
+    severity,
     file: filePath,
     line: line || 0,
     snippet,
@@ -3609,9 +3648,13 @@ async function main() {
   // HTML/URL paths whose findings never pass through detectText. Idempotent.
   allFindings = applyOverrides(allFindings, DESIGN_OVERRIDES);
 
+  // Severity-aware exit: exit 2 ONLY when at least one finding is blocking
+  // (severity P0 or P1). An advisory-only run still prints every finding
+  // (JSON on stderr, same stream as always) but exits 0 — report-only.
   if (allFindings.length > 0) {
     process.stderr.write(formatFindings(allFindings, jsonMode) + '\n');
-    process.exit(2);
+    const hasBlocking = allFindings.some(f => f.severity === 'P0' || f.severity === 'P1');
+    process.exit(hasBlocking ? 2 : 0);
   }
   if (jsonMode) process.stdout.write('[]\n');
   process.exit(0);

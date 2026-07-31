@@ -1,10 +1,10 @@
 # Voice Anchors
 
-Direct rant quotes from Adil. These are load-bearing for the spine SKILL.md. Edits that would dilute them must be refused.
+Direct quotes from Adil, captured verbatim. These are load-bearing for the spine SKILL.md. Edits that would dilute them must be refused.
 
 ---
 
-## Rant Session 1 — 2026-04-22
+## Capture Session 1 — 2026-04-22
 
 On Geist / SaaS typography monoculture:
 > "The use of Geist = vercel → no thought in typography. Boring, plain, looks like every other SaaS."
@@ -38,7 +38,7 @@ On how to judge:
 On AI design tools specifically:
 > "[Superdesign] wrote about brutalism while shipping a 2012 developer-portfolio gradient."
 
-## Rant Session 1 continued — 2026-04-22 (second pass)
+## Capture Session 1 continued — 2026-04-22 (second pass)
 
 On the Tailwind palette as enemy:
 > "Sand, eggshell are good neutrals; what I don't want are Tailwind colors."
@@ -57,7 +57,7 @@ On skeuomorphism as category error:
 > "The actual one is meant to be used in person. Next to a notebook. Where you're holding it up, typing, and getting results. It does not exist in a locked space, with a background. It's comically stupid to take that object and turn it into the basis for a digital calculator."
 
 On copy being out of scope for this system:
-> "Copy is something I write, not in this scope." — copy-voice rants are NOT captured in the design-context; the spine skill treats copy as out-of-scope.
+> "Copy is something I write, not in this scope." — copy-voice critiques are NOT captured in the design-context; the spine skill treats copy as out-of-scope.
 
 On shadow/surface treatments beyond what's already captured:
 > "Don't have the terms for it. And I don't want to be prescriptive about it; this is the kind of thing to just lift from impeccable." — the spine defers shadow/surface-treatment refusals beyond chamfering to Impeccable's absolute_bans and existing detector rules.
@@ -97,7 +97,7 @@ On the motion register:
 
 ## Sourced from the LLM CSS Manifesto — 2026-05-29
 
-These quotes are NOT Adil's spoken rants. They are verbatim from `docs/concepts/llm-css-manifesto.md` — the causal model for the CSS-architecture pattern-family (`rants/css-architecture.md` + `preferences/css-architecture.md`). Recorded here because they are load-bearing framing for doctrine B (centralize design authority; taxonomy-first; no blanket Tailwind ban).
+These quotes are NOT Adil's spoken critiques. They are verbatim from `docs/concepts/llm-css-manifesto.md` — the causal model for the CSS-architecture pattern-family (`banned/css-architecture.md` + `preferences/css-architecture.md`). Recorded here because they are load-bearing framing for doctrine B (centralize design authority; taxonomy-first; no blanket Tailwind ban).
 
 On scattered design authority at agent scale:
 > "With Tailwind, every agent is an unsupervised designer."

@@ -4,7 +4,7 @@
 > — directional, not perspective; ease-out; no bounce/elastic), authored here for the SwiftUI
 > mechanism (`withAnimation`, `MotionTokens`, `@Environment(\.accessibilityReduceMotion)`).
 > Source of truth: `peptidefox-ios/.claude/CLAUDE.md §6.4`. The refusal side lives in
-> `rants/spring-overshoot.md`.
+> `banned/spring-overshoot.md`.
 
 ## The positive move
 

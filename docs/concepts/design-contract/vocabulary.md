@@ -1,6 +1,6 @@
 # Vocabulary — Named Moves + Feelings + Working Terms
 
-Grows via rant-harvest-at-handback. Entries are [name] + short definition + pointer to reference (photo, rant, preference, site).
+Grows via aesthetic capture (owner-gated). Entries are [name] + short definition + pointer to reference (photo, banned rule, preference, site).
 
 ## Named moves
 

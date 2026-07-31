@@ -10,11 +10,16 @@
 #      a gate that shells out to this never crashes a pipeline on a host without
 #      Swift.
 #
-# Usage (mirrors the web designcheck contract):
-#   swiftdesigncheck detect --json <path>
+# Usage (mirrors the web designcheck contract; severity-aware exits):
+#   swiftdesigncheck detect --json <path>   # ONE file per invocation (v1)
 #     EXIT 0 + "[]"  -> clean
-#     EXIT 2 + JSON  -> findings (on STDERR; capture with 2>&1)
-#     EXIT 1         -> usage / internal error
+#     EXIT 0 + JSON  -> advisory-only findings (report-only: no finding's
+#                       EFFECTIVE severity is P0/P1; JSON on STDERR)
+#     EXIT 2 + JSON  -> blocking findings (at least one finding whose EFFECTIVE
+#                       severity -- per-project config override, else corpus
+#                       default -- is P0 or P1; on STDERR; capture with 2>&1)
+#     EXIT 1         -> usage / internal error (including plural paths in one
+#                       invocation -- callers loop files, one call each)
 #
 set -uo pipefail
 

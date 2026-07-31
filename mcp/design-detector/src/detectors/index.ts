@@ -30,7 +30,7 @@ export const handlers = {
 };
 
 // REMOVED FROM SCOPE (2026-04-22):
-// - detectIOSCalculatorShape: too specific; generic-ui-defaults rant covers it.
+// - detectIOSCalculatorShape: too specific; generic-ui-defaults banned rule covers it.
 // - detectPretendVariation: requires cross-candidate structural similarity, not
 //   a per-file scan. Belongs in a separate generation-time tool.
 // - detectPixelMisalignment: requires rendered layout measurements (DOM

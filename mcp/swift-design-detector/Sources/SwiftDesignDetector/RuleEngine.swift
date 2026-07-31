@@ -78,6 +78,7 @@ enum RuleRegistry {
         case "spring-overshoot":          return SpringOvershootRule(spec: spec)
         case "mono-fatigue":              return MonoFatigueRule(spec: spec)
         case "ios-default-reflex":        return IOSDefaultReflexRule(spec: spec)
+        case "unjoined-unit-baseline":    return UnjoinedUnitBaselineRule(spec: spec)
         default:                          return nil
         }
     }

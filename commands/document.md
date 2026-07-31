@@ -26,7 +26,7 @@ Reference: https://impeccable.style/docs/document and https://stitch.withgoogle.
 
 Before any work, in this order:
 
-1. Invoke `Skill("impeccable-hub")` — the register (felt-state spine + rants + preferences + voice-anchors + detector floor). Required for every invocation.
+1. Invoke `Skill("impeccable-hub")` — the aesthetic (felt-state spine + banned rules + preferences + voice-anchors + detector floor). Required for every invocation.
 2. Read `{current-project}/.claude/PRODUCT.md`. **If missing, stop and route to `/impeccable --teach` first.** PRODUCT.md is required input — anti-references and design principles named there are cited in DESIGN.md's Do's-and-Don'ts.
 
 Do not attempt to infer strategic context from the codebase. The user is the only source.
@@ -102,7 +102,7 @@ Use `{path.to.token}` reference syntax — never inline values in the component 
 
 ### Step 2.5 — Role taxonomy extraction (doctrine B, taxonomy-first)
 
-Extract the project's existing **role/semantic-class vocabulary** — the named roles agents should compose from instead of inventing design decisions inline. This is the design constitution (`rants/css-architecture.md` + `preferences/css-architecture.md`).
+Extract the project's existing **role/semantic-class vocabulary** — the named roles agents should compose from instead of inventing design decisions inline. This is the design constitution (`banned/css-architecture.md` + `preferences/css-architecture.md`).
 
 Scan for the centralized layer in whatever CSS approach the project uses (detect-and-follow — do NOT impose semantic CSS on a Tailwind project):
 
@@ -127,7 +127,7 @@ roles:
 Tokens describe what; the prose sections describe **why**. Ask exactly five:
 
 1. **Creative North Star metaphor.** "If this product were a physical object, what would it be?" (e.g., "a museum exhibit caption", "a 1970s mainframe manual", "a hand-painted shop sign"). One sentence. This anchors Overview.
-2. **Color names.** For each non-functional palette role, give a **descriptive name** (sand, brass, obsidian, eggshell — NOT "primary-500" or "accent-2"). Reference the global color rant catalog substitutes if helpful.
+2. **Color names.** For each non-functional palette role, give a **descriptive name** (sand, brass, obsidian, eggshell — NOT "primary-500" or "accent-2"). Reference the global color catalog substitutes (`banned/colors.md`) if helpful.
 3. **Elevation philosophy.** "Where does depth come from in this product?" (shadow / border / background contrast / layered surfaces / no elevation / specific physical metaphor). One sentence.
 4. **Component character.** "How should components feel? (sharp / soft / utilitarian / playful / precise / generous)." Three to five adjectives max.
 5. **Voice for Do's-and-Don'ts.** Confirm: design-director voice ("Prohibited", "forbidden", "never", "always"). NOT "consider" / "prefer" / "may". This is non-negotiable in Stitch spec; the question exists to make the user aware before they read the file.
@@ -182,7 +182,7 @@ roles:
 
 ## Typography
 
-<which family for which role + why, hierarchy commitments, mono discipline if relevant. Reference Adil's mono rant catalog for projects that use mono.>
+<which family for which role + why, hierarchy commitments, mono discipline if relevant. Reference Adil's mono catalog (`banned/typography-mono.md`) for projects that use mono.>
 
 ## Elevation
 
@@ -194,7 +194,7 @@ roles:
 
 ## Do's-and-Don'ts
 
-<every entry in design-director voice — "Prohibited", "forbidden", "never", "always". Cite PRODUCT.md anti-references by name. Cite global rant files where relevant (`rants/typography-mono.md`, `rants/colors.md`, etc.).>
+<every entry in design-director voice — "Prohibited", "forbidden", "never", "always". Cite PRODUCT.md anti-references by name. Cite global banned-rule files where relevant (`banned/typography-mono.md`, `banned/colors.md`, etc.).>
 ```
 
 ### Step 6 — Write DESIGN.json sidecar
@@ -212,11 +212,7 @@ Print a 6-line summary:
 - Existing DESIGN.md was overwritten / merged / backed up
 - Next: run `/impeccable --craft "<feature>"` to build against this contract
 
-Then close with rant-capture (existing pattern):
-
-> Returned to bench. Anything here you'd rant about?
-
-If the user responds, append to `{current-project}/.orca/design-rants-pending.md` with timestamp `## YYYY-MM-DD HH:MM — /document`.
+Aesthetic capture is owner-gated — see ~/.claude/docs/reference/design-lane.md (Aesthetic capture). No closing capture question.
 
 ---
 
@@ -244,7 +240,7 @@ Skip DESIGN.json (no real values yet). Add a top-of-file note:
 <!-- SEED MODE — re-run /impeccable --document (no flag) once code exists to populate real tokens. -->
 ```
 
-Close with rant-capture as in scan mode.
+Close as in scan mode (aesthetic capture is owner-gated; no closing capture question).
 
 ---
 

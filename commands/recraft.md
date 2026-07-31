@@ -1,6 +1,6 @@
 ---
 name: recraft
-description: "Thin coordinator for redo/recraft case. Classifies scope (single element / whole feature / contract failure) and routes to /live, re-shape+re-craft, or re-teach+re-document. Does NOT regenerate from rules. Captures critique to project rant ledger."
+description: "Thin coordinator for redo/recraft case. Classifies scope (single element / whole feature / contract failure) and routes to /live, re-shape+re-craft, or re-teach+re-document. Does NOT regenerate from rules. Captures critique to the project's pending aesthetic ledger."
 argument-hint: "<critique or target> [+ optional screenshots]"
 allowed-tools:
   - Read
@@ -32,7 +32,7 @@ Use `/refine` when:
 
 ## Load the hub + read the contract (every invocation)
 
-`Skill("impeccable-hub")` — the single home for the register (the `interfaces-that-feel` felt-state spine, the voice anchors, the rants as refusals, the preferences as positive moves, the detector contract). Loading the hub is what binds the register by construction; this file carries **zero copies** of those rules (`#POISON_PATH` re-inlining).
+`Skill("impeccable-hub")` — the single home for the aesthetic (the `interfaces-that-feel` felt-state spine, the voice anchors, the banned rules as refusals, the preferences as positive moves, the detector contract). Loading the hub is what binds the aesthetic by construction; this file carries **zero copies** of those rules (`#POISON_PATH` re-inlining).
 
 Then read `{current-project}/.claude/PRODUCT.md` (strategic) and `{current-project}/.claude/DESIGN.md` (visual) — both are cited in scope classification. Both files are required; if either is missing, route to `/impeccable --teach` or `/impeccable --document` before continuing.
 
@@ -40,11 +40,11 @@ Then read `{current-project}/.claude/PRODUCT.md` (strategic) and `{current-proje
 
 The UI-producing routes below (Route A → /live, Route B → re-shape + re-craft) run through the **one shared lane**, defined once at **`~/.claude/docs/reference/design-lane.md`** — never re-described here (`#POISON_PATH` duplication; copy-pasting the lane's steps is exactly what bloated this file). The lane is: the orchestrator (this main thread) **binds** typed FORBIDDEN/FORWARD constraints via a cognition `checkpoint` and records the returned ids to `{current-project}/.orca/orchestration/phase_state.json → planning.bound_constraint_ids` → spawns `Agent(design-builder)` to produce the artifact under those ids → spawns `Agent(design-validator)` (fresh context) which returns `GATE_VERDICT: PASS|BLOCK` → **branches** (PASS hands back; BLOCK loops the builder with the findings, **MAX N=2**, then escalates to the user).
 
-**recraft-specific bind input:** when binding for Route A or B, **fold the just-captured verbatim critique** (Step 1, below) into the bind as task-specific FORBIDDEN constraints — the named failures the rebuild must not repeat — plus FORWARD obligations derived from the critique + the register. Skipping the bind ⇒ no bound ids ⇒ the validator returns `BLOCK: no bound constraints`. The orchestrator NEVER grades its own output. **Route C produces NO UI artifact** (it edits PRODUCT.md/DESIGN.md) and therefore runs **no build lane** — see Route C.
+**recraft-specific bind input:** when binding for Route A or B, **fold the just-captured verbatim critique** (Step 1, below) into the bind as task-specific FORBIDDEN constraints — the named failures the rebuild must not repeat — plus FORWARD obligations derived from the critique + the aesthetic. Skipping the bind ⇒ no bound ids ⇒ the validator returns `BLOCK: no bound constraints`. The orchestrator NEVER grades its own output. **Route C produces NO UI artifact** (it edits PRODUCT.md/DESIGN.md) and therefore runs **no build lane** — see Route C.
 
 ## Step 1 — Capture the critique BEFORE doing anything else
 
-Append the verbatim user critique to `{current-project}/.orca/design-rants-pending.md` with a timestamp:
+Append the verbatim user critique to `{current-project}/.orca/aesthetic-pending.md` with a timestamp:
 
 ```markdown
 ## {ISO-8601 timestamp} — /recraft (intake)
@@ -52,7 +52,7 @@ Append the verbatim user critique to `{current-project}/.orca/design-rants-pendi
 {user's critique, verbatim}
 ```
 
-Create `.orca/design-rants-pending.md` if missing. **Never paraphrase.** Verbatim language is load-bearing for downstream `/impeccable --extract rants`. Note attached screenshot paths inside the same entry — do not analyze them yet (that's part of the rebuild, not the intake).
+Create `.orca/aesthetic-pending.md` if missing (sweep tools also read the legacy `.orca/design-rants-pending.md` if present). **Never paraphrase.** Verbatim language is load-bearing for downstream `/impeccable --extract aesthetic`. Note attached screenshot paths inside the same entry — do not analyze them yet (that's part of the rebuild, not the intake).
 
 ## Step 2 — Classify the scope (load-bearing — this is the routing decision)
 
@@ -112,21 +112,9 @@ bash {current-project}/scripts/audit-design.sh
 
 Post the summary inline. **The `audit-design.sh` script informs but does not gate.** It catches mechanical hygiene (mono count cap, OT ligature disable, border-padding compensation, etc.); it does NOT catch taste. The lane's validator is the hard FLOOR; the user's eye is the taste CEILING. If the audit fires AND the user agrees, feed it back into the routed flow as additional input. If the user disagrees, the audit is wrong for this case (rare; document the exception in a code comment). If the project has no `scripts/audit-design.sh`, skip this step.
 
-## Step 5 — Closing handback (rant-capture)
+## Step 5 — Closing handback
 
-After the routed flow completes AND (for UI-producing routes) the lane's validator passes:
-
-> Returned to bench. Anything here you'd rant about?
-
-If the user responds, append to `{current-project}/.orca/design-rants-pending.md`:
-
-```markdown
-## {ISO-8601 timestamp} — /recraft (handback)
-
-{user's rant, verbatim}
-```
-
-If the user has nothing to rant about, say so and stop.
+Aesthetic capture is owner-gated — see ~/.claude/docs/reference/design-lane.md (Aesthetic capture). No closing capture question.
 
 ## Refusals (explicit)
 

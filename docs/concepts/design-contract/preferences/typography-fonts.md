@@ -65,13 +65,13 @@ Preserved in verbatim block above so the original text is recorded. Normalized n
 
 ## How the spine uses this
 
-This is a **preference**, not a refusal. Different shape from `rants/fonts.md`.
+This is a **preference**, not a refusal. Different shape from `banned/fonts.md`.
 
 When a font is needed and the project doesn't specify one:
 
 1. **Default reach**: pick from this set. Match the role (sans/serif/display/mono) to the type task (body/heading/display-callout/code).
 2. **Propose, don't pick**: when multiple fonts from the set would fit, propose 2-3 and let the user choose. Don't auto-select.
-3. **Cross-check against refusals**: no font from this set appears in `rants/fonts.md` — the sets are deliberately disjoint. If a proposed font appears in both, something's wrong.
+3. **Cross-check against refusals**: no font from this set appears in `banned/fonts.md` — the sets are deliberately disjoint. If a proposed font appears in both, something's wrong.
 4. **"Can always add others"**: this list isn't closed. If the project's register genuinely calls for a font outside the set, it's allowed — but the addition should be justified and documented in the project's `aesthetic.md`, not reached for silently.
 
 ## Detection
@@ -80,7 +80,7 @@ When a font is needed and the project doesn't specify one:
 |---|---|---|
 | Generated CSS uses a font NOT in this set AND NOT in project-specific override | `font-family:` declarations checked against preferred list | Flag: "consider a font from the preferred set — see `typography-fonts.md`" |
 | Generated CSS uses a font in this set | `font-family:` matches an entry | Allow; reinforces the preference |
-| Generated CSS uses a font from `rants/fonts.md` refused list | `font-family:` matches refused (Geist, Inter, DM Sans, etc.) | P0 refuse |
+| Generated CSS uses a font from `banned/fonts.md` refused list | `font-family:` matches refused (Geist, Inter, DM Sans, etc.) | P0 refuse |
 | Project declares a different font in `aesthetic.md` | Project override | Project wins; spine defers |
 
 ## Companion principle

@@ -9,13 +9,14 @@ struct RuleSpec: Decodable {
     let name: String
     let severity: String
     let description: String
-    let sourceRant: String
+    /// Provenance reference into the collection (e.g. "banned/colors.md").
+    /// Canonical corpus field: `source` (renamed from the legacy `source_rant`).
+    let source: String
     let scopeInTokenDirs: Bool
     let detector: JSONValue
 
     enum CodingKeys: String, CodingKey {
-        case id, name, severity, description
-        case sourceRant = "source_rant"
+        case id, name, severity, description, source
         case scopeInTokenDirs = "scope_in_token_dirs"
         case detector
     }

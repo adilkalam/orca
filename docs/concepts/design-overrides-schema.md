@@ -1,7 +1,7 @@
 # `.design-overrides.json` — the per-project owner-override registry
 
 The design lanes (`docs/reference/design-lane.md` §Precedence) put the owner's
-explicit, in-context instruction **above** both the standing register (rants /
+explicit, in-context instruction **above** both the aesthetic (banned rules /
 preferences) and the deterministic detector. When the owner sanctions something
 a standing rule names as slop, that win must **persist** — otherwise it re-loses
 on the next task ("circles"). The persistence mechanism is a per-project
@@ -138,10 +138,10 @@ not, and cannot, switch off a contrast warning.
 
 ## Provenance — owner-authored, ratified by construction
 
-Unlike a rant-derived detector rule (distilled from the owner but not explicitly
+Unlike a detector rule derived from the aesthetic (distilled from the owner but not explicitly
 ratified per-use), an override is **authored by the owner in the moment**. It is
-ratified by construction. That is precisely why it outranks the register: the
-register is a derived snapshot; the override is the source speaking now. An
+ratified by construction. That is precisely why it outranks the aesthetic: the
+aesthetic is a derived snapshot; the override is the source speaking now. An
 override is emitted **only** from an explicit owner instruction — never invented,
 never used to launder a model preference (lane Step 1).
 

@@ -4,7 +4,7 @@
 
 > The stylesheet becomes the design constitution — it constrains every agent's output to visual coherence without any agent needing to understand the full design system.
 
-(From `docs/concepts/llm-css-manifesto.md`. This is a preference — the positive move — not a refusal. The refusal sibling is `rants/css-architecture.md`.)
+(From `docs/concepts/llm-css-manifesto.md`. This is a preference — the positive move — not a refusal. The refusal sibling is `banned/css-architecture.md`.)
 
 ## The principle
 
@@ -12,7 +12,7 @@
 
 The real axis is not "semantic class names vs utilities." It is: *is design authority centralized, or scattered?* A centralized layer — `@layer`, semantic role classes, token-mapped classes — is the design constitution. An agent builds a new component by composing existing role classes (`ds-card`, `ds-metric-label`, `ds-stat-row`) without ever deciding what font size a label should be. The decision was made once, in the stylesheet. "Change all metric labels to 14px" becomes one edit, not a codebase-wide grep-and-replace that an agent will get wrong.
 
-This is a directional default, NOT a Tailwind ban. Token-mapped semantic Tailwind satisfies the principle. Raw palette/utility sprawl does not. See `rants/css-architecture.md` for doctrine B in full.
+This is a directional default, NOT a Tailwind ban. Token-mapped semantic Tailwind satisfies the principle. Raw palette/utility sprawl does not. See `banned/css-architecture.md` for doctrine B in full.
 
 ## The role-taxonomy procedure (DO THIS BEFORE WRITING A CLASS)
 
@@ -38,7 +38,7 @@ Semantic CSS + the cascade + `@layer`, with the role taxonomy designed FIRST —
 
 Respect the project's detected CSS approach. The lane builders auto-detect (semantic CSS / Tailwind / CSS Modules / styled-components) and follow it — that pluralism is correct and survives. Enforce centralization WITHIN whatever is detected:
 
-- No raw palette utilities (`bg-blue-500` etc. — refused regardless of approach, per `rants/colors.md`).
+- No raw palette utilities (`bg-blue-500` etc. — refused regardless of approach, per `banned/colors.md`).
 - Repeated utility clusters → extract to a named role class (`@apply` into a component, a CSS Module class, a styled-component, or a semantic class).
 - Token-mapped only — utilities and classes bind to design tokens, not inline literals.
 - Taxonomy-first applies even mid-stream: when adding a role, name it and bind it before implementing.
@@ -47,7 +47,7 @@ Do not migrate a Tailwind project to semantic CSS as a side effect. Centralize w
 
 ## How the spine uses this
 
-This is a **preference** — the positive move catalog entry. Different shape from `rants/css-architecture.md` (the refusal).
+This is a **preference** — the positive move catalog entry. Different shape from `banned/css-architecture.md` (the refusal).
 
 1. **Greenfield:** design the role taxonomy in DESIGN.md first (`/document --seed`), then build composing from it.
 2. **Brownfield:** detect the CSS approach, enforce centralization within it, extract repeated clusters to named roles.
@@ -59,7 +59,7 @@ The principle lives here and in the spine. The enforcement mechanics live in the
 
 ## Cross-reference
 
-- **Refusal sibling:** `rants/css-architecture.md` (utility sprawl / scattered authority; doctrine B in full).
-- **Palette sibling:** `rants/colors.md` (raw Tailwind palette utilities, P0).
+- **Refusal sibling:** `banned/css-architecture.md` (utility sprawl / scattered authority; doctrine B in full).
+- **Palette sibling:** `banned/colors.md` (raw Tailwind palette utilities, P0).
 - **Per-project home:** DESIGN.md **Role Taxonomy** section (`design-template.md`), populated by `/document`.
 - **Source:** `docs/concepts/llm-css-manifesto.md`.

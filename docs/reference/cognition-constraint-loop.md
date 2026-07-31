@@ -23,7 +23,7 @@ failure. So this loop is non-negotiable for standalone use.
 ```
 /<verb> <target>   (runs in the main thread — this IS the worker; no subagents)
 
-  0. LOAD     Skill("impeccable-hub") (the register) + Skill("<verb>") (the craft spine).
+  0. LOAD     Skill("impeccable-hub") (the aesthetic) + Skill("<verb>") (the craft spine).
   │           For a .swift TARGET, load Skill("ios-impeccable-hub") instead of impeccable-hub
   │           (see docs/concepts/ios-design-contract/target-routing.md).
   │           Read {project}/.claude/PRODUCT.md + DESIGN.md if present (do not block if absent).
@@ -32,7 +32,7 @@ failure. So this loop is non-negotiable for standalone use.
   │           (semantic/centralized CSS); for a .swift target, the loaded ios-impeccable-hub.
   │
   1. R1 BIND  cognition checkpoint → typed FORBIDDEN/FORWARD constraints for THIS verb on THIS target,
-  │           each citing a detector rule id or rant id. Capture the returned ids (C1, C2, …).
+  │           each citing a detector rule id or banned-rule id. Capture the returned ids (C1, C2, …).
   │
   2. R2 WORK  do the edit in-thread under the bound ids, applying the verb's craft + the user's
   │           verbatim critique (FR-6).
@@ -45,8 +45,8 @@ failure. So this loop is non-negotiable for standalone use.
   │           fix and re-evaluate. MAX N=2 rounds. You may NOT claim done with an open constraint
   │           (#POISON_PATH). After N=2, ESCALATE to the user with the unresolved constraints named.
   │
-  5. HANDBACK rant-capture: "Returned to bench. Anything here you'd rant about?" → append verbatim to
-              {project}/.orca/design-rants-pending.md. Never write to ~/.claude/ or ORCA-OS source.
+  5. HANDBACK aesthetic capture is owner-gated — see ~/.claude/docs/reference/design-lane.md
+              (Aesthetic capture). No closing capture question.
 ```
 
 ### R1 — the bind (the enforcement entry)
@@ -57,7 +57,7 @@ mcp__cognition-mcp__cognition({
   operation: "checkpoint", projectPath: <repo root>, verbose: false,
   sessionTitle: "<verb> on <target>", sessionTags: ["design","<verb>"],
   content: { command: "/<verb>", phase: "bind", addConstraints: [
-    { type: "FORBIDDEN", text: "<named slop this verb can trip> (detector:<ruleId> | rant:<id>)" },
+    { type: "FORBIDDEN", text: "<named slop this verb can trip> (detector:<ruleId> | banned:<id>)" },
     { type: "FORWARD",   text: "<felt-state obligation derived from voice-anchors.md + the task>" }
   ]})
 })

@@ -19,14 +19,14 @@ Heavy orchestrator. Use this for real motion work. For a light pass, the user ca
 
 ## Load the motion craft context (every invocation)
 
-Load these skills — the hub for the register, the motion skills for the craft spine — before any analysis or work:
+Load these skills — the hub for the aesthetic, the motion skills for the craft spine — before any analysis or work:
 
-- `Skill("impeccable-hub")` — the single home for the register (the `interfaces-that-feel` felt-state baseline — emotional register, earned emotion, physical-world vocabulary — plus the voice anchors, rants, preferences, detector contract). This is what binds the register by construction; do not skip it — this command exists because the felt-state baseline was previously disconnected from motion work.
+- `Skill("impeccable-hub")` — the single home for the aesthetic (the `interfaces-that-feel` felt-state baseline — emotional register, earned emotion, physical-world vocabulary — plus the voice anchors, banned rules, preferences, detector contract). This is what binds the aesthetic by construction; do not skip it — this command exists because the felt-state baseline was previously disconnected from motion work.
 - `Skill("animation-engineering")` — Emil Kowalski's craft spine (custom easing, durations, press states, invisible details).
 - `Skill("motion-design-principles")` — three-tier routing + composition rules + anti-patterns.
 - If the target mentions scroll, scroll-driven, parallax-distance, pin, scrub, or smooth-scroll: also `Skill("lenis-integration")`.
 
-The hub points to the canonical motion refs (`~/.claude/docs/concepts/design-contract/rants/motion-suddenness.md`, `~/.claude/docs/concepts/design-contract/preferences/motion-references.md`, `~/.claude/docs/concepts/design-contract/voice-anchors.md`); read them when you reach for the corresponding move. This file carries **zero copies** of those rules (`#POISON_PATH` re-inlining).
+The hub points to the canonical motion refs (`~/.claude/docs/concepts/design-contract/banned/motion-suddenness.md`, `~/.claude/docs/concepts/design-contract/preferences/motion-references.md`, `~/.claude/docs/concepts/design-contract/voice-anchors.md`); read them when you reach for the corresponding move. This file carries **zero copies** of those rules (`#POISON_PATH` re-inlining).
 
 ## The shared design lane (how motion feel is judged)
 
@@ -34,7 +34,7 @@ Motion work is gated by the **one shared lane**, defined once at **`~/.claude/do
 
 **Motion-specific bind input.** When binding for a motion task, emit:
 - Motion `FORBIDDEN`s citing their detector ids: `bounce-easing`, `bouncy-easing`, `default-ease-transition`, `layout-transition` — e.g. `{type:"FORBIDDEN", text:"bounce/elastic easing (detector:bouncy-easing)"}`.
-- Rant-derived refusals (cite `rant:motion-suddenness`): 3D CSS transforms (`rotateX`/`rotateY`/`perspective`/`preserve-3d`), device-orientation tilt, parallax-Z (depth-layer), tilt/flip cards — directional-not-perspective.
+- Banned-rule refusals (cite `banned:motion-suddenness`): 3D CSS transforms (`rotateX`/`rotateY`/`perspective`/`preserve-3d`), device-orientation tilt, parallax-Z (depth-layer), tilt/flip cards — directional-not-perspective.
 - One or more `FORWARD` items derived at runtime from `voice-anchors.md` + the task — the felt-state obligations (smooth/elegant/directional motion that matches the user's emotional state at this moment in the flow).
 
 The `design-validator` (fresh context) judges the produced motion against these bound ids — that is how motion feel (which the detector is blind to: it cannot read timing/emotion) gets adjudicated externally, not self-graded. Skipping the bind ⇒ no bound ids ⇒ the validator returns `BLOCK: no bound constraints`. Interactive mid-build critique stays **in-thread** (FR-6) — carry the user's critique verbatim into the builder. Read the lane file for the full step-by-step.
@@ -44,7 +44,7 @@ The `design-validator` (fresh context) judges the produced motion against these 
 1. Read `{current-project}/DESIGN.md`. Focus on the **motion register** section (custom easing curves, duration register, press-state rules — the concrete visual tokens). Also read `{current-project}/PRODUCT.md` for the **emotional register** (the felt-state the motion must match).
 2. If `DESIGN.md` is missing, empty, or the motion register is unpopulated: stop and route the user to `/impeccable --document` first (which generates DESIGN.md). If `PRODUCT.md` is also absent, route to `/impeccable --teach` first. Resume after they return.
 
-(The motion rant + preferences + voice-anchors are already loaded by the entry bind above.)
+(The motion banned rule + preferences + voice-anchors are already loaded by the entry bind above.)
 
 ## Three-tier routing decision
 
@@ -77,7 +77,7 @@ Refuse, without negotiation:
 - Parallax-Z (depth-layer parallax). Directional parallax (2D offset on scroll) is fine.
 - Tilt cards, flip cards, and other simulated-depth interactions.
 
-If the user requests any of the above, explain the refusal (cite `rants/motion-suddenness.md` and `preferences/motion-references.md`), and offer a directional alternative.
+If the user requests any of the above, explain the refusal (cite `banned/motion-suddenness.md` and `preferences/motion-references.md`), and offer a directional alternative.
 
 ## Enforcement — felt-state framing
 
@@ -99,20 +99,6 @@ bash {current-project}/scripts/audit-design.sh
 
 The `audit-design.sh` script informs but does not gate — the lane's validator is the hard FLOOR; the user's eye is the taste CEILING. If the user critiques the output, escalate to `/recraft "<critique>"` (the thin-coordinator redo command). If the project has no `scripts/audit-design.sh`, skip this step.
 
-## Handback — rant-capture
+## Handback
 
-After the lane's validator passes, ask the user verbatim:
-
-> Returned to bench. Anything here you'd rant about?
-
-If the user responds with any rant content, append to `{current-project}/.orca/design-rants-pending.md` with a timestamp header:
-
-```markdown
-## {ISO-8601 timestamp} — /motion-design
-
-{user's rant, verbatim}
-```
-
-Create the file if it does not exist. Never write directly to `~/.claude/` or to the ORCA-OS source tree.
-
-If the user has nothing to rant about, say so and stop.
+Aesthetic capture is owner-gated — see ~/.claude/docs/reference/design-lane.md (Aesthetic capture). No closing capture question.

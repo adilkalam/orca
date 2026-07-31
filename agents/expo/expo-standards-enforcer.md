@@ -68,7 +68,7 @@ Flag violations of these skills in your review.
 - Spacing follows design system
 - Typography uses defined scales
 - Consistent with design-dna if present
-- **Ad-hoc style sprawl / scattered design authority (doctrine B, RN-adapted):** repeated inline style objects across screens where a named shared style / theme token exists (or should). RN has no cascade, but the centralize-authority principle holds — flag "extract repeated inline style to a named shared style bound to tokens." Reference `~/.claude/docs/concepts/design-contract/rants/css-architecture.md`.
+- **Ad-hoc style sprawl / scattered design authority (doctrine B, RN-adapted):** repeated inline style objects across screens where a named shared style / theme token exists (or should). RN has no cascade, but the centralize-authority principle holds — flag "extract repeated inline style to a named shared style bound to tokens." Reference `~/.claude/docs/concepts/design-contract/banned/css-architecture.md`.
 
 ### Testing
 - New logic has tests

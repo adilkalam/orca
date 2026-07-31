@@ -27,7 +27,7 @@ Rules of the discipline:
    appearance of a system `TextStyle` — it is NOT the `system-font-reflex` (the detector
    explicitly does not flag the `relativeTo:` argument).
 3. **The display floor still applies.** `Font.heroInline(...)` asserts ≥28pt; Dynamic Type
-   scales *up* from there, never below the collapse floor (see `rants/fonts.md`).
+   scales *up* from there, never below the collapse floor (see `banned/fonts.md`).
 
 ## Tabular figures for ALL dosing / calculator output
 

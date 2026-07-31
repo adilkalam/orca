@@ -35,7 +35,7 @@ Think like a design director. Evaluate:
 
 **Adil's anti-pattern catalog extends Bakaus's DON'T list:**
 
-Reference all 9 rant files in `~/.claude/docs/concepts/design-contract/rants/`. Each is authoritative for its pattern family. When reviewing, cite specific files when flagging issues.
+Reference the banned-rule files in `~/.claude/docs/concepts/design-contract/banned/`. Each is authoritative for its pattern family. When reviewing, cite specific files when flagging issues.
 
 ### Assessment C: Persona red-flags
 
@@ -237,17 +237,4 @@ After presenting the summary, tell the user:
 
 ---
 
-## Rant-capture at handback
-
-After completing the work, before returning to the user, ask:
-
-> "Returned to bench. Anything here you'd rant about?"
-
-If the user responds, append the entry to the current project's `.orca/design-rants-pending.md` in this format:
-
-```
-## YYYY-MM-DD HH:MM — [verb-name]
-[user's response verbatim]
-```
-
-Create `.orca/` in the current project if absent. Do NOT write to `~/.claude/` or to the ORCA-OS source tree directly. Pending entries are swept and categorized later via `/impeccable extract rants`.
+Aesthetic capture is owner-gated — see ~/.claude/docs/reference/design-lane.md (Aesthetic capture). No closing capture question.

@@ -20,8 +20,13 @@ struct OverrideEntry: Decodable {
 
 struct DesignOverrides {
     let entries: [OverrideEntry]
+    /// Absolute directory of the loaded registry file ("" when no registry).
+    /// Scope globs are commonly project-relative ("PeptideFox/**"), so
+    /// isSuppressed relativizes absolute artifact paths against this base
+    /// before declaring no-match (mirrors the web detector).
+    let registryDir: String
 
-    static let empty = DesignOverrides(entries: [])
+    static let empty = DesignOverrides(entries: [], registryDir: "")
 
     /// Resolution order mirrors DetectorConfig.resolve:
     ///   --overrides flag -> SWIFT_DESIGN_OVERRIDES env -> walk up from the
@@ -42,13 +47,24 @@ struct DesignOverrides {
     private static func load(path: String) -> DesignOverrides? {
         guard let data = FileManager.default.contents(atPath: path) else { return nil }
         guard let entries = try? JSONDecoder().decode([OverrideEntry].self, from: data) else { return nil }
-        return DesignOverrides(entries: entries)
+        let absolute = path.hasPrefix("/")
+            ? path
+            : (FileManager.default.currentDirectoryPath as NSString).appendingPathComponent(path)
+        return DesignOverrides(
+            entries: entries,
+            registryDir: (absolute as NSString).deletingLastPathComponent
+        )
     }
 
     private static func findUpwards(from scannedPath: String) -> String? {
         let fileManager = FileManager.default
-        var directory = (scannedPath as NSString).deletingLastPathComponent
-        if directory.isEmpty { directory = fileManager.currentDirectoryPath }
+        // Anchor relative scan paths at cwd BEFORE walking so the walk probes
+        // the starting directory too: a relative "Sub/File.swift" previously
+        // walked "Sub", hit "", and never checked cwd itself.
+        let absolutePath = scannedPath.hasPrefix("/")
+            ? scannedPath
+            : (fileManager.currentDirectoryPath as NSString).appendingPathComponent(scannedPath)
+        var directory = (absolutePath as NSString).deletingLastPathComponent
         var previous = ""
         while directory != previous && !directory.isEmpty {
             let candidate = (directory as NSString)
@@ -64,10 +80,30 @@ struct DesignOverrides {
     /// a rule-id match AND a NON-EMPTY scope that matches. An entry with a
     /// missing/empty scope suppresses nothing.
     func isSuppressed(ruleId: String, path: String) -> Bool {
+        let candidates = candidatePaths(for: path)
         for entry in entries where entry.suppresses == ruleId {
             guard let scope = entry.scope, !scope.isEmpty else { continue }
-            if GlobMatcher.matches(glob: scope, path: path) { return true }
+            if candidates.contains(where: { GlobMatcher.matches(glob: scope, path: $0) }) {
+                return true
+            }
         }
         return false
+    }
+
+    /// The scanned path plus project-relative retries. Scope globs are anchored
+    /// against the FULL path, so a project-relative scope ("PeptideFox/**") can
+    /// never match an ABSOLUTE artifact path — before failing we retry the path
+    /// relativized to (a) the registry file's directory, (b) cwd (mirrors the
+    /// web detector's overrideCandidatePaths).
+    private func candidatePaths(for path: String) -> [String] {
+        var candidates = [path]
+        let bases = [registryDir, FileManager.default.currentDirectoryPath]
+        for base in bases where !base.isEmpty {
+            let prefix = base.hasSuffix("/") ? base : base + "/"
+            if path.hasPrefix(prefix) {
+                candidates.append(String(path.dropFirst(prefix.count)))
+            }
+        }
+        return candidates
     }
 }

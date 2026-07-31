@@ -5,7 +5,7 @@
 > opposite case — the app **ships a single bundled family (Brown LL)** in `Resources/Fonts/` and
 > the discipline is *use it well*, not *pick one*. Source of truth:
 > `peptidefox-ios/.claude/CLAUDE.md §6.2` and `PeptideFox/DesignSystem/Tokens/TypographyTokens.swift`.
-> Refusal side: `rants/fonts.md` + `rants/mono-fatigue.md`.
+> Refusal side: `banned/fonts.md` + `banned/mono-fatigue.md`.
 
 ## The positive move
 

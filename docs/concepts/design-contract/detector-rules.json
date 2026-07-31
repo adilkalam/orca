@@ -1,12 +1,12 @@
 {
   "version": 1,
-  "_note": "Handler-based rules not yet wired. DEFERRED (implementable as CSS AST walks, re-add to rules[] when handlers compiled): chamfer-stack, asymmetric-heading-margins-missing, missing-typography-junctions. REMOVED FROM SCOPE: ios-calculator-default (too specific, already covered by generic-ui-defaults rant); pretend-variation (requires cross-candidate structural similarity, not a per-file scan); pixel-misalignment (requires rendered layout measurements, belongs in Chrome DevTools MCP review path, not static CSS scanner). Pattern-based rules below run live via runExternalRules in detect-antipatterns.mjs. ADVISORY UTILITY-SPRAWL NOTE: the utility-sprawl rule (P1, source_rant rants/css-architecture.md, target source) is a coarse smell detector for scattered design authority (doctrine B) — it regex-matches className/class strings carrying 6+ utility-like tokens. It is ADVISORY: it logs and never blocks, so false positives are acceptable. It is NOT a Tailwind ban — raw palette utilities are the blocking concern, owned by tailwind-palette-utilities (P0). A precise count-based JSX handler (parse the className token list, threshold the count, dedupe across components) is a future refinement, NOT built now.",
+  "_note": "Handler-based rules not yet wired. DEFERRED (implementable as CSS AST walks, re-add to rules[] when handlers compiled): chamfer-stack, asymmetric-heading-margins-missing, missing-typography-junctions. REMOVED FROM SCOPE: ios-calculator-default (too specific, already covered by the generic-ui-defaults ban); pretend-variation (requires cross-candidate structural similarity, not a per-file scan); pixel-misalignment (requires rendered layout measurements, belongs in Chrome DevTools MCP review path, not static CSS scanner). Pattern-based rules below run live via runExternalRules in detect-antipatterns.mjs. ADVISORY UTILITY-SPRAWL NOTE: the utility-sprawl rule (P1, source banned/css-architecture.md, target source) is a coarse smell detector for scattered design authority (doctrine B) — it regex-matches className/class strings carrying 6+ utility-like tokens. It is ADVISORY: it logs and never blocks, so false positives are acceptable. It is NOT a Tailwind ban — raw palette utilities are the blocking concern, owned by tailwind-palette-utilities (P0). A precise count-based JSX handler (parse the className token list, threshold the count, dedupe across components) is a future refinement, NOT built now.",
   "collection_reference": "docs/concepts/design-contract/",
   "rules": [
     {
       "id": "tailwind-palette-utilities",
       "severity": "P0",
-      "source_rant": "rants/colors.md",
+      "source": "banned/colors.md",
       "patterns": [
         {
           "type": "regex",
@@ -18,7 +18,7 @@
     {
       "id": "tailwind-hex-values",
       "severity": "P0",
-      "source_rant": "rants/colors.md",
+      "source": "banned/colors.md",
       "patterns": [
         {
           "type": "regex",
@@ -30,7 +30,7 @@
     {
       "id": "reflex-fonts",
       "severity": "P0",
-      "source_rant": "rants/fonts.md",
+      "source": "banned/fonts.md",
       "patterns": [
         {
           "type": "regex",
@@ -42,7 +42,7 @@
     {
       "id": "geist-imports",
       "severity": "P0",
-      "source_rant": "rants/fonts.md",
+      "source": "banned/fonts.md",
       "patterns": [
         {
           "type": "regex",
@@ -54,7 +54,7 @@
     {
       "id": "purple-pink-gradients",
       "severity": "P0",
-      "source_rant": "rants/gradients.md",
+      "source": "banned/gradients.md",
       "patterns": [
         {
           "type": "regex",
@@ -66,7 +66,7 @@
     {
       "id": "gradient-text",
       "severity": "P0",
-      "source_rant": "rants/gradients.md",
+      "source": "banned/gradients.md",
       "patterns": [
         {
           "type": "regex",
@@ -78,7 +78,7 @@
     {
       "id": "side-stripe-borders",
       "severity": "P0",
-      "source_rant": "rants/chamfered-buttons.md",
+      "source": "banned/chamfered-buttons.md",
       "patterns": [
         {
           "type": "regex",
@@ -90,7 +90,7 @@
     {
       "id": "inset-highlight-shadow",
       "severity": "P0",
-      "source_rant": "rants/chamfered-buttons.md",
+      "source": "banned/chamfered-buttons.md",
       "patterns": [
         {
           "type": "regex",
@@ -102,7 +102,7 @@
     {
       "id": "default-ease-transition",
       "severity": "P1",
-      "source_rant": "rants/motion-suddenness.md",
+      "source": "banned/motion-suddenness.md",
       "patterns": [
         {
           "type": "regex",
@@ -114,7 +114,7 @@
     {
       "id": "bouncy-easing",
       "severity": "P1",
-      "source_rant": "rants/motion-suddenness.md",
+      "source": "banned/motion-suddenness.md",
       "patterns": [
         {
           "type": "regex",
@@ -126,7 +126,7 @@
     {
       "id": "utility-sprawl",
       "severity": "P1",
-      "source_rant": "rants/css-architecture.md",
+      "source": "banned/css-architecture.md",
       "advisory": true,
       "patterns": [
         {

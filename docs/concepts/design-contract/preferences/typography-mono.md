@@ -6,9 +6,9 @@
 
 ## What this is about
 
-The positive companion to `~/.claude/docs/concepts/design-contract/rants/typography-mono.md`. The rant catalogs failure modes; this file catalogs the **six places mono actually belongs.**
+The positive companion to `~/.claude/docs/concepts/design-contract/banned/typography-mono.md`. The banned rule catalogs failure modes; this file catalogs the **six places mono actually belongs.**
 
-Read both. The rant tells you when not to. This file tells you when yes — and what makes the yes correct in execution, not just permitted.
+Read both. The banned rule tells you when not to. This file tells you when yes — and what makes the yes correct in execution, not just permitted.
 
 The default is: **the body sans is the workhorse of the page.** Mono appears only when a string is structurally NOT prose, AND the mono register adds information that body sans would not — typically: "this is a chip / tag / unit / fixed-width readout, treat it as a separate visual category."
 
@@ -115,7 +115,7 @@ This is where the trained reflex commonly fails — it puts the entire citation 
 
 Beyond being in one of the six slots, the mono use has to be technically correct:
 
-1. **OpenType features explicitly disabled** — see the rant for the `hist` / long-`s` failure mode in Brown Mono LL specifically. Always include `font-variant-ligatures: none` and `font-feature-settings: 'liga' 0, 'dlig' 0, 'hist' 0, 'calt' 0` on any mono-using selector, OR on a parent `.mono-register` rule that all mono selectors live inside.
+1. **OpenType features explicitly disabled** — see the banned rule for the `hist` / long-`s` failure mode in Brown Mono LL specifically. Always include `font-variant-ligatures: none` and `font-feature-settings: 'liga' 0, 'dlig' 0, 'hist' 0, 'calt' 0` on any mono-using selector, OR on a parent `.mono-register` rule that all mono selectors live inside.
 2. **No added tracking in general use** — Brown Mono LL is already wide and needs none. Zero letter-spacing on tags, units, axis chrome, and terminal text. The ONLY exception is all-caps labels (eyebrows), which take **0.02em max**. Anything more reads as "trying to look technical."
 3. **Percent sign uses the body-sans glyph** — Brown Mono LL's `%` is poorly drawn. Anywhere a `%` appears in a mono context (axis labels, tags like `4.2%`, readouts), render the percent sign in the body sans (e.g. Brown LL) while the number stays mono: `<span class="pf-pct">%</span>`. The number is mono; the `%` is not.
 4. **Fallback chain includes `ui-monospace`** — not just `monospace` (which is too coarse). The chain `'Brown Mono LL', ui-monospace, monospace` resolves to system mono fallback before hitting browser default.
@@ -140,7 +140,7 @@ If the count is higher, mono has stopped being earned and started being default.
 
 ## Cross-references
 
-- The rant: `~/.claude/docs/concepts/design-contract/rants/typography-mono.md`
+- The banned rule: `~/.claude/docs/concepts/design-contract/banned/typography-mono.md`
 - Project-specific selection: each project's `.claude/aesthetic.md` "Mono register" section
 - Sibling preference (font selection generally): `~/.claude/docs/concepts/design-contract/preferences/typography-fonts.md`
 - Junction discipline (what to do AFTER you've picked the font register): `~/.claude/docs/concepts/design-contract/preferences/typography-spacing.md`
